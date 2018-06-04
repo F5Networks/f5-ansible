@@ -15,18 +15,18 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_facts
+module: bigip_device_facts
 short_description: Collect facts from F5 BIG-IP devices
 description:
   - Collect facts from F5 BIG-IP devices.
-version_added: 1.6
+version_added: 2.7
 options:
   gather_subset:
     description:
-      - When supplied, this argument will restrict the facts collected to a given subset.
-      - Possible values for this argument include all, hardware, config, and interfaces.
+      - When supplied, this argument will restrict the facts returned to a given subset.
       - Can specify a list of values to include a larger subset.
-      - Values can also be used with an initial C(!) to specify that a specific subset should not be collected.
+      - Values can also be used with an initial C(!) to specify that a specific subset
+        should not be collected.
     required: True
     choices:
       - internal-data-groups
@@ -532,7 +532,7 @@ nodes:
         - If there is a problem with the status of the node, that problem is reported here. 
       returned: changed
       type: string
-      sample: /Common/https_443: No successful responses received...
+      sample: /Common/https_443 No successful responses received...
     monitor_rule:
       description:
         - A string representation of the full monitor rule. 
@@ -788,6 +788,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import fq_name
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.utils.responses.handlers import Stats
@@ -800,6 +801,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import fq_name
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.utils.responses.handlers import Stats
@@ -916,370 +918,6 @@ class Interfaces(object):
 
 
 
-class VirtualServers(object):
-    """Virtual servers class.
-
-    F5 BIG-IP virtual servers class.
-
-    Attributes:
-        api: iControl API instance.
-        virtual_servers: List of virtual servers.
-    """
-
-    def __init__(self, api, regex=None):
-        self.api = api
-        self.virtual_servers = api.LocalLB.VirtualServer.get_list()
-        if regex:
-            re_filter = re.compile(regex)
-            self.virtual_servers = filter(re_filter.search, self.virtual_servers)
-
-    def get_list(self):
-        return self.virtual_servers
-
-    def get_name(self):
-        return [x[x.rfind('/') + 1:] for x in self.virtual_servers]
-
-    def get_actual_hardware_acceleration(self):
-        return self.api.LocalLB.VirtualServer.get_actual_hardware_acceleration(self.virtual_servers)
-
-    def get_authentication_profile(self):
-        return self.api.LocalLB.VirtualServer.get_authentication_profile(self.virtual_servers)
-
-    def get_auto_lasthop(self):
-        return self.api.LocalLB.VirtualServer.get_auto_lasthop(self.virtual_servers)
-
-    def get_bw_controller_policy(self):
-        return self.api.LocalLB.VirtualServer.get_bw_controller_policy(self.virtual_servers)
-
-    def get_clone_pool(self):
-        return self.api.LocalLB.VirtualServer.get_clone_pool(self.virtual_servers)
-
-    def get_cmp_enable_mode(self):
-        return self.api.LocalLB.VirtualServer.get_cmp_enable_mode(self.virtual_servers)
-
-    def get_connection_limit(self):
-        return self.api.LocalLB.VirtualServer.get_connection_limit(self.virtual_servers)
-
-    def get_connection_mirror_state(self):
-        return self.api.LocalLB.VirtualServer.get_connection_mirror_state(self.virtual_servers)
-
-    def get_default_pool_name(self):
-        return self.api.LocalLB.VirtualServer.get_default_pool_name(self.virtual_servers)
-
-    def get_description(self):
-        return self.api.LocalLB.VirtualServer.get_description(self.virtual_servers)
-
-    def get_destination(self):
-        return self.api.LocalLB.VirtualServer.get_destination_v2(self.virtual_servers)
-
-    def get_enabled_state(self):
-        return self.api.LocalLB.VirtualServer.get_enabled_state(self.virtual_servers)
-
-    def get_enforced_firewall_policy(self):
-        return self.api.LocalLB.VirtualServer.get_enforced_firewall_policy(self.virtual_servers)
-
-    def get_fallback_persistence_profile(self):
-        return self.api.LocalLB.VirtualServer.get_fallback_persistence_profile(self.virtual_servers)
-
-    def get_fw_rule(self):
-        return self.api.LocalLB.VirtualServer.get_fw_rule(self.virtual_servers)
-
-    def get_gtm_score(self):
-        return self.api.LocalLB.VirtualServer.get_gtm_score(self.virtual_servers)
-
-    def get_last_hop_pool(self):
-        return self.api.LocalLB.VirtualServer.get_last_hop_pool(self.virtual_servers)
-
-    def get_nat64_state(self):
-        return self.api.LocalLB.VirtualServer.get_nat64_state(self.virtual_servers)
-
-    def get_object_status(self):
-        return self.api.LocalLB.VirtualServer.get_object_status(self.virtual_servers)
-
-    def get_persistence_profile(self):
-        return self.api.LocalLB.VirtualServer.get_persistence_profile(self.virtual_servers)
-
-    def get_profile(self):
-        return self.api.LocalLB.VirtualServer.get_profile(self.virtual_servers)
-
-    def get_protocol(self):
-        return self.api.LocalLB.VirtualServer.get_protocol(self.virtual_servers)
-
-    def get_rate_class(self):
-        return self.api.LocalLB.VirtualServer.get_rate_class(self.virtual_servers)
-
-    def get_rate_limit(self):
-        return self.api.LocalLB.VirtualServer.get_rate_limit(self.virtual_servers)
-
-    def get_rate_limit_destination_mask(self):
-        return self.api.LocalLB.VirtualServer.get_rate_limit_destination_mask(self.virtual_servers)
-
-    def get_rate_limit_mode(self):
-        return self.api.LocalLB.VirtualServer.get_rate_limit_mode(self.virtual_servers)
-
-    def get_rate_limit_source_mask(self):
-        return self.api.LocalLB.VirtualServer.get_rate_limit_source_mask(self.virtual_servers)
-
-    def get_related_rule(self):
-        return self.api.LocalLB.VirtualServer.get_related_rule(self.virtual_servers)
-
-    def get_rule(self):
-        return self.api.LocalLB.VirtualServer.get_rule(self.virtual_servers)
-
-    def get_security_log_profile(self):
-        return self.api.LocalLB.VirtualServer.get_security_log_profile(self.virtual_servers)
-
-    def get_snat_pool(self):
-        return self.api.LocalLB.VirtualServer.get_snat_pool(self.virtual_servers)
-
-    def get_snat_type(self):
-        return self.api.LocalLB.VirtualServer.get_snat_type(self.virtual_servers)
-
-    def get_source_address(self):
-        return self.api.LocalLB.VirtualServer.get_source_address(self.virtual_servers)
-
-    def get_source_address_translation_lsn_pool(self):
-        return self.api.LocalLB.VirtualServer.get_source_address_translation_lsn_pool(self.virtual_servers)
-
-    def get_source_address_translation_snat_pool(self):
-        return self.api.LocalLB.VirtualServer.get_source_address_translation_snat_pool(self.virtual_servers)
-
-    def get_source_address_translation_type(self):
-        return self.api.LocalLB.VirtualServer.get_source_address_translation_type(self.virtual_servers)
-
-    def get_source_port_behavior(self):
-        return self.api.LocalLB.VirtualServer.get_source_port_behavior(self.virtual_servers)
-
-    def get_staged_firewall_policy(self):
-        return self.api.LocalLB.VirtualServer.get_staged_firewall_policy(self.virtual_servers)
-
-    def get_translate_address_state(self):
-        return self.api.LocalLB.VirtualServer.get_translate_address_state(self.virtual_servers)
-
-    def get_translate_port_state(self):
-        return self.api.LocalLB.VirtualServer.get_translate_port_state(self.virtual_servers)
-
-    def get_type(self):
-        return self.api.LocalLB.VirtualServer.get_type(self.virtual_servers)
-
-    def get_vlan(self):
-        return self.api.LocalLB.VirtualServer.get_vlan(self.virtual_servers)
-
-    def get_wildmask(self):
-        return self.api.LocalLB.VirtualServer.get_wildmask(self.virtual_servers)
-
-
-class Devices(object):
-    """Devices class.
-
-    F5 BIG-IP devices class.
-
-    Attributes:
-        api: iControl API instance.
-        devices: List of devices.
-    """
-
-    def __init__(self, api, regex=None):
-        self.api = api
-        self.devices = api.Management.Device.get_list()
-        if regex:
-            re_filter = re.compile(regex)
-            self.devices = filter(re_filter.search, self.devices)
-
-    def get_list(self):
-        return self.devices
-
-    def get_active_modules(self):
-        return self.api.Management.Device.get_active_modules(self.devices)
-
-    def get_base_mac_address(self):
-        return self.api.Management.Device.get_base_mac_address(self.devices)
-
-    def get_blade_addresses(self):
-        return self.api.Management.Device.get_blade_addresses(self.devices)
-
-    def get_build(self):
-        return self.api.Management.Device.get_build(self.devices)
-
-    def get_chassis_id(self):
-        return self.api.Management.Device.get_chassis_id(self.devices)
-
-    def get_chassis_type(self):
-        return self.api.Management.Device.get_chassis_type(self.devices)
-
-    def get_comment(self):
-        return self.api.Management.Device.get_comment(self.devices)
-
-    def get_configsync_address(self):
-        return self.api.Management.Device.get_configsync_address(self.devices)
-
-    def get_contact(self):
-        return self.api.Management.Device.get_contact(self.devices)
-
-    def get_description(self):
-        return self.api.Management.Device.get_description(self.devices)
-
-    def get_edition(self):
-        return self.api.Management.Device.get_edition(self.devices)
-
-    def get_failover_state(self):
-        return self.api.Management.Device.get_failover_state(self.devices)
-
-    def get_local_device(self):
-        return self.api.Management.Device.get_local_device()
-
-    def get_hostname(self):
-        return self.api.Management.Device.get_hostname(self.devices)
-
-    def get_inactive_modules(self):
-        return self.api.Management.Device.get_inactive_modules(self.devices)
-
-    def get_location(self):
-        return self.api.Management.Device.get_location(self.devices)
-
-    def get_management_address(self):
-        return self.api.Management.Device.get_management_address(self.devices)
-
-    def get_marketing_name(self):
-        return self.api.Management.Device.get_marketing_name(self.devices)
-
-    def get_multicast_address(self):
-        return self.api.Management.Device.get_multicast_address(self.devices)
-
-    def get_optional_modules(self):
-        return self.api.Management.Device.get_optional_modules(self.devices)
-
-    def get_platform_id(self):
-        return self.api.Management.Device.get_platform_id(self.devices)
-
-    def get_primary_mirror_address(self):
-        return self.api.Management.Device.get_primary_mirror_address(self.devices)
-
-    def get_product(self):
-        return self.api.Management.Device.get_product(self.devices)
-
-    def get_secondary_mirror_address(self):
-        return self.api.Management.Device.get_secondary_mirror_address(self.devices)
-
-    def get_software_version(self):
-        return self.api.Management.Device.get_software_version(self.devices)
-
-    def get_timelimited_modules(self):
-        return self.api.Management.Device.get_timelimited_modules(self.devices)
-
-    def get_timezone(self):
-        return self.api.Management.Device.get_timezone(self.devices)
-
-    def get_unicast_addresses(self):
-        return self.api.Management.Device.get_unicast_addresses(self.devices)
-
-
-class DeviceGroups(object):
-    """Device groups class.
-
-    F5 BIG-IP device groups class.
-
-    Attributes:
-        api: iControl API instance.
-        device_groups: List of device groups.
-    """
-
-    def __init__(self, api, regex=None):
-        self.api = api
-        self.device_groups = api.Management.DeviceGroup.get_list()
-        if regex:
-            re_filter = re.compile(regex)
-            self.device_groups = filter(re_filter.search, self.device_groups)
-
-    def get_list(self):
-        return self.device_groups
-
-    def get_all_preferred_active(self):
-        return self.api.Management.DeviceGroup.get_all_preferred_active(self.device_groups)
-
-    def get_autosync_enabled_state(self):
-        return self.api.Management.DeviceGroup.get_autosync_enabled_state(self.device_groups)
-
-    def get_description(self):
-        return self.api.Management.DeviceGroup.get_description(self.device_groups)
-
-    def get_device(self):
-        return self.api.Management.DeviceGroup.get_device(self.device_groups)
-
-    def get_full_load_on_sync_state(self):
-        return self.api.Management.DeviceGroup.get_full_load_on_sync_state(self.device_groups)
-
-    def get_incremental_config_sync_size_maximum(self):
-        return self.api.Management.DeviceGroup.get_incremental_config_sync_size_maximum(self.device_groups)
-
-    def get_network_failover_enabled_state(self):
-        return self.api.Management.DeviceGroup.get_network_failover_enabled_state(self.device_groups)
-
-    def get_sync_status(self):
-        return self.api.Management.DeviceGroup.get_sync_status(self.device_groups)
-
-    def get_type(self):
-        return self.api.Management.DeviceGroup.get_type(self.device_groups)
-
-
-
-class VirtualAddresses(object):
-    """Virtual addresses class.
-
-    F5 BIG-IP virtual addresses class.
-
-    Attributes:
-        api: iControl API instance.
-        virtual_addresses: List of virtual addresses.
-    """
-
-    def __init__(self, api, regex=None):
-        self.api = api
-        self.virtual_addresses = api.LocalLB.VirtualAddressV2.get_list()
-        if regex:
-            re_filter = re.compile(regex)
-            self.virtual_addresses = filter(re_filter.search, self.virtual_addresses)
-
-    def get_list(self):
-        return self.virtual_addresses
-
-    def get_address(self):
-        return self.api.LocalLB.VirtualAddressV2.get_address(self.virtual_addresses)
-
-    def get_arp_state(self):
-        return self.api.LocalLB.VirtualAddressV2.get_arp_state(self.virtual_addresses)
-
-    def get_auto_delete_state(self):
-        return self.api.LocalLB.VirtualAddressV2.get_auto_delete_state(self.virtual_addresses)
-
-    def get_connection_limit(self):
-        return self.api.LocalLB.VirtualAddressV2.get_connection_limit(self.virtual_addresses)
-
-    def get_description(self):
-        return self.api.LocalLB.VirtualAddressV2.get_description(self.virtual_addresses)
-
-    def get_enabled_state(self):
-        return self.api.LocalLB.VirtualAddressV2.get_enabled_state(self.virtual_addresses)
-
-    def get_icmp_echo_state(self):
-        return self.api.LocalLB.VirtualAddressV2.get_icmp_echo_state(self.virtual_addresses)
-
-    def get_is_floating_state(self):
-        return self.api.LocalLB.VirtualAddressV2.get_is_floating_state(self.virtual_addresses)
-
-    def get_netmask(self):
-        return self.api.LocalLB.VirtualAddressV2.get_netmask(self.virtual_addresses)
-
-    def get_object_status(self):
-        return self.api.LocalLB.VirtualAddressV2.get_object_status(self.virtual_addresses)
-
-    def get_route_advertisement_state(self):
-        return self.api.LocalLB.VirtualAddressV2.get_route_advertisement_state(self.virtual_addresses)
-
-    def get_traffic_group(self):
-        return self.api.LocalLB.VirtualAddressV2.get_traffic_group(self.virtual_addresses)
-
-
 class AddressClasses(object):
     """Address group/class class.
 
@@ -1310,205 +948,6 @@ class AddressClasses(object):
         return self.api.LocalLB.Class.get_description(self.address_classes)
 
 
-class Certificates(object):
-    """Certificates class.
-
-    F5 BIG-IP certificates class.
-
-    Attributes:
-        api: iControl API instance.
-        certificates: List of certificate identifiers.
-        certificate_list: List of certificate information structures.
-    """
-
-    def __init__(self, api, regex=None, mode="MANAGEMENT_MODE_DEFAULT"):
-        self.api = api
-        self.certificate_list = api.Management.KeyCertificate.get_certificate_list(mode=mode)
-        self.certificates = [x['certificate']['cert_info']['id'] for x in self.certificate_list]
-        if regex:
-            re_filter = re.compile(regex)
-            self.certificates = filter(re_filter.search, self.certificates)
-            self.certificate_list = [x for x in self.certificate_list if x['certificate']['cert_info']['id'] in self.certificates]
-
-    def get_list(self):
-        return self.certificates
-
-    def get_certificate_list(self):
-        return self.certificate_list
-
-
-class Keys(object):
-    """Keys class.
-
-    F5 BIG-IP keys class.
-
-    Attributes:
-        api: iControl API instance.
-        keys: List of key identifiers.
-        key_list: List of key information structures.
-    """
-
-    def __init__(self, api, regex=None, mode="MANAGEMENT_MODE_DEFAULT"):
-        self.api = api
-        self.key_list = api.Management.KeyCertificate.get_key_list(mode=mode)
-        self.keys = [x['key_info']['id'] for x in self.key_list]
-        if regex:
-            re_filter = re.compile(regex)
-            self.keys = filter(re_filter.search, self.keys)
-            self.key_list = [x for x in self.key_list if x['key_info']['id'] in self.keys]
-
-    def get_list(self):
-        return self.keys
-
-    def get_key_list(self):
-        return self.key_list
-
-
-class ProfileClientSSL(object):
-    """Client SSL profiles class.
-
-    F5 BIG-IP client SSL profiles class.
-
-    Attributes:
-        api: iControl API instance.
-        profiles: List of client SSL profiles.
-    """
-
-    def __init__(self, api, regex=None):
-        self.api = api
-        self.profiles = api.LocalLB.ProfileClientSSL.get_list()
-        if regex:
-            re_filter = re.compile(regex)
-            self.profiles = filter(re_filter.search, self.profiles)
-
-    def get_list(self):
-        return self.profiles
-
-    def get_alert_timeout(self):
-        return self.api.LocalLB.ProfileClientSSL.get_alert_timeout(self.profiles)
-
-    def get_allow_nonssl_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_allow_nonssl_state(self.profiles)
-
-    def get_authenticate_depth(self):
-        return self.api.LocalLB.ProfileClientSSL.get_authenticate_depth(self.profiles)
-
-    def get_authenticate_once_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_authenticate_once_state(self.profiles)
-
-    def get_ca_file(self):
-        return self.api.LocalLB.ProfileClientSSL.get_ca_file_v2(self.profiles)
-
-    def get_cache_size(self):
-        return self.api.LocalLB.ProfileClientSSL.get_cache_size(self.profiles)
-
-    def get_cache_timeout(self):
-        return self.api.LocalLB.ProfileClientSSL.get_cache_timeout(self.profiles)
-
-    def get_certificate_file(self):
-        return self.api.LocalLB.ProfileClientSSL.get_certificate_file_v2(self.profiles)
-
-    def get_chain_file(self):
-        return self.api.LocalLB.ProfileClientSSL.get_chain_file_v2(self.profiles)
-
-    def get_cipher_list(self):
-        return self.api.LocalLB.ProfileClientSSL.get_cipher_list(self.profiles)
-
-    def get_client_certificate_ca_file(self):
-        return self.api.LocalLB.ProfileClientSSL.get_client_certificate_ca_file_v2(self.profiles)
-
-    def get_crl_file(self):
-        return self.api.LocalLB.ProfileClientSSL.get_crl_file_v2(self.profiles)
-
-    def get_default_profile(self):
-        return self.api.LocalLB.ProfileClientSSL.get_default_profile(self.profiles)
-
-    def get_description(self):
-        return self.api.LocalLB.ProfileClientSSL.get_description(self.profiles)
-
-    def get_forward_proxy_ca_certificate_file(self):
-        return self.api.LocalLB.ProfileClientSSL.get_forward_proxy_ca_certificate_file(self.profiles)
-
-    def get_forward_proxy_ca_key_file(self):
-        return self.api.LocalLB.ProfileClientSSL.get_forward_proxy_ca_key_file(self.profiles)
-
-    def get_forward_proxy_ca_passphrase(self):
-        return self.api.LocalLB.ProfileClientSSL.get_forward_proxy_ca_passphrase(self.profiles)
-
-    def get_forward_proxy_certificate_extension_include(self):
-        return self.api.LocalLB.ProfileClientSSL.get_forward_proxy_certificate_extension_include(self.profiles)
-
-    def get_forward_proxy_certificate_lifespan(self):
-        return self.api.LocalLB.ProfileClientSSL.get_forward_proxy_certificate_lifespan(self.profiles)
-
-    def get_forward_proxy_enabled_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_forward_proxy_enabled_state(self.profiles)
-
-    def get_forward_proxy_lookup_by_ipaddr_port_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_forward_proxy_lookup_by_ipaddr_port_state(self.profiles)
-
-    def get_handshake_timeout(self):
-        return self.api.LocalLB.ProfileClientSSL.get_handshake_timeout(self.profiles)
-
-    def get_key_file(self):
-        return self.api.LocalLB.ProfileClientSSL.get_key_file_v2(self.profiles)
-
-    def get_modssl_emulation_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_modssl_emulation_state(self.profiles)
-
-    def get_passphrase(self):
-        return self.api.LocalLB.ProfileClientSSL.get_passphrase(self.profiles)
-
-    def get_peer_certification_mode(self):
-        return self.api.LocalLB.ProfileClientSSL.get_peer_certification_mode(self.profiles)
-
-    def get_profile_mode(self):
-        return self.api.LocalLB.ProfileClientSSL.get_profile_mode(self.profiles)
-
-    def get_renegotiation_maximum_record_delay(self):
-        return self.api.LocalLB.ProfileClientSSL.get_renegotiation_maximum_record_delay(self.profiles)
-
-    def get_renegotiation_period(self):
-        return self.api.LocalLB.ProfileClientSSL.get_renegotiation_period(self.profiles)
-
-    def get_renegotiation_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_renegotiation_state(self.profiles)
-
-    def get_renegotiation_throughput(self):
-        return self.api.LocalLB.ProfileClientSSL.get_renegotiation_throughput(self.profiles)
-
-    def get_retain_certificate_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_retain_certificate_state(self.profiles)
-
-    def get_secure_renegotiation_mode(self):
-        return self.api.LocalLB.ProfileClientSSL.get_secure_renegotiation_mode(self.profiles)
-
-    def get_server_name(self):
-        return self.api.LocalLB.ProfileClientSSL.get_server_name(self.profiles)
-
-    def get_session_ticket_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_session_ticket_state(self.profiles)
-
-    def get_sni_default_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_sni_default_state(self.profiles)
-
-    def get_sni_require_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_sni_require_state(self.profiles)
-
-    def get_ssl_option(self):
-        return self.api.LocalLB.ProfileClientSSL.get_ssl_option(self.profiles)
-
-    def get_strict_resume_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_strict_resume_state(self.profiles)
-
-    def get_unclean_shutdown_state(self):
-        return self.api.LocalLB.ProfileClientSSL.get_unclean_shutdown_state(self.profiles)
-
-    def get_is_base_profile(self):
-        return self.api.LocalLB.ProfileClientSSL.is_base_profile(self.profiles)
-
-    def get_is_system_profile(self):
-        return self.api.LocalLB.ProfileClientSSL.is_system_profile(self.profiles)
 
 
 class SystemInfo(object):
@@ -1582,90 +1021,16 @@ def generate_interface_dict(f5, regex):
     return generate_dict(interfaces, fields)
 
 
-def generate_vs_dict(f5, regex):
-    virtual_servers = VirtualServers(f5.get_api(), regex)
-    fields = ['actual_hardware_acceleration', 'authentication_profile',
-              'auto_lasthop', 'bw_controller_policy', 'clone_pool',
-              'cmp_enable_mode', 'connection_limit', 'connection_mirror_state',
-              'default_pool_name', 'description', 'destination',
-              'enabled_state', 'enforced_firewall_policy',
-              'fallback_persistence_profile', 'fw_rule', 'gtm_score',
-              'last_hop_pool', 'nat64_state', 'object_status',
-              'persistence_profile', 'profile', 'protocol',
-              'rate_class', 'rate_limit', 'rate_limit_destination_mask',
-              'rate_limit_mode', 'rate_limit_source_mask', 'related_rule',
-              'rule', 'security_log_profile', 'snat_pool', 'snat_type',
-              'source_address', 'source_address_translation_lsn_pool',
-              'source_address_translation_snat_pool',
-              'source_address_translation_type', 'source_port_behavior',
-              'staged_firewall_policy', 'translate_address_state',
-              'translate_port_state', 'type', 'vlan', 'wildmask',
-              'name']
-    return generate_dict(virtual_servers, fields)
-
-
-def generate_device_dict(f5, regex):
-    devices = Devices(f5.get_api(), regex)
-    fields = ['active_modules', 'base_mac_address', 'blade_addresses',
-              'build', 'chassis_id', 'chassis_type', 'comment',
-              'configsync_address', 'contact', 'description', 'edition',
-              'failover_state', 'hostname', 'inactive_modules', 'location',
-              'management_address', 'marketing_name', 'multicast_address',
-              'optional_modules', 'platform_id', 'primary_mirror_address',
-              'product', 'secondary_mirror_address', 'software_version',
-              'timelimited_modules', 'timezone', 'unicast_addresses']
-    return generate_dict(devices, fields)
-
-
-def generate_device_group_dict(f5, regex):
-    device_groups = DeviceGroups(f5.get_api(), regex)
-    fields = ['all_preferred_active', 'autosync_enabled_state', 'description',
-              'device', 'full_load_on_sync_state',
-              'incremental_config_sync_size_maximum',
-              'network_failover_enabled_state', 'sync_status', 'type']
-    return generate_dict(device_groups, fields)
 
 
 
 
-
-def generate_virtual_address_dict(f5, regex):
-    virtual_addresses = VirtualAddresses(f5.get_api(), regex)
-    fields = ['address', 'arp_state', 'auto_delete_state', 'connection_limit',
-              'description', 'enabled_state', 'icmp_echo_state',
-              'is_floating_state', 'netmask', 'object_status',
-              'route_advertisement_state', 'traffic_group']
-    return generate_dict(virtual_addresses, fields)
 
 
 def generate_address_class_dict(f5, regex):
     address_classes = AddressClasses(f5.get_api(), regex)
     fields = ['address_class', 'description']
     return generate_dict(address_classes, fields)
-
-
-def generate_client_ssl_profile_dict(f5, regex):
-    profiles = ProfileClientSSL(f5.get_api(), regex)
-    fields = ['alert_timeout', 'allow_nonssl_state', 'authenticate_depth',
-              'authenticate_once_state', 'ca_file', 'cache_size',
-              'cache_timeout', 'certificate_file', 'chain_file',
-              'cipher_list', 'client_certificate_ca_file', 'crl_file',
-              'default_profile', 'description',
-              'forward_proxy_ca_certificate_file', 'forward_proxy_ca_key_file',
-              'forward_proxy_ca_passphrase',
-              'forward_proxy_certificate_extension_include',
-              'forward_proxy_certificate_lifespan',
-              'forward_proxy_enabled_state',
-              'forward_proxy_lookup_by_ipaddr_port_state', 'handshake_timeout',
-              'key_file', 'modssl_emulation_state', 'passphrase',
-              'peer_certification_mode', 'profile_mode',
-              'renegotiation_maximum_record_delay', 'renegotiation_period',
-              'renegotiation_state', 'renegotiation_throughput',
-              'retain_certificate_state', 'secure_renegotiation_mode',
-              'server_name', 'session_ticket_state', 'sni_default_state',
-              'sni_require_state', 'ssl_option', 'strict_resume_state',
-              'unclean_shutdown_state', 'is_base_profile', 'is_system_profile']
-    return generate_dict(profiles, fields)
 
 
 def generate_system_info_dict(f5):
@@ -1679,22 +1044,6 @@ def generate_system_info_dict(f5):
               'system_information', 'time',
               'time_zone', 'uptime']
     return generate_simple_dict(system_info, fields)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1835,6 +1184,548 @@ class BaseParameters(Parameters):
         for returnable in self.returnables:
             result[returnable] = getattr(self, returnable)
         result = self._filter_params(result)
+        return result
+
+
+class ClientSslProfilesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'alertTimeout': 'alert_timeout',
+        'allowNonSsl': 'allow_non_ssl',
+        'authenticateDepth': 'authenticate_depth',
+        'authenticate': 'authenticate_frequency',
+        'caFile': 'ca_file',
+        'cacheSize': 'cache_size',
+        'cacheTimeout': 'cache_timeout',
+        'cert': 'certificate_file',
+        'chain': 'chain_file',
+        'clientCertCa': 'client_certificate_ca_file',
+        'crlFile': 'crl_file',
+        'defaultsFrom': 'parent',
+        'modSslMethods': 'modssl_methods',
+        'peerCertMode': 'peer_certification_mode',
+        'sniRequire': 'sni_require',
+        'strictResume': 'strict_resume',
+        'mode': 'profile_mode_enabled',
+        'renegotiateMaxRecordDelay': 'renegotiation_maximum_record_delay',
+        'renegotiatePeriod': 'renegotiation_period',
+        'serverName': 'server_name',
+        'sessionTicket': 'session_ticket',
+        'sniDefault': 'sni_default',
+        'uncleanShutdown': 'unclean_shutdown',
+        'retainCertificate': 'retain_certificate',
+        'secureRenegotiation': 'secure_renegotiation_mode',
+        'handshakeTimeout': 'handshake_timeout',
+        'certExtensionIncludes': 'forward_proxy_certificate_extension_include',
+        'certLifespan': 'forward_proxy_certificate_lifespan',
+        'certLookupByIpaddrPort': 'forward_proxy_lookup_by_ipaddr_port',
+        'sslForwardProxy': 'forward_proxy_enabled',
+        'proxyCaPassphrase': 'forward_proxy_ca_passphrase',
+        'proxyCaCert': 'forward_proxy_ca_certificate_file',
+        'proxyCaKey': 'forward_proxy_ca_key_file'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'alert_timeout',
+        'allow_non_ssl',
+        'authenticate_depth',
+        'authenticate_frequency',
+        'ca_file',
+        'cache_size',
+        'cache_timeout',
+        'certificate_file',
+        'chain_file',
+        'ciphers',
+        'client_certificate_ca_file',
+        'crl_file',
+        'parent',
+        'description',
+        'modssl_methods',
+        'peer_certification_mode',
+        'sni_require',
+        'sni_default',
+        'strict_resume',
+        'profile_mode_enabled',
+        'renegotiation_maximum_record_delay',
+        'renegotiation_period',
+        'renegotiation',
+        'server_name',
+        'session_ticket',
+        'unclean_shutdown',
+        'retain_certificate',
+        'secure_renegotiation_mode',
+        'handshake_timeout',
+        'forward_proxy_certificate_extension_include',
+        'forward_proxy_certificate_lifespan',
+        'forward_proxy_lookup_by_ipaddr_port',
+        'forward_proxy_enabled',
+        'forward_proxy_ca_passphrase',
+        'forward_proxy_ca_certificate_file',
+        'forward_proxy_ca_key_file'
+    ]
+
+    @property
+    def alert_timeout(self):
+        if self._values['alert_timeout'] is None:
+            return None
+        if self._values['alert_timeout'] == 'indefinite':
+            return 0
+        return int(self._values['alert_timeout'])
+
+    @property
+    def renegotiation_maximum_record_delay(self):
+        if self._values['renegotiation_maximum_record_delay'] is None:
+            return None
+        if self._values['renegotiation_maximum_record_delay'] == 'indefinite':
+            return 0
+        return int(self._values['renegotiation_maximum_record_delay'])
+
+    @property
+    def renegotiation_period(self):
+        if self._values['renegotiation_period'] is None:
+            return None
+        if self._values['renegotiation_period'] == 'indefinite':
+            return 0
+        return int(self._values['renegotiation_period'])
+
+    @property
+    def handshake_timeout(self):
+        if self._values['handshake_timeout'] is None:
+            return None
+        if self._values['handshake_timeout'] == 'indefinite':
+            return 0
+        return int(self._values['handshake_timeout'])
+
+    @property
+    def allow_non_ssl(self):
+        if self._values['allow_non_ssl'] is None:
+            return None
+        if self._values['allow_non_ssl'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def forward_proxy_enabled(self):
+        if self._values['forward_proxy_enabled'] is None:
+            return None
+        if self._values['forward_proxy_enabled'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def renegotiation(self):
+        if self._values['renegotiation'] is None:
+            return None
+        if self._values['renegotiation'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def forward_proxy_lookup_by_ipaddr_port(self):
+        if self._values['forward_proxy_lookup_by_ipaddr_port'] is None:
+            return None
+        if self._values['forward_proxy_lookup_by_ipaddr_port'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def unclean_shutdown(self):
+        if self._values['unclean_shutdown'] is None:
+            return None
+        if self._values['unclean_shutdown'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def session_ticket(self):
+        if self._values['session_ticket'] is None:
+            return None
+        if self._values['session_ticket'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def retain_certificate(self):
+        if self._values['retain_certificate'] is None:
+            return None
+        if self._values['retain_certificate'] == 'true':
+            return 'yes'
+        return 'no'
+
+    @property
+    def server_name(self):
+        if self._values['server_name'] in [None, 'none']:
+            return None
+        return self._values['server_name']
+
+    @property
+    def forward_proxy_ca_certificate_file(self):
+        if self._values['forward_proxy_ca_certificate_file'] in [None, 'none']:
+            return None
+        return self._values['forward_proxy_ca_certificate_file']
+
+    @property
+    def forward_proxy_ca_key_file(self):
+        if self._values['forward_proxy_ca_key_file'] in [None, 'none']:
+            return None
+        return self._values['forward_proxy_ca_key_file']
+
+    @property
+    def authenticate_frequency(self):
+        if self._values['authenticate_frequency'] is None:
+            return None
+        return self._values['authenticate_frequency']
+
+    @property
+    def ca_file(self):
+        if self._values['ca_file'] is [None, 'none']:
+            return None
+        return self._values['ca_file']
+
+    @property
+    def certificate_file(self):
+        if self._values['certificate_file'] is [None, 'none']:
+            return None
+        return self._values['certificate_file']
+
+    @property
+    def chain_file(self):
+        if self._values['chain_file'] is [None, 'none']:
+            return None
+        return self._values['chain_file']
+
+    @property
+    def client_certificate_ca_file(self):
+        if self._values['client_certificate_ca_file'] is [None, 'none']:
+            return None
+        return self._values['client_certificate_ca_file']
+
+    @property
+    def crl_file(self):
+        if self._values['crl_file'] is [None, 'none']:
+            return None
+        return self._values['crl_file']
+
+    @property
+    def ciphers(self):
+        if self._values['ciphers'] is [None, 'none']:
+            return None
+        return self._values['ciphers'].split(' ')
+
+    @property
+    def modssl_methods(self):
+        if self._values['modssl_methods'] is None:
+            return None
+        if self._values['modssl_methods'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def strict_resume(self):
+        if self._values['strict_resume'] is None:
+            return None
+        if self._values['strict_resume'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def profile_mode_enabled(self):
+        if self._values['profile_mode_enabled'] is None:
+            return None
+        if self._values['profile_mode_enabled'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def sni_require(self):
+        if self._values['sni_require'] is None:
+            return None
+        if self._values['sni_require'] == 'false':
+            return 'no'
+        return 'yes'
+
+    @property
+    def sni_default(self):
+        if self._values['sni_default'] is None:
+            return None
+        if self._values['sni_default'] == 'false':
+            return 'no'
+        return 'yes'
+
+
+class ClientSslProfilesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ClientSslProfilesFactManager, self).__init__(**kwargs)
+        self.want = ClientSslProfilesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(client_ssl_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ClientSslProfilesParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.ltm.profile.client_ssls.get_collection()
+        return result
+
+
+class DeviceGroupsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'autoSync': 'autosync_enabled',
+        'asmSync': 'asm_sync_enabled',
+        'devicesReference': 'devices',
+        'fullLoadOnSync': 'full_load_on_sync',
+        'incrementalConfigSyncSizeMax': 'incremental_config_sync_size_maximum',
+        'networkFailover': 'network_failover_enabled'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'autosync_enabled',
+        'description',
+        'devices',
+        'full_load_on_sync',
+        'incremental_config_sync_size_maximum',
+        'network_failover_enabled',
+        'type',
+        'asm_sync_enabled'
+    ]
+
+    @property
+    def network_failover_enabled(self):
+        if self._values['network_failover_enabled'] is None:
+            return None
+        if self._values['network_failover_enabled'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def asm_sync_enabled(self):
+        if self._values['asm_sync_enabled'] is None:
+            return None
+        if self._values['asm_sync_enabled'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def autosync_enabled(self):
+        if self._values['autosync_enabled'] is None:
+            return None
+        if self._values['autosync_enabled'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def full_load_on_sync(self):
+        if self._values['full_load_on_sync'] is None:
+            return None
+        if self._values['full_load_on_sync'] == 'true':
+            return 'yes'
+        return 'no'
+
+    @property
+    def devices(self):
+        if self._values['devices'] is None or 'items' not in self._values['devices']:
+            return None
+        result = [x['fullPath'] for x in self._values['devices']['items']]
+        result.sort()
+        return result
+
+
+class DeviceGroupsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(DeviceGroupsFactManager, self).__init__(**kwargs)
+        self.want = DeviceGroupsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(device_groups=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = DeviceGroupsParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.cm.device_groups.get_collection(
+            requests_params=dict(
+                params='expandSubcollections=true'
+            )
+        )
+        return result
+
+
+class DevicesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'activeModules': 'active_modules',
+        'baseMac': 'base_mac_address',
+        'chassisId': 'chassis_id',
+        'chassisType': 'chassis_type',
+        'configsyncIp': 'configsync_address',
+        'failoverState': 'failover_state',
+        'managementIp': 'management_address',
+        'marketingName': 'marketing_name',
+        'multicastIp': 'multicast_address',
+        'optionalModules': 'optional_modules',
+        'platformId': 'platform_id',
+        'mirrorIp': 'primary_mirror_address',
+        'mirrorSecondaryIp': 'secondary_mirror_address',
+        'version': 'software_version',
+        'timeLimitedModules': 'timelimited_modules',
+        'timeZone': 'timezone',
+        'unicastAddress': 'unicast_addresses'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'active_modules',
+        'base_mac_address',
+        'build',
+        'chassis_id',
+        'chassis_type',
+        'comment',
+        'configsync_address',
+        'contact',
+        'description',
+        'edition',
+        'failover_state',
+        'hostname',
+        'location',
+        'management_address',
+        'marketing_name',
+        'multicast_address',
+        'optional_modules',
+        'platform_id',
+        'primary_mirror_address',
+        'product',
+        'secondary_mirror_address',
+        'software_version',
+        'timelimited_modules',
+        'timezone',
+        'unicast_addresses'
+    ]
+
+    @property
+    def active_modules(self):
+        if self._values['active_modules'] is None:
+            return None
+        result = {}
+        for x in self._values['active_modules']:
+            parts = x.split('|')
+            name = parts[0]
+            result[name] = parts[2:]
+        return result
+
+    @property
+    def configsync_address(self):
+        if self._values['configsync_address'] in [None, 'none']:
+            return None
+        return self._values['configsync_address']
+
+    @property
+    def primary_mirror_address(self):
+        if self._values['primary_mirror_address'] in [None, 'any6']:
+            return None
+        return self._values['primary_mirror_address']
+
+    @property
+    def secondary_mirror_address(self):
+        if self._values['secondary_mirror_address'] in [None, 'any6']:
+            return None
+        return self._values['secondary_mirror_address']
+
+    @property
+    def unicast_addresses(self):
+        if self._values['unicast_addresses'] is None:
+            return None
+        result = []
+
+        for addr in self._values['unicast_addresses']:
+            tmp = {}
+            for key in ['effectiveIp', 'effectivePort', 'ip', 'port']:
+                if key in addr:
+                    renamed_key = self.convert(key)
+                    tmp[renamed_key] = addr.get(key, None)
+            if tmp:
+                result.append(tmp)
+        if result:
+            return result
+
+    def convert(self, name):
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
+class DevicesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(DevicesFactManager, self).__init__(**kwargs)
+        self.want = DevicesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(devices=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = DevicesParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.cm.devices.get_collection()
         return result
 
 
@@ -2461,61 +2352,147 @@ class SoftwareVolumesFactManager(BaseManager):
         return result
 
 
+class SslCertificatesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'keyType': 'key_type',
+        'certificateKeySize': 'key_size',
+        'systemPath': 'system_path',
+        'checksum': 'sha1_checksum',
+        'lastUpdateTime': 'last_update_time',
+        'isBundle': 'is_bundle',
+        'expirationString': 'expiration_date',
+        'expirationDate': 'expiration_timestamp',
+        'createTime': 'create_time'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'key_type',
+        'key_size',
+        'system_path',
+        'sha1_checksum',
+        'subject',
+        'last_update_time',
+        'issuer',
+        'is_bundle',
+        'fingerprint',
+        'expiration_date',
+        'expiration_timestamp',
+        'create_time',
+    ]
+
+    @property
+    def sha1_checksum(self):
+        if self._values['sha1_checksum'] is None:
+            return None
+        parts = self._values['sha1_checksum'].split(':')
+        return parts[2]
+
+    @property
+    def is_bundle(self):
+        if self._values['sha1_checksum'] is None:
+            return None
+        if self._values['is_bundle'] in BOOLEANS_TRUE:
+            return 'yes'
+        return 'no'
 
 
+class SslCertificatesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SslCertificatesFactManager, self).__init__(**kwargs)
+        self.want = SslCertificatesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(ssl_certs=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = SslCertificatesParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.sys.file.ssl_certs.get_collection()
+        return result
 
 
+class SslKeysParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'keyType': 'key_type',
+        'keySize': 'key_size',
+        'securityType': 'security_type',
+        'systemPath': 'system_path',
+        'checksum': 'sha1_checksum'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'key_type',
+        'key_size',
+        'security_type',
+        'system_path',
+        'sha1_checksum'
+    ]
+
+    @property
+    def sha1_checksum(self):
+        if self._values['sha1_checksum'] is None:
+            return None
+        parts = self._values['sha1_checksum'].split(':')
+        return parts[2]
 
 
+class SslKeysFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SslKeysFactManager, self).__init__(**kwargs)
+        self.want = SslKeysParameters(params=self.module.params)
 
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(ssl_keys=facts)
+        return result
 
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
 
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = SslKeysParameters(params=resource.attrs)
+            results.append(params)
+        return results
 
-
-
-
-
-
-
-
-def generate_traffic_group_dict(f5, regex):
-    traffic_groups = TrafficGroups(f5.get_api(), regex)
-    fields = [
-              'ha_order', 'is_floating', 'mac_masquerade_address',
-              'unit_id']
-    return generate_dict(traffic_groups, fields)
-
-
-class TrafficGroups(object):
-    def get_auto_failback_enabled_state(self):
-        return self.api.Management.TrafficGroup.get_auto_failback_enabled_state(self.traffic_groups)
-
-    def get_auto_failback_time(self):
-        return self.api.Management.TrafficGroup.get_auto_failback_time(self.traffic_groups)
-
-    def get_default_device(self):
-        return self.api.Management.TrafficGroup.get_default_device(self.traffic_groups)
-
-    def get_description(self):
-        return self.api.Management.TrafficGroup.get_description(self.traffic_groups)
-
-    def get_ha_load_factor(self):
-        return self.api.Management.TrafficGroup.get_ha_load_factor(self.traffic_groups)
-
-    def get_ha_order(self):
-        return self.api.Management.TrafficGroup.get_ha_order(self.traffic_groups)
-
-    def get_is_floating(self):
-        return self.api.Management.TrafficGroup.get_is_floating(self.traffic_groups)
-
-    def get_mac_masquerade_address(self):
-        return self.api.Management.TrafficGroup.get_mac_masquerade_address(self.traffic_groups)
-
-    def get_unit_id(self):
-        return self.api.Management.TrafficGroup.get_unit_id(self.traffic_groups)
-
-
-
+    def read_collection_from_device(self):
+        result = self.client.api.tm.sys.file.ssl_keys.get_collection()
+        return result
 
 
 class TrafficGroupsParameters(BaseParameters):
@@ -2523,7 +2500,10 @@ class TrafficGroupsParameters(BaseParameters):
         'fullPath': 'full_path',
         'autoFailbackEnabled': 'auto_failback_enabled',
         'autoFailbackTime': 'auto_failback_time',
-        'haLoadFactor': 'ha_load_factor'
+        'haLoadFactor': 'ha_load_factor',
+        'haOrder': 'ha_order',
+        'isFloating': 'is_floating',
+        'mac': 'mac_masquerade_address'
     }
 
     returnables = [
@@ -2532,14 +2512,17 @@ class TrafficGroupsParameters(BaseParameters):
         'description',
         'auto_failback_enabled',
         'auto_failback_time',
-        'ha_load_factor'
+        'ha_load_factor',
+        'ha_order',
+        'is_floating',
+        'mac_masquerade_address'
     ]
 
     @property
     def auto_failback_time(self):
         if self._values['auto_failback_time'] is None:
             return None
-        return int(self._values['auto_fallback_time'])
+        return int(self._values['auto_failback_time'])
 
     @property
     def auto_failback_enabled(self):
@@ -2549,6 +2532,21 @@ class TrafficGroupsParameters(BaseParameters):
             # Yes, the REST API stores this as a string
             return 'no'
         return 'yes'
+
+    @property
+    def is_floating(self):
+        if self._values['is_floating'] is None:
+            return None
+        elif self._values['is_floating'] == 'true':
+            # Yes, the REST API stores this as a string
+            return 'yes'
+        return 'no'
+
+    @property
+    def mac_masquerade_address(self):
+        if self._values['mac_masquerade_address'] in [None, 'none']:
+            return None
+        return self._values['mac_masquerade_address']
 
 
 class TrafficGroupsFactManager(BaseManager):
@@ -2560,7 +2558,7 @@ class TrafficGroupsFactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(trunks=facts)
+        result = dict(traffic_groups=facts)
         return result
 
     def _exec_module(self):
@@ -2583,26 +2581,8 @@ class TrafficGroupsFactManager(BaseManager):
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.trunks.get_collection()
+        result = self.client.api.tm.cm.traffic_groups.get_collection()
         return result
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class TrunksParameters(BaseParameters):
@@ -2693,6 +2673,446 @@ class TrunksFactManager(BaseManager):
     def read_collection_from_device(self):
         result = self.client.api.tm.net.trunks.get_collection()
         return result
+
+
+class VirtualAddressesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'arp': 'arp_enabled',
+        'autoDelete': 'auto_delete_enabled',
+        'connectionLimit': 'connection_limit',
+        'icmpEcho': 'icmp_echo',
+        'mask': 'netmask',
+        'routeAdvertisement': 'route_advertisement',
+        'trafficGroup': 'traffic_group',
+        'inheritedTrafficGroup': 'inherited_traffic_group'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'address',
+        'arp_enabled',
+        'auto_delete_enabled',
+        'connection_limit',
+        'description',
+        'enabled',
+        'icmp_echo',
+        'floating',
+        'netmask',
+        'route_advertisement',
+        'traffic_group',
+        'spanning',
+        'inherited_traffic_group'
+    ]
+
+    @property
+    def spanning(self):
+        if self._values['spanning'] is None:
+            return None
+        elif self._values['spanning'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def arp_enabled(self):
+        if self._values['arp_enabled'] is None:
+            return None
+        elif self._values['arp_enabled'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def route_advertisement(self):
+        if self._values['route_advertisement'] is None:
+            return None
+        elif self._values['route_advertisement'] == 'disabled':
+            return 'no'
+        return 'yes'
+
+    @property
+    def auto_delete_enabled(self):
+        if self._values['auto_delete_enabled'] is None:
+            return None
+        elif self._values['auto_delete_enabled'] == 'true':
+            return 'yes'
+        return 'no'
+
+    @property
+    def inherited_traffic_group(self):
+        if self._values['inherited_traffic_group'] is None:
+            return None
+        elif self._values['inherited_traffic_group'] == 'true':
+            return 'yes'
+        return 'no'
+
+    @property
+    def icmp_echo(self):
+        if self._values['icmp_echo'] is None:
+            return None
+        elif self._values['icmp_echo'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def floating(self):
+        if self._values['floating'] is None:
+            return None
+        elif self._values['floating'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+
+class VirtualAddressesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(VirtualAddressesFactManager, self).__init__(**kwargs)
+        self.want = VirtualAddressesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(virtual_addresses=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = VirtualAddressesParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.ltm.virtual_address_s.get_collection()
+        return result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class VirtualServers(object):
+
+    def get_name(self):
+        return [x[x.rfind('/') + 1:] for x in self.virtual_servers]
+
+    def get_actual_hardware_acceleration(self):
+        return self.api.LocalLB.VirtualServer.get_actual_hardware_acceleration(self.virtual_servers)
+
+    def get_authentication_profile(self):
+        return self.api.LocalLB.VirtualServer.get_authentication_profile(self.virtual_servers)
+
+    def get_auto_lasthop(self):
+        return self.api.LocalLB.VirtualServer.get_auto_lasthop(self.virtual_servers)
+
+    def get_bw_controller_policy(self):
+        return self.api.LocalLB.VirtualServer.get_bw_controller_policy(self.virtual_servers)
+
+    def get_clone_pool(self):
+        return self.api.LocalLB.VirtualServer.get_clone_pool(self.virtual_servers)
+
+    def get_cmp_enable_mode(self):
+        return self.api.LocalLB.VirtualServer.get_cmp_enable_mode(self.virtual_servers)
+
+    def get_connection_limit(self):
+        return self.api.LocalLB.VirtualServer.get_connection_limit(self.virtual_servers)
+
+    def get_connection_mirror_state(self):
+        return self.api.LocalLB.VirtualServer.get_connection_mirror_state(self.virtual_servers)
+
+    def get_default_pool_name(self):
+        return self.api.LocalLB.VirtualServer.get_default_pool_name(self.virtual_servers)
+
+    def get_description(self):
+        return self.api.LocalLB.VirtualServer.get_description(self.virtual_servers)
+
+    def get_destination(self):
+        return self.api.LocalLB.VirtualServer.get_destination_v2(self.virtual_servers)
+
+    def get_enabled_state(self):
+        return self.api.LocalLB.VirtualServer.get_enabled_state(self.virtual_servers)
+
+    def get_enforced_firewall_policy(self):
+        return self.api.LocalLB.VirtualServer.get_enforced_firewall_policy(self.virtual_servers)
+
+    def get_fallback_persistence_profile(self):
+        return self.api.LocalLB.VirtualServer.get_fallback_persistence_profile(self.virtual_servers)
+
+    def get_fw_rule(self):
+        return self.api.LocalLB.VirtualServer.get_fw_rule(self.virtual_servers)
+
+    def get_gtm_score(self):
+        return self.api.LocalLB.VirtualServer.get_gtm_score(self.virtual_servers)
+
+    def get_last_hop_pool(self):
+        return self.api.LocalLB.VirtualServer.get_last_hop_pool(self.virtual_servers)
+
+    def get_nat64_state(self):
+        return self.api.LocalLB.VirtualServer.get_nat64_state(self.virtual_servers)
+
+    def get_object_status(self):
+        return self.api.LocalLB.VirtualServer.get_object_status(self.virtual_servers)
+
+    def get_persistence_profile(self):
+        return self.api.LocalLB.VirtualServer.get_persistence_profile(self.virtual_servers)
+
+    def get_profile(self):
+        return self.api.LocalLB.VirtualServer.get_profile(self.virtual_servers)
+
+    def get_protocol(self):
+        return self.api.LocalLB.VirtualServer.get_protocol(self.virtual_servers)
+
+    def get_rate_class(self):
+        return self.api.LocalLB.VirtualServer.get_rate_class(self.virtual_servers)
+
+    def get_rate_limit(self):
+        return self.api.LocalLB.VirtualServer.get_rate_limit(self.virtual_servers)
+
+    def get_rate_limit_destination_mask(self):
+        return self.api.LocalLB.VirtualServer.get_rate_limit_destination_mask(self.virtual_servers)
+
+    def get_rate_limit_mode(self):
+        return self.api.LocalLB.VirtualServer.get_rate_limit_mode(self.virtual_servers)
+
+    def get_rate_limit_source_mask(self):
+        return self.api.LocalLB.VirtualServer.get_rate_limit_source_mask(self.virtual_servers)
+
+    def get_related_rule(self):
+        return self.api.LocalLB.VirtualServer.get_related_rule(self.virtual_servers)
+
+    def get_rule(self):
+        return self.api.LocalLB.VirtualServer.get_rule(self.virtual_servers)
+
+    def get_security_log_profile(self):
+        return self.api.LocalLB.VirtualServer.get_security_log_profile(self.virtual_servers)
+
+    def get_snat_pool(self):
+        return self.api.LocalLB.VirtualServer.get_snat_pool(self.virtual_servers)
+
+    def get_snat_type(self):
+        return self.api.LocalLB.VirtualServer.get_snat_type(self.virtual_servers)
+
+    def get_source_address(self):
+        return self.api.LocalLB.VirtualServer.get_source_address(self.virtual_servers)
+
+    def get_source_address_translation_lsn_pool(self):
+        return self.api.LocalLB.VirtualServer.get_source_address_translation_lsn_pool(self.virtual_servers)
+
+    def get_source_address_translation_snat_pool(self):
+        return self.api.LocalLB.VirtualServer.get_source_address_translation_snat_pool(self.virtual_servers)
+
+    def get_source_address_translation_type(self):
+        return self.api.LocalLB.VirtualServer.get_source_address_translation_type(self.virtual_servers)
+
+    def get_source_port_behavior(self):
+        return self.api.LocalLB.VirtualServer.get_source_port_behavior(self.virtual_servers)
+
+    def get_staged_firewall_policy(self):
+        return self.api.LocalLB.VirtualServer.get_staged_firewall_policy(self.virtual_servers)
+
+    def get_translate_address_state(self):
+        return self.api.LocalLB.VirtualServer.get_translate_address_state(self.virtual_servers)
+
+    def get_translate_port_state(self):
+        return self.api.LocalLB.VirtualServer.get_translate_port_state(self.virtual_servers)
+
+    def get_type(self):
+        return self.api.LocalLB.VirtualServer.get_type(self.virtual_servers)
+
+    def get_vlan(self):
+        return self.api.LocalLB.VirtualServer.get_vlan(self.virtual_servers)
+
+    def get_wildmask(self):
+        return self.api.LocalLB.VirtualServer.get_wildmask(self.virtual_servers)
+
+
+def generate_vs_dict(f5, regex):
+    fields = ['', 'authentication_profile',
+              '', '', '',
+              '', '', 'connection_mirror_state',
+              'default_pool_name', '', '',
+              '', 'enforced_firewall_policy',
+              '', 'fw_rule', 'gtm_score',
+              'last_hop_pool', 'nat64_state', 'object_status',
+              '', 'profile', 'protocol',
+              'rate_class', 'rate_limit', 'rate_limit_destination_mask',
+              'rate_limit_mode', 'rate_limit_source_mask', 'related_rule',
+              'rule', 'security_log_profile', 'snat_pool', 'snat_type',
+              'source_address', 'source_address_translation_lsn_pool',
+              'source_address_translation_snat_pool',
+              'source_address_translation_type', 'source_port_behavior',
+              'staged_firewall_policy', 'translate_address_state',
+              'type', '', 'wildmask',
+              '']
+    return generate_dict(virtual_servers, fields)
+
+
+
+
+class VirtualServersParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'autoLasthop': 'auto_lasthop',
+        'bwcPolicy': 'bw_controller_policy',
+        'cmpEnabled': 'cmp_enabled',
+        'connectionLimit': 'connection_limit',
+        'fallbackPersistence': 'fallback_persistence_profile',
+        'persist': 'persistence_profile',
+        'translatePort': 'translate_port',
+        'translateAddress': 'translate_address'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'auto_lasthop',
+        'bw_controller_policy',
+        'cmp_enabled',
+        'connection_limit',
+        'description',
+        'enabled',
+        'fallback_persistence_profile',
+        'persistence_profile',
+        'translate_port',
+        'translate_address',
+        'vlans',
+        'destination'
+    ]
+
+    @property
+    def enabled(self):
+        if self._values['enabled'] is None:
+            return None
+        elif self._values['enabled'] is True:
+            return 'yes'
+        return 'no'
+
+    @property
+    def translate_port(self):
+        if self._values['translate_port'] is None:
+            return None
+        elif self._values['translate_port'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def translate_address(self):
+        if self._values['translate_address'] is None:
+            return None
+        elif self._values['translate_address'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def persistence_profile(self):
+        """Return persistence profile in a consumable form
+
+        I don't know why the persistence profile is stored this way, but below is the
+        general format of it.
+
+            "persist": [
+                {
+                    "name": "msrdp",
+                    "partition": "Common",
+                    "tmDefault": "yes",
+                    "nameReference": {
+                        "link": "https://localhost/mgmt/tm/ltm/persistence/msrdp/~Common~msrdp?ver=13.1.0.4"
+                    }
+                }
+            ],
+
+        As you can see, this is quite different from something like the fallback
+        persistence profile which is just simply
+
+            /Common/fallback1
+
+        This method makes the persistence profile look like the fallback profile.
+
+        Returns:
+             string: The persistence profile configured on the virtual.
+        """
+        if self._values['persistence_profile'] is None:
+            return None
+        profile = self._values['persistence_profile'][0]
+        result = fq_name(profile['partition'], profile['name'])
+        return result
+
+
+class VirtualServersFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(VirtualServersFactManager, self).__init__(**kwargs)
+        self.want = VirtualServersParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(virtual_addresses=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = VirtualServersParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.ltm.virtuals.get_collection()
+        return result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class VlansParameters(BaseParameters):
@@ -2837,12 +3257,12 @@ class ModuleManager(object):
         self.want = Parameters(params=self.module.params)
         self.managers = {
             #'internal-data-groups': InternalDataGroupsFactManager,
-            #'certificates': CertificatesFactManager,
-            #'client-ssl-profiles': ClientSslProfilesFactManager,
-            #'devices': DevicesFactManager,
-            #'device-groups': DeviceGroupsFactManager,
+            'client-ssl-profiles': ClientSslProfilesFactManager,
+            'devices': DevicesFactManager,
+            'device-groups': DeviceGroupsFactManager,
             #'interfaces': InterfacesFactManager,
-            #'keys': KeysFactManager,
+            'ssl-certs': SslCertificatesFactManager,
+            'ssl-keys': SslKeysFactManager,
             'nodes': NodesFactManager,
             'ltm-pools': LtmPoolsFactManager,
             'provision-info': ProvisionInfoFactManager,
@@ -2852,8 +3272,8 @@ class ModuleManager(object):
             #'system-info': SystemInfoFactManager,
             'traffic-groups': TrafficGroupsFactManager,
             'trunks': TrunksFactManager,
-            #'virtual-addresses': VirtualAddressesFactManager,
-            #'virtual-servers': VirtualServersFactManager,
+            'virtual-addresses': VirtualAddressesFactManager,
+            'virtual-servers': VirtualServersFactManager,
             'vlans': VlansFactManager
         }
 
