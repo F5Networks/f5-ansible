@@ -1,0 +1,97 @@
+cli admin-partitions {
+    update-partition Common
+}
+
+sys application template dynamic_internal_data_group {
+
+    actions {
+        definition {
+
+            implementation {
+
+		puts "Starting iApp $tmsh::app_name.app generated with tmsh2iapp version 20180601.3"
+
+                set partition "/[lindex [split [tmsh::pwd] /] 1]"
+                set partition_name "[lindex [split [tmsh::pwd] /] 1]"
+
+                if { $partition == "/" } {
+                   puts "Warning: behaviour not well defined when @partition is \"/\""
+                   set defaultrd 0
+                } else {
+                   set obj [tmsh::get_config auth partition $partition_name default-route-domain]
+                   set defaultrd [tmsh::get_field_value [lindex $obj 0] default-route-domain]
+                }
+
+                puts "The iApp of type service is being instantiated in @partition $partition, @defaultrd is $defaultrd"
+
+
+
+
+
+
+                puts "Dumping values passed to iApp variables"
+                puts ">>> regular variables"
+                puts ">>> pool member variables"
+                puts ">>> data record variables"
+                if {[info exists {::dr__url_filtering}]} { puts "> __dr__url_filtering__ >${::dr__url_filtering}<"
+ }puts ">>> firewall address list variables"
+                puts ">>> firewall port list variables"
+                puts ">>> url match category list variables"
+                puts ">>> url nomatch category list variables"
+                puts ">>> iworkflow variables"
+                puts "End of dumping values passed to iApp variables"
+
+                set cfg {
+ltm data-group internal url_filtering {
+    __dr__url_filtering__
+    type string
+} }
+
+
+                set cfg [string map "@service_folder $tmsh::app_name.app @partition $partition @defaultrd $defaultrd __dr__url_filtering__ {} __app_service__ $tmsh::app_name.app/$tmsh::app_name " $cfg]
+
+                set fileId [open /var/tmp/dynamic_internal_data_group.cfg "w"]
+                puts -nonewline $fileId $cfg
+                close $fileId
+
+                tmsh::load sys config merge file /var/tmp/dynamic_internal_data_group.cfg
+
+
+
+
+                if {[info exists {::dr__url_filtering}] && [string length ${::dr__url_filtering}] > 0} {
+                   set cmd "tmsh::modify ltm data-group internal url_filtering description url_filtering { records replace-all-with { ${::dr__url_filtering} } }"
+                   puts "$cmd"
+                   eval $cmd
+                }
+
+
+
+
+
+
+
+
+
+                puts "Finished iApp $tmsh::app_name.app generated with tmsh2iapp version 20180601.3"
+            }
+
+            presentation {
+
+                include "/Common/f5.apl_common"
+                section dr {
+                        string url_filtering display "xxlarge"
+                }
+
+                text {
+
+                        dr "Internal data-group records"
+                        dr.url_filtering "__dr__url_filtering__"
+                }
+            }
+            role-acl { admin manager resource-admin }
+        }
+    }
+    description "iApp dynamic_internal_data_group generated with tmsh2iapp 20180601.3"
+
+}

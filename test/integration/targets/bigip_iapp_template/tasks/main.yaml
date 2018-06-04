@@ -66,3 +66,6 @@
 
 - import_tasks: issue-00438.yaml
   tags: issue-00438
+
+- import_tasks: issue-00744.yaml
+  tags: issue-00744

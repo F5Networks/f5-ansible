@@ -392,6 +392,8 @@ class ModuleManager(object):
             result = output.commandResult
             if 'Syntax Error' in result:
                 raise F5ModuleError(output.commandResult)
+            if 'ERROR' in result:
+                raise F5ModuleError(output.commandResult)
 
     def remove(self):
         if self.module.check_mode:
