@@ -1,0 +1,35 @@
+---
+
+- name: Issue 00738 - Create a new partition
+  bigip_partition:
+    name: my-part1
+
+- name: Issue 00738 - Create iApp template
+  bigip_iapp_template:
+    content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
+    partition: my-part1
+  register: result
+
+- name: Issue 00738 - Assert Create iApp template
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00738 - Create iApp template - Idempotent check
+  bigip_iapp_template:
+    content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
+    partition: my-part1
+  register: result
+
+- name: Issue 00738 - Assert Create iApp template - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00738 - Delete iApp template
+  bigip_iapp_template:
+    name: good_templ
+    partition: my-part1
+    state: absent
