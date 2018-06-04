@@ -1,0 +1,436 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create OneConnect profile
+  bigip_profile_oneconnect:
+    name: profile1
+  register: result
+
+- name: Assert Create OneConnect profile
+  assert:
+    that:
+      - result is changed
+
+- name: Create OneConnect profile - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+  register: result
+
+- name: Assert Create OneConnect profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Change source mask
+  bigip_profile_oneconnect:
+    name: profile1
+    source_mask: 24
+  register: result
+
+- name: Assert Change source mask
+  assert:
+    that:
+      - result is changed
+
+- name: Change source mask - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    source_mask: 24
+  register: result
+
+- name: Assert Change source mask - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change source mask, dotted quad - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    source_mask: 255.255.255.0
+  register: result
+
+- name: Assert Change source mask, dotted quad - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+- name: Change max size
+  bigip_profile_oneconnect:
+    name: profile1
+    maximum_size: 1000
+  register: result
+
+- name: Assert Change max size
+  assert:
+    that:
+      - result is changed
+
+- name: Change max size - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    maximum_size: 1000
+  register: result
+
+- name: Assert Change max size - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Change max age
+  bigip_profile_oneconnect:
+    name: profile1
+    maximum_age: 2000
+  register: result
+
+- name: Assert Change max age
+  assert:
+    that:
+      - result is changed
+
+- name: Change max age - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    maximum_age: 2000
+  register: result
+
+- name: Assert Change max age - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Change max reuse
+  bigip_profile_oneconnect:
+    name: profile1
+    maximum_reuse: 3000
+  register: result
+
+- name: Assert Change max reuse
+  assert:
+    that:
+      - result is changed
+
+- name: Change max reuse - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    maximum_reuse: 3000
+  register: result
+
+- name: Assert Change max reuse - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Change idle_timeout_override - indefinite
+  bigip_profile_oneconnect:
+    name: profile1
+    idle_timeout_override: indefinite
+  register: result
+
+- name: Assert Change idle_timeout_override - indefinite
+  assert:
+    that:
+      - result is changed
+
+- name: Change idle_timeout_override - indefinite - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    idle_timeout_override: indefinite
+  register: result
+
+- name: Assert Change idle_timeout_override - indefinite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Change idle_timeout_override - disabled
+  bigip_profile_oneconnect:
+    name: profile1
+    idle_timeout_override: disabled
+  register: result
+
+- name: Assert Change idle_timeout_override - disabled
+  assert:
+    that:
+      - result is changed
+
+- name: Change idle_timeout_override - disabled - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    idle_timeout_override: disabled
+  register: result
+
+- name: Assert Change idle_timeout_override - disabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Change idle_timeout_override - specify
+  bigip_profile_oneconnect:
+    name: profile1
+    idle_timeout_override: 100
+  register: result
+
+- name: Assert Change idle_timeout_override - specify
+  assert:
+    that:
+      - result is changed
+
+- name: Change idle_timeout_override - specify - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    idle_timeout_override: 100
+  register: result
+
+- name: Assert Change idle_timeout_override - specify - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+- name: Change limit_type - idle
+  bigip_profile_oneconnect:
+    name: profile1
+    limit_type: idle
+  register: result
+
+- name: Assert Change limit_type - idle
+  assert:
+    that:
+      - result is changed
+
+- name: Change limit_type - idle - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    limit_type: idle
+  register: result
+
+- name: Assert Change limit_type - idle - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+- name: Change limit_type - strict
+  bigip_profile_oneconnect:
+    name: profile1
+    limit_type: strict
+  register: result
+
+- name: Assert Change limit_type - strict
+  assert:
+    that:
+      - result is changed
+
+- name: Change limit_type - strict - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    limit_type: strict
+  register: result
+
+- name: Assert Change limit_type - strict - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Change limit_type - none
+  bigip_profile_oneconnect:
+    name: profile1
+    limit_type: none
+  register: result
+
+- name: Assert Change limit_type - none
+  assert:
+    that:
+      - result is changed
+
+- name: Change limit_type - none - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    limit_type: none
+  register: result
+
+- name: Assert Change limit_type - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+- name: Change share_pools - yes
+  bigip_profile_oneconnect:
+    name: profile1
+    share_pools: yes
+  register: result
+
+- name: Assert Change share_pools - yes
+  assert:
+    that:
+      - result is changed
+
+- name: Change share_pools - yes - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    share_pools: yes
+  register: result
+
+- name: Assert Change share_pools - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Change share_pools - no
+  bigip_profile_oneconnect:
+    name: profile1
+    share_pools: no
+  register: result
+
+- name: Assert Change share_pools - no
+  assert:
+    that:
+      - result is changed
+
+- name: Change share_pools - no - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    share_pools: no
+  register: result
+
+- name: Assert Change share_pools - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+- name: Remove profile
+  bigip_profile_oneconnect:
+    name: profile1
+    state: absent
+  register: result
+
+- name: Assert Remove profile
+  assert:
+    that:
+      - result is changed
+
+- name: Remove profile - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    state: absent
+  register: result
+
+- name: Assert Remove profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- import_tasks: teardown.yaml
