@@ -4,3 +4,10 @@
   bigip_iapp_template:
     content: "{{ lookup('file', 'issue-0744.tmpl') }}"
     state: present
+  register: result
+  failed_when: result is success
+
+- name: Issue 00744 - Assert Add to the BIG-IP library the iApp
+  assert:
+    that:
+      - result is success
