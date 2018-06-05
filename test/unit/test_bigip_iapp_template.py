@@ -98,7 +98,7 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             content=load_fixture('basic-iapp.tmpl'),
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
@@ -121,7 +121,7 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             content=load_fixture('basic-iapp.tmpl'),
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
@@ -150,7 +150,7 @@ class TestManager(unittest.TestCase):
     def test_delete_iapp_template(self, *args):
         set_module_args(dict(
             content=load_fixture('basic-iapp.tmpl'),
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin',
             state='absent'
@@ -173,7 +173,7 @@ class TestManager(unittest.TestCase):
     def test_delete_iapp_template_idempotent(self, *args):
         set_module_args(dict(
             content=load_fixture('basic-iapp.tmpl'),
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin',
             state='absent'

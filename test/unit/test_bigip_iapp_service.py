@@ -316,7 +316,7 @@ class TestManager(unittest.TestCase):
             template='f5.http',
             parameters=parameters,
             state='present',
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
@@ -341,7 +341,7 @@ class TestManager(unittest.TestCase):
             template='f5.http',
             parameters=parameters,
             state='present',
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
