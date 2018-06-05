@@ -48,6 +48,7 @@ options:
       - virtual-addresses
       - virtual-servers
       - vlans
+    aliases: ['include']
 notes:
   - Requires the netaddr Python package on the host. This is as easy as pip
     install netaddr.
@@ -67,6 +68,25 @@ EXAMPLES = r'''
     gather_subset:
       - interface
       - vlans
+  delegate_to: localhost
+
+- name: Collect all BIG-IP facts
+  bigip_facts:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    gather_subset:
+      - all
+  delegate_to: localhost
+
+- name: Collect all BIG-IP facts except trunks
+  bigip_facts:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    gather_subset:
+      - all
+      - "!trunks"
   delegate_to: localhost
 '''
 
@@ -898,38 +918,16 @@ class BaseManager(object):
 
 
 class Parameters(AnsibleF5Parameters):
-    include_map = {
-        'address_class': 'internal-data-groups',
-        'certificate': 'certificates',
-        'client_ssl_profile': 'client-ssl-profiles',
-        'device': 'devices',
-        'device_group': 'device-groups',
-        'interface': 'interfaces',
-        'key': 'keys',
-        'node': 'nodes',
-        'pool': 'pools',
-        'provision': 'provision-info',
-        'rule': 'irules',
-        'self_ip': 'self-ips',
-        'software': 'software-images',
-        'system_info': 'system-info',
-        'traffic_group': 'traffic-groups',
-        'trunk': 'trunks',
-        'virtual_address': 'virtual-addresses',
-        'virtual_server': 'virtual-servers',
-        'vlan': 'vlans',
-    }
-
     @property
-    def include(self):
-        if isinstance(self._values['include'], string_types):
-            self._values['include'] = [self._values['include']]
-        elif not isinstance(self._values['include'], list):
+    def gather_subset(self):
+        if isinstance(self._values['gather_subset'], string_types):
+            self._values['gather_subset'] = [self._values['gather_subset']]
+        elif not isinstance(self._values['gather_subset'], list):
             raise F5ModuleError(
                 "The specified gather_subset must be a list."
             )
-        self._values['include'].sort()
-        return self._values['include']
+        self._values['gather_subset'].sort()
+        return self._values['gather_subset']
 
 
 class BaseParameters(Parameters):
@@ -3746,11 +3744,11 @@ class ModuleManager(object):
         }
 
     def exec_module(self):
-        if 'all' in self.want.include:
-            managers = list(self.managers.keys()) + self.want.include
+        if 'all' in self.want.gather_subset:
+            managers = list(self.managers.keys()) + self.want.gather_subset
             managers.remove('all')
-            self.want.update({'include': managers})
-        res = self.check_valid_gather_subset(self.want.include)
+            self.want.update({'gather_subset': managers})
+        res = self.check_valid_gather_subset(self.want.gather_subset)
         if res:
             invalid = ','.join(res)
             raise F5ModuleError(
@@ -3758,8 +3756,8 @@ class ModuleManager(object):
             )
 
         # Remove the excluded entries from the list of possible facts
-        exclude = [x[1:] for x in self.want.include if x[0] == '!']
-        include = [x for x in self.want.include if x[0] != '!']
+        exclude = [x[1:] for x in self.want.gather_subset if x[0] == '!']
+        include = [x for x in self.want.gather_subset if x[0] != '!']
         result = [x for x in include if x not in exclude]
 
         managers = []
@@ -3797,6 +3795,8 @@ class ModuleManager(object):
                 if x[0] == '!':
                     if x[1:] not in keys:
                         result.append(x)
+                else:
+                    result.append(x)
         return result
 
     def execute_managers(self, managers):
@@ -3832,10 +3832,10 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = False
         argument_spec = dict(
-            include=dict(
+            gather_subset=dict(
                 type='list',
                 required=True,
-                aliases=['gather_subset']
+                aliases=['include']
             ),
         )
         self.argument_spec = {}

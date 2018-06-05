@@ -9,6 +9,165 @@
 #  register: result
 #  loop: "{{ valid_includes }}"
 
+
+
+
+
+- name: Select system-info facts
+  bigip_device_facts:
+    include:
+      - system-info
+  register: result
+
+- name: Assert Select interface facts
+  assert:
+    that:
+      - result is success
+      - result.system_info.product_code == 'BIG-IP'
+
+- name: Select interface facts
+  bigip_device_facts:
+    include:
+      - interfaces
+  register: result
+
+- name: Assert Select interface facts
+  assert:
+    that:
+      - result is success
+      - result.interfaces | selectattr("name", "match", "1.0") | map(attribute='mtu') | first == 1500
+      - result.interfaces | json_query("[?name=='1.0'].mtu") | first == 1500
+
+- name: Select internal data group facts
+  bigip_device_facts:
+    include:
+      - internal-data-groups
+  register: result
+
+- name: Assert Select internal data group facts
+  assert:
+    that:
+      - result is success
+      - result.internal_data_groups | selectattr("name", "match", "aol") | map(attribute='type') | first == 'ip'
+      - result.internal_data_groups | json_query("[?name=='aol'].type") | first == 'ip'
+
+- name: Select virtual server facts
+  bigip_device_facts:
+    include:
+      - virtual-servers
+  register: result
+
+- name: Assert Select virtual server facts
+  assert:
+    that:
+      - result is success
+      - result.virtual_servers | selectattr("name", "match", "virtual1") | map(attribute='description') | first == 'my virtual1'
+      - result.virtual_servers | json_query("[?name=='virtual1'].description") | first == 'my virtual1'
+
+- name: Select virtual address facts
+  bigip_device_facts:
+    include:
+      - virtual-addresses
+  register: result
+
+- name: Assert Select virtual address facts
+  assert:
+    that:
+      - result is success
+      - result.virtual_addresses | selectattr("name", "match", "2.3.4.5") | map(attribute='address') | first == '2.3.4.5'
+      - result.virtual_addresses | json_query("[?name=='2.3.4.5'].address") | first == '2.3.4.5'
+
+- name: Select device group facts
+  bigip_device_facts:
+    include:
+      - device-groups
+  register: result
+
+- name: Assert Select device group facts
+  assert:
+    that:
+      - result is success
+      - result.device_groups | selectattr("name", "match", "mydg1") | map(attribute='autosync_enabled') | first == 'no'
+      - result.device_groups | json_query("[?name=='mydg1'].autosync_enabled") | first == 'no'
+
+- name: Select ssl-cert facts
+  bigip_device_facts:
+    include:
+      - ssl-certs
+  register: result
+
+- name: Assert Select ssl-cert facts
+  assert:
+    that:
+      - result is success
+      - result.ssl_certs | selectattr("name", "match", "ca-bundle.crt") | map(attribute='key_type') | first == 'rsa-public'
+      - result.ssl_certs | json_query("[?name=='ca-bundle.crt'].key_type") | first == 'rsa-public'
+
+- name: Select ssl-key facts
+  bigip_device_facts:
+    include:
+      - ssl-keys
+  register: result
+
+- name: Assert Select ssl-key facts
+  assert:
+    that:
+      - result is success
+      - result.ssl_keys | selectattr("name", "match", "default.key") | map(attribute='security_type') | first == 'normal'
+      - result.ssl_keys | json_query("[?name=='default.key'].security_type") | first == 'normal'
+
+- name: Select device facts
+  bigip_device_facts:
+    include:
+      - devices
+  register: result
+
+- name: Assert Select device facts
+  assert:
+    that:
+      - result is success
+      - result.devices | selectattr("name", "match", "bigip1") | map(attribute='hostname') | first == 'bigip1'
+      - result.devices | json_query("[?name=='bigip1'].hostname") | first == 'bigip1'
+
+- name: Select client-ssl-profile facts
+  bigip_device_facts:
+    include:
+      - client-ssl-profiles
+  register: result
+
+- name: Assert Select client-ssl-profile facts
+  assert:
+    that:
+      - result is success
+      - result.client_ssl_profiles | selectattr("name", "match", "clientssl") | map(attribute='ciphers') | first | first == 'DEFAULT'
+      - result.client_ssl_profiles | json_query("[?name=='clientssl'].ciphers") | first | first == 'DEFAULT'
+
+- name: Select traffic group facts
+  bigip_device_facts:
+    include:
+      - traffic-groups
+  register: result
+
+- name: Assert Select traffic group facts
+  assert:
+    that:
+      - result is success
+      - result.traffic_groups | selectattr("name", "match", "tg1") | map(attribute='auto_failback_time') | first == 60
+      - result.traffic_groups | json_query("[?name=='tg1'].auto_failback_time") | first == 60
+
+- name: Select node facts
+  bigip_device_facts:
+    include:
+      - nodes
+  register: result
+
+- name: Assert Select node facts
+  assert:
+    that:
+      - result is success
+      - result.nodes | selectattr("name", "match", "5.6.7.8") | map(attribute='connection_limit') | first == 100
+      - result.nodes | json_query("[?name=='5.6.7.8'].connection_limit") | first == 100
+
 - name: Select trunk facts
   bigip_device_facts:
     include:
@@ -21,14 +180,6 @@
       - result is success
       - result.trunks | selectattr("name", "match", "trunk1") | map(attribute='description') | first == "my trunk"
       - result.trunks | json_query("[?name=='trunk1'].description") | first == "my trunk"
-
-
-
-
-
-- meta: end_play
-
-
 
 - name: Select selfip facts
   bigip_device_facts:
@@ -123,5 +274,114 @@
     that:
       - "'options are invalid: provision' in result.msg"
       - result is success
+
+- name: Select all facts
+  bigip_device_facts:
+    include:
+      - client-ssl-profiles
+      - device-groups
+      - devices
+      - interfaces
+      - internal-data-groups
+      - irules
+      - ltm-pools
+      - nodes
+      - provision-info
+      - self-ips
+      - software-volumes
+      - ssl-certs
+      - ssl-keys
+      - system-info
+      - traffic-groups
+      - trunks
+      - virtual-addresses
+      - virtual-servers
+      - vlans
+  register: result
+
+- name: Assert Select all facts
+  assert:
+    that:
+      - result is success
+      - "'client_ssl_profiles' in result"
+      - "'device_groups' in result"
+      - "'devices' in result"
+      - "'interfaces' in result"
+      - "'internal_data_groups' in result"
+      - "'irules' in result"
+      - "'ltm_pools' in result"
+      - "'nodes' in result"
+      - "'provision_info' in result"
+      - "'self_ips' in result"
+      - "'software_volumes' in result"
+      - "'ssl_certs' in result"
+      - "'ssl_keys' in result"
+      - "'system_info' in result"
+      - "'traffic_groups' in result"
+      - "'trunks' in result"
+      - "'virtual_addresses' in result"
+      - "'virtual_servers' in result"
+      - "'vlans' in result"
+
+- name: Select all facts, single keyword
+  bigip_device_facts:
+    include:
+      - all
+  register: result
+
+- name: Assert Select all facts, single keyword
+  assert:
+    that:
+      - result is success
+      - "'client_ssl_profiles' in result"
+      - "'device_groups' in result"
+      - "'devices' in result"
+      - "'interfaces' in result"
+      - "'internal_data_groups' in result"
+      - "'irules' in result"
+      - "'ltm_pools' in result"
+      - "'nodes' in result"
+      - "'provision_info' in result"
+      - "'self_ips' in result"
+      - "'software_volumes' in result"
+      - "'ssl_certs' in result"
+      - "'ssl_keys' in result"
+      - "'system_info' in result"
+      - "'traffic_groups' in result"
+      - "'trunks' in result"
+      - "'virtual_addresses' in result"
+      - "'virtual_servers' in result"
+      - "'vlans' in result"
+
+- name: Select all facts, except trunks
+  bigip_device_facts:
+    include:
+      - all
+      - "!trunks"
+  register: result
+
+- name: Assert Select all facts, except trunks
+  assert:
+    that:
+      - result is success
+      - "'client_ssl_profiles' in result"
+      - "'device_groups' in result"
+      - "'devices' in result"
+      - "'interfaces' in result"
+      - "'internal_data_groups' in result"
+      - "'irules' in result"
+      - "'ltm_pools' in result"
+      - "'nodes' in result"
+      - "'provision_info' in result"
+      - "'self_ips' in result"
+      - "'software_volumes' in result"
+      - "'ssl_certs' in result"
+      - "'ssl_keys' in result"
+      - "'system_info' in result"
+      - "'traffic_groups' in result"
+      - "'trunks' not in result"
+      - "'virtual_addresses' in result"
+      - "'virtual_servers' in result"
+      - "'vlans' in result"
 
 - import_tasks: teardown.yaml
