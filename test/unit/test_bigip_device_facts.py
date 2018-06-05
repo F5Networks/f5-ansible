@@ -22,7 +22,10 @@ from ansible.module_utils.six import iteritems
 
 try:
     from library.modules.bigip_device_facts import Parameters
+    from library.modules.bigip_device_facts import VirtualAddressesFactManager
+    from library.modules.bigip_device_facts import VirtualAddressesParameters
     from library.modules.bigip_device_facts import ArgumentSpec
+    from library.modules.bigip_device_facts import ModuleManager
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from f5.bigip.tm.gtm.pool import A
@@ -31,7 +34,10 @@ try:
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_device_pool import Parameters
+        from ansible.modules.network.f5.bigip_device_pool import VirtualAddressesFactManager
+        from ansible.modules.network.f5.bigip_device_pool import VirtualAddressesParameters
         from ansible.modules.network.f5.bigip_device_pool import ArgumentSpec
+        from ansible.modules.network.f5.bigip_device_pool import ModuleManager
         from ansible.module_utils.network.f5.common import F5ModuleError
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.bigip.tm.gtm.pool import A
@@ -62,12 +68,7 @@ def load_fixture(name):
     return data
 
 
-class FakeStatResource(object):
-    def __init__(self, obj):
-        self.entries = obj
-
-
-class FakeARecord(A):
+class FakeVirtualAddress(A):
     def __init__(self, *args, **kwargs):
         attrs = kwargs.pop('attrs', {})
         for key, value in iteritems(attrs):
@@ -88,41 +89,31 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_get_typed_pool_facts(self, *args):
+    def test_get_trunk_facts(self, *args):
         set_module_args(dict(
-            gather_subset=['virtual-servers'],
+            gather_subset=['virtual-addresses'],
             password='password',
             server='localhost',
             user='admin'
         ))
 
-        fixture1 = load_fixture('load_gtm_pool_a_collection.json')
-        fixture2 = load_fixture('load_gtm_pool_a_example_stats.json')
-        collection = [FakeARecord(attrs=x) for x in fixture1['items']]
-        stats = Stats(FakeStatResource(fixture2['entries']))
+        fixture1 = load_fixture('load_ltm_virtual_address_collection_1.json')
+        collection = [FakeVirtualAddress(attrs=x) for x in fixture1['items']]
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
         )
 
-        # Override methods in the specific type of manager
-        tfm = TypedPoolFactManager(module=module)
-        tfm.read_collection_from_device = Mock(return_value=collection)
-        tfm.read_stats_from_device = Mock(return_value=stats.stat)
-
-        tm = PoolFactManager(module=module)
-        tm.version_is_less_than_12 = Mock(return_value=False)
-        tm.get_manager = Mock(return_value=tfm)
+        tm = VirtualAddressesFactManager(module=module)
+        tm.read_collection_from_device = Mock(return_value=collection)
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         mm.get_manager = Mock(return_value=tm)
-        mm.gtm_provisioned = Mock(return_value=True)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert 'pool' in results
-        assert len(results['pool']) > 0
-        assert 'load_balancing_mode' in results['pool'][0]
+        assert 'virtual_addresses' in results
+        assert len(results['virtual_addresses']) > 0
