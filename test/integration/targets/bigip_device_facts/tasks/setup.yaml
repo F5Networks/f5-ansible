@@ -19,10 +19,32 @@
       foo2: baz
     priority_group_activation: 1
 
+- name: Add pool member
+  bigip_pool_member:
+    connection_limit: 100
+    description: my node
+    host: 5.6.7.8
+    pool: "{{ pool_name }}"
+    port: 80
+    rate_limit: 200
+    ratio: 1
+
+- name: Update node settings
+  bigip_node:
+    connection_limit: 100
+    description: my node
+    name: 5.6.7.8
+    rate_limit: 200
+    ratio: 1
+
 - name: Create test trunk
   bigip_trunk:
     name: trunk1
     description: my trunk
+
+- name: Create a traffic group
+  bigip_traffic_group:
+    name: tg1
 
 - name: Create test virtual
   bigip_virtual_server:
@@ -33,3 +55,8 @@
     name: virtual1
     port: 80
     snat: Automap
+    enabled_vlans: "{{ vlan_name }}"
+
+- name: Create device group
+  bigip_device_group:
+    name: mydg1
