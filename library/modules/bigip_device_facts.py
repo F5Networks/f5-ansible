@@ -776,6 +776,8 @@ trunks:
       sample: 1
 '''
 
+import datetime
+import math
 import re
 
 from ansible.module_utils.basic import AnsibleModule
@@ -873,7 +875,6 @@ def parseStats(entry):
                         except ValueError:
                             result = dict()
                             result[name] = parseStats(entry)
-        import q; q.q(result)
         return result
 
 
@@ -2439,78 +2440,6 @@ class SslKeysFactManager(BaseManager):
         return result
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class SystemInfo(object):
-
-    def get_base_mac_address(self):
-        return self.api.System.SystemInfo.get_base_mac_address()
-
-    def get_blade_temperature(self):
-        return self.api.System.SystemInfo.get_blade_temperature()
-
-    def get_chassis_slot_information(self):
-        return self.api.System.SystemInfo.get_chassis_slot_information()
-
-    def get_globally_unique_identifier(self):
-        return self.api.System.SystemInfo.get_globally_unique_identifier()
-
-    def get_group_id(self):
-        return self.api.System.SystemInfo.get_group_id()
-
-    def get_hardware_information(self):
-        return self.api.System.SystemInfo.get_hardware_information()
-
-    def get_marketing_name(self):
-        return self.api.System.SystemInfo.get_marketing_name()
-
-    def get_product_information(self):
-        return self.api.System.SystemInfo.get_product_information()
-
-    def get_pva_version(self):
-        return self.api.System.SystemInfo.get_pva_version()
-
-    def get_system_id(self):
-        return self.api.System.SystemInfo.get_system_id()
-
-    def get_system_information(self):
-        return self.api.System.SystemInfo.get_system_information()
-
-    def get_time(self):
-        return self.api.System.SystemInfo.get_time()
-
-    def get_time_zone(self):
-        return self.api.System.SystemInfo.get_time_zone()
-
-    def get_uptime(self):
-        return self.api.System.SystemInfo.get_uptime()
-
-
-def generate_system_info_dict(f5):
-    system_info = SystemInfo(f5.get_api())
-    fields = ['',
-              '', 'chassis_slot_information',
-              'globally_unique_identifier', 'group_id',
-              '',
-              '', 'system_id',
-              'system_information',
-              'time_zone', 'uptime']
-    return generate_simple_dict(system_info, fields)
-
-
-
 class SystemInfoParameters(BaseParameters):
     api_map = {
 
@@ -2521,7 +2450,13 @@ class SystemInfoParameters(BaseParameters):
         'marketing_name',
         'time',
         'hardware_information',
-        'product_information'
+        'product_information',
+        'package_edition',
+        'package_version',
+        'product_code',
+        'product_version',
+        'system_information',
+        'uptime'
     ]
 
     @property
@@ -2534,7 +2469,11 @@ class SystemInfoParameters(BaseParameters):
         the dictionary are mapped to the stats returned from the /mgmt/tm/sys/version
         API.
 
-        :return:
+        Note that the list of product features, previously reported by the SOAP API
+        is no longer available in the REST API and has been removed from this module.
+
+        Returns:
+            A dict of product information such as the version and code.
         """
         result = dict(
             package_edition=self._values['Edition'],
@@ -2545,6 +2484,48 @@ class SystemInfoParameters(BaseParameters):
             product_version=self._values['Version']
         )
         return result
+
+    @property
+    def system_information(self):
+        """Return system information
+
+        This is maintained here for legacy purposes.
+
+        Returns a dictionary of product related information where the keys in
+        the dictionary are mapped to the stats returned from the /mgmt/tm/sys/hardware
+        API.
+
+        Returns:
+            A dict of system information such as the version and code.
+        """
+        if self._values['system-info'] is None:
+            return None
+
+        result = dict(
+            chassis_serial=self._values['system-info'][0]['bigipChassisSerialNum'],
+            host_board_part_revision=self._values['system-info'][0]['hostBoardPartRevNum'],
+            host_board_serial=self._values['system-info'][0]['hostBoardSerialNum'],
+            platform=self._values['system-info'][0]['platform'],
+            switch_board_part_revision=self._values['system-info'][0]['switchBoardPartRevNum'],
+            switch_board_serial=self._values['system-info'][0]['switchBoardSerialNum'],
+        )
+        return result
+
+    @property
+    def package_edition(self):
+        return self._values['Edition']
+
+    @property
+    def package_version(self):
+        return 'Build {0} - {1}'.format(self._values['Build'], self._values['Date'])
+
+    @property
+    def product_code(self):
+        return self._values['Product']
+
+    @property
+    def product_version(self):
+        return self._values['Version']
 
     @property
     def hardware_information(self):
@@ -2572,7 +2553,16 @@ class SystemInfoParameters(BaseParameters):
     def time(self):
         if self._values['fullDate'] is None:
             return None
-        return self._values['fullDate']
+        date = datetime.datetime.strptime(self._values['fullDate'], "%Y-%m-%dT%H:%M:%SZ")
+        result = dict(
+            day=date.day,
+            hour=date.hour,
+            minute=date.minute,
+            month=date.month,
+            second=date.second,
+            year=date.year
+        )
+        return result
 
     @property
     def marketing_name(self):
@@ -2600,25 +2590,21 @@ class SystemInfoFactManager(BaseManager):
         return result
 
     def _exec_module(self):
-        results = []
         facts = self.read_facts()
-        for item in facts:
-            attrs = item.to_return()
-            results.append(attrs)
+        results = facts.to_return()
         return results
 
     def read_facts(self):
-        results = []
         collection = self.read_collection_from_device()
         params = SystemInfoParameters(params=collection)
-        results.append(params)
-        return results
+        return params
 
     def read_collection_from_device(self):
         result = dict()
         tmp = self.read_hardware_info_from_device()
         if tmp:
             result.update(tmp)
+
         tmp = self.read_clock_info_from_device()
         if tmp:
             result.update(tmp)
@@ -2626,7 +2612,39 @@ class SystemInfoFactManager(BaseManager):
         tmp = self.read_version_info_from_device()
         if tmp:
             result.update(tmp)
+
+        tmp = self.read_uptime_info_from_device()
+        if tmp:
+            result.update(tmp)
+
         return result
+
+    def read_uptime_info_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/util/bash".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        args = dict(
+            command='run',
+            utilCmdArgs='-c "cat /proc/uptime"'
+        )
+        resp = self.client.api.post(uri, json=args)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        try:
+            parts = response['commandResult'].strip().split(' ')
+            return dict(
+                uptime=math.floor(float(parts[0]))
+            )
+        except KeyError:
+            pass
 
     def read_hardware_info_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/hardware".format(
@@ -2786,22 +2804,6 @@ class SystemInfoFactManager(BaseManager):
                 raise F5ModuleError(resp.content)
         result = parseStats(response)
         return result[0]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class TrafficGroupsParameters(BaseParameters):
@@ -3745,18 +3747,23 @@ class ModuleManager(object):
 
     def exec_module(self):
         if 'all' in self.want.include:
-            managers = list(self.managers.keys())
-            self.want.update({'includes': managers})
-        else:
-            res = self.check_valid_gather_subset(self.want.include)
-            if res:
-                invalid = ','.join(res)
-                raise F5ModuleError(
-                    "The specified 'gather_subset' options are invalid: {0}".format(invalid)
-                )
+            managers = list(self.managers.keys()) + self.want.include
+            managers.remove('all')
+            self.want.update({'include': managers})
+        res = self.check_valid_gather_subset(self.want.include)
+        if res:
+            invalid = ','.join(res)
+            raise F5ModuleError(
+                "The specified 'gather_subset' options are invalid: {0}".format(invalid)
+            )
+
+        # Remove the excluded entries from the list of possible facts
+        exclude = [x[1:] for x in self.want.include if x[0] == '!']
+        include = [x for x in self.want.include if x[0] != '!']
+        result = [x for x in include if x not in exclude]
 
         managers = []
-        for name in self.want.include:
+        for name in result:
             manager = self.get_manager(name)
             if manager:
                 managers.append(manager)
@@ -3783,10 +3790,14 @@ class ModuleManager(object):
         :param includes:
         :return:
         """
-        if 'all' in includes:
-            return []
-        invalid = [x for x in includes if x not in self.managers.keys()]
-        return invalid
+        keys = self.managers.keys()
+        result = []
+        for x in includes:
+            if x not in keys:
+                if x[0] == '!':
+                    if x[1:] not in keys:
+                        result.append(x)
+        return result
 
     def execute_managers(self, managers):
         results = dict()
