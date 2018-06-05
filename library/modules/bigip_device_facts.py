@@ -30,12 +30,12 @@ options:
     required: True
     choices:
       - internal-data-groups
-      - certificates
       - client-ssl-profiles
       - devices
       - device-groups
       - interfaces
-      - keys
+      - ssl-certs
+      - ssl-keys
       - nodes
       - ltm-pools
       - provision-info
@@ -48,6 +48,11 @@ options:
       - virtual-addresses
       - virtual-servers
       - vlans
+notes:
+  - Requires the netaddr Python package on the host. This is as easy as pip
+    install netaddr.
+requirements:
+  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -780,10 +785,12 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.six import string_types
+from collections import namedtuple
 
 try:
     from library.module_utils.network.f5.bigip import HAS_F5SDK
     from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
@@ -797,6 +804,7 @@ try:
 except ImportError:
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
     from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
@@ -808,256 +816,11 @@ except ImportError:
     except ImportError:
         HAS_F5SDK = False
 
-
-class Interfaces(object):
-    """Interfaces class.
-
-    F5 BIG-IP interfaces class.
-
-    Attributes:
-        api: iControl API instance.
-        interfaces: A list of BIG-IP interface names.
-    """
-
-    def __init__(self, api, regex=None):
-        self.api = api
-        self.interfaces = api.Networking.Interfaces.get_list()
-        if regex:
-            re_filter = re.compile(regex)
-            self.interfaces = filter(re_filter.search, self.interfaces)
-
-    def get_list(self):
-        return self.interfaces
-
-    def get_active_media(self):
-        return self.api.Networking.Interfaces.get_active_media(self.interfaces)
-
-    def get_actual_flow_control(self):
-        return self.api.Networking.Interfaces.get_actual_flow_control(self.interfaces)
-
-    def get_bundle_state(self):
-        return self.api.Networking.Interfaces.get_bundle_state(self.interfaces)
-
-    def get_description(self):
-        return self.api.Networking.Interfaces.get_description(self.interfaces)
-
-    def get_dual_media_state(self):
-        return self.api.Networking.Interfaces.get_dual_media_state(self.interfaces)
-
-    def get_enabled_state(self):
-        return self.api.Networking.Interfaces.get_enabled_state(self.interfaces)
-
-    def get_if_index(self):
-        return self.api.Networking.Interfaces.get_if_index(self.interfaces)
-
-    def get_learning_mode(self):
-        return self.api.Networking.Interfaces.get_learning_mode(self.interfaces)
-
-    def get_lldp_admin_status(self):
-        return self.api.Networking.Interfaces.get_lldp_admin_status(self.interfaces)
-
-    def get_lldp_tlvmap(self):
-        return self.api.Networking.Interfaces.get_lldp_tlvmap(self.interfaces)
-
-    def get_mac_address(self):
-        return self.api.Networking.Interfaces.get_mac_address(self.interfaces)
-
-    def get_media(self):
-        return self.api.Networking.Interfaces.get_media(self.interfaces)
-
-    def get_media_option(self):
-        return self.api.Networking.Interfaces.get_media_option(self.interfaces)
-
-    def get_media_option_sfp(self):
-        return self.api.Networking.Interfaces.get_media_option_sfp(self.interfaces)
-
-    def get_media_sfp(self):
-        return self.api.Networking.Interfaces.get_media_sfp(self.interfaces)
-
-    def get_media_speed(self):
-        return self.api.Networking.Interfaces.get_media_speed(self.interfaces)
-
-    def get_media_status(self):
-        return self.api.Networking.Interfaces.get_media_status(self.interfaces)
-
-    def get_mtu(self):
-        return self.api.Networking.Interfaces.get_mtu(self.interfaces)
-
-    def get_phy_master_slave_mode(self):
-        return self.api.Networking.Interfaces.get_phy_master_slave_mode(self.interfaces)
-
-    def get_prefer_sfp_state(self):
-        return self.api.Networking.Interfaces.get_prefer_sfp_state(self.interfaces)
-
-    def get_flow_control(self):
-        return self.api.Networking.Interfaces.get_requested_flow_control(self.interfaces)
-
-    def get_sflow_poll_interval(self):
-        return self.api.Networking.Interfaces.get_sflow_poll_interval(self.interfaces)
-
-    def get_sflow_poll_interval_global(self):
-        return self.api.Networking.Interfaces.get_sflow_poll_interval_global(self.interfaces)
-
-    def get_sfp_media_state(self):
-        return self.api.Networking.Interfaces.get_sfp_media_state(self.interfaces)
-
-    def get_stp_active_edge_port_state(self):
-        return self.api.Networking.Interfaces.get_stp_active_edge_port_state(self.interfaces)
-
-    def get_stp_enabled_state(self):
-        return self.api.Networking.Interfaces.get_stp_enabled_state(self.interfaces)
-
-    def get_stp_link_type(self):
-        return self.api.Networking.Interfaces.get_stp_link_type(self.interfaces)
-
-    def get_stp_protocol_detection_reset_state(self):
-        return self.api.Networking.Interfaces.get_stp_protocol_detection_reset_state(self.interfaces)
-
-
-
-
-
-
-class AddressClasses(object):
-    """Address group/class class.
-
-    F5 BIG-IP address group/class class.
-
-    Attributes:
-        api: iControl API instance.
-        address_classes: List of address classes.
-    """
-
-    def __init__(self, api, regex=None):
-        self.api = api
-        self.address_classes = api.LocalLB.Class.get_address_class_list()
-        if regex:
-            re_filter = re.compile(regex)
-            self.address_classes = filter(re_filter.search, self.address_classes)
-
-    def get_list(self):
-        return self.address_classes
-
-    def get_address_class(self):
-        key = self.api.LocalLB.Class.get_address_class(self.address_classes)
-        value = self.api.LocalLB.Class.get_address_class_member_data_value(key)
-        result = list(map(zip, [x['members'] for x in key], value))
-        return result
-
-    def get_description(self):
-        return self.api.LocalLB.Class.get_description(self.address_classes)
-
-
-
-
-class SystemInfo(object):
-    """System information class.
-
-    F5 BIG-IP system information class.
-
-    Attributes:
-        api: iControl API instance.
-    """
-
-    def __init__(self, api):
-        self.api = api
-
-    def get_base_mac_address(self):
-        return self.api.System.SystemInfo.get_base_mac_address()
-
-    def get_blade_temperature(self):
-        return self.api.System.SystemInfo.get_blade_temperature()
-
-    def get_chassis_slot_information(self):
-        return self.api.System.SystemInfo.get_chassis_slot_information()
-
-    def get_globally_unique_identifier(self):
-        return self.api.System.SystemInfo.get_globally_unique_identifier()
-
-    def get_group_id(self):
-        return self.api.System.SystemInfo.get_group_id()
-
-    def get_hardware_information(self):
-        return self.api.System.SystemInfo.get_hardware_information()
-
-    def get_marketing_name(self):
-        return self.api.System.SystemInfo.get_marketing_name()
-
-    def get_product_information(self):
-        return self.api.System.SystemInfo.get_product_information()
-
-    def get_pva_version(self):
-        return self.api.System.SystemInfo.get_pva_version()
-
-    def get_system_id(self):
-        return self.api.System.SystemInfo.get_system_id()
-
-    def get_system_information(self):
-        return self.api.System.SystemInfo.get_system_information()
-
-    def get_time(self):
-        return self.api.System.SystemInfo.get_time()
-
-    def get_time_zone(self):
-        return self.api.System.SystemInfo.get_time_zone()
-
-    def get_uptime(self):
-        return self.api.System.SystemInfo.get_uptime()
-
-
-
-def generate_interface_dict(f5, regex):
-    interfaces = Interfaces(f5.get_api(), regex)
-    fields = ['active_media', 'actual_flow_control', 'bundle_state',
-              'description', 'dual_media_state', 'enabled_state', 'if_index',
-              'learning_mode', 'lldp_admin_status', 'lldp_tlvmap',
-              'mac_address', 'media', 'media_option', 'media_option_sfp',
-              'media_sfp', 'media_speed', 'media_status', 'mtu',
-              'phy_master_slave_mode', 'prefer_sfp_state', 'flow_control',
-              'sflow_poll_interval', 'sflow_poll_interval_global',
-              'sfp_media_state', 'stp_active_edge_port_state',
-              'stp_enabled_state', 'stp_link_type',
-              'stp_protocol_detection_reset_state']
-    return generate_dict(interfaces, fields)
-
-
-
-
-
-
-
-
-def generate_address_class_dict(f5, regex):
-    address_classes = AddressClasses(f5.get_api(), regex)
-    fields = ['address_class', 'description']
-    return generate_dict(address_classes, fields)
-
-
-def generate_system_info_dict(f5):
-    system_info = SystemInfo(f5.get_api())
-    fields = ['base_mac_address',
-              'blade_temperature', 'chassis_slot_information',
-              'globally_unique_identifier', 'group_id',
-              'hardware_information',
-              'marketing_name',
-              'product_information', 'pva_version', 'system_id',
-              'system_information', 'time',
-              'time_zone', 'uptime']
-    return generate_simple_dict(system_info, fields)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+try:
+    import netaddr
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
 
 
 def parseStats(entry):
@@ -1070,14 +833,25 @@ def parseStats(entry):
             entries = entry['entries']
         else:
             entries = entry['nestedStats']['entries']
-        result = {}
+        result = None
 
         for name in entries:
             entry = entries[name]
             if 'https://localhost' in name:
                 name = name.split('/')
                 name = name[-1]
-                result[name] = parseStats(entry)
+                if result and isinstance(result, list):
+                    result.append(parseStats(entry))
+                elif result and isinstance(result, dict):
+                    result[name] = parseStats(entry)
+                else:
+                    try:
+                        int(name)
+                        result = list()
+                        result.append(parseStats(entry))
+                    except ValueError:
+                        result = dict()
+                        result[name] = parseStats(entry)
             else:
                 if '.' in name:
                     names = name.split('.')
@@ -1087,7 +861,19 @@ def parseStats(entry):
                         result[key] = {}
                     result[key][value] = parseStats(entry)
                 else:
-                    result[name] = parseStats(entry)
+                    if result and isinstance(result, list):
+                        result.append(parseStats(entry))
+                    elif result and isinstance(result, dict):
+                        result[name] = parseStats(entry)
+                    else:
+                        try:
+                            int(name)
+                            result = list()
+                            result.append(parseStats(entry))
+                        except ValueError:
+                            result = dict()
+                            result[name] = parseStats(entry)
+        import q; q.q(result)
         return result
 
 
@@ -1726,6 +1512,164 @@ class DevicesFactManager(BaseManager):
 
     def read_collection_from_device(self):
         result = self.client.api.tm.cm.devices.get_collection()
+        return result
+
+
+class InterfacesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'mediaActive': 'active_media_type',
+        'flowControl': 'flow_control',
+        'bundleSpeed': 'bundle_speed',
+        'ifIndex': 'if_index',
+        'macAddress': 'mac_address',
+        'mediaSfp': 'media_sfp',
+        'lldpTlvmap': 'lldp_tlvmap',
+        'lldpAdmin': 'lldp_admin',
+        'preferPort': 'prefer_port',
+        'stpAutoEdgePort': 'stp_auto_edge_port',
+        'stp': 'stp_enabled',
+        'stpLinkType': 'stp_link_type'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'active_media_type',
+        'flow_control',
+        'description',
+        'bundle',
+        'bundle_speed',
+        'enabled',
+        'if_index',
+        'mac_address',
+        'media_sfp',
+        'lldp_tlvmap',
+        'lldp_admin',
+        'mtu',
+        'prefer_port',
+        'sflow_poll_interval',
+        'sflow_poll_interval_global',
+        'stp_auto_edge_port',
+        'stp_enabled',
+        'stp_link_type'
+    ]
+
+    @property
+    def stp_enabled(self):
+        if self._values['stp_enabled'] is None:
+            return None
+        elif self._values['stp_enabled'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def sflow_poll_interval_global(self):
+        if self._values['sflow'] is None:
+            return None
+        if 'pollIntervalGlobal' in self._values['sflow']:
+            return self._values['sflow']['pollIntervalGlobal']
+
+    @property
+    def sflow_poll_interval(self):
+        if self._values['sflow'] is None:
+            return None
+        if 'pollInterval' in self._values['sflow']:
+            return self._values['sflow']['pollInterval']
+
+    @property
+    def mac_address(self):
+        if self._values['mac_address'] in [None, 'none']:
+            return None
+        return self._values['mac_address']
+
+    @property
+    def enabled(self):
+        if self._values['enabled'] is None:
+            return None
+        elif self._values['enabled'] is True:
+            return 'yes'
+        return 'no'
+
+
+class InterfacesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(InterfacesFactManager, self).__init__(**kwargs)
+        self.want = InterfacesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(interfaces=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = InterfacesParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.net.interfaces.get_collection()
+        return result
+
+
+class InternalDataGroupsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'type',
+        'records'
+    ]
+
+
+class InternalDataGroupsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(InternalDataGroupsFactManager, self).__init__(**kwargs)
+        self.want = InternalDataGroupsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(internal_data_groups=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = InternalDataGroupsParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.ltm.data_group.internals.get_collection()
         return result
 
 
@@ -2495,6 +2439,371 @@ class SslKeysFactManager(BaseManager):
         return result
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class SystemInfo(object):
+
+    def get_base_mac_address(self):
+        return self.api.System.SystemInfo.get_base_mac_address()
+
+    def get_blade_temperature(self):
+        return self.api.System.SystemInfo.get_blade_temperature()
+
+    def get_chassis_slot_information(self):
+        return self.api.System.SystemInfo.get_chassis_slot_information()
+
+    def get_globally_unique_identifier(self):
+        return self.api.System.SystemInfo.get_globally_unique_identifier()
+
+    def get_group_id(self):
+        return self.api.System.SystemInfo.get_group_id()
+
+    def get_hardware_information(self):
+        return self.api.System.SystemInfo.get_hardware_information()
+
+    def get_marketing_name(self):
+        return self.api.System.SystemInfo.get_marketing_name()
+
+    def get_product_information(self):
+        return self.api.System.SystemInfo.get_product_information()
+
+    def get_pva_version(self):
+        return self.api.System.SystemInfo.get_pva_version()
+
+    def get_system_id(self):
+        return self.api.System.SystemInfo.get_system_id()
+
+    def get_system_information(self):
+        return self.api.System.SystemInfo.get_system_information()
+
+    def get_time(self):
+        return self.api.System.SystemInfo.get_time()
+
+    def get_time_zone(self):
+        return self.api.System.SystemInfo.get_time_zone()
+
+    def get_uptime(self):
+        return self.api.System.SystemInfo.get_uptime()
+
+
+def generate_system_info_dict(f5):
+    system_info = SystemInfo(f5.get_api())
+    fields = ['',
+              '', 'chassis_slot_information',
+              'globally_unique_identifier', 'group_id',
+              '',
+              '', 'system_id',
+              'system_information',
+              'time_zone', 'uptime']
+    return generate_simple_dict(system_info, fields)
+
+
+
+class SystemInfoParameters(BaseParameters):
+    api_map = {
+
+    }
+
+    returnables = [
+        'base_mac_address',
+        'marketing_name',
+        'time',
+        'hardware_information',
+        'product_information'
+    ]
+
+    @property
+    def product_information(self):
+        """Return product information
+
+        This is maintained here for legacy purposes.
+
+        Returns a dictionary of product related information where the keys in
+        the dictionary are mapped to the stats returned from the /mgmt/tm/sys/version
+        API.
+
+        :return:
+        """
+        result = dict(
+            package_edition=self._values['Edition'],
+            package_version='Build {0} - {1}'.format(
+                self._values['Build'], self._values['Date']
+            ),
+            product_code=self._values['Product'],
+            product_version=self._values['Version']
+        )
+        return result
+
+    @property
+    def hardware_information(self):
+        if self._values['hardware-version'] is None:
+            return None
+        self._transform_name_attribute(self._values['hardware-version'])
+        result = [v for k, v in iteritems(self._values['hardware-version'])]
+        return result
+
+    def _transform_name_attribute(self, entry):
+        if isinstance(entry, dict):
+            for k, v in iteritems(entry):
+                if k == 'tmName':
+                    entry['name'] = entry.pop('tmName')
+                self._transform_name_attribute(v)
+        elif isinstance(entry, list):
+            for k in entry:
+                if k == 'tmName':
+                    entry['name'] = entry.pop('tmName')
+                self._transform_name_attribute(k)
+        else:
+            return
+
+    @property
+    def time(self):
+        if self._values['fullDate'] is None:
+            return None
+        return self._values['fullDate']
+
+    @property
+    def marketing_name(self):
+        if self._values['platform'] is None:
+            return None
+        return self._values['platform'][0]['marketingName']
+
+    @property
+    def base_mac_address(self):
+        if self._values['platform'] is None:
+            return None
+        return self._values['platform'][0]['baseMac']
+
+
+class SystemInfoFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SystemInfoFactManager, self).__init__(**kwargs)
+        self.want = SystemInfoParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(system_info=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        params = SystemInfoParameters(params=collection)
+        results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = dict()
+        tmp = self.read_hardware_info_from_device()
+        if tmp:
+            result.update(tmp)
+        tmp = self.read_clock_info_from_device()
+        if tmp:
+            result.update(tmp)
+
+        tmp = self.read_version_info_from_device()
+        if tmp:
+            result.update(tmp)
+        return result
+
+    def read_hardware_info_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/hardware".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        return result
+
+    def read_clock_info_from_device(self):
+        """Parses clock info from the REST API
+
+        The clock stat returned from the REST API (at the time of 13.1.0.7)
+        is similar to the following.
+
+        {
+            "kind": "tm:sys:clock:clockstats",
+            "selfLink": "https://localhost/mgmt/tm/sys/clock?ver=13.1.0.4",
+            "entries": {
+                "https://localhost/mgmt/tm/sys/clock/0": {
+                    "nestedStats": {
+                        "entries": {
+                            "fullDate": {
+                                "description": "2018-06-05T13:38:33Z"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Parsing this data using the ``parseStats`` method, yields a list of
+        the clock stats in a format resembling that below.
+
+        [{'fullDate': '2018-06-05T13:41:05Z'}]
+
+        Therefore, this method cherry-picks the first entry from this list
+        and returns it. There can be no other items in this list.
+
+        Returns:
+            A dict mapping keys to the corresponding clock stats. For
+            example:
+
+            {'fullDate': '2018-06-05T13:41:05Z'}
+
+            There should never not be a clock stat, unless by chance it
+            is removed from the API in the future, or changed to a different
+            API endpoint.
+
+        Raises:
+            F5ModuleError: A non-successful HTTP code was returned or a JSON
+                           response was not found.
+        """
+        uri = "https://{0}:{1}/mgmt/tm/sys/clock".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        return result[0]
+
+    def read_version_info_from_device(self):
+        """Parses version info from the REST API
+
+        The version stat returned from the REST API (at the time of 13.1.0.7)
+        is similar to the following.
+
+        {
+            "kind": "tm:sys:version:versionstats",
+            "selfLink": "https://localhost/mgmt/tm/sys/version?ver=13.1.0.4",
+            "entries": {
+                "https://localhost/mgmt/tm/sys/version/0": {
+                    "nestedStats": {
+                        "entries": {
+                            "Build": {
+                                "description": "0.0.6"
+                            },
+                            "Date": {
+                                "description": "Tue Mar 13 20:10:42 PDT 2018"
+                            },
+                            "Edition": {
+                                "description": "Point Release 4"
+                            },
+                            "Product": {
+                                "description": "BIG-IP"
+                            },
+                            "Title": {
+                                "description": "Main Package"
+                            },
+                            "Version": {
+                                "description": "13.1.0.4"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Parsing this data using the ``parseStats`` method, yields a list of
+        the clock stats in a format resembling that below.
+
+        [{'Build': '0.0.6', 'Date': 'Tue Mar 13 20:10:42 PDT 2018',
+          'Edition': 'Point Release 4', 'Product': 'BIG-IP', 'Title': 'Main Package',
+          'Version': '13.1.0.4'}]
+
+        Therefore, this method cherry-picks the first entry from this list
+        and returns it. There can be no other items in this list.
+
+        Returns:
+            A dict mapping keys to the corresponding clock stats. For
+            example:
+
+            {'Build': '0.0.6', 'Date': 'Tue Mar 13 20:10:42 PDT 2018',
+             'Edition': 'Point Release 4', 'Product': 'BIG-IP', 'Title': 'Main Package',
+             'Version': '13.1.0.4'}
+
+            There should never not be a version stat, unless by chance it
+            is removed from the API in the future, or changed to a different
+            API endpoint.
+
+        Raises:
+            F5ModuleError: A non-successful HTTP code was returned or a JSON
+                           response was not found.
+        """
+        uri = "https://{0}:{1}/mgmt/tm/sys/version".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        return result[0]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class TrafficGroupsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -2797,184 +3106,6 @@ class VirtualAddressesFactManager(BaseManager):
         return result
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class VirtualServers(object):
-
-    def get_name(self):
-        return [x[x.rfind('/') + 1:] for x in self.virtual_servers]
-
-    def get_actual_hardware_acceleration(self):
-        return self.api.LocalLB.VirtualServer.get_actual_hardware_acceleration(self.virtual_servers)
-
-    def get_authentication_profile(self):
-        return self.api.LocalLB.VirtualServer.get_authentication_profile(self.virtual_servers)
-
-    def get_auto_lasthop(self):
-        return self.api.LocalLB.VirtualServer.get_auto_lasthop(self.virtual_servers)
-
-    def get_bw_controller_policy(self):
-        return self.api.LocalLB.VirtualServer.get_bw_controller_policy(self.virtual_servers)
-
-    def get_clone_pool(self):
-        return self.api.LocalLB.VirtualServer.get_clone_pool(self.virtual_servers)
-
-    def get_cmp_enable_mode(self):
-        return self.api.LocalLB.VirtualServer.get_cmp_enable_mode(self.virtual_servers)
-
-    def get_connection_limit(self):
-        return self.api.LocalLB.VirtualServer.get_connection_limit(self.virtual_servers)
-
-    def get_connection_mirror_state(self):
-        return self.api.LocalLB.VirtualServer.get_connection_mirror_state(self.virtual_servers)
-
-    def get_default_pool_name(self):
-        return self.api.LocalLB.VirtualServer.get_default_pool_name(self.virtual_servers)
-
-    def get_description(self):
-        return self.api.LocalLB.VirtualServer.get_description(self.virtual_servers)
-
-    def get_destination(self):
-        return self.api.LocalLB.VirtualServer.get_destination_v2(self.virtual_servers)
-
-    def get_enabled_state(self):
-        return self.api.LocalLB.VirtualServer.get_enabled_state(self.virtual_servers)
-
-    def get_enforced_firewall_policy(self):
-        return self.api.LocalLB.VirtualServer.get_enforced_firewall_policy(self.virtual_servers)
-
-    def get_fallback_persistence_profile(self):
-        return self.api.LocalLB.VirtualServer.get_fallback_persistence_profile(self.virtual_servers)
-
-    def get_fw_rule(self):
-        return self.api.LocalLB.VirtualServer.get_fw_rule(self.virtual_servers)
-
-    def get_gtm_score(self):
-        return self.api.LocalLB.VirtualServer.get_gtm_score(self.virtual_servers)
-
-    def get_last_hop_pool(self):
-        return self.api.LocalLB.VirtualServer.get_last_hop_pool(self.virtual_servers)
-
-    def get_nat64_state(self):
-        return self.api.LocalLB.VirtualServer.get_nat64_state(self.virtual_servers)
-
-    def get_object_status(self):
-        return self.api.LocalLB.VirtualServer.get_object_status(self.virtual_servers)
-
-    def get_persistence_profile(self):
-        return self.api.LocalLB.VirtualServer.get_persistence_profile(self.virtual_servers)
-
-    def get_profile(self):
-        return self.api.LocalLB.VirtualServer.get_profile(self.virtual_servers)
-
-    def get_protocol(self):
-        return self.api.LocalLB.VirtualServer.get_protocol(self.virtual_servers)
-
-    def get_rate_class(self):
-        return self.api.LocalLB.VirtualServer.get_rate_class(self.virtual_servers)
-
-    def get_rate_limit(self):
-        return self.api.LocalLB.VirtualServer.get_rate_limit(self.virtual_servers)
-
-    def get_rate_limit_destination_mask(self):
-        return self.api.LocalLB.VirtualServer.get_rate_limit_destination_mask(self.virtual_servers)
-
-    def get_rate_limit_mode(self):
-        return self.api.LocalLB.VirtualServer.get_rate_limit_mode(self.virtual_servers)
-
-    def get_rate_limit_source_mask(self):
-        return self.api.LocalLB.VirtualServer.get_rate_limit_source_mask(self.virtual_servers)
-
-    def get_related_rule(self):
-        return self.api.LocalLB.VirtualServer.get_related_rule(self.virtual_servers)
-
-    def get_rule(self):
-        return self.api.LocalLB.VirtualServer.get_rule(self.virtual_servers)
-
-    def get_security_log_profile(self):
-        return self.api.LocalLB.VirtualServer.get_security_log_profile(self.virtual_servers)
-
-    def get_snat_pool(self):
-        return self.api.LocalLB.VirtualServer.get_snat_pool(self.virtual_servers)
-
-    def get_snat_type(self):
-        return self.api.LocalLB.VirtualServer.get_snat_type(self.virtual_servers)
-
-    def get_source_address(self):
-        return self.api.LocalLB.VirtualServer.get_source_address(self.virtual_servers)
-
-    def get_source_address_translation_lsn_pool(self):
-        return self.api.LocalLB.VirtualServer.get_source_address_translation_lsn_pool(self.virtual_servers)
-
-    def get_source_address_translation_snat_pool(self):
-        return self.api.LocalLB.VirtualServer.get_source_address_translation_snat_pool(self.virtual_servers)
-
-    def get_source_address_translation_type(self):
-        return self.api.LocalLB.VirtualServer.get_source_address_translation_type(self.virtual_servers)
-
-    def get_source_port_behavior(self):
-        return self.api.LocalLB.VirtualServer.get_source_port_behavior(self.virtual_servers)
-
-    def get_staged_firewall_policy(self):
-        return self.api.LocalLB.VirtualServer.get_staged_firewall_policy(self.virtual_servers)
-
-    def get_translate_address_state(self):
-        return self.api.LocalLB.VirtualServer.get_translate_address_state(self.virtual_servers)
-
-    def get_translate_port_state(self):
-        return self.api.LocalLB.VirtualServer.get_translate_port_state(self.virtual_servers)
-
-    def get_type(self):
-        return self.api.LocalLB.VirtualServer.get_type(self.virtual_servers)
-
-    def get_vlan(self):
-        return self.api.LocalLB.VirtualServer.get_vlan(self.virtual_servers)
-
-    def get_wildmask(self):
-        return self.api.LocalLB.VirtualServer.get_wildmask(self.virtual_servers)
-
-
-def generate_vs_dict(f5, regex):
-    fields = ['', 'authentication_profile',
-              '', '', '',
-              '', '', 'connection_mirror_state',
-              'default_pool_name', '', '',
-              '', 'enforced_firewall_policy',
-              '', 'fw_rule', 'gtm_score',
-              'last_hop_pool', 'nat64_state', 'object_status',
-              '', 'profile', 'protocol',
-              'rate_class', 'rate_limit', 'rate_limit_destination_mask',
-              'rate_limit_mode', 'rate_limit_source_mask', 'related_rule',
-              'rule', 'security_log_profile', 'snat_pool', 'snat_type',
-              'source_address', 'source_address_translation_lsn_pool',
-              'source_address_translation_snat_pool',
-              'source_address_translation_type', 'source_port_behavior',
-              'staged_firewall_policy', 'translate_address_state',
-              'type', '', 'wildmask',
-              '']
-    return generate_dict(virtual_servers, fields)
-
-
-
-
 class VirtualServersParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -2985,7 +3116,26 @@ class VirtualServersParameters(BaseParameters):
         'fallbackPersistence': 'fallback_persistence_profile',
         'persist': 'persistence_profile',
         'translatePort': 'translate_port',
-        'translateAddress': 'translate_address'
+        'translateAddress': 'translate_address',
+        'lastHopPool': 'last_hop_pool',
+        'nat64': 'nat64_enabled',
+        'sourcePort': 'source_port_behavior',
+        'ipIntelligencePolicy': 'ip_intelligence_policy',
+        'ipProtocol': 'protocol',
+        'pool': 'default_pool',
+        'rateLimitMode': 'rate_limit_mode',
+        'rateLimitSrcMask': 'rate_limit_source_mask',
+        'rateLimitDstMask': 'rate_limit_destination_mask',
+        'rateLimit': 'rate_limit',
+        'sourceAddressTranslation': 'snat_type',
+        'gtmScore': 'gtm_score',
+        'rateClass': 'rate_class',
+        'source': 'source_address',
+        'auth': 'authentication_profile',
+        'mirror': 'connection_mirror_enabled',
+        'rules': 'irules',
+        'securityLogProfiles': 'security_log_profiles',
+        'profilesReference': 'profiles'
     }
 
     returnables = [
@@ -3002,8 +3152,228 @@ class VirtualServersParameters(BaseParameters):
         'translate_port',
         'translate_address',
         'vlans',
-        'destination'
+        'destination',
+        'last_hop_pool',
+        'nat64_enabled',
+        'source_port_behavior',
+        'ip_intelligence_policy',
+        'protocol',
+        'default_pool',
+        'rate_limit_mode',
+        'rate_limit_source_mask',
+        'rate_limit',
+        'snat_type',
+        'snat_pool',
+        'gtm_score',
+        'rate_class',
+        'rate_limit_destination_mask',
+        'source_address',
+        'authentication_profile',
+        'connection_mirror_enabled',
+        'irules',
+        'security_log_profiles',
+        'type',
+        'profiles',
+        'destination_address',
+        'destination_port'
     ]
+
+    @property
+    def destination_address(self):
+        if self._values['destination'] is None:
+            return None
+        tup = self.destination_tuple
+        return tup.ip
+
+    @property
+    def destination_port(self):
+        if self._values['destination'] is None:
+            return None
+        tup = self.destination_tuple
+        return tup.port
+
+    @property
+    def type(self):
+        """Attempt to determine the current server type
+
+        This check is very unscientific. It turns out that this information is not
+        exactly available anywhere on a BIG-IP. Instead, we rely on a semi-reliable
+        means for determining what the type of the virtual server is. Hopefully it
+        always works.
+
+        There are a handful of attributes that can be used to determine a specific
+        type. There are some types though that can only be determined by looking at
+        the profiles that are assigned to them. We follow that method for those
+        complicated types; message-routing, fasthttp, and fastl4.
+
+        Because type determination is an expensive operation, we cache the result
+        from the operation.
+
+        Returns:
+            string: The server type.
+        """
+        if self._values['l2Forward'] is True:
+            result = 'forwarding-l2'
+        elif self._values['ipForward'] is True:
+            result = 'forwarding-ip'
+        elif self._values['stateless'] is True:
+            result = 'stateless'
+        elif self._values['reject'] is True:
+            result = 'reject'
+        elif self._values['dhcpRelay'] is True:
+            result = 'dhcp'
+        elif self._values['internal'] is True:
+            result = 'internal'
+        elif self.has_fasthttp_profiles:
+            result = 'performance-http'
+        elif self.has_fastl4_profiles:
+            result = 'performance-l4'
+        elif self.has_message_routing_profiles:
+            result = 'message-routing'
+        else:
+            result = 'standard'
+        return result
+
+    @property
+    def profiles(self):
+        """Returns a list of profiles from the API
+
+        The profiles are formatted so that they are usable in this module and
+        are able to be compared by the Difference engine.
+
+        Returns:
+             list (:obj:`list` of :obj:`dict`): List of profiles.
+
+             Each dictionary in the list contains the following three (3) keys.
+
+             * name
+             * context
+             * fullPath
+
+        Raises:
+            F5ModuleError: If the specified context is a value other that
+                ``all``, ``serverside``, or ``clientside``.
+        """
+        if 'items' not in self._values['profiles']:
+            return None
+        result = []
+        for item in self._values['profiles']['items']:
+            context = item['context']
+            name = item['name']
+            if context in ['all', 'serverside', 'clientside']:
+                result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+            else:
+                raise F5ModuleError(
+                    "Unknown profile context found: '{0}'".format(context)
+                )
+        return result
+
+    @property
+    def has_message_routing_profiles(self):
+        if self.profiles is None:
+            return None
+        current = self._read_current_message_routing_profiles_from_device()
+        result = [x['name'] for x in self.profiles if x['name'] in current]
+        if len(result) > 0:
+            return True
+        return False
+
+    @property
+    def has_fastl4_profiles(self):
+        if self.profiles is None:
+            return None
+        current = self._read_current_fastl4_profiles_from_device()
+        result = [x['name'] for x in self.profiles if x['name'] in current]
+        if len(result) > 0:
+            return True
+        return False
+
+    @property
+    def has_fasthttp_profiles(self):
+        """Check if ``fasthttp`` profile is in API profiles
+
+        This method is used to determine the server type when doing comparisons
+        in the Difference class.
+
+        Returns:
+             bool: True if server has ``fasthttp`` profiles. False otherwise.
+        """
+        if self.profiles is None:
+            return None
+        current = self._read_current_fasthttp_profiles_from_device()
+        result = [x['name'] for x in self.profiles if x['name'] in current]
+        if len(result) > 0:
+            return True
+        return False
+
+    def _read_current_message_routing_profiles_from_device(self):
+        collection1 = self.client.api.tm.ltm.profile.diameters.get_collection()
+        collection2 = self.client.api.tm.ltm.profile.sips.get_collection()
+        result = [x.name for x in collection1]
+        result += [x.name for x in collection2]
+        return result
+
+    def _read_current_fastl4_profiles_from_device(self):
+        collection = self.client.api.tm.ltm.profile.fastl4s.get_collection()
+        result = [x.name for x in collection]
+        return result
+
+    def _read_current_fasthttp_profiles_from_device(self):
+        collection = self.client.api.tm.ltm.profile.fasthttps.get_collection()
+        result = [x.name for x in collection]
+        return result
+
+    @property
+    def security_log_profiles(self):
+        if self._values['security_log_profiles'] is None:
+            return None
+        result = list(set([x.strip('"') for x in self._values['security_log_profiles']]))
+        result.sort()
+        return result
+
+    @property
+    def snat_type(self):
+        if self._values['snat_type'] is None:
+            return None
+        if 'type' in self._values['snat_type']:
+            if self._values['snat_type']['type'] == 'pool':
+                return self._values['snat_type']['pool']
+
+    @property
+    def snat_type(self):
+        if self._values['snat_type'] is None:
+            return None
+        if 'type' in self._values['snat_type']:
+            if self._values['snat_type']['type'] == 'automap':
+                return 'automap'
+            elif self._values['snat_type']['type'] == 'none':
+                return 'none'
+            elif self._values['snat_type']['type'] == 'pool':
+                return 'snat'
+
+    @property
+    def connection_mirror_enabled(self):
+        if self._values['connection_mirror_enabled'] is None:
+            return None
+        elif self._values['connection_mirror_enabled'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def rate_limit(self):
+        if self._values['rate_limit'] is None:
+            return None
+        elif self._values['rate_limit'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def nat64_enabled(self):
+        if self._values['nat64_enabled'] is None:
+            return None
+        elif self._values['nat64_enabled'] == 'enabled':
+            return 'yes'
+        return 'no'
 
     @property
     def enabled(self):
@@ -3063,17 +3433,124 @@ class VirtualServersParameters(BaseParameters):
         result = fq_name(profile['partition'], profile['name'])
         return result
 
+    @property
+    def destination_tuple(self):
+        Destination = namedtuple('Destination', ['ip', 'port', 'route_domain'])
+
+        # Remove the partition
+        if self._values['destination'] is None:
+            result = Destination(ip=None, port=None, route_domain=None)
+            return result
+        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
+
+        if self.is_valid_ip(destination):
+            result = Destination(
+                ip=destination,
+                port=None,
+                route_domain=None
+            )
+            return result
+
+        # Covers the following examples
+        #
+        # /Common/2700:bc00:1f10:101::6%2.80
+        # 2700:bc00:1f10:101::6%2.80
+        # 1.1.1.1%2:80
+        # /Common/1.1.1.1%2:80
+        # /Common/2700:bc00:1f10:101::6%2.any
+        #
+        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+|any)'
+        matches = re.search(pattern, destination)
+        if matches:
+            try:
+                port = int(matches.group('port'))
+            except ValueError:
+                # Can be a port of "any". This only happens with IPv6
+                port = matches.group('port')
+                if port == 'any':
+                    port = 0
+            ip = matches.group('ip')
+            if not self.is_valid_ip(ip):
+                raise F5ModuleError(
+                    "The provided destination is not a valid IP address"
+                )
+            result = Destination(
+                ip=matches.group('ip'),
+                port=port,
+                route_domain=int(matches.group('route_domain'))
+            )
+            return result
+
+        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)'
+        matches = re.search(pattern, destination)
+        if matches:
+            ip = matches.group('ip')
+            if not self.is_valid_ip(ip):
+                raise F5ModuleError(
+                    "The provided destination is not a valid IP address"
+                )
+            result = Destination(
+                ip=matches.group('ip'),
+                port=None,
+                route_domain=int(matches.group('route_domain'))
+            )
+            return result
+
+        parts = destination.split('.')
+        if len(parts) == 4:
+            # IPv4
+            ip, port = destination.split(':')
+            if not self.is_valid_ip(ip):
+                raise F5ModuleError(
+                    "The provided destination is not a valid IP address"
+                )
+            result = Destination(
+                ip=ip,
+                port=int(port),
+                route_domain=None
+            )
+            return result
+        elif len(parts) == 2:
+            # IPv6
+            ip, port = destination.split('.')
+            try:
+                port = int(port)
+            except ValueError:
+                # Can be a port of "any". This only happens with IPv6
+                if port == 'any':
+                    port = 0
+            if not self.is_valid_ip(ip):
+                raise F5ModuleError(
+                    "The provided destination is not a valid IP address"
+                )
+            result = Destination(
+                ip=ip,
+                port=port,
+                route_domain=None
+            )
+            return result
+        else:
+            result = Destination(ip=None, port=None, route_domain=None)
+            return result
+
+    def is_valid_ip(self, value):
+        try:
+            netaddr.IPAddress(value)
+            return True
+        except (netaddr.core.AddrFormatError, ValueError):
+            return False
+
 
 class VirtualServersFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(VirtualServersFactManager, self).__init__(**kwargs)
-        self.want = VirtualServersParameters(params=self.module.params)
+        self.want = VirtualServersParameters(client=self.client, params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(virtual_addresses=facts)
+        result = dict(virtual_servers=facts)
         return result
 
     def _exec_module(self):
@@ -3094,25 +3571,14 @@ class VirtualServersFactManager(BaseManager):
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.virtuals.get_collection()
+        result = self.client.api.tm.ltm.virtuals.get_collection(
+            requests_params=dict(
+                params=dict(
+                    expandSubcollections='true'
+                )
+            )
+        )
         return result
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class VlansParameters(BaseParameters):
@@ -3256,11 +3722,11 @@ class ModuleManager(object):
         self.kwargs = kwargs
         self.want = Parameters(params=self.module.params)
         self.managers = {
-            #'internal-data-groups': InternalDataGroupsFactManager,
+            'internal-data-groups': InternalDataGroupsFactManager,
             'client-ssl-profiles': ClientSslProfilesFactManager,
             'devices': DevicesFactManager,
             'device-groups': DeviceGroupsFactManager,
-            #'interfaces': InterfacesFactManager,
+            'interfaces': InterfacesFactManager,
             'ssl-certs': SslCertificatesFactManager,
             'ssl-keys': SslKeysFactManager,
             'nodes': NodesFactManager,
@@ -3269,7 +3735,7 @@ class ModuleManager(object):
             'irules': IrulesFactManager,
             'self-ips': SelfIpsFactManager,
             'software-volumes': SoftwareVolumesFactManager,
-            #'system-info': SystemInfoFactManager,
+            'system-info': SystemInfoFactManager,
             'traffic-groups': TrafficGroupsFactManager,
             'trunks': TrunksFactManager,
             'virtual-addresses': VirtualAddressesFactManager,
@@ -3286,8 +3752,7 @@ class ModuleManager(object):
             if res:
                 invalid = ','.join(res)
                 raise F5ModuleError(
-                    "The specified 'gather_subset' options are invalid: {0}"
-                        .format(invalid)
+                    "The specified 'gather_subset' options are invalid: {0}".format(invalid)
                 )
 
         managers = []
@@ -3334,7 +3799,21 @@ class ModuleManager(object):
         result = {}
         manager = self.managers.get(which, None)
         if manager:
-            result = manager(**self.kwargs)
+            kwargs = dict()
+            kwargs.update(self.kwargs)
+
+            if manager == SystemInfoFactManager:
+                # Replace the API layer for the SystemInfoFactManager
+                #
+                # This is being done because there is no API for talking to the
+                # /mgmt/tm/sys/hardware API in the f5-sdk.
+                #
+                # Longer term, all of the classes in this module should use the
+                # F5RestClient object and drop the usage of the f5-sdk.
+
+                client = F5RestClient(**self.module.params)
+                kwargs['client'] = client
+            result = manager(**kwargs)
         return result
 
 
@@ -3362,6 +3841,8 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
+    if not HAS_NETADDR:
+        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
