@@ -2,17 +2,6 @@
 
 - import_tasks: setup.yaml
 
-#- name: Collect BIG-IP facts
-#  bigip_device_facts:
-#    include:
-#      - "{{ item }}"
-#  register: result
-#  loop: "{{ valid_includes }}"
-
-
-
-
-
 - name: Select system-info facts
   bigip_device_facts:
     include:
