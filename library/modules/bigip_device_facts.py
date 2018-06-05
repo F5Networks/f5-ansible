@@ -2479,8 +2479,17 @@ class SystemInfoParameters(BaseParameters):
                 self._values['Build'], self._values['Date']
             ),
             product_code=self._values['Product'],
-            product_version=self._values['Version']
+            product_version=self._values['Version'],
         )
+
+        if 'version_info' not in self._values:
+            return result
+        if 'Built' in self._values['version_info']:
+            result['product_built'] = int(self._values['version_info']['Built'])
+        if 'Changelist' in self._values['version_info']:
+            result['product_changelist'] = int(self._values['version_info']['Changelist'])
+        if 'JobID' in self._values['version_info']:
+            result['product_jobid'] = int(self._values['version_info']['JobID'])
         return result
 
     @property
@@ -2615,7 +2624,53 @@ class SystemInfoFactManager(BaseManager):
         if tmp:
             result.update(tmp)
 
+        tmp = self.read_version_file_info_from_device()
+        if tmp:
+            result.update(tmp)
+
         return result
+
+    def read_version_file_info_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/util/bash".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        args = dict(
+            command='run',
+            utilCmdArgs='-c "cat /VERSION"'
+        )
+        resp = self.client.api.post(uri, json=args)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        try:
+            pattern = r'^(?P<key>(Product|Build|Sequence|BaseBuild|Edition|Date|Built|Changelist|JobID))\:(?P<value>.*)'
+            result = response['commandResult'].strip()
+        except KeyError:
+            return None
+
+        if 'No such file or directory' in result:
+            return None
+
+        lines = response['commandResult'].split("\n")
+        result = dict()
+        for line in lines:
+            if not line:
+                continue
+            matches = re.match(pattern, line)
+            if matches:
+                result[matches.group('key')] = matches.group('value').strip()
+
+        if result:
+            return dict(
+                version_info=result
+            )
 
     def read_uptime_info_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/util/bash".format(

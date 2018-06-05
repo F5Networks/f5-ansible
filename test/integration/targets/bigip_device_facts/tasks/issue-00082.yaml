@@ -1,0 +1,15 @@
+---
+
+- name: Issue 00082 - Select system-info facts
+  bigip_device_facts:
+    include:
+      - system-info
+  register: result
+
+- name: Assert Issue 00082 - Select interface facts
+  assert:
+    that:
+      - result is success
+      - result.system_info.product_information.product_built > 100
+      - result.system_info.product_information.product_changelist > 100
+      - result.system_info.product_information.product_jobid > 100

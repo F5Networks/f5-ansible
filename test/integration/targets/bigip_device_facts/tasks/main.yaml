@@ -374,3 +374,6 @@
       - "'vlans' in result"
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-00082.yaml
+  tags: issue-00082
