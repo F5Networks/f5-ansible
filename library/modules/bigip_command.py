@@ -511,7 +511,7 @@ class BaseManager(object):
 
     def _check_known_errors(self, responses):
         # A regex to match the error IDs used in the F5 v2 logging framework.
-        pattern = r'^[0-9A-Fa-f]+:?\d+?:'
+        # pattern = r'^[0-9A-Fa-f]+:?\d+?:'
 
         for resp in responses:
             if 'usage: tmsh' in resp:
@@ -519,8 +519,15 @@ class BaseManager(object):
                     "tmsh command printed its 'help' message instead of running your command. "
                     "This usually indicates unbalanced quotes."
                 )
-            if re.match(pattern, resp):
-                raise F5ModuleError(str(resp))
+
+            # This breaks some existing playbooks that specifically checked for errors
+            # in stdout.
+            #
+            # FWIW, the Ansible command module does not, afaik, do any specific checking,
+            # so it appears this should be removed.
+            #
+            # if re.match(pattern, resp):
+            #    raise F5ModuleError(str(resp))
 
     def _transform_to_complex_commands(self, commands):
         spec = dict(
