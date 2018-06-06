@@ -92,6 +92,177 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+fasthttp_profiles:
+  description: FastHTTP profile related facts.
+  returned: when C(fasthttp_profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/fasthttp
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: fasthttp
+    client_close_timeout:
+      description:
+        - Number of seconds after which the system closes a client connection, when
+          the system either receives a client FIN packet or sends a FIN packet to the client.
+      returned: changed
+      type: int
+      sample: 5
+    oneconnect_idle_timeout_override:
+      description:
+        - Number of seconds after which a server-side connection in a OneConnect pool
+          is eligible for deletion, when the connection has no traffic.
+      returned: changed
+      type: int
+      sample: 0
+    oneconnect_maximum_reuse:
+      description:
+        - Maximum number of times that the system can re-use a current connection.
+      returned: changed
+      type: int
+      sample: 0
+    oneconnect_maximum_pool_size:
+      description:
+        - Maximum number of connections to a load balancing pool.
+      returned: changed
+      type: int
+      sample: 2048
+    oneconnect_minimum_pool_size:
+      description:
+        - Minimum number of connections to a load balancing pool.
+      returned: changed
+      type: int
+      sample: 0
+    oneconnect_replenish':
+      description:
+        - Specifies, when C(yes), that the system will not keep a steady-state maximum of
+          connections to the back-end unless the number of connections to the pool have
+          dropped beneath the C(minimum_pool_size) specified in the profile.
+      returned: changed
+      type: bool
+      sample: yes
+    oneconnect_ramp_up_increment:
+      description:
+        - The increment in which the system makes additional connections available, when
+          all available connections are in use.
+      returned: changed
+      type: int
+      sample: 4 
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: fasthttp
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My profile
+    force_http_1_0_response:
+      description:
+        - Specifies, when C(yes), that the server sends responses to clients in the HTTP/1.0
+          format.
+      returned: changed
+      type: bool
+      sample: no
+    request_header_insert:
+      description:
+        - A string that the system inserts as a header in an HTTP request. If the header
+          exists already, the system does not replace it.
+      returned: changed
+      type: string
+      sample: X-F5-Authentication: foo
+    http_1_1_close_workarounds:
+      description:
+        - Specifies, when C(yes), that the server uses workarounds for HTTP 1.1 close issues.
+      returned: changed
+      type: bool
+      sample: no
+    idle_timeout:
+      description:
+        - Length of time that a connection is idle (has no traffic) before the connection
+          is eligible for deletion.
+      returned: changed
+      type: bool
+      sample: 300
+    insert_x_forwarded_for:
+      description:
+        - Whether the system inserts the X-Forwarded-For header in an HTTP request with the
+          client IP address, to use with connection pooling.
+      returned: changed
+      type: bool
+      sample: no
+    maximum_header_size:
+      description:
+        - Maximum amount of HTTP header data that the system buffers before making a load
+          balancing decision.
+      returned: changed
+      type: int
+      sample: 32768
+    maximum_requests:
+      description:
+        - Maximum number of requests that the system can receive on a client-side connection,
+          before the system closes the connection.
+      returned: changed
+      type: int
+      sample: 0
+    maximum_segment_size_override:
+      description:
+        - Maximum segment size (MSS) override for server-side connections.
+      returned: changed
+      type: int
+      sample: 0
+    receive_window_size:
+      description:
+        - Amount of data the BIG-IP system can accept without acknowledging the server.
+      returned: changed
+      type: int
+      sample: 0
+    reset_on_timeout:
+      description:
+        - Specifies, when C(yes), that the system sends a reset packet (RST) in addition to
+          deleting the connection, when a connection exceeds the idle timeout value.
+      returned: changed
+      type: bool
+      sample: yes
+    server_close_timeout:
+      description:
+        - Number of seconds after which the system closes a client connection, when the system
+          either receives a server FIN packet or sends a FIN packet to the server.
+      returned: changed
+      type: int
+      sample: 5
+    server_sack:
+      description:
+        - Whether the BIG-IP system processes Selective ACK (Sack) packets in cookie responses
+          from the server.
+      returned: changed
+      type: bool
+      sample: no 
+    server_timestamp:
+      description:
+        - Whether the BIG-IP system processes timestamp request packets in cookie responses
+          from the server.
+      returned: changed
+      type: bool
+      sample: no
+    unclean_shutdown:
+      description:
+        - How the system handles closing connections. Values provided may be C(enabled), C(disabled),
+          or C(fast).
+      returned: changed
+      type: string
+      sample: enabled
 irules:
   description: iRule related facts.
   returned: when C(irules) is specified in C(gather_subset).
@@ -1539,7 +1710,7 @@ class FastHttpProfilesParameters(BaseParameters):
         'receiveWindowSize': 'receive_window_size',
         'resetOnTimeout': 'reset_on_timeout',
         'serverCloseTimeout': 'server_close_timeout',
-        'serverSack': 'server_stack',
+        'serverSack': 'server_sack',
         'serverTimestamp': 'server_timestamp',
         'uncleanShutdown': 'unclean_shutdown'
     }
@@ -1567,7 +1738,7 @@ class FastHttpProfilesParameters(BaseParameters):
         'receive_window_size',
         'reset_on_timeout',
         'server_close_timeout',
-        'server_stack',
+        'server_sack',
         'server_timestamp',
         'unclean_shutdown'
     ]
@@ -1579,19 +1750,14 @@ class FastHttpProfilesParameters(BaseParameters):
         return self._values['request_header_insert']
 
     @property
-    def unclean_shutdown(self):
-        self.flatten_boolean('unclean_shutdown', self._values)
-        return self._values['unclean_shutdown']
-
-    @property
     def server_timestamp(self):
         self.flatten_boolean('server_timestamp', self._values)
         return self._values['server_timestamp']
 
     @property
-    def server_stack(self):
-        self.flatten_boolean('server_stack', self._values)
-        return self._values['server_stack']
+    def server_sack(self):
+        self.flatten_boolean('server_sack', self._values)
+        return self._values['server_sack']
 
     @property
     def reset_on_timeout(self):
