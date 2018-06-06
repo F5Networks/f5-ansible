@@ -31,6 +31,7 @@ options:
     choices:
       - internal-data-groups
       - client-ssl-profiles
+      - fasthttp-profiles
       - devices
       - device-groups
       - interfaces
@@ -952,6 +953,8 @@ class BaseParameters(Parameters):
     def flatten_boolean(self, key, resource):
         truthy = list(BOOLEANS_TRUE) + ['enabled']
         falsey = list(BOOLEANS_FALSE) + ['disabled']
+        if resource[key] is None:
+            return None
         if resource[key] in truthy:
             resource[key] = 'yes'
         elif resource[key] in falsey:
@@ -1511,6 +1514,142 @@ class DevicesFactManager(BaseManager):
 
     def read_collection_from_device(self):
         result = self.client.api.tm.cm.devices.get_collection()
+        return result
+
+
+class FastHttpProfilesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'clientCloseTimeout': 'client_close_timeout',
+        'connpoolIdleTimeoutOverride': 'oneconnect_idle_timeout_override',
+        'connpoolMaxReuse': 'oneconnect_maximum_reuse',
+        'connpoolMaxSize': 'oneconnect_maximum_pool_size',
+        'connpoolMinSize': 'oneconnect_minimum_pool_size',
+        'connpoolReplenish': 'oneconnect_replenish',
+        'connpoolStep': 'oneconnect_ramp_up_increment',
+        'defaultsFrom': 'parent',
+        'forceHttp_10Response': 'force_http_1_0_response',
+        'headerInsert': 'request_header_insert',
+        'http_11CloseWorkarounds': 'http_1_1_close_workarounds',
+        'idleTimeout': 'idle_timeout',
+        'insertXforwardedFor': 'insert_x_forwarded_for',
+        'maxHeaderSize': 'maximum_header_size',
+        'maxRequests': 'maximum_requests',
+        'mssOverride': 'maximum_segment_size_override',
+        'receiveWindowSize': 'receive_window_size',
+        'resetOnTimeout': 'reset_on_timeout',
+        'serverCloseTimeout': 'server_close_timeout',
+        'serverSack': 'server_stack',
+        'serverTimestamp': 'server_timestamp',
+        'uncleanShutdown': 'unclean_shutdown'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'client_close_timeout',
+        'oneconnect_idle_timeout_override',
+        'oneconnect_maximum_reuse',
+        'oneconnect_maximum_pool_size',
+        'oneconnect_minimum_pool_size',
+        'oneconnect_replenish',
+        'oneconnect_ramp_up_increment',
+        'parent',
+        'description',
+        'force_http_1_0_response',
+        'request_header_insert',
+        'http_1_1_close_workarounds',
+        'idle_timeout',
+        'insert_x_forwarded_for',
+        'maximum_header_size',
+        'maximum_requests',
+        'maximum_segment_size_override',
+        'receive_window_size',
+        'reset_on_timeout',
+        'server_close_timeout',
+        'server_stack',
+        'server_timestamp',
+        'unclean_shutdown'
+    ]
+
+    @property
+    def request_header_insert(self):
+        if self._values['request_header_insert'] in [None, 'none']:
+            return None
+        return self._values['request_header_insert']
+
+    @property
+    def unclean_shutdown(self):
+        self.flatten_boolean('unclean_shutdown', self._values)
+        return self._values['unclean_shutdown']
+
+    @property
+    def server_timestamp(self):
+        self.flatten_boolean('server_timestamp', self._values)
+        return self._values['server_timestamp']
+
+    @property
+    def server_stack(self):
+        self.flatten_boolean('server_stack', self._values)
+        return self._values['server_stack']
+
+    @property
+    def reset_on_timeout(self):
+        self.flatten_boolean('reset_on_timeout', self._values)
+        return self._values['reset_on_timeout']
+
+    @property
+    def insert_x_forwarded_for(self):
+        self.flatten_boolean('insert_x_forwarded_for', self._values)
+        return self._values['insert_x_forwarded_for']
+
+    @property
+    def http_1_1_close_workarounds(self):
+        self.flatten_boolean('http_1_1_close_workarounds', self._values)
+        return self._values['http_1_1_close_workarounds']
+
+    @property
+    def force_http_1_0_response(self):
+        self.flatten_boolean('force_http_1_0_response', self._values)
+        return self._values['force_http_1_0_response']
+
+    @property
+    def oneconnect_replenish(self):
+        self.flatten_boolean('oneconnect_replenish', self._values)
+        return self._values['oneconnect_replenish']
+
+
+class FastHttpProfilesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(FastHttpProfilesFactManager, self).__init__(**kwargs)
+        self.want = FastHttpProfilesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(fasthttp_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = FastHttpProfilesParameters(params=resource.attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.ltm.profile.fasthttps.get_collection()
         return result
 
 
@@ -3781,6 +3920,7 @@ class ModuleManager(object):
             'client-ssl-profiles': ClientSslProfilesFactManager,
             'devices': DevicesFactManager,
             'device-groups': DeviceGroupsFactManager,
+            'fasthttp-profiles': FastHttpProfilesFactManager,
             'interfaces': InterfacesFactManager,
             'ssl-certs': SslCertificatesFactManager,
             'ssl-keys': SslKeysFactManager,

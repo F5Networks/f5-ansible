@@ -1,0 +1,14 @@
+---
+
+- name: Issue 00700 - Select fasthttp-profile facts
+  bigip_device_facts:
+    include:
+      - fasthttp-profiles
+  register: result
+
+- name: Issue 00700 - Assert Select fasthttp-profile facts
+  assert:
+    that:
+      - result is success
+      - result.fasthttp_profiles | selectattr("name", "match", "fasthttp") | map(attribute='oneconnect_maximum_pool_size') | first == 2048
+      - result.fasthttp_profiles | json_query("[?name=='fasthttp'].oneconnect_maximum_pool_size") | first == 2048
