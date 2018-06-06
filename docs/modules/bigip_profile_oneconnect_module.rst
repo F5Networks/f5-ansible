@@ -3,10 +3,10 @@
 .. _bigip_profile_oneconnect:
 
 
-bigip_profile_oneconnect - __SHORT_DESCRIPTION__
-++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_oneconnect - Manage OneConnect profiles on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -15,7 +15,7 @@ bigip_profile_oneconnect - __SHORT_DESCRIPTION__
 
 Synopsis
 --------
-- __LONG DESCRIPTION__.
+- Manage OneConnect profiles on a BIG-IP.
 
 
 
@@ -24,6 +24,7 @@ Requirements
 The below requirements are needed on the host that executes this module.
 
 - f5-sdk >= 3.0.9
+- netaddr
 
 
 Parameters
@@ -41,6 +42,132 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>description</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Description of the profile.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>idle_timeout_override</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the number of seconds that a connection is idle before the connection flow is eligible for deletion.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default is <code>disabled</code>.</div>
+                                                            <div>You may specify a number of seconds for the timeout override.</div>
+                                                            <div>When <code>disabled</code>, specifies that there is no timeout override for the connection.</div>
+                                                            <div>When <code>indefinite</code>, Specifies that a connection may be idle with no timeout override.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>limit_type</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>none</li>
+                                                                                                                                                                                                                        <li>idle</li>
+                                                                                                                                                                                                                        <li>strict</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>When <code>none</code>, simultaneous in-flight requests and responses over TCP connections to a pool member are counted toward the limit. This is the historical behavior.</div>
+                                                            <div>When <code>idle</code>, idle connections will be dropped as the TCP connection limit is reached. For short intervals, during the overlap of the idle connection being dropped and the new connection being established, the TCP connection limit may be exceeded.</div>
+                                                            <div>When <code>strict</code>, the TCP connection limit is honored with no exceptions. This means that idle connections will prevent new TCP connections from being made until they expire, even if they could otherwise be reused.</div>
+                                                            <div><code>strict</code> is not a recommended configuration except in very special cases with short expiration timeouts.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default of <code>none</code> will be used.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>maximum_age</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the maximum number of seconds allowed for a connection in the connection reuse pool.</div>
+                                                            <div>For any connection with an age higher than this value, the system removes that connection from the re-use pool.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default is <code>86400</code>.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>maximum_reuse</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the maximum number of times that a server-side connection can be reused.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default is <code>1000</code>.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>maximum_size</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the maximum number of connections that the system holds in the connection reuse pool.</div>
+                                                            <div>If the pool is already full, then a server-side connection closes after the response is completed.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default is <code>10000</code>.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>name</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -51,7 +178,45 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the name of the ... .</div>
+                                                                                    <div>Specifies the name of the OneConnect profile.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>parent</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the profile from which this profile inherits settings.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>oneconnect</code> profile.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>partition</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">Common</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Device partition to manage resources on.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -297,6 +462,75 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>share_pools</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Indicates that connections may be shared not only within a virtual server, but also among similar virtual servers</div>
+                                                            <div>When <code>yes</code>, all virtual servers that use the same OneConnect and other internal network profiles can share connections.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default of <code>no</code> will be used.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>source_mask</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies a value that the system applies to the source address to determine its eligibility for reuse.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default of <code>0</code> will be used.</div>
+                                                            <div>The system applies the value of this setting to the server-side source address to determine its eligibility for reuse.</div>
+                                                            <div>A mask of <code>0</code> causes the system to share reused connections across all source addresses. A host mask of <code>32</code> causes the system to share only those reused connections originating from the same source address.</div>
+                                                            <div>When you are using a SNAT or SNAT pool, the server-side source address is translated first and then the OneConnect mask is applied to the translated address.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>state</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                                        <li>absent</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>When <code>present</code>, ensures that the profile exists.</div>
+                                                            <div>When <code>absent</code>, ensures the profile is removed.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>user</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -341,6 +575,7 @@ Notes
 -----
 
 .. note::
+    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
 
@@ -351,7 +586,7 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Create a OneConnect profile
       bigip_profile_oneconnect:
         name: foo
         password: secret
@@ -379,7 +614,121 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>param1</b>
+                            <b>description</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>Description of the profile.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My profile</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>idle_timeout_override</b>
+                            <br/><div style="font-size: small; color: red">string or int</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The new idle timeout override.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">disabled</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>limit_type</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>New limit type of the profile.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">idle</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>maximum_age</b>
+                            <br/><div style="font-size: small; color: red">int</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>Maximum number of seconds allowed for a connection in the connection reuse pool.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2000</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>maximum_reuse</b>
+                            <br/><div style="font-size: small; color: red">int</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>Maximum number of times that a server-side connection can be reused.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>maximum_size</b>
+                            <br/><div style="font-size: small; color: red">int</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>Maximum number of connections that the system holds in the connection reuse pool.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3000</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>share_pools</b>
                             <br/><div style="font-size: small; color: red">bool</div>
                         </div>
                     </div>
@@ -387,7 +736,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The new param1 value of the resource.</div>
+                                                    <div>Share connections among similar virtual servers.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
                                                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -398,7 +747,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>param2</b>
+                            <b>source_mask</b>
                             <br/><div style="font-size: small; color: red">string</div>
                         </div>
                     </div>
@@ -406,10 +755,10 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The new param2 value of the resource.</div>
+                                                    <div>Value that the system applies to the source address to determine its eligibility for reuse.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">255.255.255.255</div>
                                             </div>
                 </td>
             </tr>
