@@ -155,7 +155,7 @@ fasthttp_profiles:
           all available connections are in use.
       returned: changed
       type: int
-      sample: 4 
+      sample: 4
     parent:
       description:
         - Profile from which this profile inherits settings.
@@ -248,7 +248,7 @@ fasthttp_profiles:
           from the server.
       returned: changed
       type: bool
-      sample: no 
+      sample: no
     server_timestamp:
       description:
         - Whether the BIG-IP system processes timestamp request packets in cookie responses
@@ -1098,7 +1098,10 @@ class Parameters(AnsibleF5Parameters):
             raise F5ModuleError(
                 "The specified gather_subset must be a list."
             )
-        self._values['gather_subset'].sort()
+        tmp = list(set(self._values['gather_subset']))
+        tmp.sort()
+        self._values['gather_subset'] = tmp
+
         return self._values['gather_subset']
 
 
@@ -4105,10 +4108,7 @@ class ModuleManager(object):
         }
 
     def exec_module(self):
-        if 'all' in self.want.gather_subset:
-            managers = list(self.managers.keys()) + self.want.gather_subset
-            managers.remove('all')
-            self.want.update({'gather_subset': managers})
+        self.handle_all_keyword()
         res = self.check_valid_gather_subset(self.want.gather_subset)
         if res:
             invalid = ','.join(res)
@@ -4139,6 +4139,13 @@ class ModuleManager(object):
         else:
             result['changed'] = False
         return result
+
+    def handle_all_keyword(self):
+        if 'all' not in self.want.gather_subset:
+            return
+        managers = list(self.managers.keys()) + self.want.gather_subset
+        managers.remove('all')
+        self.want.update({'gather_subset': managers})
 
     def check_valid_gather_subset(self, includes):
         """Check that the specified subset is valid
