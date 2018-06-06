@@ -4109,17 +4109,14 @@ class ModuleManager(object):
 
     def exec_module(self):
         self.handle_all_keyword()
+        self.handle_profiles_keyword()
         res = self.check_valid_gather_subset(self.want.gather_subset)
         if res:
             invalid = ','.join(res)
             raise F5ModuleError(
                 "The specified 'gather_subset' options are invalid: {0}".format(invalid)
             )
-
-        # Remove the excluded entries from the list of possible facts
-        exclude = [x[1:] for x in self.want.gather_subset if x[0] == '!']
-        include = [x for x in self.want.gather_subset if x[0] != '!']
-        result = [x for x in include if x not in exclude]
+        result = self.filter_excluded_facts()
 
         managers = []
         for name in result:
@@ -4140,11 +4137,25 @@ class ModuleManager(object):
             result['changed'] = False
         return result
 
+    def filter_excluded_facts(self):
+        # Remove the excluded entries from the list of possible facts
+        exclude = [x[1:] for x in self.want.gather_subset if x[0] == '!']
+        include = [x for x in self.want.gather_subset if x[0] != '!']
+        result = [x for x in include if x not in exclude]
+        return result
+
     def handle_all_keyword(self):
         if 'all' not in self.want.gather_subset:
             return
         managers = list(self.managers.keys()) + self.want.gather_subset
         managers.remove('all')
+        self.want.update({'gather_subset': managers})
+
+    def handle_profiles_keyword(self):
+        if 'profiles' not in self.want.gather_subset:
+            return
+        managers = [x for x in self.managers.keys() if '-profiles' in x] + self.want.gather_subset
+        managers.remove('profiles')
         self.want.update({'gather_subset': managers})
 
     def check_valid_gather_subset(self, includes):
@@ -4177,22 +4188,23 @@ class ModuleManager(object):
     def get_manager(self, which):
         result = {}
         manager = self.managers.get(which, None)
-        if manager:
-            kwargs = dict()
-            kwargs.update(self.kwargs)
+        if not manager:
+            return result
+        kwargs = dict()
+        kwargs.update(self.kwargs)
 
-            if manager == SystemInfoFactManager:
-                # Replace the API layer for the SystemInfoFactManager
-                #
-                # This is being done because there is no API for talking to the
-                # /mgmt/tm/sys/hardware API in the f5-sdk.
-                #
-                # Longer term, all of the classes in this module should use the
-                # F5RestClient object and drop the usage of the f5-sdk.
+        if manager == SystemInfoFactManager:
+            # Replace the API layer for the SystemInfoFactManager
+            #
+            # This is being done because there is no API for talking to the
+            # /mgmt/tm/sys/hardware API in the f5-sdk.
+            #
+            # Longer term, all of the classes in this module should use the
+            # F5RestClient object and drop the usage of the f5-sdk.
 
-                client = F5RestClient(**self.module.params)
-                kwargs['client'] = client
-            result = manager(**kwargs)
+            client = F5RestClient(**self.module.params)
+            kwargs['client'] = client
+        result = manager(**kwargs)
         return result
 
 
