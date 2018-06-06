@@ -42,7 +42,7 @@ use the API, rather than SSH, to connect.
 .. note::
 
    The one exception is the ``bigip_command`` module, which defaults to the REST API, but that you can use with
-   SSH. For details, see :ref:`Run tmsh commands <bigip_command>`.
+   SSH. For details, see :ref:`Run tmsh commands`.
 
 
 Running playbooks
@@ -277,9 +277,6 @@ Wait for BIG-IP to be ready
 Between tasks, you may want to wait for BIG-IP to be ready to accept the next changes.
 
 `Here <https://github.com/F5Networks/f5-ansible/tree/devel/examples/0003-wait-for-bigip>`_ is an example of how to do this.
-
-
-.. _bigip_command:
 
 Run tmsh commands
 +++++++++++++++++
