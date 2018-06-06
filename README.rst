@@ -39,7 +39,7 @@ BIG-IP device configurations.
 
 Support
 -------
-F5 Ansible modules delivered in |ansible_distro| are F5-Supported. Please refer to the |support_policy| for details.
+F5 supports the F5 modules delivered in |ansible_distro|. Please refer to the |support_policy| for details.
 
 Bugs, Issues
 ------------

@@ -1,14 +1,18 @@
 Get help
 ========
 
-F5 does not currently support the F5 Modules for Ansible.
+F5 provides support for the F5 Modules for Ansible. For more information, see |support_policies|.
 
-However, the community provides informal support through a number of channels.
+.. |support_policies| raw:: html
+
+   <a href="https://f5.com/support/support-policies" target="_blank">this page</a>
+
+The community also provides informal support through a number of channels.
 
 File an issue
 -------------
 
-If you need help with anything related to the F5 Modules for Ansible, you should open an issue |github_issue|.
+If you'd like community support, you can open an issue |github_issue|.
 
 .. |github_issue| raw:: html
 
@@ -41,8 +45,7 @@ When submitting a request for help or feedback, you should NEVER:
 
 - Enter any private or personally identifying information about you, your network, organization, etc.
 - Enter any passwords/credentials, logs, IP addresses, or servers/server ports.
-- Expect that F5 Technical Support will reply to your request. They will not.
 - Expect that an F5 employee will immediately respond. Employees offer best-effort assistance, but there may be times when responses are delayed.
 
-If you need more in-depth technical assistance, you can ask us to contact you privately.
+If you need more in-depth technical assistance, you can contact F5 Support.
 
