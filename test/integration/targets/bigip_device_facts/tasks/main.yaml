@@ -8,7 +8,7 @@
       - system-info
   register: result
 
-- name: Assert Select interface facts
+- name: Assert Select system-info facts
   assert:
     that:
       - result is success
