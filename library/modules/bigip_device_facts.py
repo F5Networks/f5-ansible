@@ -92,6 +92,265 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+devices:
+  description: Device related facts.
+  returned: when C(devices) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/bigip02.internal
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: bigip02.internal
+    active_modules:
+      description:
+        - The currently licensed and provisioned modules on the device.
+      returned: changed
+      type: list
+      sample: ["DNS Services (LAB)", "PSM, VE"]
+    base_mac_address:
+      description:
+        - Media Access Control address (MAC address) of the device.
+      returned: changed
+      type: string
+      sample: "fa:16:3e:c3:42:6f"
+    build:
+      description:
+        - The minor version information of the total product version.
+      returned: changed
+      type: string
+      sample: 0.0.1
+    chassis_id:
+      description:
+        - Serial number of the device.
+      returned: changed
+      type: string
+      sample: 11111111-2222-3333-444444444444
+    chassis_type:
+      description:
+        - Displays the chassis type. The possible values are C(individual) and C(viprion).
+      returned: changed
+      type: string
+      sample: individual
+    comment:
+      description:
+        - User comments about the device.
+      returned: changed
+      type: string
+      sample: My device
+    configsync_address:
+      description:
+        - IP address used for configuration synchronization.
+      returned: changed
+      type: string
+      sample: 10.10.10.10
+    contact:
+      description:
+        - Administrator contact information.
+      returned: changed
+      type: string
+      sample: The User
+    description:
+      description:
+        - Description of the device.
+      returned: changed
+      type: string
+      sample: My device
+    edition:
+      description:
+        - Displays the software edition.
+      returned: changed
+      type: string
+      sample: Point Release 7
+    failover_state:
+      description:
+        - Device failover state.
+      returned: changed
+      type: string
+      sample: active
+    hostname:
+      description:
+        - Device hostname
+      returned: changed
+      type: string
+      sample: bigip02.internal
+    location:
+      description:
+        - Specifies the physical location of the device.
+      returned: changed
+      type: string
+      sample: London
+    management_address:
+      description:
+        - IP address of the management interface.
+      returned: changed
+      type: string
+      sample: 3.3.3.3
+    marketing_name:
+      description:
+        - Marketing name of the device platform.
+      returned: changed
+      type: string
+      sample: BIG-IP Virtual Edition
+    multicast_address:
+      description:
+        - Specifies the multicast IP address used for failover.
+      returned: changed
+      type: string
+      sample: 4.4.4.4
+    optional_modules:
+      description:
+        - Modules that are available for the current platform, but are not currently licensed.
+      returned: changed
+      type: list
+      sample: ["App Mode (TMSH Only, No Root/Bash)", "BIG-IP VE, Multicast Routing"]
+    platform_id:
+      description:
+        - Displays the device platform identifier.
+      returned: changed
+      type: string
+      sample: Z100
+    primary_mirror_address:
+      description:
+        - Specifies the IP address used for state mirroring.
+      returned: changed
+      type: string
+      sample: 5.5.5.5
+    product:
+      description:
+        - Displays the software product name.
+      returned: changed
+      type: string
+      sample: BIG-IP
+    secondary_mirror_address:
+      description:
+        - Secondary IP address used for state mirroring.
+      returned: changed
+      type: string
+      sample: 2.2.2.2
+    software_version:
+      description:
+        - Displays the software version number.
+      returned: changed
+      type: string
+      sample: 13.1.0.7
+    timelimited_modules:
+      description:
+        - Displays the licensed modules that are time-limited.
+      returned: changed
+      type: list
+      sample: ["IP Intelligence, 3Yr, ...", "PEM URL Filtering, 3Yr, ..."]
+    timezone:
+      description:
+        - Displays the time zone configured on the device.
+      returned: changed
+      type: string
+      sample: UTC
+    unicast_addresses:
+      description:
+        - Specifies the entire set of unicast addresses used for failover.
+      returned: changed
+      type: complex
+      contains:
+        effective_ip:
+          description:
+            - The IP address that peers can use to reach this unicast address IP.
+          returned: changed
+          type: string
+          sample: 5.4.3.5
+        effective_port:
+          description:
+            - The port that peers can use to reach this unicast address.
+          returned: changed
+          type: int
+          sample: 1026
+        ip:
+          description:
+            - The IP address that the failover daemon will listen on for packets from its peers.
+          returned: changed
+          type: string
+          sample: 5.4.3.5
+        port:
+          description:
+            - The IP port that the failover daemon uses to accept packets from its peers.
+          returned: changed
+          type: int
+          sample: 1026
+  sample: hash/dictionary of values
+device_groups:
+  description: Device group related facts.
+  returned: when C(device_groups) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/fasthttp
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: fasthttp
+    autosync_enabled:
+      description:
+        - Whether the device group automatically synchronizes configuration data to its members.
+      returned: changed
+      type: bool
+      sample: no
+    description:
+      description:
+        - Description of the device group.
+      returned: changed
+      type: string
+      sample: My device group
+    devices:
+      description:
+        - List of devices that are in the group. Devices are listed by their C(full_path).
+      returned: changed
+      type: list
+      sample: [/Common/bigip02.internal]
+    full_load_on_sync:
+      description:
+        - Specifies that the entire configuration for a device group is sent when configuration
+          synchronization is performed.
+      returned: changed
+      type: bool
+      sample: yes
+    incremental_config_sync_size_maximum:
+      description:
+        - Specifies the maximum size (in KB) to devote to incremental config sync cached transactions.
+      returned: changed
+      type: int
+      sample: 1024
+    network_failover_enabled:
+      description:
+        - Specifies whether network failover is used.
+      returned: changed
+      type: bool
+      sample: yes
+    type:
+      description:
+        - Specifies the type of device group.
+      returned: changed
+      type: string
+      sample: sync-only
+    asm_sync_enabled:
+      description:
+        - Specifies whether to synchronize ASM configurations of device group members.
+      returned: changed
+      type: bool
+      sample: yes
+  sample: hash/dictionary of values
 fasthttp_profiles:
   description: FastHTTP profile related facts.
   returned: when C(fasthttp_profiles) is specified in C(gather_subset).
@@ -263,6 +522,7 @@ fasthttp_profiles:
       returned: changed
       type: string
       sample: enabled
+  sample: hash/dictionary of values
 irules:
   description: iRule related facts.
   returned: when C(irules) is specified in C(gather_subset).
@@ -304,82 +564,6 @@ irules:
       returned: changed
       type: string
       sample: WsYy2M6xMqvosIKIEH/FSsvhtWMe6xKOA6i7f...
-  sample: hash/dictionary of values
-vlans:
-  description: List of VLAN facts.
-  returned: when C(vlans) is specified in C(gather_subset).
-  type: complex
-  contains:
-    type:
-      description: The action type.
-      returned: changed
-      type: string
-      sample: forward
-    pool:
-      description: Pool for forward to.
-      returned: changed
-      type: string
-      sample: foo-pool
-  sample: hash/dictionary of values
-software_volumes:
-  description: List of software volumes.
-  returned: when C(software-volumes) is specified in C(gather_subset).
-  type: complex
-  contains:
-    active:
-      description:
-        - Whether the volume is currently active or not.
-        - An active volume contains the currently running version of software.
-      returned: changed
-      type: bool
-      sample: yes
-    base_build:
-      description:
-        - Base build version of the software installed in the volume.
-        - When a hotfix is installed, this refers to the base version of software
-          that the hotfix requires.
-      returned: changed
-      type: string
-      sample: 0.0.6
-    build:
-      description:
-        - Build version of the software installed in the volume.
-      returned: changed
-      type: string
-      sample: 0.0.6
-    full_path:
-      description:
-        - Full name of the resource as known to BIG-IP.
-      returned: changed
-      type: string
-      sample: HD1.1
-    name:
-      description:
-        - Relative name of the resource in BIG-IP.
-        - This usually matches the C(full_name).
-      returned: changed
-      type: string
-      sample: HD1.1
-    product:
-      description:
-        - The F5 product installed in this slot.
-        - This should always be BIG-IP.
-      returned: changed
-      type: string
-      sample: BIG-IP
-    status:
-      description:
-        - Status of the software installed, or being installed, in the volume.
-        - When C(complete), indicates that the software has completed installing.
-      returned: changed
-      type: string
-      sample: complete
-    version:
-      description:
-        - Version of software installed in the volume, excluding the C(build) number.
-      returned: changed
-      type: string
-      sample: 13.1.0.4
   sample: hash/dictionary of values
 ltm_pools:
   description: List of LTM (Local Traffic Manager) pools.
@@ -799,6 +983,66 @@ provision_info:
       type: int
       sample: 0
   sample: hash/dictionary of values
+software_volumes:
+  description: List of software volumes.
+  returned: when C(software-volumes) is specified in C(gather_subset).
+  type: complex
+  contains:
+    active:
+      description:
+        - Whether the volume is currently active or not.
+        - An active volume contains the currently running version of software.
+      returned: changed
+      type: bool
+      sample: yes
+    base_build:
+      description:
+        - Base build version of the software installed in the volume.
+        - When a hotfix is installed, this refers to the base version of software
+          that the hotfix requires.
+      returned: changed
+      type: string
+      sample: 0.0.6
+    build:
+      description:
+        - Build version of the software installed in the volume.
+      returned: changed
+      type: string
+      sample: 0.0.6
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: HD1.1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+        - This usually matches the C(full_name).
+      returned: changed
+      type: string
+      sample: HD1.1
+    product:
+      description:
+        - The F5 product installed in this slot.
+        - This should always be BIG-IP.
+      returned: changed
+      type: string
+      sample: BIG-IP
+    status:
+      description:
+        - Status of the software installed, or being installed, in the volume.
+        - When C(complete), indicates that the software has completed installing.
+      returned: changed
+      type: string
+      sample: complete
+    version:
+      description:
+        - Version of software installed in the volume, excluding the C(build) number.
+      returned: changed
+      type: string
+      sample: 13.1.0.4
+  sample: hash/dictionary of values
 self_ips:
   description: Self-IP related facts.
   returned: when C(self-ips) is specified in C(gather_subset).
@@ -966,6 +1210,138 @@ trunks:
       returned: changed
       type: int
       sample: 1
+vlans:
+  description: List of VLAN facts.
+  returned: when C(vlans) is specified in C(gather_subset).
+  type: complex
+  contains:
+    auto_lasthop:
+      description:
+        - Allows the system to send return traffic to the MAC address that transmitted the
+          request, even if the routing table points to a different network or interface.
+      returned: changed
+      type: string
+      sample: enabled
+    cmp_hash_algorithm:
+      description:
+        - Specifies how the traffic on the VLAN will be disaggregated.
+      returned: changed
+      type: string
+      sample: default
+    description:
+      description:
+        - Description of the VLAN.
+      returned: changed
+      type: string
+      sample: My vlan
+    failsafe_action:
+      description:
+        - Action for the system to take when the fail-safe mechanism is triggered.
+      returned: changed
+      type: string
+      sample: reboot
+    failsafe_enabled:
+      description:
+        - Whether failsafe is enabled or not.
+      returned: changed
+      type: bool
+      sample: yes
+    failsafe_timeout:
+      description:
+        - Number of seconds that an active unit can run without detecting network traffic
+          on this VLAN before it starts a failover.
+      returned: changed
+      type: int
+      sample: 90
+    if_index:
+      description:
+        - Index assigned to this VLAN. It is a unique identifier assigned for all objects
+          displayed in the SNMP IF-MIB.
+      returned: changed
+      type: int
+      sample: 176
+    learning_mode:
+      description:
+        - Whether switch ports placed in the VLAN are configured for switch learning,
+          forwarding only, or dropped.
+      returned: changed
+      type: string
+      sample: enable-forward
+    interfaces:
+      description:
+        - List of tagged or untagged interfaces and trunks that you want to configure for the VLAN.
+      returned: changed
+      type: complex
+      contains:
+        full_path:
+          description:
+            - Full name of the resource as known to BIG-IP.
+          returned: changed
+          type: string
+          sample: 1.3
+        name:
+          description:
+            - Relative name of the resource in BIG-IP.
+          returned: changed
+          type: string
+          sample: 1.3
+        tagged:
+          description:
+            - Whether the interface is tagged or not.
+          returned: changed
+          type: bool
+          sample: no
+    mtu:
+      description:
+        - Specific maximum transition unit (MTU) for the VLAN.
+      returned: changed
+      type: int
+      sample: 1500
+    sflow_poll_interval
+      description:
+        - Maximum interval in seconds between two pollings.
+      returned: changed
+      type: int
+      sample: 0
+    sflow_poll_interval_global:
+      description:
+        - Whether the global VLAN poll-interval setting, overrides the object-level
+          poll-interval setting.
+      returned: changed
+      type: bool
+      sample: no
+    sflow_sampling_rate:
+      description:
+        - Ratio of packets observed to the samples generated.
+      returned: changed
+      type: int
+      sample: 0
+    sflow_sampling_rate_global:
+      description:
+        - Whether the global VLAN sampling-rate setting, overrides the object-level
+          sampling-rate setting.
+      returned: changed
+      type: bool
+      sample: yes
+    source_check_enabled:
+      description:
+        - Specifies that only connections that have a return route in the routing table are accepted.
+      returned: changed
+      type: bool
+      sample: yes
+    true_mac_address:
+      description:
+        - Media access control (MAC) address for the lowest-numbered interface assigned to this VLAN.
+      returned: changed
+      type: string
+      sample: "fa:16:3e:10:da:ff"
+    tag:
+      description:
+        - Tag number for the VLAN.
+      returned: changed
+      type: int
+      sample: 30
+  sample: hash/dictionary of values
 '''
 
 import datetime
@@ -1610,12 +1986,11 @@ class DevicesParameters(BaseParameters):
     def active_modules(self):
         if self._values['active_modules'] is None:
             return None
-        result = {}
+        result = []
         for x in self._values['active_modules']:
             parts = x.split('|')
-            name = parts[0]
-            result[name] = parts[2:]
-        return result
+            result += parts[2:]
+        return list(set(result))
 
     @property
     def configsync_address(self):
@@ -2761,6 +3136,7 @@ class SystemInfoParameters(BaseParameters):
         'package_version',
         'product_code',
         'product_version',
+        'product_build',
         'system_information',
         'uptime'
     ]
@@ -2786,6 +3162,8 @@ class SystemInfoParameters(BaseParameters):
             package_version='Build {0} - {1}'.format(
                 self._values['Build'], self._values['Date']
             ),
+            product_build=self._values['Build'],
+            product_build_date=self._values['Date'],
             product_code=self._values['Product'],
             product_version=self._values['Version'],
         )
@@ -2833,6 +3211,14 @@ class SystemInfoParameters(BaseParameters):
     @property
     def package_version(self):
         return 'Build {0} - {1}'.format(self._values['Build'], self._values['Date'])
+
+    @property
+    def product_build(self):
+        return self._values['Build']
+
+    @property
+    def product_build_date(self):
+        return self._values['Date']
 
     @property
     def product_code(self):
@@ -3949,12 +4335,12 @@ class VlansParameters(BaseParameters):
         'autoLasthop': 'auto_lasthop',
         'cmpHash': 'cmp_hash_algorithm',
         'failsafeAction': 'failsafe_action',
-        'failsafe': 'failsafe_state',
+        'failsafe': 'failsafe_enabled',
         'failsafeTimeout': 'failsafe_timeout',
         'ifIndex': 'if_index',
         'learning': 'learning_mode',
         'interfacesReference': 'interfaces',
-        'sourceChecking': 'source_check_state',
+        'sourceChecking': 'source_check_enabled',
         'fullPath': 'full_path'
     }
 
@@ -3965,21 +4351,19 @@ class VlansParameters(BaseParameters):
         'cmp_hash_algorithm',
         'description',
         'failsafe_action',
-        'failsafe_state',
+        'failsafe_enabled',
         'failsafe_timeout',
         'if_index',
         'learning_mode',
-        'interfaces',  # (deprecated) Replaces the "members" return value
+        'interfaces',
         'mtu',
         'sflow_poll_interval',
-        'sflow_poll_interval_global',  # SOAP values are deprecated (ex. SFLOW_GLOBAL_YES)
+        'sflow_poll_interval_global',
         'sflow_sampling_rate',
         'sflow_sampling_rate_global',
-        'source_check_state',
+        'source_check_enabled',
         'true_mac_address',
-        'vlan_id',
-        # (deprecated) MAC masquerade addresses are now configured on traffic groups.
-        # (missing; ask Don) def get_dynamic_forwarding(self): return self.api.Networking.VLAN.get_dynamic_forwarding(self.vlans)
+        'tag',
     ]
 
     @property
@@ -3995,9 +4379,9 @@ class VlansParameters(BaseParameters):
                 full_path=item['fullPath']
             )
             if 'tagged' in item:
-                tmp['tagged'] = True
+                tmp['tagged'] = 'yes'
             else:
-                tmp['tagged'] = False
+                tmp['tagged'] = 'no'
             result.append(tmp)
         return result
 
@@ -4007,9 +4391,8 @@ class VlansParameters(BaseParameters):
 
     @property
     def sflow_poll_interval_global(self):
-        if self._values['sflow']['pollIntervalGlobal'] in BOOLEANS_TRUE:
-            return True
-        return False
+        self.flatten_boolean('pollIntervalGlobal', self._values['sflow'])
+        return self._values['sflow']['pollIntervalGlobal']
 
     @property
     def sflow_sampling_rate(self):
@@ -4017,15 +4400,13 @@ class VlansParameters(BaseParameters):
 
     @property
     def sflow_sampling_rate_global(self):
-        if self._values['sflow']['samplingRateGlobal'] in BOOLEANS_TRUE:
-            return True
-        return False
+        self.flatten_boolean('samplingRateGlobal', self._values['sflow'])
+        return self._values['sflow']['samplingRateGlobal']
 
     @property
     def source_check_state(self):
-        if self._values['source_check_state'] == 'enabled':
-            return True
-        return False
+        self.flatten_boolean('source_check_state', self._values)
+        return self._values['source_check_state']
 
     @property
     def true_mac_address(self):
@@ -4033,9 +4414,14 @@ class VlansParameters(BaseParameters):
         return self._values['stats']['macTrue']['description']
 
     @property
-    def vlan_id(self):
+    def tag(self):
         # We can't agree on field names...SMH
         return self._values['stats']['id']['value']
+
+    @property
+    def failsafe_enabled(self):
+        self.flatten_boolean('failsafe_enabled', self._values)
+        return self._values['failsafe_enabled']
 
 
 class VlansFactManager(BaseManager):
