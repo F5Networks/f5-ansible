@@ -3,7 +3,6 @@ Install F5 Modules for Ansible
 
 This document explains how to install the F5 Modules for Ansible.
 
-**Note:** F5 does not officially support the F5 Modules for Ansible.
 
 Install Python
 --------------
