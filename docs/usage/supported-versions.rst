@@ -1,13 +1,7 @@
 Releases and Versioning
 -----------------------
 
-F5 does not currently support the F5 Modules for Ansible. However, the community provides informal support through a number of channels. For details, see :doc:`support`.
-
-
-Versions
-````````
-
-The following versions are used in development testing.
+F5 tests and supports the following versions.
 
 The F5 Modules for Ansible may work with versions not shown here; F5 has not verified functionality in those versions.
 
@@ -21,7 +15,15 @@ v2.5                       v12.x, v13.x            v5.4.x
 
    F5 Networks does not back-port changes to earlier versions of Ansible.
 
+For a detailed list of BIG-IP versions that are currently supported by F5, see |k5903|.
 
+.. |k5903| raw:: html
+
+   <a href="https://support.f5.com/csp/article/K5903" target="_blank">this solution article</a>
+
+When a version of BIG-IP reaches end of technical support, F5 supports it until the next Ansible release.
+
+For example, if a version of BIG-IP reaches end of technical support on January 1, and Ansible releases a new version on March 1, then F5 supports the modules on that version of BIG-IP until March 1.
 
 Experimental Module Support
 ```````````````````````````
