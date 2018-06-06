@@ -327,7 +327,23 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
+        # Leave the ``monitor`` attribute commented out
+        #
+        # This attribute is commented out to prevent it from trying to be
+        # sent to the API during a create or update request. This is because
+        # the field is **broken** and **will not work** if you send some
+        # formats of the monitor to the API.
+        #
+        # Specifically, the m_of_n types will not work because they include
+        # the brace ( ``{`` ) character and the API considers this character
+        # to be invalid.
+        #
+        # Monitors are handled in a special case within the ``update_one_device``
+        # and ``create_one_device`` methods. Refer to them if you need to know
+        # what that special case is.
+        #
         # 'monitor',
+
         'description',
         'address',
         'fqdn',
