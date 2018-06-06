@@ -663,12 +663,12 @@ class Difference(object):
         result = self.want.allow_service
         if result[0] == 'none' and self.have.allow_service is None:
             return None
+        elif self.have.allow_service is None:
+            return result
         elif result[0] == 'all' and self.have.allow_service[0] != 'all':
             return ['all']
         elif result[0] == 'none':
             return []
-        elif self.have.allow_service is None:
-            return result
         elif set(self.want.allow_service) != set(self.have.allow_service):
             return result
 
