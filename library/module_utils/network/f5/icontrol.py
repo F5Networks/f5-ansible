@@ -165,6 +165,10 @@ class Response(object):
         self.reason = None
         self.request = None
 
+    @property
+    def content(self):
+        return self._content
+
     def json(self):
         return _json.loads(self._content)
 
