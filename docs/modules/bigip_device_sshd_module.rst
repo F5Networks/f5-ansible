@@ -535,9 +535,8 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.
-</div>
-                                                <br/>
+                                                                                    <div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div>
+                                                                            <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
                                                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">192.0.2.*</div>
                                             </div>
@@ -574,9 +573,8 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed and success</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>Specifies the text included on the pre-login banner that displays when a user attempts to login to the system using SSH.
-</div>
-                                                <br/>
+                                                                                    <div>Specifies the text included on the pre-login banner that displays when a user attempts to login to the system using SSH.</div>
+                                                                            <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
                                                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This is a corporate device. Connecting to it without...</div>
                                             </div>
@@ -594,9 +592,8 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The number of seconds before inactivity causes an SSH session to log out.
-</div>
-                                                <br/>
+                                                                                    <div>The number of seconds before inactivity causes an SSH session to log out.</div>
+                                                                            <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
                                                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
                                             </div>
