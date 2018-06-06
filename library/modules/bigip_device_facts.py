@@ -440,7 +440,7 @@ fasthttp_profiles:
           exists already, the system does not replace it.
       returned: changed
       type: string
-      sample: X-F5-Authentication: foo
+      sample: "X-F5-Authentication: foo"
     http_1_1_close_workarounds:
       description:
         - Specifies, when C(yes), that the server uses workarounds for HTTP 1.1 close issues.
@@ -1297,7 +1297,7 @@ vlans:
       returned: changed
       type: int
       sample: 1500
-    sflow_poll_interval
+    sflow_poll_interval:
       description:
         - Maximum interval in seconds between two pollings.
       returned: changed
