@@ -237,7 +237,7 @@ ltm_pools:
     client_link_qos:
       description:
         - Whether the system sets a Quality of Service (QoS) level within a packet sent to the client,
-          based on the targeted pool. 
+          based on the targeted pool.
         - Values can range from C(0) to C(7), or be set to C(pass-through).
       returned: changed
       type: string
@@ -529,44 +529,43 @@ nodes:
     monitor_status:
       description:
         - Status of the node as reported by the monitor(s) associated with it.
-        - This value is also used in determining node C(state). 
+        - This value is also used in determining node C(state).
       returned: changed
       type: string
       sample: down
     session_status:
       description:
-        - TODO: WHAT IS THIS
-        - This value is also used in determining node C(state). 
+        - This value is also used in determining node C(state).
       returned: changed
       type: string
       sample: enabled
     availability_status:
       description:
-        - The availability of the node. 
+        - The availability of the node.
       returned: changed
       type: string
       sample: offline
     enabled_status:
       description:
-        - The enabled-ness of the node. 
+        - The enabled-ness of the node.
       returned: changed
       type: string
       sample: enabled
     status_reason:
       description:
-        - If there is a problem with the status of the node, that problem is reported here. 
+        - If there is a problem with the status of the node, that problem is reported here.
       returned: changed
       type: string
       sample: /Common/https_443 No successful responses received...
     monitor_rule:
       description:
-        - A string representation of the full monitor rule. 
+        - A string representation of the full monitor rule.
       returned: changed
       type: string
       sample: /Common/https_443 and /Common/icmp
     monitors:
       description:
-        - A list of the monitors identified in the C(monitor_rule). 
+        - A list of the monitors identified in the C(monitor_rule).
       returned: changed
       type: list
       sample: ['/Common/https_443', '/Common/icmp']
@@ -622,7 +621,8 @@ provision_info:
     level:
       description:
         - Provisioned level of the module on BIG-IP.
-        - Valid return values can include C(none), 
+        - Valid return values can include C(none), C(minimum), C(nominal), C(dedicated)
+          and C(custom).
       returned: changed
       type: int
       sample: 0
@@ -754,7 +754,7 @@ trunks:
         - Number of working members associated with the trunk.
       returned: changed
       type: int
-      sample: 1      
+      sample: 1
     media_status:
       description:
         - Whether the media that is part of the trunk is up or not.
@@ -3661,10 +3661,10 @@ class VlansParameters(BaseParameters):
         'failsafe_timeout',
         'if_index',
         'learning_mode',
-        'interfaces', # (deprecated) Replaces the "members" return value
+        'interfaces',  # (deprecated) Replaces the "members" return value
         'mtu',
         'sflow_poll_interval',
-        'sflow_poll_interval_global', # SOAP values are deprecated (ex. SFLOW_GLOBAL_YES)
+        'sflow_poll_interval_global',  # SOAP values are deprecated (ex. SFLOW_GLOBAL_YES)
         'sflow_sampling_rate',
         'sflow_sampling_rate_global',
         'source_check_state',
