@@ -178,8 +178,6 @@ import time
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.network.common.utils import validate_ip_address
-from ansible.module_utils.network.common.utils import validate_ip_v6_address
 
 try:
     from library.module_utils.network.f5.bigiq import F5RestClient
@@ -188,6 +186,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import is_valid_ip
 except ImportError:
     from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -195,6 +194,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
@@ -271,7 +271,7 @@ class ModuleParameters(Parameters):
 
     @property
     def default_device_reference(self):
-        if validate_ip_address(self.service_environment) or validate_ip_v6_address(self.service_environment):
+        if is_valid_ip(self.service_environment):
             filter = "address+eq+'{0}'".format(self.service_environment)
         else:
             # Assume a hostname was specified
