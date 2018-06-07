@@ -1914,42 +1914,250 @@ virtual_servers:
       returned: changed
       type: string
       sample: 2.3.4.5
-
-        'auto_lasthop',
-        'bw_controller_policy',
-        'cmp_enabled',
-        'connection_limit',
-        'description',
-        'enabled',
-        'fallback_persistence_profile',
-        'persistence_profile',
-        'translate_port',
-        'translate_address',
-        'vlans',
-        'destination',
-        'last_hop_pool',
-        'nat64_enabled',
-        'source_port_behavior',
-        'ip_intelligence_policy',
-        'protocol',
-        'default_pool',
-        'rate_limit_mode',
-        'rate_limit_source_mask',
-        'rate_limit',
-        'snat_type',
-        'snat_pool',
-        'gtm_score',
-        'rate_class',
-        'rate_limit_destination_mask',
-        'source_address',
-        'authentication_profile',
-        'connection_mirror_enabled',
-        'irules',
-        'security_log_profiles',
-        'type',
-        'profiles',
-        'destination_address',
-        'destination_port'
+    auto_lasthop:
+      description:
+        - When enabled, allows the system to send return traffic to the MAC address
+          that transmitted the request, even if the routing table points to a different
+          network or interface.
+      returned: changed
+      type: string
+      sample: default
+    bw_controller_policy:
+      description:
+        - The bandwidth controller for the system to use to enforce a throughput policy
+          for incoming network traffic.
+      returned: changed
+      type: string
+      sample: /Common/bw1
+    cmp_enabled:
+      description:
+        - Whether or not clustered multi-processor (CMP) acceleration is enabled.
+      returned: changed
+      type: bool
+      sample: yes
+    connection_limit:
+      description:
+        - Maximum number of concurrent connections you want to allow for the virtual server.
+      returned: changed
+      type: int
+      sample: 100
+    description:
+      description:
+        - The description of the virtual server.
+      returned: changed
+      type: string
+      sample: My virtual
+    enabled:
+      description:
+        - Whether or not the virtual is enabled.
+      returned: changed
+      type: bool
+      sample: yes
+    fallback_persistence_profile:
+      description:
+        - Fallback persistence profile for the virtual server to use
+          when the default persistence profile is not available.
+      returned: changed
+      type: string
+      sample: /Common/fallback1
+    persistence_profile:
+      description:
+        - The persistence profile you want the system to use as the default
+          for this virtual server.
+      returned: changed
+      type: string
+      sample: /Common/persist1 
+    translate_port:
+      description:
+        - Enables or disables port translation.
+      returned: changed
+      type: bool
+      sample: yes
+    translate_address:
+      description:
+        - Enables or disables address translation for the virtual server.
+      returned: changed
+      type: bool
+      sample: yes
+    vlans:
+      description:
+        - List of VLANs on which the virtual server is either enabled or disabled.
+      returned: changed
+      type: list
+      sample: ['/Common/vlan1', '/Common/vlan2']
+    destination:
+      description:
+        - Name of the virtual address and service on which the virtual server
+          listens for connections.
+      returned: changed
+      type: string
+      sample: /Common/2.2.3.3%1:76
+    last_hop_pool:
+      description:
+        - Name of the last hop pool that you want the virtual
+          server to use to direct reply traffic to the last hop router.
+      returned: changed
+      type: string
+      sample: /Common/pool1
+    nat64_enabled:
+      description:
+        - Whether or not NAT64 is enabled.
+      returned: changed
+      type: bool
+      sample: yes
+    source_port_behavior:
+      description:
+        - Specifies whether the system preserves the source port of the connection.
+      returned: changed
+      type: string
+      sample: preserve
+    ip_intelligence_policy:
+      description:
+        - IP Intelligence policy assigned to the virtual
+      returned: changed
+      type: string
+      sample: /Common/ip1
+    protocol:
+      description:
+        - IP protocol for which you want the virtual server to direct traffic.
+      returned: changed
+      type: string
+      sample: tcp
+    default_pool:
+      description:
+        - Pool name that you want the virtual server to use as the default pool.
+      returned: changed
+      type: string
+      sample: /Common/pool1
+    rate_limit_mode:
+      description:
+        - Indicates whether the rate limit is applied per virtual object,
+          per source address, per destination address, or some combination
+          thereof.
+      returned: changed
+      type: string
+      sample: object
+    rate_limit_source_mask:
+      description:
+        - Specifies a mask, in bits, to be applied to the source address as
+          part of the rate limiting.
+      returned: changed
+      type: int
+      sample: 0
+    rate_limit:
+      description:
+        - Maximum number of connections per second allowed for a virtual server.
+      returned: changed
+      type: int
+      sample: 34
+    snat_type:
+      description:
+        - Specifies the type of source address translation associated
+          with the specified virtual server.
+      returned: changed
+      type: string
+      sample: none
+    snat_pool:
+      description:
+        - Specifies the name of a LSN or SNAT pool used by the specified virtual server.
+      returned: changed
+      type: string
+      sample: /Common/pool1
+    gtm_score:
+      description:
+        - Specifies a score that is associated with the virtual server.
+      returned: changed
+      type: int
+      sample: 0
+    rate_class:
+      description:
+        - Name of an existing rate class that you want the
+          virtual server to use to enforce a throughput policy for incoming
+          network traffic.
+      returned: changed
+      type: string
+    rate_limit_destination_mask:
+      description:
+        - Specifies a mask, in bits, to be applied to the destination
+          address as part of the rate limiting.
+      returned: changed
+      type: int
+      sample: 32
+    source_address:
+      description:
+        - Specifies an IP address or network from which the virtual server
+          will accept traffic.
+      returned: changed
+      type: string
+      sample: 0.0.0./0
+    authentication_profile:
+      description:
+        - Specifies a list of authentication profile names, separated by
+          spaces, that the virtual server uses to manage authentication.
+      returned: changed
+      type: list
+      sample: ['/Common/ssl_drldp']
+    connection_mirror_enabled:
+      description:
+        - Whether or not connection mirroring is enabled.
+      returned: changed
+      type: bool
+      sample: yes
+    irules:
+      description:
+        - List of iRules that customize the virtual server to direct and manage traffic.
+      returned: changed
+      type: list
+      sample: ['/Common/rule1', /Common/rule2']
+    security_log_profiles:
+      description:
+        - Specifies the log profile applied to the virtual server.
+      returned: changed
+      type: list
+      sample: ['/Common/global-network', '/Common/local-dos']
+    type:
+      description:
+        - Virtual server type.
+      returned: changed
+      type: string
+      sample: standard
+    destination_address:
+      description:
+        - Address portion of the C(destination).
+      returned: changed
+      type: string
+      sample: 2.3.3.2
+    destination_port:
+      description:
+        - Port potion of the C(destination).
+      returned: changed
+      type: int
+      sample: 80
+    profiles:
+      description:
+        - List of the profiles attached to the virtual.
+      type: complex
+      contains:
+        context:
+          description:
+            - Which side of the connection the profile affects; either C(all),
+              C(client-side) or C(server-side).
+          returned: changed
+          type: string
+          sample: client-side
+        full_path:
+          description:
+            - Full name of the resource as known to BIG-IP.
+          returned: changed
+          type: string
+          sample: /Common/tcp
+        name:
+          description:
+            - Relative name of the resource in BIG-IP.
+          returned: changed
+          type: string
+          sample: tcp
+  sample: hash/dictionary of values
 vlans:
   description: List of VLAN facts.
   returned: When C(vlans) is specified in C(gather_subset).
@@ -4714,16 +4922,20 @@ class VirtualServersParameters(BaseParameters):
 
         Raises:
             F5ModuleError: If the specified context is a value other that
-                ``all``, ``serverside``, or ``clientside``.
+                ``all``, ``server-side``, or ``client-side``.
         """
         if 'items' not in self._values['profiles']:
             return None
         result = []
         for item in self._values['profiles']['items']:
             context = item['context']
+            if 'context' == 'serverside':
+                context = 'server-side'
+            elif 'context' == 'clientside':
+                context = 'client-side'
             name = item['name']
-            if context in ['all', 'serverside', 'clientside']:
-                result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+            if context in ['all', 'server-side', 'client-side']:
+                result.append(dict(name=name, context=context, full_path=item['fullPath']))
             else:
                 raise F5ModuleError(
                     "Unknown profile context found: '{0}'".format(context)
@@ -4825,9 +5037,9 @@ class VirtualServersParameters(BaseParameters):
     def rate_limit(self):
         if self._values['rate_limit'] is None:
             return None
-        elif self._values['rate_limit'] == 'enabled':
-            return 'yes'
-        return 'no'
+        elif self._values['rate_limit'] == 'disabled':
+            return -1
+        return int(self._values['rate_limit'])
 
     @property
     def nat64_enabled(self):
