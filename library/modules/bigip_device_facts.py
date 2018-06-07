@@ -1642,6 +1642,172 @@ ssl_keys:
       sample: 1fcf7de3dd8e834d613099d8e10b2060cd9ecc9f
   sample: hash/dictionary of values
 system_info:
+  description: Traffic group related facts.
+  returned: When C(traffic-groups) is specified in C(gather_subset).
+  type: complex
+  contains:
+    base_mac_address:
+      description:
+        - Media Access Control address (MAC address) of the device.
+      returned: changed
+      type: string
+      sample: "fa:16:3e:c3:42:6f"
+    marketing_name:
+      description:
+        - Marketing name of the device platform.
+      returned: changed
+      type: string
+      sample: BIG-IP Virtual Edition
+    time:
+      description:
+        - Mapping of the current time information to specific time-named keys.
+      returned: changed
+      type: complex
+      contains:
+        day:
+          description:
+            - The current day of the month, in numeric form.
+          returned: changed
+          type: int
+          sample: 7
+        hour:
+          description:
+            - The current hour of the day in 24-hour form.
+          returned: changed
+          type: int
+          sample: 18
+        minute:
+          description:
+            - The current minute of the hour.
+          returned: changed
+          type: int
+          sample: 16
+        month:
+          description:
+            - The current month, in numeric form.
+          returned: changed
+          type: int
+          sample: 6
+        second:
+          description:
+            - The current second of the minute.
+          returned: changed
+          type: int
+          sample: 51
+        year:
+          description:
+            - The current year in 4-digit form.
+          returned: changed
+          type: int
+          sample: 2018
+    hardware_information:
+      description:
+        - Information related to the hardware (drives and CPUs) of the system.
+      type: complex
+      returned: changed
+      contains:
+        model:
+          description:
+            - The model of the hardware.
+          type: string
+          sample: Virtual Disk
+        name:
+          description:
+            - The name of the hardware.
+          type: string
+          sample: HD1
+        type:
+          description:
+            - The type of hardware.
+          type: string
+          sample: physical-disk
+        versions:
+          description:
+            - Hardware specific properties
+          type: complex
+          contains:
+            name:
+              description:
+                - Name of the property
+              type: string
+              sample: Size
+            version:
+              description:
+                - Value of the property
+              type: string
+              sample: 154.00G 
+    package_edition:
+      description:
+        - Displays the software edition.
+      returned: changed
+      type: string
+      sample: Point Release 7
+    package_version:
+      description:
+        - A string combining the C(product_build) and C(product_build_date).
+      type: string
+      sample: "Build 0.0.1 - Tue May 15 15:26:30 PDT 2018"
+    product_code:
+      description:
+        - Code identifying the product.
+      type: string
+      sample: BIG-IP
+    product_build:
+      description:
+        - Build version of the release version.
+      type: string
+      sample: 0.0.1
+    product_built:
+      description:
+        - Unix timestamp of when the product was built.
+      type: int
+      sample: 180515152630
+    product_build_date:
+      description:
+        - Human readable build date.
+      type: string
+      sample: "Tue May 15 15:26:30 PDT 2018"
+    product_changelist:
+      description:
+        - Changelist that product branches from.
+      type: int
+      sample: 2557198
+    product_jobid:
+      description:
+        - ID of the job that built the product version.
+      type: int
+      sample: 1012030
+    chassis_serial:
+      description:
+        - Serial of the chassis
+      type: string
+      sample: 11111111-2222-3333-444444444444
+    host_board_part_revision:
+      description:
+        - Revision of the host board.
+      type: string
+    host_board_serial:
+      description:
+        - Serial of the host board.
+      type: string
+    platform:
+      description:
+        - Platform identifier.
+      type: string
+      sample: Z100
+    switch_board_part_revision:
+      description:
+        - Switch board revision.
+      type: string
+    switch_board_serial:
+      description:
+        - Serial of the switch board.
+      type: string
+    uptime:
+      description:
+        - Time, in seconds, since the system booted.
+      type: int
+      sample: 603202
 traffic_groups:
   description: Traffic group related facts.
   returned: When C(traffic-groups) is specified in C(gather_subset).
@@ -4072,74 +4238,63 @@ class SystemInfoParameters(BaseParameters):
         'package_edition',
         'package_version',
         'product_code',
-        'product_version',
         'product_build',
-        'system_information',
-        'uptime'
+        'product_built',
+        'product_build_date',
+        'product_changelist',
+        'product_jobid',
+        'uptime',
+        'chassis_serial',
+        'host_board_part_revision',
+        'host_board_serial',
+        'platform',
+        'switch_board_part_revision',
+        'switch_board_serial'
     ]
 
     @property
-    def product_information(self):
-        """Return product information
-
-        This is maintained here for legacy purposes.
-
-        Returns a dictionary of product related information where the keys in
-        the dictionary are mapped to the stats returned from the /mgmt/tm/sys/version
-        API.
-
-        Note that the list of product features, previously reported by the SOAP API
-        is no longer available in the REST API and has been removed from this module.
-
-        Returns:
-            A dict of product information such as the version and code.
-        """
-        result = dict(
-            package_edition=self._values['Edition'],
-            package_version='Build {0} - {1}'.format(
-                self._values['Build'], self._values['Date']
-            ),
-            product_build=self._values['Build'],
-            product_build_date=self._values['Date'],
-            product_code=self._values['Product'],
-            product_version=self._values['Version'],
-        )
-
-        if 'version_info' not in self._values:
-            return result
-        if 'Built' in self._values['version_info']:
-            result['product_built'] = int(self._values['version_info']['Built'])
-        if 'Changelist' in self._values['version_info']:
-            result['product_changelist'] = int(self._values['version_info']['Changelist'])
-        if 'JobID' in self._values['version_info']:
-            result['product_jobid'] = int(self._values['version_info']['JobID'])
-        return result
-
-    @property
-    def system_information(self):
-        """Return system information
-
-        This is maintained here for legacy purposes.
-
-        Returns a dictionary of product related information where the keys in
-        the dictionary are mapped to the stats returned from the /mgmt/tm/sys/hardware
-        API.
-
-        Returns:
-            A dict of system information such as the version and code.
-        """
+    def chassis_serial(self):
         if self._values['system-info'] is None:
             return None
+        return self._values['system-info'][0]['bigipChassisSerialNum']
 
-        result = dict(
-            chassis_serial=self._values['system-info'][0]['bigipChassisSerialNum'],
-            host_board_part_revision=self._values['system-info'][0]['hostBoardPartRevNum'],
-            host_board_serial=self._values['system-info'][0]['hostBoardSerialNum'],
-            platform=self._values['system-info'][0]['platform'],
-            switch_board_part_revision=self._values['system-info'][0]['switchBoardPartRevNum'],
-            switch_board_serial=self._values['system-info'][0]['switchBoardSerialNum'],
-        )
-        return result
+    @property
+    def switch_board_serial(self):
+        if self._values['system-info'] is None:
+            return None
+        if self._values['system-info'][0]['switchBoardSerialNum'].strip() == '':
+            return None
+        return self._values['system-info'][0]['switchBoardSerialNum']
+
+    @property
+    def switch_board_part_revision(self):
+        if self._values['system-info'] is None:
+            return None
+        if self._values['system-info'][0]['switchBoardPartRevNum'].strip() == '':
+            return None
+        return self._values['system-info'][0]['switchBoardPartRevNum']
+
+    @property
+    def platform(self):
+        if self._values['system-info'] is None:
+            return None
+        return self._values['system-info'][0]['platform']
+
+    @property
+    def host_board_serial(self):
+        if self._values['system-info'] is None:
+            return None
+        if self._values['system-info'][0]['hostBoardSerialNum'].strip() == '':
+            return None
+        return self._values['system-info'][0]['hostBoardSerialNum']
+
+    @property
+    def host_board_part_revision(self):
+        if self._values['system-info'] is None:
+            return None
+        if self._values['system-info'][0]['hostBoardPartRevNum'].strip() == '':
+            return None
+        return self._values['system-info'][0]['hostBoardPartRevNum']
 
     @property
     def package_edition(self):
@@ -4156,6 +4311,21 @@ class SystemInfoParameters(BaseParameters):
     @property
     def product_build_date(self):
         return self._values['Date']
+
+    @property
+    def product_built(self):
+        if 'Built' in self._values['version_info']:
+            return int(self._values['version_info']['Built'])
+
+    @property
+    def product_changelist(self):
+        if 'Changelist' in self._values['version_info']:
+            return int(self._values['version_info']['Changelist'])
+
+    @property
+    def product_jobid(self):
+        if 'JobID' in self._values['version_info']:
+            return  int(self._values['version_info']['JobID'])
 
     @property
     def product_code(self):
