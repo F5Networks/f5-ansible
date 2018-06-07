@@ -93,9 +93,9 @@ banner_text:
   type: string
   sample: This is a corporate device. Do not touch.
 console_timeout:
-  description: >
-    The new number of seconds of inactivity before the system
-    logs off a user that is logged on.
+  description:
+    - The new number of seconds of inactivity before the system
+      logs off a user that is logged on.
   returned: changed
   type: int
   sample: 600
@@ -120,16 +120,16 @@ net_reboot:
   type: string
   sample: enabled
 quiet_boot:
-  description: >
-    The new setting for whether the system should suppress information to
-    the console during boot or not.
+  description:
+    - The new setting for whether the system should suppress information to
+      the console during boot or not.
   returned: changed
   type: string
   sample: enabled
 security_banner:
-  description: >
-    The new setting for whether the system should display an advisory message
-    on the login screen or not.
+  description:
+    - The new setting for whether the system should display an advisory message
+      on the login screen or not.
   returned: changed
   type: string
   sample: enabled
