@@ -1,3 +1,7 @@
+.. _modules_by_category:
+
+:orphan:
+
 Module Index
 ============
 

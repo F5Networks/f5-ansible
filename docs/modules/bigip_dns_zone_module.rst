@@ -1,6 +1,8 @@
 :source: modules/bigip_dns_zone.py
 
-.. _bigip_dns_zone:
+:orphan:
+
+.. _bigip_dns_zone_module:
 
 
 bigip_dns_zone - Manages DNS zones on a BIG-IP
@@ -33,123 +35,75 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                <tr>
-            <th class="head"><div class="cell-border">Parameter</div></th>
-            <th class="head"><div class="cell-border">Choices/<font color="blue">Defaults</font></div></th>
-                        <th class="head" width="100%"><div class="cell-border">Comments</div></th>
+                                                                                                                                                                                                                                        <tr>
+            <th colspan="1">Parameter</th>
+            <th>Choices/<font color="blue">Defaults</font></th>
+                        <th width="100%">Comments</th>
         </tr>
-                    <tr class="return-value-column">
+                    <tr>
+                                                                <td colspan="1">
+                    <b>options</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>options</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>A sequence of options for the view.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>A sequence of options for the view.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>password</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>BIG-IP password.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>BIG-IP password.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>server</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>server</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>BIG-IP host.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>BIG-IP host.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>state</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>state</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                                        <li>absent</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>absent</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Whether the record should exist.  When <code>absent</code>, removes the record.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Whether the record should exist.  When <code>absent</code>, removes the record.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>user</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>BIG-IP username.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: username</div>
-                                            </div>
-                </td>
+                                                                        <div>BIG-IP username.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: username</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>zone</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>zone</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The name of the zone.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The name of the zone.</div>
+                                                                                </td>
             </tr>
                         </table>
     <br/>
@@ -200,3 +154,6 @@ Author
 
 - Tim Rupp (@caphrim007)
 
+
+.. hint::
+    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/bigip_dns_zone.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.

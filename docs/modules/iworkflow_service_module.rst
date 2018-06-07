@@ -1,6 +1,8 @@
 :source: modules/iworkflow_service.py
 
-.. _iworkflow_service:
+:orphan:
+
+.. _iworkflow_service_module:
 
 
 iworkflow_service - Manages L4/L7 Services on iWorkflow
@@ -32,101 +34,61 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                <tr>
-            <th class="head"><div class="cell-border">Parameter</div></th>
-            <th class="head"><div class="cell-border">Choices/<font color="blue">Defaults</font></div></th>
-                        <th class="head" width="100%"><div class="cell-border">Comments</div></th>
+                                                                                                                                                                                                        <tr>
+            <th colspan="1">Parameter</th>
+            <th>Choices/<font color="blue">Defaults</font></th>
+                        <th width="100%">Comments</th>
         </tr>
-                    <tr class="return-value-column">
+                    <tr>
+                                                                <td colspan="1">
+                    <b>connector</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>connector</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The cloud connector associated with this L4/L7 service. This option is required when <code>state</code> is <code>present</code>.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The cloud connector associated with this L4/L7 service. This option is required when <code>state</code> is <code>present</code>.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>name</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Name of the L4/L7 service.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Name of the L4/L7 service.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>parameters</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>parameters</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>A dictionary containing the values of input parameters that the service administrator has made available for tenant editing.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>A dictionary containing the values of input parameters that the service administrator has made available for tenant editing.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>service_template</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>service_template</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The Service Template that you want to base this L4/L7 Service off of. This option is required when <code>state</code> is <code>present</code>.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The Service Template that you want to base this L4/L7 Service off of. This option is required when <code>state</code> is <code>present</code>.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>tenant</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>tenant</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">None</div>
-                                            </div>
-                </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">None</div>
+                                    </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The tenant whose service is going to be managed. This is a required option when using the system&#x27;s <code>admin</code> account as the admin is not a tenant, and therefore cannot manipulate any of the L4/L7 services that exist. If the <code>user</code> option is not the <code>admin</code> account, then this tenant option is assumed to be the user who is connecting to the BIG-IP. This assumption can always be changed by setting this option to whatever tenant you wish.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The tenant whose service is going to be managed. This is a required option when using the system&#x27;s <code>admin</code> account as the admin is not a tenant, and therefore cannot manipulate any of the L4/L7 services that exist. If the <code>user</code> option is not the <code>admin</code> account, then this tenant option is assumed to be the user who is connecting to the BIG-IP. This assumption can always be changed by setting this option to whatever tenant you wish.</div>
+                                                                                </td>
             </tr>
                         </table>
     <br/>
@@ -173,3 +135,6 @@ Author
 
 - Tim Rupp (@caphrim007)
 
+
+.. hint::
+    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/iworkflow_service.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.

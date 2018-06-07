@@ -1,6 +1,8 @@
 :source: modules/bigip_device_sshd.py
 
-.. _bigip_device_sshd:
+:orphan:
+
+.. _bigip_device_sshd_module:
 
 
 bigip_device_sshd - Manage the SSHD settings of a BIG-IP
@@ -32,436 +34,269 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                <tr>
-            <th class="head"><div class="cell-border">Parameter</div></th>
-            <th class="head"><div class="cell-border">Choices/<font color="blue">Defaults</font></div></th>
-                        <th class="head" width="100%"><div class="cell-border">Comments</div></th>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                    <tr>
+            <th colspan="2">Parameter</th>
+            <th>Choices/<font color="blue">Defaults</font></th>
+                        <th width="100%">Comments</th>
         </tr>
-                    <tr class="return-value-column">
+                    <tr>
+                                                                <td colspan="2">
+                    <b>allow</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>allow</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div>
-                                                            <div>To specify all addresses, use the value <code>all</code>.</div>
-                                                            <div>IP address can be specified, such as 172.27.1.10.</div>
-                                                            <div>IP rangees can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div>
+                                                    <div>To specify all addresses, use the value <code>all</code>.</div>
+                                                    <div>IP address can be specified, such as 172.27.1.10.</div>
+                                                    <div>IP rangees can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>banner</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>banner</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>enabled</li>
-                                                                                                                                                                                                                        <li>disabled</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>enabled</li>
+                                                                                                                                                                                                <li>disabled</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Whether to enable the banner or not.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Whether to enable the banner or not.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>banner_text</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>banner_text</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the text to include on the pre-login banner that displays when a user attempts to login to the system using SSH.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies the text to include on the pre-login banner that displays when a user attempts to login to the system using SSH.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>inactivity_timeout</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>inactivity_timeout</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the number of seconds before inactivity causes an SSH session to log out.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies the number of seconds before inactivity causes an SSH session to log out.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>log_level</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>log_level</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>debug</li>
-                                                                                                                                                                                                                        <li>debug1</li>
-                                                                                                                                                                                                                        <li>debug2</li>
-                                                                                                                                                                                                                        <li>debug3</li>
-                                                                                                                                                                                                                        <li>error</li>
-                                                                                                                                                                                                                        <li>fatal</li>
-                                                                                                                                                                                                                        <li>info</li>
-                                                                                                                                                                                                                        <li>quiet</li>
-                                                                                                                                                                                                                        <li>verbose</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>debug1</li>
+                                                                                                                                                                                                <li>debug2</li>
+                                                                                                                                                                                                <li>debug3</li>
+                                                                                                                                                                                                <li>error</li>
+                                                                                                                                                                                                <li>fatal</li>
+                                                                                                                                                                                                <li>info</li>
+                                                                                                                                                                                                <li>quiet</li>
+                                                                                                                                                                                                <li>verbose</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the minimum SSHD message level to include in the system log.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies the minimum SSHD message level to include in the system log.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>login</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>login</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>enabled</li>
-                                                                                                                                                                                                                        <li>disabled</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>enabled</li>
+                                                                                                                                                                                                <li>disabled</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies, when checked <code>enabled</code>, that the system accepts SSH communications.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies, when checked <code>enabled</code>, that the system accepts SSH communications.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>password</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                            </div>
-                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>port</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>port</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Port that you want the SSH daemon to run on.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Port that you want the SSH daemon to run on.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>provider</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>provider</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>A dict object containing connection details.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>A dict object containing connection details.</div>
+                                                                                </td>
             </tr>
-                                                            <tr class="return-value-column">
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>password</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                            </div>
-                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>server</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>server</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>server_port</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>server_port</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">443</div>
-                                            </div>
-                </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
+                                    </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>user</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>validate_certs</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>validate_certs</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>timeout</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
-                                            </div>
-                </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                    </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>ssh_keyfile</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>ssh_keyfile</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>transport</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>transport</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>rest</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>rest</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Configures the transport connection to use when connecting to the remote device.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Configures the transport connection to use when connecting to the remote device.</div>
+                                                                                </td>
             </tr>
                     
-                                                <tr class="return-value-column">
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>server</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>server</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>server_port</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>server_port</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">443</div>
-                                            </div>
-                </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
+                                    </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>user</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>validate_certs</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>validate_certs</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                </td>
             </tr>
                         </table>
     <br/>
@@ -518,143 +353,101 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-        <tr>
-            <th class="head"><div class="cell-border">Key</div></th>
-            <th class="head"><div class="cell-border">Returned</div></th>
-            <th class="head" width="100%"><div class="cell-border">Description</div></th>
+                                                                                                                                                                                                                                                        <tr>
+            <th colspan="1">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
         </tr>
-                    <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>allow</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
+                    <tr>
+                                <td colspan="1">
+                    <b>allow</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div>
-                                                                            <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">192.0.2.*</div>
-                                            </div>
-                </td>
+                                                                        <div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">192.0.2.*</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>banner</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
+                                <tr>
+                                <td colspan="1">
+                    <b>banner</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>Whether the banner is enabled or not.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                            </div>
-                </td>
+                                            <div>Whether the banner is enabled or not.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>banner_text</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
+                                <tr>
+                                <td colspan="1">
+                    <b>banner_text</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td><div class="cell-border">changed and success</div></td>
+                <td>changed and success</td>
                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the text included on the pre-login banner that displays when a user attempts to login to the system using SSH.</div>
-                                                                            <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This is a corporate device. Connecting to it without...</div>
-                                            </div>
-                </td>
+                                                                        <div>Specifies the text included on the pre-login banner that displays when a user attempts to login to the system using SSH.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This is a corporate device. Connecting to it without...</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>inactivity_timeout</b>
-                            <br/><div style="font-size: small; color: red">int</div>
-                        </div>
-                    </div>
+                                <tr>
+                                <td colspan="1">
+                    <b>inactivity_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The number of seconds before inactivity causes an SSH session to log out.</div>
-                                                                            <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
-                                            </div>
-                </td>
+                                                                        <div>The number of seconds before inactivity causes an SSH session to log out.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>log_level</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
+                                <tr>
+                                <td colspan="1">
+                    <b>log_level</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>The minimum SSHD message level to include in the system log.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">debug</div>
-                                            </div>
-                </td>
+                                            <div>The minimum SSHD message level to include in the system log.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">debug</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>login</b>
-                            <br/><div style="font-size: small; color: red">bool</div>
-                        </div>
-                    </div>
+                                <tr>
+                                <td colspan="1">
+                    <b>login</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>Specifies that the system accepts SSH communications or not.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                            </div>
-                </td>
+                                            <div>Specifies that the system accepts SSH communications or not.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>port</b>
-                            <br/><div style="font-size: small; color: red">int</div>
-                        </div>
-                    </div>
+                                <tr>
+                                <td colspan="1">
+                    <b>port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>Port that you want the SSH daemon to run on.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">22</div>
-                                            </div>
-                </td>
+                                            <div>Port that you want the SSH daemon to run on.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">22</div>
+                                    </td>
             </tr>
                         </table>
     <br/><br/>
@@ -675,3 +468,6 @@ Author
 
 - Tim Rupp (@caphrim007)
 
+
+.. hint::
+    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/bigip_device_sshd.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.

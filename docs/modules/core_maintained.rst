@@ -1,5 +1,7 @@
 .. _core_supported:
 
+:orphan:
+
 Modules Maintained by the Ansible Core Team
 ```````````````````````````````````````````
 

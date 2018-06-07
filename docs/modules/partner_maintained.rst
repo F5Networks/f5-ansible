@@ -1,5 +1,7 @@
 .. _partner_supported:
 
+:orphan:
+
 Modules Maintained by the Ansible Partners
 ``````````````````````````````````````````
 
