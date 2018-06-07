@@ -129,6 +129,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import is_valid_ip
 except ImportError:
     from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -136,11 +137,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
+    from ansible.module_utils.network.f5.common import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
@@ -205,11 +202,9 @@ class ModuleParameters(Parameters):
 
     @property
     def device_is_address(self):
-        try:
-            netaddr.IPAddress(self.device)
+        if is_valid_ip(self.device):
             return True
-        except (ValueError, netaddr.core.AddrFormatError):
-            return False
+        return False
 
     @property
     def device_is_id(self):
@@ -611,8 +606,6 @@ def main():
         supports_check_mode=spec.supports_check_mode,
         required_if=spec.required_if
     )
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5RestClient(module=module)
