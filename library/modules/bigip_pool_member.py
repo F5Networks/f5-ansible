@@ -279,6 +279,8 @@ address:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.network.common.utils import validate_ip_address
+from ansible.module_utils.network.common.utils import validate_ip_v6_address
 
 try:
     from library.module_utils.network.f5.bigip import HAS_F5SDK
@@ -289,6 +291,7 @@ try:
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import is_valid_hostname
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_valid_ip
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -302,16 +305,11 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import is_valid_hostname
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import is_valid_ip
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -341,12 +339,8 @@ class ModuleParameters(Parameters):
     @property
     def full_name(self):
         delimiter = ':'
-        try:
-            addr = netaddr.IPAddress(self.full_name_dict['name'])
-            if addr.version == 6:
-                delimiter = '.'
-        except netaddr.AddrFormatError:
-            pass
+        if validate_ip_v6_address(self.full_name_dict['name']):
+            delimiter = '.'
         return '{0}{1}{2}'.format(self.full_name_dict['name'], delimiter, self.port)
 
     @property
@@ -432,13 +426,11 @@ class ModuleParameters(Parameters):
             return None
         elif self._values['address'] == 'any6':
             return 'any6'
-        try:
-            addr = netaddr.IPAddress(self._values['address'])
-            return str(addr)
-        except netaddr.AddrFormatError:
-            raise F5ModuleError(
-                "The specified 'address' value is not a valid IP address."
-            )
+        if is_valid_ip(self._values['address']):
+            return self._values['address']
+        raise F5ModuleError(
+            "The specified 'address' value is not a valid IP address."
+        )
 
 
 class ApiParameters(Parameters):
@@ -687,13 +679,12 @@ class ModuleManager(object):
         return True
 
     def _set_host_by_name(self):
-        try:
-            netaddr.IPAddress(self.want.name)
+        if is_valid_ip(self.want.name):
             self.want.update({
                 'fqdn': None,
                 'address': self.want.name
             })
-        except netaddr.AddrFormatError:
+        else:
             if not is_valid_hostname(self.want.name):
                 raise F5ModuleError(
                     "'name' is neither a valid IP address or FQDN name."
@@ -895,8 +886,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
