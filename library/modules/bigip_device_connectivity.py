@@ -146,6 +146,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_valid_ip
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -157,16 +158,11 @@ except ImportError:
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import is_valid_ip
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    from netaddr import IPAddress, AddrFormatError
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -256,31 +252,22 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     def _validate_unicast_failover_address(self, address):
-        try:
-            if address != 'management-ip':
-                result = IPAddress(address)
-                return str(result)
-            else:
+        if address != 'management-ip':
+            if is_valid_ip(address):
                 return address
-        except KeyError:
-            raise F5ModuleError(
-                "An 'address' must be supplied when configuring unicast failover"
-            )
-        except AddrFormatError:
-            raise F5ModuleError(
-                "'address' field in unicast failover is not a valid IP address"
-            )
+            else:
+                raise F5ModuleError(
+                    "'address' field in unicast failover is not a valid IP address"
+                )
+        else:
+            return address
 
     def _get_validated_ip_address(self, address):
-        try:
-            IPAddress(self._values[address])
+        if is_valid_ip(self._values[address]):
             return self._values[address]
-        except AddrFormatError:
-            raise F5ModuleError(
-                "The specified '{0}' is not a valid IP address".format(
-                    address
-                )
-            )
+        raise F5ModuleError(
+            "The specified '{0}' is not a valid IP address".format(address)
+        )
 
 
 class ApiParameters(Parameters):
@@ -564,9 +551,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
