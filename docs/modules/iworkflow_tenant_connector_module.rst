@@ -249,9 +249,9 @@ Notes
 -----
 
 .. note::
-    - Tenants are not useful unless you associate them with a connector using the `iworkflow_tenant_connector` module.
+    - Tenants are not useful unless you associate them with a connector using the ``iworkflow_tenant_connector`` module.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples

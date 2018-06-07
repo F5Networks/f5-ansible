@@ -329,11 +329,11 @@ Notes
     - This module does not verify that the new or replaced SSH keys from the UCS file are synchronized between the BIG-IP system and the SCCP
     - This module does not support the 'rma' option
     - This module does not support restoring a UCS archive on a BIG-IP 1500, 3400, 4100, 6400, 6800, or 8400 hardware platform other than the system from which the backup was created
-    - The UCS restore operation restores the full configuration only if the hostname of the target system matches the hostname on which the UCS archive was created. If the hostname does not match, only the shared configuration is restored. You can ensure hostnames match by using the `bigip_hostname` Ansible module in a task before using this module.
+    - The UCS restore operation restores the full configuration only if the hostname of the target system matches the hostname on which the UCS archive was created. If the hostname does not match, only the shared configuration is restored. You can ensure hostnames match by using the ``bigip_hostname`` Ansible module in a task before using this module.
     - This module does not support re-licensing a BIG-IP restored from a UCS
     - This module does not support restoring encrypted archives on replacement RMA units.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples

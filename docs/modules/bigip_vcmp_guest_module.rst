@@ -17,7 +17,7 @@ bigip_vcmp_guest - Manages vCMP guests on a BIG-IP
 
 Synopsis
 --------
-- Manages vCMP guests on a BIG-IP. This functionality only exists on actual hardware and must be enabled by provisioning `vcmp` with the `bigip_provision` module.
+- Manages vCMP guests on a BIG-IP. This functionality only exists on actual hardware and must be enabled by provisioning ``vcmp`` with the ``bigip_provision`` module.
 
 
 
@@ -352,7 +352,7 @@ Notes
     - When BIG-IP starts, the VMs are booted sequentially; not in parallel. This means that it is not unusual for a vCMP host with many guests to take a long time (60+ minutes) to reboot and bring all the guests online. The BIG-IP chassis will be available before all vCMP guests are online.
     - netaddr
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples
@@ -398,7 +398,7 @@ Examples
 
 Return Values
 -------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 

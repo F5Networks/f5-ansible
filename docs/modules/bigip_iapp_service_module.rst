@@ -18,7 +18,7 @@ bigip_iapp_service - Manages TCL iApp services on a BIG-IP
 Synopsis
 --------
 - Manages TCL iApp services on a BIG-IP.
-- If you are looking for the API that is communicated with on the BIG-IP, the one the is used is `/mgmt/tm/sys/application/service/`. There are a couple of APIs in a BIG-IP that might seem like they are relevant to iApp Services, but the API mentioned here is the one that is used.
+- If you are looking for the API that is communicated with on the BIG-IP, the one the is used is ``/mgmt/tm/sys/application/service/``. There are a couple of APIs in a BIG-IP that might seem like they are relevant to iApp Services, but the API mentioned here is the one that is used.
 
 
 
@@ -314,7 +314,7 @@ Notes
 
 .. note::
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples

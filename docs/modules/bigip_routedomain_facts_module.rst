@@ -119,7 +119,7 @@ Examples
 
 Return Values
 -------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 
