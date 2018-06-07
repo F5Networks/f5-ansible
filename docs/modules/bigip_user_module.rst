@@ -17,7 +17,7 @@ bigip_user - Manage user accounts and user attributes on a BIG-IP
 
 Synopsis
 --------
-- Manage user accounts and user attributes on a BIG-IP. Typically this module operates only on the REST API users and not the CLI users. There is one exception though and that is if you specify the `username_credential` of `root`. When specifying `root`, you may only change the password. Your other parameters will be ignored in this case. Changing the `root` password is not an idempotent operation. Therefore, it will change it every time this module attempts to change it.
+- Manage user accounts and user attributes on a BIG-IP. Typically this module operates only on the REST API users and not the CLI users. There is one exception though and that is if you specify the ``username_credential`` of ``root``. When specifying ``root``, you may only change the password. Your other parameters will be ignored in this case. Changing the ``root`` password is not an idempotent operation. Therefore, it will change it every time this module attempts to change it.
 
 
 
@@ -311,7 +311,7 @@ Notes
 .. note::
     - Requires BIG-IP versions >= 12.0.0
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples
@@ -406,7 +406,7 @@ Examples
 
 Return Values
 -------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 

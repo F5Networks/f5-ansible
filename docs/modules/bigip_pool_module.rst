@@ -399,9 +399,9 @@ Notes
 
 .. note::
     - Requires BIG-IP software version >= 12.
-    - To add members do a pool, use the `bigip_pool_member` module. Previously, the `bigip_pool` module allowed the management of users, but this has been removed in version 2.5 of Ansible.
+    - To add members do a pool, use the ``bigip_pool_member`` module. Previously, the ``bigip_pool`` module allowed the management of users, but this has been removed in version 2.5 of Ansible.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples
@@ -539,7 +539,7 @@ Examples
 
 Return Values
 -------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 

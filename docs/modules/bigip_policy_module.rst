@@ -17,7 +17,7 @@ bigip_policy - Manage general policy configuration on a BIG-IP
 
 Synopsis
 --------
-- Manages general policy configuration on a BIG-IP. This module is best used in conjunction with the `bigip_policy_rule` module. This module can handle general configuration like setting the draft state of the policy, the description, and things unrelated to the policy rules themselves. It is also the first module that should be used when creating rules as the `bigip_policy_rule` module requires a policy parameter.
+- Manages general policy configuration on a BIG-IP. This module is best used in conjunction with the ``bigip_policy_rule`` module. This module can handle general configuration like setting the draft state of the policy, the description, and things unrelated to the policy rules themselves. It is also the first module that should be used when creating rules as the ``bigip_policy_rule`` module requires a policy parameter.
 
 
 
@@ -293,7 +293,7 @@ Notes
 
 .. note::
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples
@@ -370,7 +370,7 @@ Examples
 
 Return Values
 -------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 

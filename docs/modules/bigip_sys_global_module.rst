@@ -333,7 +333,7 @@ Notes
 
 .. note::
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples
@@ -356,7 +356,7 @@ Examples
 
 Return Values
 -------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 
@@ -386,9 +386,8 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new number of seconds of inactivity before the system logs off a user that is logged on.
-</div>
-                                        <br/>
+                                                                        <div>The new number of seconds of inactivity before the system logs off a user that is logged on.</div>
+                                                                <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">600</div>
                                     </td>
@@ -452,9 +451,8 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new setting for whether the system should suppress information to the console during boot or not.
-</div>
-                                        <br/>
+                                                                        <div>The new setting for whether the system should suppress information to the console during boot or not.</div>
+                                                                <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
                                     </td>
@@ -466,9 +464,8 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new setting for whether the system should display an advisory message on the login screen or not.
-</div>
-                                        <br/>
+                                                                        <div>The new setting for whether the system should display an advisory message on the login screen or not.</div>
+                                                                <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
                                     </td>

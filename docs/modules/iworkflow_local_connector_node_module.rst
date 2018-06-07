@@ -17,7 +17,7 @@ iworkflow_local_connector_node - Manages L2/L3 configuration of a BIG-IP via iWo
 
 Synopsis
 --------
-- Manages L2/L3 configuration of a BIG-IP via iWorkflow. This module is useful in the event that you have a new BIG-IP that does not yet have VLANs and Self-IPs configured on it. You can use this module on a discovered, managed, device to configure those settings via iWorkflow. You **do not** need touse this module if you have an existing BIG-IP that has its L2/L3 configuration already complete. In that cae, it is sufficient to just use the `iworkflow_managed_device` module and iWorkflow will automatically discover the node information for you.
+- Manages L2/L3 configuration of a BIG-IP via iWorkflow. This module is useful in the event that you have a new BIG-IP that does not yet have VLANs and Self-IPs configured on it. You can use this module on a discovered, managed, device to configure those settings via iWorkflow. You **do not** need touse this module if you have an existing BIG-IP that has its L2/L3 configuration already complete. In that cae, it is sufficient to just use the ``iworkflow_managed_device`` module and iWorkflow will automatically discover the node information for you.
 
 
 
@@ -320,9 +320,9 @@ Notes
 
 .. note::
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
-    - This module does not support updating of existing nodes that were created with a `cli_password_credential`. The onboarding process will change your device's `cli_username_credential` password, which will prevent you from using this module (without knowing the password) a second time.
+    - This module does not support updating of existing nodes that were created with a ``cli_password_credential``. The onboarding process will change your device's ``cli_username_credential`` password, which will prevent you from using this module (without knowing the password) a second time.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 Examples

@@ -17,7 +17,7 @@ iworkflow_service - Manages L4/L7 Services on iWorkflow
 
 Synopsis
 --------
-- Manages L4/L7 Service on iWorkflow. Services can only be created and otherwise managed by tenants on iWorkflow. Since all of the F5 modules assume the use of the administrator account, the user of this module will need to include the `tenant` option if they want to use this module with the admin account.
+- Manages L4/L7 Service on iWorkflow. Services can only be created and otherwise managed by tenants on iWorkflow. Since all of the F5 modules assume the use of the administrator account, the user of this module will need to include the ``tenant`` option if they want to use this module with the admin account.
 
 
 
