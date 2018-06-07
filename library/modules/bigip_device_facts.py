@@ -1551,7 +1551,7 @@ ssl_certs:
           updated/modified.
       returned: changed
       type: string
-      sample: 2018-05-15T21:11:15Z 
+      sample: "2018-05-15T21:11:15Z"
     issuer:
       description:
         - Specifies X509 information of the certificate's issuer.
@@ -1966,7 +1966,7 @@ virtual_servers:
           for this virtual server.
       returned: changed
       type: string
-      sample: /Common/persist1 
+      sample: /Common/persist1
     translate_port:
       description:
         - Enables or disables port translation.
