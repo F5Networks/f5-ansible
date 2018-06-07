@@ -92,9 +92,260 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+client_ssl_profiles:
+  description: Client SSL Profile related facts.
+  returned: When C(client-ssl-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/bigip02.internal
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: bigip02.internal
+    alert_timeout:
+      description:
+        - Maximum time period in seconds to keep the SSL session active after alert
+          message is sent, or indefinite.
+      returned: changed
+      type: int
+      sample: 0
+    allow_non_ssl:
+      description:
+        - Enables or disables non-SSL connections.
+      returned: changed
+      type: bool
+      sample: yes
+    authenticate_depth:
+      description:
+        - Specifies the authenticate depth. This is the client certificate chain maximum traversal depth.
+      returned: changed
+      type: int
+      sample: 9
+    authenticate_frequency:
+      description:
+        - Specifies how often the system authenticates a user.
+      returned: changed
+      type: string
+      sample: once
+    ca_file:
+      description:
+        - Specifies the certificate authority (CA) file name.
+      returned: changed
+      type: string
+      sample: /Common/default-ca.crt
+    cache_size:
+      description:
+        - Specifies the SSL session cache size.
+      returned: changed
+      type: int
+      sample: 262144
+    cache_timeout:
+      description:
+        - Specifies the SSL session cache timeout value.
+      returned: changed
+      type: int
+      sample: 3600
+    certificate_file:
+      description:
+        - Specifies the name of the certificate installed on the traffic
+          management system for the purpose of terminating or initiating
+          an SSL connection.
+      returned: changed
+      type: string
+      sample: /Common/default.crt
+    chain_file:
+      description:
+        - Specifies or builds a certificate chain file that a client can
+          use to authenticate the profile.
+      returned: changed
+      type: string
+      sample: /Common/ca-chain.crt
+    ciphers:
+      description:
+        - Specifies a list of cipher names.
+      returned: changed
+      type: string
+      sample: ['DEFAULT']
+    crl_file:
+      description:
+        - Specifies the certificate revocation list file name.
+      returned: changed
+      type: string
+      sample: /Common/default.crl
+    parent:
+      description:
+        - Parent of the profile
+      returned: changed
+      type: string
+      sample: /Common/clientssl
+    description:
+      description:
+        - Description of the profile.
+      returned: changed
+      type: string
+      sample: My profile
+    modssl_methods:
+      description:
+        - Enables or disables ModSSL method emulation.
+      returned: changed
+      type: bool
+      sample: no
+    peer_certification_mode:
+      description:
+        - Specifies the peer certificate mode.
+      returned: changed
+      type: string
+      sample: ignore
+    sni_require:
+      description:
+        - When this option is C(yes), a client connection that does not
+          specify a known server name or does not support SNI extension will
+          be rejected.
+      returned: changed
+      type: bool
+      sample: no
+    sni_default:
+      description:
+        - When C(yes), this profile is the default SSL profile when the server
+          name in a client connection does not match any configured server
+          names, or a client connection does not specify any server name at
+          all.
+      returned: changed
+      type: bool
+      sample: yes
+    strict_resume:
+      description:
+        - Enables or disables strict-resume.
+      returned: changed
+      type: bool
+      sample: yes
+    profile_mode_enabled:
+      description:
+        - Specifies the profile mode, which enables or disables SSL
+          processing.
+      returned: changed
+      type: bool
+      sample: yes
+    renegotiation_maximum_record_delay:
+      description:
+        - Maximum number of SSL records that the traffic
+          management system can receive before it renegotiates an SSL
+          session.
+      returned: changed
+      type: int
+      sample: 0
+    renegotiation_period:
+      description:
+        - Number of seconds required to renegotiate an SSL
+          session.
+      returned: changed
+      type: int
+      sample: 0
+    renegotiation:
+      description:
+        - Specifies whether renegotiations are enabled.
+      returned: changed
+      type: bool
+      sample: yes
+    server_name:
+      description:
+        - Specifies the server names to be matched with SNI (server name
+          indication) extension information in ClientHello from a client
+          connection.
+      returned: changed
+      type: string
+      sample: bigip01
+    session_ticket:
+      description:
+        - Enables or disables session-ticket.
+      returned: changed
+      type: bool
+      sample: no
+    unclean_shutdown:
+      description:
+        - Whether to force the SSL profile to perform a clean shutdown of all SSL
+          connections or not
+      returned: changed
+      type: bool
+      sample: no
+    retain_certificate:
+      description:
+        - APM module requires storing certificate in SSL session. When
+          C(no), certificate will not be stored in SSL session.
+      returned: changed
+      type: bool
+      sample: yes
+    secure_renegotiation_mode:
+      description:
+        - Specifies the secure renegotiation mode.
+      returned: changed
+      type: string
+      sample: require
+    handshake_timeout:
+      description:
+        - Specifies the handshake timeout in seconds.
+      returned: changed
+      type: int
+      sample: 10
+    forward_proxy_certificate_extension_include:
+      description:
+        - Specifies the extensions of the web server certificates to be
+          included in the generated certificates using SSL Forward Proxy.
+      returned: changed
+      type: list
+      sample: ["basic-constraints", "subject-alternative-name"]
+    forward_proxy_certificate_lifespan:
+      description:
+        - Specifies the lifespan of the certificate generated using the SSL
+          forward proxy feature.
+      returned: changed
+      type: int
+      sample: 30
+    forward_proxy_lookup_by_ipaddr_port:
+      description:
+        - Specifies whether to perform certificate look up by IP address and
+          port number.
+      returned: changed
+      type: bool
+      sample: no
+    forward_proxy_enabled:
+      description:
+        - Enables or disables SSL forward proxy feature.
+      returned: changed
+      type: bool
+      sample: yes
+    forward_proxy_ca_passphrase:
+      description:
+        - Specifies the passphrase of the key file that is used as the
+          certification authority key when SSL forward proxy feature is
+          enabled.
+      returned: changed
+      type: string
+    forward_proxy_ca_certificate_file:
+      description:
+        - Specifies the name of the certificate file that is used as the
+          certification authority certificate when SSL forward proxy feature
+          is enabled.
+      returned: changed
+      type: string
+    forward_proxy_ca_key_file:
+      description:
+        - Specifies the name of the key file that is used as the
+          certification authority key when SSL forward proxy feature is
+          enabled.
+      returned: changed
+      type: string
+  sample: hash/dictionary of values
 devices:
   description: Device related facts.
-  returned: when C(devices) is specified in C(gather_subset).
+  returned: When C(devices) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
@@ -286,7 +537,7 @@ devices:
   sample: hash/dictionary of values
 device_groups:
   description: Device group related facts.
-  returned: when C(device_groups) is specified in C(gather_subset).
+  returned: When C(device-groups) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
@@ -353,7 +604,7 @@ device_groups:
   sample: hash/dictionary of values
 fasthttp_profiles:
   description: FastHTTP profile related facts.
-  returned: when C(fasthttp_profiles) is specified in C(gather_subset).
+  returned: When C(fasthttp-profiles) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
@@ -525,7 +776,7 @@ fasthttp_profiles:
   sample: hash/dictionary of values
 irules:
   description: iRule related facts.
-  returned: when C(irules) is specified in C(gather_subset).
+  returned: When C(irules) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
@@ -567,7 +818,7 @@ irules:
   sample: hash/dictionary of values
 ltm_pools:
   description: List of LTM (Local Traffic Manager) pools.
-  returned: when C(ltm-pools) is specified in C(gather_subset).
+  returned: When C(ltm-pools) is specified in C(gather_subset).
   type: complex
   contains:
     allow_nat:
@@ -831,7 +1082,7 @@ ltm_pools:
   sample: hash/dictionary of values
 nodes:
   description: Node related facts.
-  returned: when C(nodes) is specified in C(gather_subset).
+  returned: When C(nodes) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
@@ -935,7 +1186,7 @@ nodes:
   sample: hash/dictionary of values
 provision_info:
   description: Module provisioning related information.
-  returned: when C(provision-info) is specified in C(gather_subset).
+  returned: When C(provision-info) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
@@ -985,7 +1236,7 @@ provision_info:
   sample: hash/dictionary of values
 software_volumes:
   description: List of software volumes.
-  returned: when C(software-volumes) is specified in C(gather_subset).
+  returned: When C(software-volumes) is specified in C(gather_subset).
   type: complex
   contains:
     active:
@@ -1045,7 +1296,7 @@ software_volumes:
   sample: hash/dictionary of values
 self_ips:
   description: Self-IP related facts.
-  returned: when C(self-ips) is specified in C(gather_subset).
+  returned: When C(self-ips) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
@@ -1120,7 +1371,7 @@ self_ips:
   sample: hash/dictionary of values
 trunks:
   description: Trunk related facts.
-  returned: when C(trunks) is specified in C(gather_subset).
+  returned: When C(trunks) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
@@ -1212,7 +1463,7 @@ trunks:
       sample: 1
 vlans:
   description: List of VLAN facts.
-  returned: when C(vlans) is specified in C(gather_subset).
+  returned: When C(vlans) is specified in C(gather_subset).
   type: complex
   contains:
     auto_lasthop:
@@ -1537,7 +1788,6 @@ class ClientSslProfilesParameters(BaseParameters):
         'cacheTimeout': 'cache_timeout',
         'cert': 'certificate_file',
         'chain': 'chain_file',
-        'clientCertCa': 'client_certificate_ca_file',
         'crlFile': 'crl_file',
         'defaultsFrom': 'parent',
         'modSslMethods': 'modssl_methods',
@@ -1576,7 +1826,6 @@ class ClientSslProfilesParameters(BaseParameters):
         'certificate_file',
         'chain_file',
         'ciphers',
-        'client_certificate_ca_file',
         'crl_file',
         'parent',
         'description',
@@ -1718,37 +1967,31 @@ class ClientSslProfilesParameters(BaseParameters):
 
     @property
     def ca_file(self):
-        if self._values['ca_file'] is [None, 'none']:
+        if self._values['ca_file'] in [None, 'none']:
             return None
         return self._values['ca_file']
 
     @property
     def certificate_file(self):
-        if self._values['certificate_file'] is [None, 'none']:
+        if self._values['certificate_file'] in [None, 'none']:
             return None
         return self._values['certificate_file']
 
     @property
     def chain_file(self):
-        if self._values['chain_file'] is [None, 'none']:
+        if self._values['chain_file'] in [None, 'none']:
             return None
         return self._values['chain_file']
 
     @property
-    def client_certificate_ca_file(self):
-        if self._values['client_certificate_ca_file'] is [None, 'none']:
-            return None
-        return self._values['client_certificate_ca_file']
-
-    @property
     def crl_file(self):
-        if self._values['crl_file'] is [None, 'none']:
+        if self._values['crl_file'] in [None, 'none']:
             return None
         return self._values['crl_file']
 
     @property
     def ciphers(self):
-        if self._values['ciphers'] is [None, 'none']:
+        if self._values['ciphers'] in [None, 'none']:
             return None
         return self._values['ciphers'].split(' ')
 
