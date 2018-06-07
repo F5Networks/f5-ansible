@@ -937,7 +937,7 @@ irules:
         - The actual definition of the iRule.
       returned: changed
       type: string
-      sample: "when HTTP_REQUEST {\n HTTP::redirect https://[getfield..."
+      sample: when HTTP_REQUEST ...
     signature:
       description:
         - The calculated signature of the iRule.
