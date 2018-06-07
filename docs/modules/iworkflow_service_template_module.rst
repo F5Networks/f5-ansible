@@ -1,6 +1,8 @@
 :source: modules/iworkflow_service_template.py
 
-.. _iworkflow_service_template:
+:orphan:
+
+.. _iworkflow_service_template_module:
 
 
 iworkflow_service_template - Manages Service Templates on iWorkflow
@@ -32,82 +34,50 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                <tr>
-            <th class="head"><div class="cell-border">Parameter</div></th>
-            <th class="head"><div class="cell-border">Choices/<font color="blue">Defaults</font></div></th>
-                        <th class="head" width="100%"><div class="cell-border">Comments</div></th>
+                                                                                                                                                                        <tr>
+            <th colspan="1">Parameter</th>
+            <th>Choices/<font color="blue">Defaults</font></th>
+                        <th width="100%">Comments</th>
         </tr>
-                    <tr class="return-value-column">
+                    <tr>
+                                                                <td colspan="1">
+                    <b>base_template</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>base_template</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The iApp template that you want to base this Service Template off of. Note that, while iWorkflow&#x27;s UI also allows you to specify another Service Template for the <code>base_template</code>, this module does not yet let you do that. This option is required when <code>state</code> is <code>present</code>.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The iApp template that you want to base this Service Template off of. Note that, while iWorkflow&#x27;s UI also allows you to specify another Service Template for the <code>base_template</code>, this module does not yet let you do that. This option is required when <code>state</code> is <code>present</code>.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>connector</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>connector</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The cloud connector associated with this Service Template. If you want to have this Service Template associated with all clouds, then specify a <code>connector</code> of <code>all</code>. When creating a new Service Template, if no connector is specified, then <code>all</code> clouds will be the default.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The cloud connector associated with this Service Template. If you want to have this Service Template associated with all clouds, then specify a <code>connector</code> of <code>all</code>. When creating a new Service Template, if no connector is specified, then <code>all</code> clouds will be the default.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>name</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Name of the service template.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Name of the service template.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="1">
+                    <b>parameters</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>parameters</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>A dictionary containing the values of input parameters that the Service Template contains. You will see these in iWorkflow&#x27;s UI labeled as &quot;Application Tier Information&quot; and &quot;Sections&quot;. This is the way by which you customize the Service Template and specify which values are tenant editable. Since this value can be particularly large, the recommended practice is to put it in an external file and include it with the Ansible <code>file</code> or <code>template</code> lookup plugins. This option is required when <code>state</code> is <code>present</code>.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>A dictionary containing the values of input parameters that the Service Template contains. You will see these in iWorkflow&#x27;s UI labeled as &quot;Application Tier Information&quot; and &quot;Sections&quot;. This is the way by which you customize the Service Template and specify which values are tenant editable. Since this value can be particularly large, the recommended practice is to put it in an external file and include it with the Ansible <code>file</code> or <code>template</code> lookup plugins. This option is required when <code>state</code> is <code>present</code>.</div>
+                                                                                </td>
             </tr>
                         </table>
     <br/>
@@ -154,3 +124,6 @@ Author
 
 - Tim Rupp (@caphrim007)
 
+
+.. hint::
+    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/iworkflow_service_template.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.

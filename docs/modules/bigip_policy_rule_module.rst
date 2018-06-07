@@ -1,6 +1,8 @@
 :source: modules/bigip_policy_rule.py
 
-.. _bigip_policy_rule:
+:orphan:
+
+.. _bigip_policy_rule_module:
 
 
 bigip_policy_rule - Manage LTM policy rules on a BIG-IP
@@ -33,559 +35,346 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                <tr>
-            <th class="head"><div class="cell-border">Parameter</div></th>
-            <th class="head"><div class="cell-border">Choices/<font color="blue">Defaults</font></div></th>
-                        <th class="head" width="100%"><div class="cell-border">Comments</div></th>
+                                                                                                                                                                                                                    
+                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                    <tr>
+            <th colspan="2">Parameter</th>
+            <th>Choices/<font color="blue">Defaults</font></th>
+                        <th width="100%">Comments</th>
         </tr>
-                    <tr class="return-value-column">
+                    <tr>
+                                                                <td colspan="2">
+                    <b>actions</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>actions</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The actions that you want the policy rule to perform.</div>
-                                                            <div>The available attributes vary by the action, however, each action requires that a <code>type</code> be specified.</div>
-                                                            <div>These conditions can be specified in any order. Despite them being a list, the BIG-IP does not treat their order as anything special.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The actions that you want the policy rule to perform.</div>
+                                                    <div>The available attributes vary by the action, however, each action requires that a <code>type</code> be specified.</div>
+                                                    <div>These conditions can be specified in any order. Despite them being a list, the BIG-IP does not treat their order as anything special.</div>
+                                                                                </td>
             </tr>
-                                                            <tr class="return-value-column">
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>type</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>forward</li>
-                                                                                                                                                                                                                        <li>enable</li>
-                                                                                                                                                                                                                        <li>ignore</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>forward</li>
+                                                                                                                                                                                                <li>enable</li>
+                                                                                                                                                                                                <li>ignore</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The action type. This value controls what below options are required.</div>
-                                                            <div>When <code>type</code> is <code>forward</code>, will associate a given <code>pool</code>, or <code>virtual</code> with this rule.</div>
-                                                            <div>When <code>type</code> is <code>enable</code>, will associate a given <code>asm_policy</code> with this rule.</div>
-                                                            <div>When <code>type</code> is <code>ignore</code>, will remove all existing actions from this rule.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The action type. This value controls what below options are required.</div>
+                                                    <div>When <code>type</code> is <code>forward</code>, will associate a given <code>pool</code>, or <code>virtual</code> with this rule.</div>
+                                                    <div>When <code>type</code> is <code>enable</code>, will associate a given <code>asm_policy</code> with this rule.</div>
+                                                    <div>When <code>type</code> is <code>ignore</code>, will remove all existing actions from this rule.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>pool</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>pool</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Pool that you want to forward traffic to.</div>
-                                                            <div>This parameter is only valid with the <code>forward</code> type.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Pool that you want to forward traffic to.</div>
+                                                    <div>This parameter is only valid with the <code>forward</code> type.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>virtual</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>virtual</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Virtual Server that you want to forward traffic to.</div>
-                                                            <div>This parameter is only valid with the <code>forward</code> type.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Virtual Server that you want to forward traffic to.</div>
+                                                    <div>This parameter is only valid with the <code>forward</code> type.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>asm_policy</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>asm_policy</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>ASM policy to enable.</div>
-                                                            <div>This parameter is only valid with the <code>enable</code> type.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>ASM policy to enable.</div>
+                                                    <div>This parameter is only valid with the <code>enable</code> type.</div>
+                                                                                </td>
             </tr>
                     
-                                                <tr class="return-value-column">
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>conditions</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>conditions</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>A list of attributes that describe the condition.</div>
-                                                            <div>See suboptions for details on how to construct each list entry.</div>
-                                                            <div>The ordering of this list is important, the module will ensure the order is kept when modifying the task.</div>
-                                                            <div>The suboption options listed below are not required for all condition types, read the description for more details.</div>
-                                                            <div>These conditions can be specified in any order. Despite them being a list, the BIG-IP does not treat their order as anything special.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>A list of attributes that describe the condition.</div>
+                                                    <div>See suboptions for details on how to construct each list entry.</div>
+                                                    <div>The ordering of this list is important, the module will ensure the order is kept when modifying the task.</div>
+                                                    <div>The suboption options listed below are not required for all condition types, read the description for more details.</div>
+                                                    <div>These conditions can be specified in any order. Despite them being a list, the BIG-IP does not treat their order as anything special.</div>
+                                                                                </td>
             </tr>
-                                                            <tr class="return-value-column">
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>type</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>http_uri</li>
-                                                                                                                                                                                                                        <li>all_traffic</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>http_uri</li>
+                                                                                                                                                                                                <li>all_traffic</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The condition type. This value controls what below options are required.</div>
-                                                            <div>When <code>type</code> is <code>http_uri</code>, will associate a given <code>path_begins_with_any</code> list of strings with which the HTTP URI should begin with. Any item in the list will provide a match.</div>
-                                                            <div>When <code>type</code> is <code>all_traffic</code>, will remove all existing conditions from this rule.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The condition type. This value controls what below options are required.</div>
+                                                    <div>When <code>type</code> is <code>http_uri</code>, will associate a given <code>path_begins_with_any</code> list of strings with which the HTTP URI should begin with. Any item in the list will provide a match.</div>
+                                                    <div>When <code>type</code> is <code>all_traffic</code>, will remove all existing conditions from this rule.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>path_begins_with_any</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>path_begins_with_any</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>A list of strings of characters that the HTTP URI should start with.</div>
-                                                            <div>This parameter is only valid with the <code>http_uri</code> type.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>A list of strings of characters that the HTTP URI should start with.</div>
+                                                    <div>This parameter is only valid with the <code>http_uri</code> type.</div>
+                                                                                </td>
             </tr>
                     
-                                                <tr class="return-value-column">
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>description</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>description</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Description of the policy rule.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Description of the policy rule.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>name</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The name of the rule.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The name of the rule.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>partition</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>partition</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">Common</div>
-                                            </div>
-                </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
+                                    </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Device partition to manage resources on.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Device partition to manage resources on.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>password</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                            </div>
-                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>policy</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>policy</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The name of the policy that you want to associate this rule with.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The name of the policy that you want to associate this rule with.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>provider</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>provider</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>A dict object containing connection details.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>A dict object containing connection details.</div>
+                                                                                </td>
             </tr>
-                                                            <tr class="return-value-column">
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>password</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                            </div>
-                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>server</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>server</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>server_port</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>server_port</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">443</div>
-                                            </div>
-                </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
+                                    </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>user</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>validate_certs</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>validate_certs</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>timeout</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
-                                            </div>
-                </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                    </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>ssh_keyfile</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>ssh_keyfile</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>transport</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>transport</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>rest</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>rest</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>Configures the transport connection to use when connecting to the remote device.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>Configures the transport connection to use when connecting to the remote device.</div>
+                                                                                </td>
             </tr>
                     
-                                                <tr class="return-value-column">
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>server</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>server</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>server_port</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>server_port</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">443</div>
-                                            </div>
-                </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
+                                    </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>state</b>
+                                                        </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>state</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                                        <li>absent</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>absent</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>When <code>present</code>, ensures that the key is uploaded to the device. When <code>absent</code>, ensures that the key is removed from the device. If the key is currently in use, the module will not be able to remove the key.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>When <code>present</code>, ensures that the key is uploaded to the device. When <code>absent</code>, ensures that the key is removed from the device. If the key is currently in use, the module will not be able to remove the key.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>user</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                </td>
             </tr>
-                                <tr class="return-value-column">
+                                <tr>
+                                                                <td colspan="2">
+                    <b>validate_certs</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
                                 <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>validate_certs</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                    <div class="cell-border">
-                                                                                    <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
-                                                                                                </div>
-                </td>
+                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                </td>
             </tr>
                         </table>
     <br/>
@@ -666,149 +455,109 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-        <tr>
-            <th class="head"><div class="cell-border">Key</div></th>
-            <th class="head"><div class="cell-border">Returned</div></th>
-            <th class="head" width="100%"><div class="cell-border">Description</div></th>
+                                                                                                                                            
+                                                                                                                                                                
+                                                                            <tr>
+            <th colspan="2">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
         </tr>
-                    <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>actions</b>
-                            <br/><div style="font-size: small; color: red">complex</div>
-                        </div>
-                    </div>
+                    <tr>
+                                <td colspan="2">
+                    <b>actions</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>The new list of actions applied to the rule</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
-                                            </div>
-                </td>
+                                            <div>The new list of actions applied to the rule</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
             </tr>
-                                                            <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>type</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>The action type</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">forward</div>
-                                            </div>
-                </td>
+                                            <div>The action type</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">forward</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>pool</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>pool</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>Pool for forward to</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo-pool</div>
-                                            </div>
-                </td>
+                                            <div>Pool for forward to</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo-pool</div>
+                                    </td>
             </tr>
                     
-                                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>conditions</b>
-                            <br/><div style="font-size: small; color: red">complex</div>
-                        </div>
-                    </div>
+                                                <tr>
+                                <td colspan="2">
+                    <b>conditions</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>The new list of conditions applied to the rule.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
-                                            </div>
-                </td>
+                                            <div>The new list of conditions applied to the rule.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
             </tr>
-                                                            <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>type</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>The condition type.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">http_uri</div>
-                                            </div>
-                </td>
+                                            <div>The condition type.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">http_uri</div>
+                                    </td>
             </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>path_begins_with_any</b>
-                            <br/><div style="font-size: small; color: red">list</div>
-                        </div>
-                    </div>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>path_begins_with_any</b>
+                    <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>List of strings that the URI begins with.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;foo&#x27;, &#x27;bar&#x27;]</div>
-                                            </div>
-                </td>
+                                            <div>List of strings that the URI begins with.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;foo&#x27;, &#x27;bar&#x27;]</div>
+                                    </td>
             </tr>
                     
-                                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>description</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
+                                                <tr>
+                                <td colspan="2">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td><div class="cell-border">changed</div></td>
+                <td>changed</td>
                 <td>
-                    <div class="cell-border">
-                                                    <div>The new description of the rule.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My rule</div>
-                                            </div>
-                </td>
+                                            <div>The new description of the rule.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My rule</div>
+                                    </td>
             </tr>
                         </table>
     <br/><br/>
@@ -829,3 +578,6 @@ Author
 
 - Tim Rupp (@caphrim007)
 
+
+.. hint::
+    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/bigip_policy_rule.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.
