@@ -174,6 +174,8 @@ servers:
   sample: hash/dictionary of values
 '''
 
+import time
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
@@ -184,6 +186,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import is_valid_ip
 except ImportError:
     from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -191,15 +194,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
-
-
-import time
+    from ansible.module_utils.network.f5.common import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
@@ -274,11 +269,10 @@ class ModuleParameters(Parameters):
 
     @property
     def default_device_reference(self):
-        try:
+        if is_valid_ip(self.service_environment):
             # An IP address was specified
-            netaddr.IPAddress(self.service_environment)
             filter = "address+eq+'{0}'".format(self.service_environment)
-        except netaddr.core.AddrFormatError:
+        else:
             # Assume a hostname was specified
             filter = "hostname+eq+'{0}'".format(self.service_environment)
 
@@ -678,8 +672,6 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5RestClient(module=module)
