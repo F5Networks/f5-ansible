@@ -160,11 +160,6 @@ options:
       - Device partition to manage resources on.
     default: Common
     version_added: 2.5
-notes:
-  - Requires the netaddr Python package on the host. This is as easy as
-    C(pip install netaddr).
-requirements:
-  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -311,12 +306,6 @@ except ImportError:
         from f5.sdk_exception import LazyAttributesRequired
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -1026,8 +1015,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
