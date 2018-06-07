@@ -1363,66 +1363,6 @@ provision_info:
       type: int
       sample: 0
   sample: hash/dictionary of values
-software_volumes:
-  description: List of software volumes.
-  returned: When C(software-volumes) is specified in C(gather_subset).
-  type: complex
-  contains:
-    active:
-      description:
-        - Whether the volume is currently active or not.
-        - An active volume contains the currently running version of software.
-      returned: changed
-      type: bool
-      sample: yes
-    base_build:
-      description:
-        - Base build version of the software installed in the volume.
-        - When a hotfix is installed, this refers to the base version of software
-          that the hotfix requires.
-      returned: changed
-      type: string
-      sample: 0.0.6
-    build:
-      description:
-        - Build version of the software installed in the volume.
-      returned: changed
-      type: string
-      sample: 0.0.6
-    full_path:
-      description:
-        - Full name of the resource as known to BIG-IP.
-      returned: changed
-      type: string
-      sample: HD1.1
-    name:
-      description:
-        - Relative name of the resource in BIG-IP.
-        - This usually matches the C(full_name).
-      returned: changed
-      type: string
-      sample: HD1.1
-    product:
-      description:
-        - The F5 product installed in this slot.
-        - This should always be BIG-IP.
-      returned: changed
-      type: string
-      sample: BIG-IP
-    status:
-      description:
-        - Status of the software installed, or being installed, in the volume.
-        - When C(complete), indicates that the software has completed installing.
-      returned: changed
-      type: string
-      sample: complete
-    version:
-      description:
-        - Version of software installed in the volume, excluding the C(build) number.
-      returned: changed
-      type: string
-      sample: 13.1.0.4
-  sample: hash/dictionary of values
 self_ips:
   description: Self-IP related facts.
   returned: When C(self-ips) is specified in C(gather_subset).
@@ -1498,6 +1438,274 @@ self_ips:
       type: bool
       sample: no
   sample: hash/dictionary of values
+software_volumes:
+  description: List of software volumes.
+  returned: When C(software-volumes) is specified in C(gather_subset).
+  type: complex
+  contains:
+    active:
+      description:
+        - Whether the volume is currently active or not.
+        - An active volume contains the currently running version of software.
+      returned: changed
+      type: bool
+      sample: yes
+    base_build:
+      description:
+        - Base build version of the software installed in the volume.
+        - When a hotfix is installed, this refers to the base version of software
+          that the hotfix requires.
+      returned: changed
+      type: string
+      sample: 0.0.6
+    build:
+      description:
+        - Build version of the software installed in the volume.
+      returned: changed
+      type: string
+      sample: 0.0.6
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: HD1.1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+        - This usually matches the C(full_name).
+      returned: changed
+      type: string
+      sample: HD1.1
+    product:
+      description:
+        - The F5 product installed in this slot.
+        - This should always be BIG-IP.
+      returned: changed
+      type: string
+      sample: BIG-IP
+    status:
+      description:
+        - Status of the software installed, or being installed, in the volume.
+        - When C(complete), indicates that the software has completed installing.
+      returned: changed
+      type: string
+      sample: complete
+    version:
+      description:
+        - Version of software installed in the volume, excluding the C(build) number.
+      returned: changed
+      type: string
+      sample: 13.1.0.4
+  sample: hash/dictionary of values
+ssl_certs:
+  description: SSL certificate related facts.
+  returned: When C(ssl-certs) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/cert1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: cert1
+    key_type:
+      description:
+        - Specifies the type of cryptographic key associated with this certificate.
+      returned: changed
+      type: string
+      sample: rsa-private
+    key_size:
+      description:
+        - Specifies the size (in bytes) of the file associated with this file object.
+      returned: changed
+      type: int
+      sample: 2048
+    system_path:
+      description:
+        - Path on the BIG-IP where the cert can be found.
+      returned: changed
+      type: string
+      sample: /config/ssl/ssl.crt/f5-irule.crt
+    sha1_checksum:
+      description:
+        - SHA1 checksum of the certificate.
+      returned: changed
+      type: string
+      sample: 1306e84e1e6a2da53816cefe1f684b80d6be1e3e
+    subject:
+      description:
+        - Specifies X509 information of the certificate's subject.
+      returned: changed
+      type: string
+      sample: "emailAddress=support@f5.com,CN=..."
+    last_update_time:
+      description:
+        - Specifies the last time at which the file-object was
+          updated/modified.
+      returned: changed
+      type: string
+      sample: 2018-05-15T21:11:15Z 
+    issuer:
+      description:
+        - Specifies X509 information of the certificate's issuer.
+      returned: changed
+      type: string
+      sample: "emailAddress=support@f5.com,...CN=support.f5.com,"
+    is_bundle:
+      description:
+        - Specifies whether the certificate file is a bundle (that is,
+          whether it contains more than one certificate).
+      returned: changed
+      type: bool
+      sample: no
+    fingerprint:
+      description:
+        - Displays the SHA-256 fingerprint of the certificate.
+      returned: changed
+      type: string
+      sample: "SHA256/88:A3:05:...:59:01:EA:5D:B0"
+    expiration_date:
+      description:
+        - Specifies a string representation of the expiration date of the
+          certificate.
+      returned: changed
+      type: string
+      sample: "Aug 13 21:21:29 2031 GMT"
+    expiration_timestamp:
+      description:
+        - Specifies the date at which this certificate expires. Stored as a
+          POSIX time.
+      returned: changed
+      type: int
+      sample: 1944422489
+    create_time:
+      description:
+        - Specifies the time at which the file-object was created.
+      returned: changed
+      type: string
+      sample: "2018-05-15T21:11:15Z"
+ssl_keys:
+  description: SSL certificate related facts.
+  returned: When C(ssl-certs) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/key1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: key1
+    key_type:
+      description:
+        - Specifies the cryptographic type of the key in question. That is,
+          which algorithm this key is compatible with.
+      returned: changed
+      type: string
+      sample: rsa-private
+    key_size:
+      description:
+        - Specifies the size of the cryptographic key associated with this
+          file object, in bits.
+      returned: changed
+      type: int
+      sample: 2048
+    security_type:
+      description:
+        - Specifies the type of security used to handle or store the key.
+      returned: changed
+      type: string
+      sample: normal
+    system_path:
+      description:
+        - The path on the filesystem where the key is stored.
+      returned: changed
+      type: string
+      sample: /config/ssl/ssl.key/default.key
+    sha1_checksum:
+      description:
+        - The SHA1 checksum of the key.
+      returned: changed
+      type: string
+      sample: 1fcf7de3dd8e834d613099d8e10b2060cd9ecc9f
+  sample: hash/dictionary of values
+system_info:
+traffic_groups:
+  description: Traffic group related facts.
+  returned: When C(traffic-groups) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/tg1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: tg1
+    description:
+      description:
+        - Description of the traffic group.
+      returned: changed
+      type: string
+      sample: My traffic group
+    auto_failback_enabled:
+      description:
+        - Specifies whether the traffic group fails back to the default
+          device.
+      returned: changed
+      type: bool
+      sample: yes
+    auto_failback_time:
+      description:
+        - Specifies the time required to fail back.
+      returned: changed
+      type: int
+      sample: 60
+    ha_load_factor:
+      description:
+        - Specifies a number for this traffic group that represents the load
+          this traffic group presents to the system relative to other
+          traffic groups.
+      returned: changed
+      type: int
+      sample: 1
+    ha_order:
+      description:
+        - This list of devices specifies the order in which the devices will
+          become active for the traffic group when a failure occurs.
+      returned: changed
+      type: list
+      sample: ['/Common/device1', '/Common/device2']
+    is_floating:
+      description:
+        - Indicates whether the traffic group can fail over to other devices
+          in the device group.
+      returned: changed
+      type: bool
+      sample: no
+    mac_masquerade_address:
+      description:
+        - Specifies a MAC address for the traffic group.
+      returned: changed
+      type: string
+      sample: "00:98:76:54:32:10"
 trunks:
   description: Trunk related facts.
   returned: When C(trunks) is specified in C(gather_subset).
@@ -1590,6 +1798,158 @@ trunks:
       returned: changed
       type: int
       sample: 1
+virtual_addresses:
+  description: Virtual address related facts.
+  returned: When C(virtual-addresses) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/2.3.4.5
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: 2.3.4.5
+    address:
+      description:
+        - The virtual IP address.
+      returned: changed
+      type: string
+      sample: 2.3.4.5
+    arp_enabled:
+      description:
+        - Whether or not ARP is enabled for the specified virtual address.
+      returned: changed
+      type: bool
+      sample: yes
+    auto_delete_enabled:
+      description:
+        - Indicates if the virtual address will be deleted automatically on
+          deletion of the last associated virtual server or not.
+      returned: changed
+      type: bool
+      sample: no
+    connection_limit:
+      description:
+        - Concurrent connection limit for one or more virtual
+          servers.
+      returned: changed
+      type: int
+      sample: 0
+    description:
+      description:
+        - The description of the virtual address.
+      returned: changed
+      type: string
+      sample: My virtual address
+    enabled:
+      description:
+        - Whether the virtual address is enabled or not.
+      returned: changed
+      type: bool
+      sample: yes
+    icmp_echo:
+      description:
+        - Whether the virtual address should reply to ICMP echo requests.
+      returned: changed
+      type: bool
+      sample: yes
+    floating:
+      description:
+        - Property derived from traffic-group. A floating virtual
+          address is a virtual address for a VLAN that serves as a shared
+          address by all devices of a BIG-IP traffic-group.
+      returned: changed
+      type: bool
+      sample: yes
+    netmask:
+      description:
+        - Netmask of the virtual address.
+      returned: changed
+      type: string
+      sample: 255.255.255.255
+    route_advertisement:
+      description:
+        - Specifies the route advertisement setting for the virtual address.
+      returned: changed
+      type: bool
+      sample: no
+    traffic_group:
+      description:
+        - Traffic group on which the virtual address is active.
+      returned: changed
+      type: string
+      sample: /Common/traffic-group-1
+    spanning:
+      description:
+        - Whether or not spanning is enabled for the specified virtual address.
+      returned: changed
+      type: bool
+      sample: no
+    inherited_traffic_group:
+      description:
+        - Indicates if the traffic-group is inherited from the parent folder.
+      returned: changed
+      type: bool
+      sample: no
+virtual_servers:
+  description: Virtual address related facts.
+  returned: When C(virtual-addresses) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/2.3.4.5
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: 2.3.4.5
+
+        'auto_lasthop',
+        'bw_controller_policy',
+        'cmp_enabled',
+        'connection_limit',
+        'description',
+        'enabled',
+        'fallback_persistence_profile',
+        'persistence_profile',
+        'translate_port',
+        'translate_address',
+        'vlans',
+        'destination',
+        'last_hop_pool',
+        'nat64_enabled',
+        'source_port_behavior',
+        'ip_intelligence_policy',
+        'protocol',
+        'default_pool',
+        'rate_limit_mode',
+        'rate_limit_source_mask',
+        'rate_limit',
+        'snat_type',
+        'snat_pool',
+        'gtm_score',
+        'rate_class',
+        'rate_limit_destination_mask',
+        'source_address',
+        'authentication_profile',
+        'connection_mirror_enabled',
+        'irules',
+        'security_log_profiles',
+        'type',
+        'profiles',
+        'destination_address',
+        'destination_port'
 vlans:
   description: List of VLAN facts.
   returned: When C(vlans) is specified in C(gather_subset).
@@ -4135,59 +4495,43 @@ class VirtualAddressesParameters(BaseParameters):
 
     @property
     def spanning(self):
-        if self._values['spanning'] is None:
-            return None
-        elif self._values['spanning'] == 'disabled':
-            return 'no'
-        return 'yes'
+        self.flatten_boolean('spanning', self._values)
+        return self._values['spanning']
 
     @property
     def arp_enabled(self):
-        if self._values['arp_enabled'] is None:
-            return None
-        elif self._values['arp_enabled'] == 'disabled':
-            return 'no'
-        return 'yes'
+        self.flatten_boolean('arp_enabled', self._values)
+        return self._values['arp_enabled']
 
     @property
     def route_advertisement(self):
-        if self._values['route_advertisement'] is None:
-            return None
-        elif self._values['route_advertisement'] == 'disabled':
-            return 'no'
-        return 'yes'
+        self.flatten_boolean('route_advertisement', self._values)
+        return self._values['route_advertisement']
 
     @property
     def auto_delete_enabled(self):
-        if self._values['auto_delete_enabled'] is None:
-            return None
-        elif self._values['auto_delete_enabled'] == 'true':
-            return 'yes'
-        return 'no'
+        self.flatten_boolean('auto_delete_enabled', self._values)
+        return self._values['auto_delete_enabled']
 
     @property
     def inherited_traffic_group(self):
-        if self._values['inherited_traffic_group'] is None:
-            return None
-        elif self._values['inherited_traffic_group'] == 'true':
-            return 'yes'
-        return 'no'
+        self.flatten_boolean('inherited_traffic_group', self._values)
+        return self._values['inherited_traffic_group']
 
     @property
     def icmp_echo(self):
-        if self._values['icmp_echo'] is None:
-            return None
-        elif self._values['icmp_echo'] == 'enabled':
-            return 'yes'
-        return 'no'
+        self.flatten_boolean('icmp_echo', self._values)
+        return self._values['icmp_echo']
 
     @property
     def floating(self):
-        if self._values['floating'] is None:
-            return None
-        elif self._values['floating'] == 'enabled':
-            return 'yes'
-        return 'no'
+        self.flatten_boolean('floating', self._values)
+        return self._values['floating']
+
+    @property
+    def enabled(self):
+        self.flatten_boolean('enabled', self._values)
+        return self._values['enabled']
 
 
 class VirtualAddressesFactManager(BaseManager):
