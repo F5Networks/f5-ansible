@@ -774,6 +774,135 @@ fasthttp_profiles:
       type: string
       sample: enabled
   sample: hash/dictionary of values
+interfaces:
+  description: Interface related facts.
+  returned: When C(interfaces) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/irul1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: irule1
+    active_media_type:
+      description:
+        - Displays the current media setting for the interface.
+      returned: changed
+      type: string
+      sample: 100TX-FD
+    flow_control:
+      description:
+        - Specifies how the system controls the sending of PAUSE frames for
+          flow control.
+      returned: changed
+      type: string
+      sample: tx-rx
+    description:
+      description:
+        - Description of the interface
+      returned: changed
+      type: string
+      sample: My interface
+    bundle:
+      description:
+        - The bundle capability on the port.
+      returned: changed
+      type: string
+      sample: not-supported
+    bundle_speed:
+      description:
+        - The bundle-speed on the port when bundle capability is
+          enabled.
+      returned: changed
+      type: string
+      sample: 100G
+    enabled:
+      description:
+        - Whether the interface is enabled or not
+      returned: changed
+      type: bool
+      sample: yes
+    if_index:
+      description:
+        - The index assigned to this interface.
+      returned: changed
+      type: int
+      sample: 32
+    mac_address:
+      description:
+        - Displays the 6-byte ethernet address in non-case-sensitive
+          hexadecimal colon notation.
+      returned: changed
+      type: string
+      sample: "00:0b:09:88:00:9a"
+    media_sfp:
+      description:
+        - The settings for an SFP (pluggable) interface.
+      returned: changed
+      type: string
+      sample: auto
+    lldp_admin:
+      description:
+        - Sets the sending or receiving of LLDP packets on that interface.
+          Should be one of C(disable), C(txonly), C(rxonly) or C(txrx).
+      returned: changed
+      type: string
+      sample: txonly
+    mtu:
+      description:
+        - Displays the Maximum Transmission Unit (MTU) of the interface,
+          which is the maximum number of bytes in a frame without IP
+          fragmentation.
+      returned: changed
+      type: int
+      sample: 1500
+    prefer_port:
+      description:
+        - Indicates which side of a combo port the interface uses, if both
+          sides of the port have the potential for external links.
+      returned: changed
+      type: string
+      sample: sfp
+    sflow_poll_interval:
+      description:
+        - Specifies the maximum interval in seconds between two
+          pollings.
+      returned: changed
+      type: int
+      sample: 0
+    sflow_poll_interval_global:
+      description:
+        - Specifies whether the global interface poll-interval setting
+          overrides the object-level poll-interval setting.
+      returned: changed
+      type: bool
+      sample: yes
+    stp_auto_edge_port:
+      description:
+        - STP edge port detection.
+      returned: changed
+      type: bool
+      sample: yes
+    stp_enabled:
+      description:
+        - Whether STP is enabled or not.
+      returned: changed
+      type: bool
+      sample: no
+    stp_link_type:
+      description:
+        - Specifies the STP link type for the interface.
+      returned: changed
+      type: string
+      sample: auto
+  sample: hash/dictionary of values
 irules:
   description: iRule related facts.
   returned: When C(irules) is specified in C(gather_subset).
@@ -2449,7 +2578,6 @@ class InterfacesParameters(BaseParameters):
         'ifIndex': 'if_index',
         'macAddress': 'mac_address',
         'mediaSfp': 'media_sfp',
-        'lldpTlvmap': 'lldp_tlvmap',
         'lldpAdmin': 'lldp_admin',
         'preferPort': 'prefer_port',
         'stpAutoEdgePort': 'stp_auto_edge_port',
@@ -2469,7 +2597,6 @@ class InterfacesParameters(BaseParameters):
         'if_index',
         'mac_address',
         'media_sfp',
-        'lldp_tlvmap',
         'lldp_admin',
         'mtu',
         'prefer_port',
@@ -2481,12 +2608,14 @@ class InterfacesParameters(BaseParameters):
     ]
 
     @property
+    def stp_auto_edge_port(self):
+        self.flatten_boolean('stp_auto_edge_port', self._values)
+        return self._values['stp_auto_edge_port']
+
+    @property
     def stp_enabled(self):
-        if self._values['stp_enabled'] is None:
-            return None
-        elif self._values['stp_enabled'] == 'enabled':
-            return 'yes'
-        return 'no'
+        self.flatten_boolean('stp_enabled', self._values)
+        return self._values['stp_enabled']
 
     @property
     def sflow_poll_interval_global(self):
@@ -2510,11 +2639,8 @@ class InterfacesParameters(BaseParameters):
 
     @property
     def enabled(self):
-        if self._values['enabled'] is None:
-            return None
-        elif self._values['enabled'] is True:
-            return 'yes'
-        return 'no'
+        self.flatten_boolean('enabled', self._values)
+        return self._values['enabled']
 
 
 class InterfacesFactManager(BaseManager):
