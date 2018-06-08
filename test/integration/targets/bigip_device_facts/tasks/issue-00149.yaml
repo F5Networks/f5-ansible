@@ -1,0 +1,14 @@
+---
+
+- name: Select system-db facts
+  bigip_device_facts:
+    include:
+      - system-db
+  register: result
+
+- name: Assert Select system-db facts
+  assert:
+    that:
+      - result is success
+      - result.system_db | selectattr("name", "match", "vendor.wwwurl") | map(attribute='name') | first == 'vendor.wwwurl'
+      - result.system_db | json_query("[?name=='vendor.wwwurl'].name") | first == 'vendor.wwwurl'

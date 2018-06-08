@@ -30,20 +30,21 @@ options:
     required: True
     choices:
       - asm-policy-stats
-      - internal-data-groups
       - client-ssl-profiles
-      - fasthttp-profiles
       - devices
       - device-groups
+      - fasthttp-profiles
       - interfaces
-      - ssl-certs
-      - ssl-keys
-      - nodes
-      - ltm-pools
-      - provision-info
+      - internal-data-groups
       - irules
+      - ltm-pools
+      - nodes
+      - provision-info
       - self-ips
       - software-volumes
+      - ssl-certs
+      - ssl-keys
+      - system-db
       - system-info
       - traffic-groups
       - trunks
@@ -1678,6 +1679,47 @@ ssl_keys:
       type: string
       sample: 1fcf7de3dd8e834d613099d8e10b2060cd9ecc9f
   sample: hash/dictionary of values
+system_db:
+  description: System DB related facts.
+  returned: When C(system-db) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: vendor.wwwurl
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: vendor.wwwurl
+    default:
+      description:
+        - Default value of the key.
+      returned: changed
+      type: string
+      sample: www.f5.com
+    scf_config:
+      description:
+        - Whether the database key would be found in an SCF config or not.
+      returned: changed
+      type: string
+      sample: false
+    value:
+      description:
+        - The value of the key
+      returned: changed
+      type: string
+      sample: www.f5.com
+    value_range:
+      description:
+        - The accepted range of values for the key
+      returned: changed
+      type: string
+      sample: string
 system_info:
   description: Traffic group related facts.
   returned: When C(traffic-groups) is specified in C(gather_subset).
@@ -4348,6 +4390,106 @@ class SslKeysFactManager(BaseManager):
         return result
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class SystemDbParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'defaultValue': 'default',
+        'scfConfig': 'scf_config',
+        'valueRange': 'value_range'
+    }
+
+    returnables = [
+        'name',
+        'full_path',
+        'default',
+        'scf_config',
+        'value',
+        'value_range'
+    ]
+
+
+class SystemDbFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SystemDbFactManager, self).__init__(**kwargs)
+        self.want = SystemInfoParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(system_db=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = SystemDbParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/db".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class SystemInfoParameters(BaseParameters):
     api_map = {
 
@@ -5735,6 +5877,10 @@ class ModuleManager(object):
             ),
             'software-volumes': dict(
                 manager=SoftwareVolumesFactManager
+            ),
+            'system-db': dict(
+                manager=SystemDbFactManager,
+                client=F5RestClient
             ),
             'system-info': dict(
                 manager=SystemInfoFactManager,
