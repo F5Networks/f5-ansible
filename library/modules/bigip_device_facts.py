@@ -94,16 +94,41 @@ EXAMPLES = r'''
 
 RETURN = r'''
 asm_policy_stats:
-  description: Client SSL Profile related facts.
-  returned: When C(client-ssl-profiles) is specified in C(gather_subset).
+  description: Miscellaneous ASM policy related facts.
+  returned: When C(asm-policy-stats) is specified in C(gather_subset).
   type: complex
   contains:
-    full_path:
+    policies:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - The total number of ASM policies on the device.
       returned: changed
-      type: string
-      sample: /Common/bigip02.internal 
+      type: int
+      sample: 3
+    policies_active:
+      description:
+        - The number of ASM policies that are marked as active.
+      returned: changed
+      type: int
+      sample: 3
+    policies_attached:
+      description:
+        - The number of ASM policies that are attached to virtual servers.
+      returned: changed
+      type: int
+      sample: 1
+    policies_inactive:
+      description:
+        - The number of ASM policies that are marked as inactive.
+      returned: changed
+      type: int
+      sample: 0
+    policies_unattached:
+      description:
+        - The number of ASM policies that are not attached to a virtual server.
+      returned: changed
+      type: int
+      sample: 3
+  sample: hash/dictionary of values
 client_ssl_profiles:
   description: Client SSL Profile related facts.
   returned: When C(client-ssl-profiles) is specified in C(gather_subset).
@@ -2649,13 +2674,6 @@ class BaseParameters(Parameters):
             result[returnable] = getattr(self, returnable)
         result = self._filter_params(result)
         return result
-
-
-
-
-
-
-
 
 
 class AsmPolicyStatsParameters(BaseParameters):
