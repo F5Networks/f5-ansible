@@ -1814,7 +1814,7 @@ system_info:
               description:
                 - Value of the property
               type: string
-              sample: 154.00G 
+              sample: 154.00G
     package_edition:
       description:
         - Displays the software edition.
@@ -4557,7 +4557,7 @@ class SystemInfoParameters(BaseParameters):
     @property
     def product_jobid(self):
         if 'JobID' in self._values['version_info']:
-            return  int(self._values['version_info']['JobID'])
+            return int(self._values['version_info']['JobID'])
 
     @property
     def product_code(self):
