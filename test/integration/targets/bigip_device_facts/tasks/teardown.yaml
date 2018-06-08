@@ -1,5 +1,10 @@
 ---
 
+- name: Create route domain
+  bigip_routedomain:
+    name: foo
+    state: absent
+
 - name: Remove device group
   bigip_device_group:
     name: mydg1
