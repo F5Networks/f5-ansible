@@ -4390,24 +4390,6 @@ class SslKeysFactManager(BaseManager):
         return result
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class SystemDbParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -4472,22 +4454,6 @@ class SystemDbFactManager(BaseManager):
                 raise F5ModuleError(resp.content)
         result = response['items']
         return result
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class SystemInfoParameters(BaseParameters):
