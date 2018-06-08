@@ -29,6 +29,7 @@ options:
         should not be collected.
     required: True
     choices:
+      - asm-policy-stats
       - internal-data-groups
       - client-ssl-profiles
       - fasthttp-profiles
@@ -92,6 +93,17 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+asm_policy_stats:
+  description: Client SSL Profile related facts.
+  returned: When C(client-ssl-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/bigip02.internal 
 client_ssl_profiles:
   description: Client SSL Profile related facts.
   returned: When C(client-ssl-profiles) is specified in C(gather_subset).
@@ -2637,6 +2649,100 @@ class BaseParameters(Parameters):
             result[returnable] = getattr(self, returnable)
         result = self._filter_params(result)
         return result
+
+
+
+
+
+
+
+
+
+class AsmPolicyStatsParameters(BaseParameters):
+    api_map = {
+
+    }
+
+    returnables = [
+        'policies',
+        'policies_active',
+        'policies_attached',
+        'policies_inactive',
+        'policies_unattached',
+    ]
+
+    @property
+    def policies(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len(self._values['policies'])
+
+    @property
+    def policies_active(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len([x for x in self._values['policies'] if x['active'] is True])
+
+    @property
+    def policies_inactive(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len([x for x in self._values['policies'] if x['active'] is not True])
+
+    @property
+    def policies_attached(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len([x for x in self._values['policies'] if x['active'] is True and len(x['virtualServers']) > 0])
+
+    @property
+    def policies_unattached(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len([x for x in self._values['policies'] if x['active'] is True and len(x['virtualServers']) == 0])
+
+
+class AsmPolicyStatsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(AsmPolicyStatsFactManager, self).__init__(**kwargs)
+        self.want = AsmPolicyStatsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(asm_policy_stats=facts)
+        return result
+
+    def _exec_module(self):
+        facts = self.read_facts()
+        results = facts.to_return()
+        return results
+
+    def read_facts(self):
+        collection = self.read_collection_from_device()
+        params = AsmPolicyStatsParameters(params=collection)
+        return params
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/asm/policies".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        return dict(
+            policies=response['items']
+        )
 
 
 class ClientSslProfilesParameters(BaseParameters):
@@ -5566,26 +5672,71 @@ class ModuleManager(object):
         self.kwargs = kwargs
         self.want = Parameters(params=self.module.params)
         self.managers = {
-            'internal-data-groups': InternalDataGroupsFactManager,
-            'client-ssl-profiles': ClientSslProfilesFactManager,
-            'devices': DevicesFactManager,
-            'device-groups': DeviceGroupsFactManager,
-            'fasthttp-profiles': FastHttpProfilesFactManager,
-            'interfaces': InterfacesFactManager,
-            'ssl-certs': SslCertificatesFactManager,
-            'ssl-keys': SslKeysFactManager,
-            'nodes': NodesFactManager,
-            'ltm-pools': LtmPoolsFactManager,
-            'provision-info': ProvisionInfoFactManager,
-            'irules': IrulesFactManager,
-            'self-ips': SelfIpsFactManager,
-            'software-volumes': SoftwareVolumesFactManager,
-            'system-info': SystemInfoFactManager,
-            'traffic-groups': TrafficGroupsFactManager,
-            'trunks': TrunksFactManager,
-            'virtual-addresses': VirtualAddressesFactManager,
-            'virtual-servers': VirtualServersFactManager,
-            'vlans': VlansFactManager
+            'asm-policy-stats': dict(
+                manager=AsmPolicyStatsFactManager,
+                client=F5RestClient,
+            ),
+            'internal-data-groups': dict(
+                manager=InternalDataGroupsFactManager
+            ),
+            'client-ssl-profiles': dict(
+                manager=ClientSslProfilesFactManager
+            ),
+            'devices': dict(
+                manager=DevicesFactManager
+            ),
+            'device-groups': dict(
+                manager=DeviceGroupsFactManager
+            ),
+            'fasthttp-profiles': dict(
+                manager=FastHttpProfilesFactManager
+            ),
+            'interfaces': dict(
+                manager=InterfacesFactManager
+            ),
+            'ssl-certs': dict(
+                manager=SslCertificatesFactManager
+            ),
+            'ssl-keys': dict(
+                manager=SslKeysFactManager
+            ),
+            'nodes': dict(
+                manager=NodesFactManager
+            ),
+            'ltm-pools': dict(
+                manager=LtmPoolsFactManager
+            ),
+            'provision-info': dict(
+                manager=ProvisionInfoFactManager
+            ),
+            'irules': dict(
+                manager=IrulesFactManager
+            ),
+            'self-ips': dict(
+                manager=SelfIpsFactManager
+            ),
+            'software-volumes': dict(
+                manager=SoftwareVolumesFactManager
+            ),
+            'system-info': dict(
+                manager=SystemInfoFactManager,
+                client=F5RestClient
+            ),
+            'traffic-groups': dict(
+                manager=TrafficGroupsFactManager
+            ),
+            'trunks': dict(
+                manager=TrunksFactManager
+            ),
+            'virtual-addresses': dict(
+                manager=VirtualAddressesFactManager
+            ),
+            'virtual-servers': dict(
+                manager=VirtualServersFactManager
+            ),
+            'vlans': dict(
+                manager=VlansFactManager
+            )
         }
 
     def exec_module(self):
@@ -5668,23 +5819,17 @@ class ModuleManager(object):
 
     def get_manager(self, which):
         result = {}
-        manager = self.managers.get(which, None)
-        if not manager:
+        info = self.managers.get(which, None)
+        if not info:
             return result
         kwargs = dict()
         kwargs.update(self.kwargs)
 
-        if manager == SystemInfoFactManager:
-            # Replace the API layer for the SystemInfoFactManager
-            #
-            # This is being done because there is no API for talking to the
-            # /mgmt/tm/sys/hardware API in the f5-sdk.
-            #
-            # Longer term, all of the classes in this module should use the
-            # F5RestClient object and drop the usage of the f5-sdk.
-
-            client = F5RestClient(**self.module.params)
-            kwargs['client'] = client
+        manager = info.get('manager', None)
+        client = info.get('client', None)
+        if client is None:
+            client = F5Client
+        kwargs['client'] = client(**self.module.params)
         result = manager(**kwargs)
         return result
 
