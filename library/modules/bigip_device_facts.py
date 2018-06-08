@@ -4088,6 +4088,91 @@ class ProvisionInfoFactManager(BaseManager):
         return result
 
 
+class RouteDomainParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'bwcPolicy': 'bandwidth_controller_policy',
+        'connectionLimit': 'connection_limit',
+        'flowEvictionPolicy': 'flow_eviction_policy',
+        'servicePolicy': 'service_policy',
+        'routingProtocol': 'routing_protocol'
+    }
+
+    returnables = [
+        'name',
+        'id',
+        'full_path',
+        'parent',
+        'bandwidth_controller_policy',
+        'connection_limit',
+        'description',
+        'flow_eviction_policy',
+        'service_policy',
+        'strict',
+        'routing_protocol',
+        'vlans'
+    ]
+
+    @property
+    def strict(self):
+        self.flatten_boolean('strict', self._values)
+        return self._values['strict']
+
+    @property
+    def connection_limit(self):
+        if self._values['connection_limit'] is None:
+            return None
+        return int(self._values['connection_limit'])
+
+
+class RouteDomainFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(RouteDomainFactManager, self).__init__(**kwargs)
+        self.want = RouteDomainParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(route_domains=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = RouteDomainParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/net/route-domain".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class SelfIpsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -5802,9 +5887,6 @@ class ModuleManager(object):
                 manager=AsmPolicyStatsFactManager,
                 client=F5RestClient,
             ),
-            'internal-data-groups': dict(
-                manager=InternalDataGroupsFactManager
-            ),
             'client-ssl-profiles': dict(
                 manager=ClientSslProfilesFactManager
             ),
@@ -5820,29 +5902,36 @@ class ModuleManager(object):
             'interfaces': dict(
                 manager=InterfacesFactManager
             ),
-            'ssl-certs': dict(
-                manager=SslCertificatesFactManager
+            'internal-data-groups': dict(
+                manager=InternalDataGroupsFactManager
             ),
-            'ssl-keys': dict(
-                manager=SslKeysFactManager
-            ),
-            'nodes': dict(
-                manager=NodesFactManager
+            'irules': dict(
+                manager=IrulesFactManager
             ),
             'ltm-pools': dict(
                 manager=LtmPoolsFactManager
             ),
+            'nodes': dict(
+                manager=NodesFactManager
+            ),
             'provision-info': dict(
                 manager=ProvisionInfoFactManager
             ),
-            'irules': dict(
-                manager=IrulesFactManager
+            'route-domains': dict(
+                manager=RouteDomainFactManager,
+                client=F5RestClient
             ),
             'self-ips': dict(
                 manager=SelfIpsFactManager
             ),
             'software-volumes': dict(
                 manager=SoftwareVolumesFactManager
+            ),
+            'ssl-certs': dict(
+                manager=SslCertificatesFactManager
+            ),
+            'ssl-keys': dict(
+                manager=SslKeysFactManager
             ),
             'system-db': dict(
                 manager=SystemDbFactManager,
@@ -5866,7 +5955,7 @@ class ModuleManager(object):
             ),
             'vlans': dict(
                 manager=VlansFactManager
-            )
+            ),
         }
 
     def exec_module(self):

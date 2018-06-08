@@ -2,6 +2,19 @@
 
 - import_tasks: setup.yaml
 
+- name: Select route domain facts
+  bigip_device_facts:
+    include:
+      - route-domains
+  register: result
+
+- name: Assert Select route domain facts
+  assert:
+    that:
+      - result is success
+      - result.route_domains | selectattr("name", "match", "foo") | map(attribute='id') | first == 100
+      - result.route_domains | json_query("[?name=='foo'].id") | first == 100
+
 - name: Select system-info facts
   bigip_device_facts:
     include:
