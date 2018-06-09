@@ -1,56 +1,35 @@
 ---
 
-- name: Create a VIP, pool, pool members and nodes
+- name: Remove VIP, pool, pool members and nodes
   hosts: big-ip01.internal
   connection: local
 
+  vars:
+    provider:
+      password: "{{ f5_password }}"
+      server: "{{ ansible_host }}"
+      user: "{{ f5_username }}"
+      validate_certs: "{{ validate_certs }}"
+      server_port: "{{ f5_server_port }}"
+
   tasks:
-      - name: Destroy a VIP
-        bigip_virtual_server:
-            description: "foo-vip"
-            destination: "172.16.10.108"
-            password: "{{ bigip_password }}"
-            name: "vip-1"
-            pool: "web"
-            port: "80"
-            server: "{{ ansible_host }}"
-            snat: "Automap"
-            user: "{{ bigip_username }}"
-            state: "absent"
-            all_profiles:
-                - "http"
-                - "clientssl"
-            validate_certs: "{{ validate_certs }}"
-        delegate_to: localhost
+    - name: Destroy a VIP
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        name: vip-1
+        state: absent
 
-      - name: Destroy a pool
-        bigip_pool:
-            lb_method: "ratio-member"
-            name: "web"
-            password: "{{ bigip_password }}"
-            server: "{{ ansible_host }}"
-            slow_ramp_time: "120"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-            state: "absent"
-        delegate_to: localhost
+    - name: Destroy a pool
+      bigip_pool:
+        provider: "{{ provider }}"
+        name: web
+        state: absent
 
-      - name: Delete node1
-        bigip_node:
-            name: "node-1"
-            password: "{{ bigip_password }}"
-            server: "{{ ansible_host }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-            state: "absent"
-        delegate_to: localhost
-
-      - name: Delete node2
-        bigip_node:
-            name: "node-2"
-            password: "{{ bigip_password }}"
-            server: "{{ ansible_host }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-            state: "absent"
-        delegate_to: localhost
+    - name: Delete nodes
+      bigip_node:
+        provider: "{{ provider }}"
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - web01
+        - web02
