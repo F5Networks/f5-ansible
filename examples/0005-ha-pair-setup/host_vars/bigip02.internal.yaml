@@ -2,7 +2,7 @@
 
 ansible_host: IP_B0
 
-self_ips:
+nets:
   - name: Self-Internal
     address: IP_B1
     netmask: 255.255.255.0
