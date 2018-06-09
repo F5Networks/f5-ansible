@@ -34,7 +34,6 @@ find and change (as needed) the following variables.
 * ``bigip_port``
 * ``validate_certs``
 * ``ansible_python_interpreter``
-* ``vlans``
 
 Observe the documentation in each file to determine what needs to be changed
 
@@ -42,7 +41,7 @@ Next, open the ``host_vars/bigip01.internal.yaml`` file. Inside this file, you w
 find and change the following variables.
 
 * ``ansible_host``
-* ``self_ips``
+* ``nets``
 * ``config_sync_ip``
 * ``mirror_primary_address``
 * ``unicast_failover``

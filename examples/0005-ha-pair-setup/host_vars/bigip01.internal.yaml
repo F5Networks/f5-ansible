@@ -2,19 +2,31 @@
 
 ansible_host: IP_A0
 
-self_ips:
+nets:
   - name: Self-Internal
     address: IP_A1
     netmask: 255.255.255.0
-    vlan: Internal
+    vlan:
+      name: Internal
+      tag: 10
+      interfaces:
+        - 1.1
   - name: Self-External
     address: IP_A2
     netmask: 255.255.255.0
-    vlan: External
+    vlan:
+      name: External
+      tag: 20
+      interfaces:
+        - 1.2
   - name: Self-HA
     address: IP_A3
     netmask: 255.255.255.0
-    vlan: HA
+    vlan:
+      name: HA
+      tag: 30
+      interfaces:
+        - 1.3
 
 config_sync_ip: IP_A3
 mirror_primary_address: IP_A3
