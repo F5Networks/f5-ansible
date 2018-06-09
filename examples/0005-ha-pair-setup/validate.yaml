@@ -3,17 +3,17 @@
 - name: Check Internal IP address
   fail:
     msg: "You must fill-in the 'Internal' Self-IP"
-  when: self_ips[0]['address'] in ['IP_A1', 'IP_B1']
+  when: nets[0]['address'] in ['IP_A1', 'IP_B1']
 
 - name: Check External IP address
   fail:
     msg: "You must fill-in the 'External' Self-IP"
-  when: self_ips[0]['address'] in ['IP_A2', 'IP_B2']
+  when: nets[0]['address'] in ['IP_A2', 'IP_B2']
 
 - name: Check HA IP address
   fail:
     msg: "You must fill-in the 'HA' Self-IP"
-  when: self_ips[0]['address'] in ['IP_A3', 'IP_B3']
+  when: nets[0]['address'] in ['IP_A3', 'IP_B3']
 
 - name: Check config-sync IP
   fail:
