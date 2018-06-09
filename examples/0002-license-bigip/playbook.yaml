@@ -5,15 +5,15 @@
   connection: local
 
   vars:
-      bigip_license: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
+    bigip_license: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
+    provider:
+      password: "{{ f5_password }}"
+      server: "{{ ansible_host }}"
+      user: "{{ f5_username }}"
+      validate_certs: "{{ validate_certs }}"
+      server_port: "{{ f5_server_port }}"
 
   tasks:
-      - name: License a BIG-IP
-        bigip_license:
-            password: "{{ bigip_password }}"
-            server: "{{ ansible_host }}"
-            server_port: "{{ bigip_port }}"
-            user: "{{ bigip_username }}"
-            key: "{{ bigip_license }}"
-            validate_certs: "{{ validate_certs }}"
-        delegate_to: localhost
+    - name: License a BIG-IP
+      bigip_license:
+        key: "{{ bigip_license }}"
