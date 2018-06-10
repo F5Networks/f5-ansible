@@ -53,9 +53,9 @@
   vars:
     provider:
       server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
+      server_port: "{{ f5_server_port }}"
+      user: "{{ f5_username }}"
+      password: "{{ f5_password }}"
       validate_certs: "{{ validate_certs }}"
 
   tasks:
@@ -63,8 +63,8 @@
       bigip_device_trust:
         peer_server: "{{ hostvars[item].ansible_host }}"
         peer_hostname: "{{ hostvars[item].inventory_hostname }}"
-        peer_user: "{{ bigip_username }}"
-        peer_password: "{{ bigip_password }}"
+        peer_user: "{{ f5_username }}"
+        peer_password: "{{ f5_password }}"
         provider: "{{ provider }}"
       loop: "{{ groups['f5-test'][1:] }}"
 
