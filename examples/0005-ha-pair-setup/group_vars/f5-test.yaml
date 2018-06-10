@@ -1,6 +1,5 @@
 ---
 
-ansible_host: localhost
 f5_username: admin
 f5_password: admin
 f5_server_port: 443
