@@ -7,9 +7,9 @@
   vars:
     provider:
       server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
+      server_port: "{{ f5_server_port }}"
+      user: "{{ f5_username }}"
+      password: "{{ f5_password }}"
       validate_certs: "{{ validate_certs }}"
 
   tasks:
@@ -17,23 +17,21 @@
 
     - name: Add VLANs
       bigip_vlan:
-        name: "{{ item.0.vlan.name }}"
-        tag: "{{ item.0.vlan.tag }}"
-        untagged_interfaces: "{{ item.1 }}"
+        name: "{{ item.vlan.name }}"
+        tag: "{{ item.vlan.tag }}"
+        untagged_interfaces: "{{ item.vlan.interfaces }}"
         provider: "{{ provider }}"
-      with_subelements:
-        - nets
-        - vlan.interfaces
+      loop: "{{ nets }}"
 
     - name: Add Self-IPs
       bigip_selfip:
-       name: "{{ item.name }}"
-       address: "{{ item.address }}"
-       netmask: "{{ item.netmask }}"
-       vlan: "{{ item.vlan.name }}"
-       provider: "{{ provider }}"
-       allow_service:
-         - all
+        name: "{{ item.name }}"
+        address: "{{ item.address }}"
+        netmask: "{{ item.netmask }}"
+        vlan: "{{ item.vlan.name }}"
+        provider: "{{ provider }}"
+        allow_service:
+          - all
       loop: "{{ nets }}"
 
     - name: Configure hostname
