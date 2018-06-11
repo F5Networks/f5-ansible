@@ -43,6 +43,6 @@
         pool: web
         port: 80
         snat: Automap
-        all_profiles:
+        profiles:
           - http
           - clientssl
