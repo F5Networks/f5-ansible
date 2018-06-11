@@ -5,7 +5,6 @@
   connection: local
 
   vars:
-    bigip_license: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
     provider:
       password: "{{ f5_password }}"
       server: "{{ ansible_host }}"
@@ -15,5 +14,7 @@
 
   tasks:
     - name: License a BIG-IP
-      bigip_license:
-        key: "{{ bigip_license }}"
+      bigip_device_license:
+        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+        accept_eula: yes
+        provider: "{{ provider }}"
