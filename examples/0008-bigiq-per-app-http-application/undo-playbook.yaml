@@ -1,0 +1,20 @@
+---
+
+- name: Remove an HTTP "per-app" application on BIG-IQ
+  hosts: f5-test
+  connection: local
+
+  vars:
+    provider:
+      password: "{{ f5_password }}"
+      server: "{{ ansible_host }}"
+      user: "{{ f5_username }}"
+      validate_certs: "{{ validate_certs }}"
+      server_port: "{{ f5_server_port }}"
+
+  tasks:
+    - name: Remove an HTTP application
+      bigiq_application_http:
+        provider: "{{ provider }}"
+        name: my-app1
+        state: absent
