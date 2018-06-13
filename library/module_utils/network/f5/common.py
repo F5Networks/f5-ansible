@@ -21,6 +21,11 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from collections import defaultdict
 
 try:
+    from library.module_utils.network.f5.bigip import F5RestClient
+except ImportError:
+    from ansible.module_utils.network.f5.bigip import F5RestClient
+
+try:
     from icontrol.exceptions import iControlUnexpectedHTTPError
     HAS_F5SDK = True
 except ImportError:
@@ -196,11 +201,27 @@ def run_commands(module, commands, check_rc=True):
 
 def cleanup_tokens(client):
     try:
-        resource = client.api.shared.authz.tokens_s.token.load(
-            name=client.api.icrs.token
-        )
-        resource.delete()
-    except Exception:
+        if isinstance(client, F5RestClient):
+            token = client._client.headers.get('X-F5-Auth-Token', None)
+            if not token:
+                return
+            uri = "https://{0}:{1}/mgmt/shared/authz/tokens/{2}".format(
+                client.provider['server'],
+                client.provider['server_port'],
+                token
+            )
+            resp = client.api.delete(uri)
+            try:
+                resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+            return True
+        else:
+            resource = client.api.shared.authz.tokens_s.token.load(
+                name=client.api.icrs.token
+            )
+            resource.delete()
+    except Exception as ex:
         pass
 
 
