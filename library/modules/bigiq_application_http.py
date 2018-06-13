@@ -400,7 +400,7 @@ class UsableChanges(Changes):
         for x in self.servers:
             member = dict(
                 parameters=dict(
-                    port=x['port'],
+                    port=x.get('port', 80),
                     nodeReference=dict(
                         link='#/resources/ltm:node:9e76a6323321/{0}'.format(x['address']),
                         fullPath='# {0}'.format(x['address'])
