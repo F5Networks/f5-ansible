@@ -21,11 +21,6 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from collections import defaultdict
 
 try:
-    from library.module_utils.network.f5.bigip import F5RestClient
-except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-
-try:
     from icontrol.exceptions import iControlUnexpectedHTTPError
     HAS_F5SDK = True
 except ImportError:
@@ -201,7 +196,11 @@ def run_commands(module, commands, check_rc=True):
 
 def cleanup_tokens(client):
     try:
-        if isinstance(client, F5RestClient):
+        # isinstance cannot be used here because to import it creates a
+        # circular dependency with teh module_utils.network.f5.bigip file.
+        #
+        # TODO(consider refactoring cleanup_tokens)
+        if 'F5RestClient' in type(client).__name__:
             token = client._client.headers.get('X-F5-Auth-Token', None)
             if not token:
                 return
