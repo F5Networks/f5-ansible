@@ -332,7 +332,7 @@ class UsableChanges(Changes):
                     name='virtual',
                     destinationAddress=self.inbound_virtual['address'],
                     mask=self.inbound_virtual['netmask'],
-                    destinationPort=self.inbound_virtual['port']
+                    destinationPort=self.inbound_virtual.get('port', 53)
                 ),
                 subcollectionResources=self.profiles
             )
@@ -370,7 +370,7 @@ class UsableChanges(Changes):
         for x in self.servers:
             member = dict(
                 parameters=dict(
-                    port=x['port'],
+                    port=x.get('port', 8000),
                     nodeReference=dict(
                         link='#/resources/ltm:node:b19842fe713a/{0}'.format(x['address']),
                         fullPath='# {0}'.format(x['address'])

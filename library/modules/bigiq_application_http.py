@@ -357,7 +357,7 @@ class UsableChanges(Changes):
                     name='virtual',
                     destinationAddress=self.inbound_virtual['address'],
                     mask=self.inbound_virtual['netmask'],
-                    destinationPort=self.inbound_virtual['port']
+                    destinationPort=self.inbound_virtual.get('port', 80)
                 ),
                 subcollectionResources=self.profiles
             )
