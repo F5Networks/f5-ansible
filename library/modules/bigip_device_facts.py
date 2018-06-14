@@ -52,11 +52,6 @@ options:
       - virtual-servers
       - vlans
     aliases: ['include']
-notes:
-  - Requires the netaddr Python package on the host. This is as easy as pip
-    install netaddr.
-requirements:
-  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -2559,6 +2554,8 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import fq_name
+    from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.common import is_valid_ip
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.utils.responses.handlers import Stats
@@ -2573,17 +2570,13 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import fq_name
+    from ansible.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.common import is_valid_ip
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.utils.responses.handlers import Stats
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 def parseStats(entry):
@@ -2692,16 +2685,6 @@ class BaseParameters(Parameters):
             return True
         else:
             return False
-
-    def flatten_boolean(self, key, resource):
-        truthy = list(BOOLEANS_TRUE) + ['enabled']
-        falsey = list(BOOLEANS_FALSE) + ['disabled']
-        if resource[key] is None:
-            return None
-        if resource[key] in truthy:
-            resource[key] = 'yes'
-        elif resource[key] in falsey:
-            resource[key] = 'no'
 
     def _remove_internal_keywords(self, resource):
         resource.pop('kind', None)
@@ -3401,38 +3384,31 @@ class FastHttpProfilesParameters(BaseParameters):
 
     @property
     def server_timestamp(self):
-        self.flatten_boolean('server_timestamp', self._values)
-        return self._values['server_timestamp']
+        return flatten_boolean(self._values['server_timestamp'])
 
     @property
     def server_sack(self):
-        self.flatten_boolean('server_sack', self._values)
-        return self._values['server_sack']
+        return flatten_boolean(self._values['server_sack'])
 
     @property
     def reset_on_timeout(self):
-        self.flatten_boolean('reset_on_timeout', self._values)
-        return self._values['reset_on_timeout']
+        return flatten_boolean(self._values['reset_on_timeout'])
 
     @property
     def insert_x_forwarded_for(self):
-        self.flatten_boolean('insert_x_forwarded_for', self._values)
-        return self._values['insert_x_forwarded_for']
+        return flatten_boolean(self._values['insert_x_forwarded_for'])
 
     @property
     def http_1_1_close_workarounds(self):
-        self.flatten_boolean('http_1_1_close_workarounds', self._values)
-        return self._values['http_1_1_close_workarounds']
+        return flatten_boolean(self._values['http_1_1_close_workarounds'])
 
     @property
     def force_http_1_0_response(self):
-        self.flatten_boolean('force_http_1_0_response', self._values)
-        return self._values['force_http_1_0_response']
+        return flatten_boolean(self._values['force_http_1_0_response'])
 
     @property
     def oneconnect_replenish(self):
-        self.flatten_boolean('oneconnect_replenish', self._values)
-        return self._values['oneconnect_replenish']
+        return flatten_boolean(self._values['oneconnect_replenish'])
 
 
 class FastHttpProfilesFactManager(BaseManager):
@@ -3509,13 +3485,11 @@ class InterfacesParameters(BaseParameters):
 
     @property
     def stp_auto_edge_port(self):
-        self.flatten_boolean('stp_auto_edge_port', self._values)
-        return self._values['stp_auto_edge_port']
+        return flatten_boolean(self._values['stp_auto_edge_port'])
 
     @property
     def stp_enabled(self):
-        self.flatten_boolean('stp_enabled', self._values)
-        return self._values['stp_enabled']
+        return flatten_boolean(self._values['stp_enabled'])
 
     @property
     def sflow_poll_interval_global(self):
@@ -3539,8 +3513,7 @@ class InterfacesParameters(BaseParameters):
 
     @property
     def enabled(self):
-        self.flatten_boolean('enabled', self._values)
-        return self._values['enabled']
+        return flatten_boolean(self._values['enabled'])
 
 
 class InterfacesFactManager(BaseManager):
@@ -3761,18 +3734,15 @@ class LtmPoolsParameters(BaseParameters):
 
     @property
     def ignore_persisted_weight(self):
-        self.flatten_boolean('ignore_persisted_weight', self._values)
-        return self._values['ignore_persisted_weight']
+        return flatten_boolean(self._values['ignore_persisted_weight'])
 
     @property
     def minimum_up_members_checking(self):
-        self.flatten_boolean('minimum_up_members_checking', self._values)
-        return self._values['minimum_up_members_checking']
+        return flatten_boolean(self._values['minimum_up_members_checking'])
 
     @property
     def queue_on_connection_limit(self):
-        self.flatten_boolean('queue_on_connection_limit', self._values)
-        return self._values['queue_on_connection_limit']
+        return flatten_boolean(self._values['queue_on_connection_limit'])
 
     @property
     def priority_group_activation(self):
@@ -3828,7 +3798,8 @@ class LtmPoolsParameters(BaseParameters):
                 del member['fqdn']
 
             for key in ['ephemeral', 'inherit_profile', 'logging', 'rate_limit']:
-                self.flatten_boolean(key, member)
+                tmp = flatten_boolean(member[key])
+                member[key] = tmp
 
             if 'profiles' in member:
                 # Even though the ``profiles`` is a list, there is only ever 1
@@ -4115,8 +4086,7 @@ class RouteDomainParameters(BaseParameters):
 
     @property
     def strict(self):
-        self.flatten_boolean('strict', self._values)
-        return self._values['strict']
+        return flatten_boolean(self._values['strict'])
 
     @property
     def connection_limit(self):
@@ -5190,43 +5160,35 @@ class VirtualAddressesParameters(BaseParameters):
 
     @property
     def spanning(self):
-        self.flatten_boolean('spanning', self._values)
-        return self._values['spanning']
+        return flatten_boolean(self._values['spanning'])
 
     @property
     def arp_enabled(self):
-        self.flatten_boolean('arp_enabled', self._values)
-        return self._values['arp_enabled']
+        return flatten_boolean(self._values['arp_enabled'])
 
     @property
     def route_advertisement(self):
-        self.flatten_boolean('route_advertisement', self._values)
-        return self._values['route_advertisement']
+        return flatten_boolean(self._values['route_advertisement'])
 
     @property
     def auto_delete_enabled(self):
-        self.flatten_boolean('auto_delete_enabled', self._values)
-        return self._values['auto_delete_enabled']
+        return flatten_boolean(self._values['auto_delete_enabled'])
 
     @property
     def inherited_traffic_group(self):
-        self.flatten_boolean('inherited_traffic_group', self._values)
-        return self._values['inherited_traffic_group']
+        return flatten_boolean(self._values['inherited_traffic_group'])
 
     @property
     def icmp_echo(self):
-        self.flatten_boolean('icmp_echo', self._values)
-        return self._values['icmp_echo']
+        return flatten_boolean(self._values['icmp_echo'])
 
     @property
     def floating(self):
-        self.flatten_boolean('floating', self._values)
-        return self._values['floating']
+        return flatten_boolean(self._values['floating'])
 
     @property
     def enabled(self):
-        self.flatten_boolean('enabled', self._values)
-        return self._values['enabled']
+        return flatten_boolean(self._values['enabled'])
 
 
 class VirtualAddressesFactManager(BaseManager):
@@ -5604,7 +5566,7 @@ class VirtualServersParameters(BaseParameters):
             return result
         destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
 
-        if self.is_valid_ip(destination):
+        if is_valid_ip(destination):
             result = Destination(
                 ip=destination,
                 port=None,
@@ -5631,7 +5593,7 @@ class VirtualServersParameters(BaseParameters):
                 if port == 'any':
                     port = 0
             ip = matches.group('ip')
-            if not self.is_valid_ip(ip):
+            if not is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -5646,7 +5608,7 @@ class VirtualServersParameters(BaseParameters):
         matches = re.search(pattern, destination)
         if matches:
             ip = matches.group('ip')
-            if not self.is_valid_ip(ip):
+            if not is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -5661,7 +5623,7 @@ class VirtualServersParameters(BaseParameters):
         if len(parts) == 4:
             # IPv4
             ip, port = destination.split(':')
-            if not self.is_valid_ip(ip):
+            if not is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -5680,7 +5642,7 @@ class VirtualServersParameters(BaseParameters):
                 # Can be a port of "any". This only happens with IPv6
                 if port == 'any':
                     port = 0
-            if not self.is_valid_ip(ip):
+            if not is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -5693,13 +5655,6 @@ class VirtualServersParameters(BaseParameters):
         else:
             result = Destination(ip=None, port=None, route_domain=None)
             return result
-
-    def is_valid_ip(self, value):
-        try:
-            netaddr.IPAddress(value)
-            return True
-        except (netaddr.core.AddrFormatError, ValueError):
-            return False
 
 
 class VirtualServersFactManager(BaseManager):
@@ -5803,8 +5758,7 @@ class VlansParameters(BaseParameters):
 
     @property
     def sflow_poll_interval_global(self):
-        self.flatten_boolean('pollIntervalGlobal', self._values['sflow'])
-        return self._values['sflow']['pollIntervalGlobal']
+        return flatten_boolean(self._values['sflow']['pollIntervalGlobal'])
 
     @property
     def sflow_sampling_rate(self):
@@ -5812,13 +5766,11 @@ class VlansParameters(BaseParameters):
 
     @property
     def sflow_sampling_rate_global(self):
-        self.flatten_boolean('samplingRateGlobal', self._values['sflow'])
-        return self._values['sflow']['samplingRateGlobal']
+        return flatten_boolean(self._values['sflow']['samplingRateGlobal'])
 
     @property
     def source_check_state(self):
-        self.flatten_boolean('source_check_state', self._values)
-        return self._values['source_check_state']
+        return flatten_boolean(self._values['source_check_state'])
 
     @property
     def true_mac_address(self):
@@ -5832,8 +5784,7 @@ class VlansParameters(BaseParameters):
 
     @property
     def failsafe_enabled(self):
-        self.flatten_boolean('failsafe_enabled', self._values)
-        return self._values['failsafe_enabled']
+        return flatten_boolean(self._values['failsafe_enabled'])
 
 
 class VlansFactManager(BaseManager):
@@ -6077,8 +6028,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
