@@ -264,7 +264,7 @@ class Parameters(AnsibleF5Parameters):
             return None
         if self._values['ip'] in ['*', '0.0.0.0']:
             return '*'
-        if is_valid_ip(self._values['ip']):
+        elif is_valid_ip(self._values['ip']):
             return self._values['ip']
         else:
             raise F5ModuleError(
