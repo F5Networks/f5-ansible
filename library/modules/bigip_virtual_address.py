@@ -157,12 +157,7 @@ options:
       - The route domain of the C(address) that you want to use.
       - This value cannot be modified after it is set.
     version_added: 2.6
-notes:
-  - Requires the netaddr Python package on the host. This is as easy as pip
-    install netaddr.
 extends_documentation_fragment: f5
-requirements:
-  - netaddr
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -246,6 +241,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_valid_ip
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -258,16 +254,11 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import is_valid_ip
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -331,10 +322,9 @@ class Parameters(AnsibleF5Parameters):
     def netmask(self):
         if self._values['netmask'] is None:
             return None
-        try:
-            ip = netaddr.IPAddress(self._values['netmask'])
-            return str(ip)
-        except netaddr.core.AddrFormatError:
+        if is_valid_ip(self._values['netmask']):
+            return self._values['netmask']
+        else:
             raise F5ModuleError(
                 "The provided 'netmask' is not a valid IP address"
             )
@@ -422,10 +412,9 @@ class ModuleParameters(Parameters):
     def address(self):
         if self._values['address'] is None:
             return None
-        try:
-            ip = netaddr.IPAddress(self._values['address'])
-            return str(ip)
-        except netaddr.core.AddrFormatError:
+        if is_valid_ip(self._values['address']):
+            return self._values['address']
+        else:
             raise F5ModuleError(
                 "The provided 'address' is not a valid IP address"
             )
@@ -744,8 +733,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
