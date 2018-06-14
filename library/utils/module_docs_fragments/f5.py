@@ -114,6 +114,7 @@ options:
 notes:
   - For more information on using Ansible to manage F5 Networks devices see U(https://www.ansible.com/integrations/networks/f5).
   - Requires the f5-sdk Python package on the host. This is as easy as C(pip install f5-sdk).
+  - Requires BIG-IP software version >= 12.
 requirements:
-  - f5-sdk >= 3.0.9
+  - f5-sdk >= 3.0.16
 '''
