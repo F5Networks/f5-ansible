@@ -18,6 +18,7 @@ from ansible.module_utils.network.common.utils import validate_ip_address
 from ansible.module_utils.network.common.utils import validate_ip_v6_address
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
 from collections import defaultdict
 
 try:
@@ -194,6 +195,17 @@ def run_commands(module, commands, check_rc=True):
     return responses
 
 
+def flatten_boolean(self, value):
+    truthy = list(BOOLEANS_TRUE) + ['enabled']
+    falsey = list(BOOLEANS_FALSE) + ['disabled']
+    if value is None:
+        return None
+    elif value in truthy:
+        return 'yes'
+    elif value in falsey:
+        return 'no'
+
+
 def cleanup_tokens(client):
     try:
         # isinstance cannot be used here because to import it creates a
@@ -283,6 +295,29 @@ def is_valid_fqdn(host):
         if len(parts) > 1:
             return True
     return False
+
+
+def transform_name(partition=None, name=None, sub_path=None):
+    if name:
+        name = name.replace('/', '~')
+    if partition:
+        partition = '~' + partition
+    else:
+        if sub_path:
+            F5ModuleError(
+                'When giving the subPath component include partition as well.'
+            )
+
+    if sub_path and partition:
+        sub_path = '~' + sub_path
+
+    if name and partition:
+        name = '~' + name
+
+    tilded_partition_and_instance = partition + sub_path + name
+
+    result = base_uri + tilded_partition_and_instance + suffix
+    return result
 
 
 def dict2tuple(items):
