@@ -195,7 +195,7 @@ def run_commands(module, commands, check_rc=True):
     return responses
 
 
-def flatten_boolean(self, value):
+def flatten_boolean(value):
     truthy = list(BOOLEANS_TRUE) + ['enabled']
     falsey = list(BOOLEANS_FALSE) + ['disabled']
     if value is None:
@@ -297,7 +297,7 @@ def is_valid_fqdn(host):
     return False
 
 
-def transform_name(partition=None, name=None, sub_path=None):
+def transform_name(partition='', name='', sub_path=''):
     if name:
         name = name.replace('/', '~')
     if partition:
@@ -314,9 +314,7 @@ def transform_name(partition=None, name=None, sub_path=None):
     if name and partition:
         name = '~' + name
 
-    tilded_partition_and_instance = partition + sub_path + name
-
-    result = base_uri + tilded_partition_and_instance + suffix
+    result = partition + sub_path + name
     return result
 
 
