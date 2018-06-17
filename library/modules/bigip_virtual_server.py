@@ -609,6 +609,7 @@ import re
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.network.common.utils import validate_ip_v6_address
 from ansible.module_utils.six import iteritems
 from collections import namedtuple
 
@@ -620,6 +621,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_valid_ip
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -632,6 +634,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import is_valid_ip
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -783,16 +786,8 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
-    def is_valid_ip(self, value):
-        try:
-            netaddr.IPAddress(value)
-            return True
-        except (netaddr.core.AddrFormatError, ValueError):
-            return False
-
     def _format_port_for_destination(self, ip, port):
-        addr = netaddr.IPAddress(ip)
-        if addr.version == 6:
+        if validate_ip_v6_address(ip):
             if port == 0:
                 result = '.any'
             else:
@@ -976,7 +971,7 @@ class ApiParameters(Parameters):
             return result
         destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
 
-        if self.is_valid_ip(destination):
+        if is_valid_ip(destination):
             result = Destination(
                 ip=destination,
                 port=None,
@@ -1003,7 +998,7 @@ class ApiParameters(Parameters):
                 if port == 'any':
                     port = 0
             ip = matches.group('ip')
-            if not self.is_valid_ip(ip):
+            if not is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -1018,7 +1013,7 @@ class ApiParameters(Parameters):
         matches = re.search(pattern, destination)
         if matches:
             ip = matches.group('ip')
-            if not self.is_valid_ip(ip):
+            if not is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -1033,7 +1028,7 @@ class ApiParameters(Parameters):
         if len(parts) == 4:
             # IPv4
             ip, port = destination.split(':')
-            if not self.is_valid_ip(ip):
+            if not is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -1052,7 +1047,7 @@ class ApiParameters(Parameters):
                 # Can be a port of "any". This only happens with IPv6
                 if port == 'any':
                     port = 0
-            if not self.is_valid_ip(ip):
+            if not is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -1240,7 +1235,7 @@ class ModuleParameters(Parameters):
     @property
     def destination(self):
         addr = self._values['destination'].split("%")[0]
-        if not self.is_valid_ip(addr):
+        if not is_valid_ip(addr):
             raise F5ModuleError(
                 "The provided destination is not a valid IP address"
             )
