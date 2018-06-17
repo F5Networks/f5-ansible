@@ -39,6 +39,7 @@ options:
       - irules
       - ltm-pools
       - nodes
+      - partitions
       - provision-info
       - self-ips
       - software-volumes
@@ -1346,6 +1347,37 @@ nodes:
       type: string
       sample: and_list
   sample: hash/dictionary of values
+partitions:
+  description: Partition related information.
+  returned: When C(partitions) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: Common
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: Common
+    description:
+      description:
+        - Description of the partition.
+      returned: changed
+      type: string
+      sample: Tenant 1
+    default_route_domain:
+      description:
+        - ID of the route domain that is associated with the IP addresses that reside
+          in the partition.
+      returned: changed
+      type: int
+      sample: 0
+  sample: hash/dictionary of values
 provision_info:
   description: Module provisioning related information.
   returned: When C(provision-info) is specified in C(gather_subset).
@@ -2571,7 +2603,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import flatten_boolean
-    from library.module_utils.network.f5.common import is_valid_ip
+    from ansible.module_utils.network.f5.common import is_valid_ip
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.utils.responses.handlers import Stats
@@ -4004,6 +4036,68 @@ class NodesFactManager(BaseManager):
 
     def read_collection_from_device(self):
         result = self.client.api.tm.ltm.nodes.get_collection()
+        return result
+
+
+class PartitionParameters(BaseParameters):
+    api_map = {
+        'defaultRouteDomain': 'default_route_domain',
+        'fullPath': 'full_path',
+    }
+
+    returnables = [
+        'name',
+        'full_path',
+        'description',
+        'default_route_domain'
+    ]
+
+
+class PartitionFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(PartitionFactManager, self).__init__(**kwargs)
+        self.want = PartitionParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(partitions=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = PartitionParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/auth/partition".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -5864,6 +5958,10 @@ class ModuleManager(object):
             ),
             'nodes': dict(
                 manager=NodesFactManager
+            ),
+            'partitions': dict(
+                manager=PartitionFactManager,
+                client=F5RestClient
             ),
             'provision-info': dict(
                 manager=ProvisionInfoFactManager
