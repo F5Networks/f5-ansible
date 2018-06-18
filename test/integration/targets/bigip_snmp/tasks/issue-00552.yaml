@@ -1,6 +1,6 @@
 ---
 
-- name: Set allowed addresses
+- name: Issue 00552 - Set allowed addresses
   bigip_snmp:
     allowed_addresses:
       - 3.4.5.6
@@ -9,12 +9,12 @@
       - baz
   register: result
 
-- name: Assert Set allowed addresses
+- name: Issue 00552 - Assert Set allowed addresses
   assert:
     that:
       - result is changed
 
-- name: Set allowed addresses - Idempotent check
+- name: Issue 00552 - Set allowed addresses - Idempotent check
   bigip_snmp:
     allowed_addresses:
       - 3.4.5.6
@@ -23,118 +23,118 @@
       - baz
   register: result
 
-- name: Assert Set allowed addresses - Idempotent check
+- name: Issue 00552 - Assert Set allowed addresses - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set allowed addresses to default
+- name: Issue 00552 - Set allowed addresses to default
   bigip_snmp:
     allowed_addresses:
       - default
   register: result
 
-- name: Assert Set allowed addresses to default
+- name: Issue 00552 - Assert Set allowed addresses to default
   assert:
     that:
       - result is changed
 
-- name: Set allowed addresses to default - Idempotent check
+- name: Issue 00552 - Set allowed addresses to default - Idempotent check
   bigip_snmp:
     allowed_addresses:
       - default
   register: result
 
-- name: Assert Set allowed addresses to default - Idempotent check
+- name: Issue 00552 - Assert Set allowed addresses to default - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set allowed addresses to single item
+- name: Issue 00552 - Set allowed addresses to single item
   bigip_snmp:
     allowed_addresses: 3.4.5.6
   register: result
 
-- name: Assert Set allowed addresses to single item
+- name: Issue 00552 - Assert Set allowed addresses to single item
   assert:
     that:
       - result is changed
 
-- name: Set allowed addresses to single item - Idempotent check
+- name: Issue 00552 - Set allowed addresses to single item - Idempotent check
   bigip_snmp:
     allowed_addresses: 3.4.5.6
   register: result
 
-- name: Set allowed addresses to default list item
+- name: Issue 00552 - Set allowed addresses to default list item
   bigip_snmp:
     allowed_addresses:
       - default
   register: result
 
-- name: Assert Set allowed addresses to default list item
+- name: Issue 00552 - Assert Set allowed addresses to default list item
   assert:
     that:
       - result is changed
 
-- name: Set allowed addresses to default list item - Idempotent check
+- name: Issue 00552 - Set allowed addresses to default list item - Idempotent check
   bigip_snmp:
     allowed_addresses:
       - default
   register: result
 
-- name: Assert Set allowed addresses to default list item - Idempotent check
+- name: Issue 00552 - Assert Set allowed addresses to default list item - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set allowed addresses to single item for empty test
+- name: Issue 00552 - Set allowed addresses to single item for empty test
   bigip_snmp:
     allowed_addresses: 3.4.5.6
   register: result
 
-- name: Set allowed addresses to empty item
+- name: Issue 00552 - Set allowed addresses to empty item
   bigip_snmp:
     allowed_addresses: ""
   register: result
 
-- name: Assert Set allowed addresses to empty item
+- name: Issue 00552 - Assert Set allowed addresses to empty item
   assert:
     that:
       - result is changed
 
-- name: Set allowed addresses to empty item - Idempotent check
+- name: Issue 00552 - Set allowed addresses to empty item - Idempotent check
   bigip_snmp:
     allowed_addresses: ""
   register: result
 
-- name: Assert Set allowed addresses to empty item - Idempotent check
+- name: Issue 00552 - Assert Set allowed addresses to empty item - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set allowed addresses to single item for empty list test
+- name: Issue 00552 - Set allowed addresses to single item for empty list test
   bigip_snmp:
     allowed_addresses: 3.4.5.6
   register: result
 
-- name: Set allowed addresses to empty list item
+- name: Issue 00552 - Set allowed addresses to empty list item
   bigip_snmp:
     allowed_addresses:
       - ""
   register: result
 
-- name: Assert Set allowed addresses to empty list item
+- name: Issue 00552 - Assert Set allowed addresses to empty list item
   assert:
     that:
       - result is changed
 
-- name: Set allowed addresses to empty list item - Idempotent check
+- name: Issue 00552 - Set allowed addresses to empty list item - Idempotent check
   bigip_snmp:
     allowed_addresses:
       - ""
   register: result
 
-- name: Assert Set allowed addresses to empty list item - Idempotent check
+- name: Issue 00552 - Assert Set allowed addresses to empty list item - Idempotent check
   assert:
     that:
       - result is not changed
