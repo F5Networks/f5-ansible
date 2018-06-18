@@ -116,11 +116,6 @@ options:
     choices:
       - present
       - absent
-notes:
-  - Requires the netaddr Python package on the host. This is as easy as pip
-    install netaddr.
-requirements:
-  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -191,6 +186,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_valid_ip
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -203,16 +199,11 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import is_valid_ip
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -305,12 +296,15 @@ class ModuleParameters(Parameters):
         elif self._values['source_mask'] == 'any':
             return 0
         try:
-            cidr = int(self._values['source_mask'])
-            addr = netaddr.IPNetwork('0/{0}'.format(cidr))
-            return str(addr.netmask)
+            int(self._values['source_mask'])
+            raise F5ModuleError(
+                "'source_mask' must not be in CIDR format."
+            )
         except ValueError:
-            addr = netaddr.IPNetwork(self._values['source_mask'])
-            return str(addr.ip)
+            pass
+
+        if is_valid_ip(self._values['source_mask']):
+            return self._values['source_mask']
 
     @property
     def share_pools(self):
@@ -576,8 +570,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
