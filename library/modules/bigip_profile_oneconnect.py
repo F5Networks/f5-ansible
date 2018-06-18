@@ -34,7 +34,7 @@ options:
       - Specifies a value that the system applies to the source address to determine
         its eligibility for reuse.
       - When creating a new profile, if this parameter is not specified, the
-        default of C(0) will be used.
+        default is provided by the parent profile.
       - The system applies the value of this setting to the server-side source address to
         determine its eligibility for reuse.
       - A mask of C(0) causes the system to share reused connections across all source
@@ -52,7 +52,7 @@ options:
       - If the pool is already full, then a server-side connection closes after the
         response is completed.
       - When creating a new profile, if this parameter is not specified, the
-        default is C(10000).
+        default is provided by the parent profile.
   maximum_age:
     description:
       - Specifies the maximum number of seconds allowed for a connection in the connection
@@ -60,18 +60,18 @@ options:
       - For any connection with an age higher than this value, the system removes that
         connection from the re-use pool.
       - When creating a new profile, if this parameter is not specified, the
-        default is C(86400).
+        default is provided by the parent profile.
   maximum_reuse:
     description:
       - Specifies the maximum number of times that a server-side connection can be reused.
       - When creating a new profile, if this parameter is not specified, the
-        default is C(1000).
+        default is provided by the parent profile.
   idle_timeout_override:
     description:
       - Specifies the number of seconds that a connection is idle before the connection
         flow is eligible for deletion.
-      - When creating a new profile, if this parameter is not specified, the default is
-        C(disabled).
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
       - You may specify a number of seconds for the timeout override.
       - When C(disabled), specifies that there is no timeout override for the connection.
       - When C(indefinite), Specifies that a connection may be idle with no timeout
@@ -89,8 +89,8 @@ options:
         they expire, even if they could otherwise be reused.
       - C(strict) is not a recommended configuration except in very special cases with
         short expiration timeouts.
-      - When creating a new profile, if this parameter is not specified, the default of
-        C(none) will be used.
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
     choices:
       - none
       - idle
@@ -101,8 +101,8 @@ options:
         also among similar virtual servers
       - When C(yes), all virtual servers that use the same OneConnect and other internal
         network profiles can share connections.
-      - When creating a new profile, if this parameter is not specified, the default of
-        C(no) will be used.
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
     type: bool
   partition:
     description:
@@ -478,16 +478,6 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.want.limit_type is None:
-            self.want.update({'limit_type': 'none'})
-        if self.want.idle_timeout_override is None:
-            self.want.update({'idle_timeout_override': 'disabled'})
-        if self.want.maximum_reuse is None:
-            self.want.update({'maximum_reuse': 1000})
-        if self.want.maximum_age is None:
-            self.want.update({'maximum_age': 86400})
-        if self.want.maximum_size is None:
-            self.want.update({'maximum_size': 10000})
         if self.module.check_mode:
             return True
         self.create_on_device()
