@@ -22,38 +22,16 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
-
-
-- name: Change source mask
+- name: Change source mask, dotted quad
   bigip_profile_oneconnect:
     name: profile1
-    source_mask: 24
+    source_mask: 255.255.255.0
   register: result
 
-- name: Assert Change source mask
+- name: Assert Change source mask, dotted quad
   assert:
     that:
       - result is changed
-
-- name: Change source mask - Idempotent check
-  bigip_profile_oneconnect:
-    name: profile1
-    source_mask: 24
-  register: result
-
-- name: Assert Change source mask - Idempotent check
-  assert:
-    that:
-      - result is not changed
 
 - name: Change source mask, dotted quad - Idempotent check
   bigip_profile_oneconnect:
@@ -66,11 +44,49 @@
     that:
       - result is not changed
 
+- name: Change source mask, ipv6
+  bigip_profile_oneconnect:
+    name: profile1
+    source_mask: "ffff:ffff:ffff:ffff::"
+  register: result
 
+- name: Assert Change source mask, ipv6
+  assert:
+    that:
+      - result is changed
 
+- name: Change source mask, ipv6 - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    source_mask: "ffff:ffff:ffff:ffff::"
+  register: result
 
+- name: Assert Change source mask, ipv6 - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
+- name: Change source mask, ipv4 in ipv6
+  bigip_profile_oneconnect:
+    name: profile1
+    source_mask: "ffff:ff00::"
+  register: result
 
+- name: Assert Change source mask, ipv4 in ipv6
+  assert:
+    that:
+      - result is changed
+
+- name: Change source mask, ipv4 in ipv6 - Idempotent check
+  bigip_profile_oneconnect:
+    name: profile1
+    source_mask: "ffff:ff00::"
+  register: result
+
+- name: Assert Change source mask, ipv4 in ipv6 - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - name: Change max size
   bigip_profile_oneconnect:
@@ -94,11 +110,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
 - name: Change max age
   bigip_profile_oneconnect:
     name: profile1
@@ -120,11 +131,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
 
 - name: Change max reuse
   bigip_profile_oneconnect:
@@ -148,11 +154,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
 - name: Change idle_timeout_override - indefinite
   bigip_profile_oneconnect:
     name: profile1
@@ -174,13 +175,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
 
 - name: Change idle_timeout_override - disabled
   bigip_profile_oneconnect:
@@ -204,18 +198,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Change idle_timeout_override - specify
   bigip_profile_oneconnect:
     name: profile1
@@ -237,15 +219,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
-
-
 
 - name: Change limit_type - idle
   bigip_profile_oneconnect:
@@ -269,14 +242,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
 - name: Change limit_type - strict
   bigip_profile_oneconnect:
     name: profile1
@@ -298,13 +263,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
 
 - name: Change limit_type - none
   bigip_profile_oneconnect:
@@ -328,14 +286,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
 - name: Change share_pools - yes
   bigip_profile_oneconnect:
     name: profile1
@@ -357,13 +307,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
 
 - name: Change share_pools - no
   bigip_profile_oneconnect:
@@ -387,15 +330,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
 - name: Remove profile
   bigip_profile_oneconnect:
     name: profile1
@@ -417,20 +351,5 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 - import_tasks: teardown.yaml
