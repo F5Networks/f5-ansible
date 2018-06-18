@@ -35,8 +35,8 @@ options:
   enable_dns_express:
     description:
       - Specifies whether the DNS Express engine is enabled.
-      - When creating a new profile, if this parameter is not specified, the default is
-        C(yes).
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
       - The DNS Express engine receives zone transfers from the authoritative DNS server
         for the zone. If the C(enable_zone_transfer) setting is also C(yes) on this profile,
         the DNS Express engine also responds to zone transfer requests made by the nameservers
@@ -46,8 +46,8 @@ options:
     description:
       - Specifies whether the system answers zone transfer requests for a DNS zone created
         on the system.
-      - When creating a new profile, if this parameter is not specified, the default is
-        C(no).
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
       - The C(enable_dns_express) and C(enable_zone_transfer) settings on a DNS profile
         affect how the system responds to zone transfer requests.
       - When the C(enable_dns_express) and C(enable_zone_transfer) settings are both C(yes),
@@ -61,21 +61,21 @@ options:
     description:
       - Specifies whether the system signs responses with DNSSEC keys and replies to DNSSEC
         specific queries (e.g., DNSKEY query type).
-      - When creating a new profile, if this parameter is not specified, the default is
-        C(yes).
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
     type: bool
   enable_gtm:
     description:
       - Specifies whether the system uses Global Traffic Manager to manage the response.
-      - When creating a new profile, if this parameter is not specified, the default is
-        C(yes).
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
     type: bool
   process_recursion_desired:
     description:
       - Specifies whether to process client-side DNS packets with Recursion Desired set in
         the header.
-      - When creating a new profile, if this parameter is not specified, the default is
-        C(yes).
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
       - If set to C(no), processing of the packet is subject to the unhandled-query-action
         option.
     type: bool
@@ -84,14 +84,14 @@ options:
       - Specifies whether the system forwards non-wide IP queries to the local BIND server
         on the BIG-IP system.
       - For best performance, disable this setting when using a DNS cache.
-      - When creating a new profile, if this parameter is not specified, the default is
-        C(yes).
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
     type: bool
   enable_dns_firewall:
     description:
       - Specifies whether DNS firewall capability is enabled.
-      - When creating a new profile, if this parameter is not specified, the default is
-        C(no).
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
     type: bool
   partition:
     description:
@@ -554,21 +554,6 @@ class ModuleManager(object):
         return True
 
     def create(self):
-        if self.want.enable_dns_express is None:
-            self.want.update({'enable_dns_express': True})
-        if self.want.enable_zone_transfer is None:
-            self.want.update({'enable_zone_transfer': False})
-        if self.want.enable_dnssec is None:
-            self.want.update({'enable_dnssec': True})
-        if self.want.enable_gtm is None:
-            self.want.update({'enable_gtm': True})
-        if self.want.process_recursion_desired is None:
-            self.want.update({'process_recursion_desired': True})
-        if self.want.use_local_bind is None:
-            self.want.update({'use_local_bind': True})
-        if self.want.enable_dns_firewall is None:
-            self.want.update({'enable_dns_firewall': False})
-
         self._set_changed_options()
         if self.module.check_mode:
             return True
