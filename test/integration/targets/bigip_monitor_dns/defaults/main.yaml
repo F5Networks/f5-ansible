@@ -1,0 +1,5 @@
+---
+
+monitor_name: my_dns_monitor
+query_name1: foo
+query_name2: bar
