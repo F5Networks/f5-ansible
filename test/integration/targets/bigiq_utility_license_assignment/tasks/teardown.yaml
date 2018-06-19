@@ -1,0 +1,6 @@
+---
+
+- name: Remove a license
+  bigiq_utility_license:
+    license_key: "{{ license_1 }}"
+    state: absent
