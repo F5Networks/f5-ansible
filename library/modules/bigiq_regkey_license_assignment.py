@@ -89,7 +89,7 @@ EXAMPLES = r'''
     user: admin
   delegate_to: localhost
 
-- name: Register an managed device, by name
+- name: Register a managed device, by name
   bigiq_regkey_license_assignment:
     pool: my-regkey-pool
     key: XXXX-XXXX-XXXX-XXXX-XXXX
@@ -101,7 +101,7 @@ EXAMPLES = r'''
     user: admin
   delegate_to: localhost
 
-- name: Register an managed device, by UUID
+- name: Register a managed device, by UUID
   bigiq_regkey_license_assignment:
     pool: my-regkey-pool
     key: XXXX-XXXX-XXXX-XXXX-XXXX
