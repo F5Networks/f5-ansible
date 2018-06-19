@@ -119,6 +119,7 @@ RETURN = r'''
 '''
 
 import re
+import time
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -479,6 +480,10 @@ class ModuleManager(object):
         self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to delete the resource.")
+        # Artificial sleeping to wait for remote licensing (on BIG-IP) to complete
+        #
+        # This should be something that BIG-IQ can do natively in 6.1-ish time.
+        time.sleep(60)
         return True
 
     def create(self):
@@ -500,6 +505,11 @@ class ModuleManager(object):
                 "Failed to license the remote device."
             )
         self.wait_for_device_to_be_licensed()
+
+        # Artificial sleeping to wait for remote licensing (on BIG-IP) to complete
+        #
+        # This should be something that BIG-IQ can do natively in 6.1-ish time.
+        time.sleep(60)
         return True
 
     def create_on_device(self):
