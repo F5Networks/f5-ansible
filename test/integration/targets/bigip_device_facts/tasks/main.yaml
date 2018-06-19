@@ -2,6 +2,19 @@
 
 - import_tasks: setup.yaml
 
+- name: Select partition facts
+  bigip_device_facts:
+    include:
+      - partitions
+  register: result
+
+- name: Assert Select partition facts
+  assert:
+    that:
+      - result is success
+      - result.partitions | selectattr("name", "match", "part1") | map(attribute='default_route_domain') | first == 0
+      - result.partitions | json_query("[?name=='part1'].default_route_domain") | first == 0
+
 - name: Select route domain facts
   bigip_device_facts:
     include:

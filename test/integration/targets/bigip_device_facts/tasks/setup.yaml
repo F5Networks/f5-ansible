@@ -65,3 +65,7 @@
   bigip_routedomain:
     name: foo
     id: 100
+
+- name: Create a partition
+  bigip_partition:
+    name: part1
