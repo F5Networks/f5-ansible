@@ -412,6 +412,12 @@ def is_uuid(uuid=None):
     return False
 
 
+def on_bigip():
+    if os.path.exists('/usr/bin/tmsh'):
+        return True
+    return False
+
+
 class Noop(object):
     """Represent no-operation required
 
