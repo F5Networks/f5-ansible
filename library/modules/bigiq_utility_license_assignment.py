@@ -15,83 +15,159 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigiq_utility_license_assignment
-short_description: __SHORT_DESCRIPTION__
+short_description: Manage utility license assignment on BIG-IPs from a BIG-IQ
 description:
-  - __LONG DESCRIPTION__.
+  - Manages the assignment of utility licenses on a BIG-IQ. Assignment means that
+    the license is assigned to a BIG-IP, or, it needs to be assigned to a BIG-IP.
+    Additionally, this module supported revoking the assignments from BIG-IP devices.
 version_added: 2.5
 options:
-  name:
+  unit_of_measure:
     description:
-      - Specifies the name of the ... .
+      - Sets the rate at which this license usage is billed.
+      - Depending on your license, you may have different units of measures
+        available to you. If a particular unit is not available to you, the module
+        will notify you at licensing time.
+  key:
+    description:
+      - The registration key that you want choose an offering from.
     required: True
+  offering:
+    description:
+      - Name of the license offering to assign to the device.
+  device:
+    description:
+      - When C(managed) is C(no), specifies the address, or hostname, where the BIG-IQ
+        can reach the remote device to register.
+      - When C(managed) is C(yes), specifies the managed device, or device UUID, that
+        you want to register.
+      - If C(managed) is C(yes), it is very important that you do not have more than
+        one device with the same name. BIG-IQ internally recognizes devices by their ID,
+        and therefore, this module's cannot guarantee that the correct device will be
+        registered. The device returned is the device that will be used.
+  managed:
+    description:
+      - Whether the specified device is a managed or un-managed device.
+      - When C(state) is C(present), this parameter is required.
+    type: bool
+  device_port:
+    description:
+      - Specifies the port of the remote device to connect to.
+      - If this parameter is not specified, the default of C(443) will be used.
+    default: 443
+  device_username:
+    description:
+      - The username used to connect to the remote device.
+      - This username should be one that has sufficient privileges on the remote device
+        to do licensing. Usually this is the C(Administrator) role.
+      - When C(managed) is C(no), this parameter is required.
+  device_password:
+    description:
+      - The password of the C(device_username).
+      - When C(managed) is C(no), this parameter is required.
+  state:
+    description:
+      - When C(present), ensures that the device is assigned the specified license.
+      - When C(absent), ensures the license is revokes from the remote device and freed
+        on the BIG-IQ.
+    default: present
+    choices:
+      - present
+      - absent
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Register an unmanaged device
   bigiq_utility_license_assignment:
-    name: foo
-    password: secret
-    server: lb.mydomain.com
+    key: XXXX-XXXX-XXXX-XXXX-XXXX
+    offering: F5-BIG-MSP-AFM-10G-LIC
+    device: 1.1.1.1
+    managed: no
+    device_username: admin
+    device_password: secret
     state: present
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Register a managed device, by name
+  bigiq_utility_license_assignment:
+    key: XXXX-XXXX-XXXX-XXXX-XXXX
+    offering: F5-BIG-MSP-AFM-10G-LIC
+    device: bigi1.foo.com
+    managed: yes
+    state: present
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Register a managed device, by UUID
+  bigiq_utility_license_assignment:
+    key: XXXX-XXXX-XXXX-XXXX-XXXX
+    offering: F5-BIG-MSP-AFM-10G-LIC
+    device: 7141a063-7cf8-423f-9829-9d40599fa3e0
+    managed: yes
+    state: present
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
-  returned: changed
-  type: string
-  sample: Foo is bar
+# only common fields returned
 '''
+
+import re
 
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.module_utils.network.f5.bigiq import HAS_F5SDK
-    from library.module_utils.network.f5.bigiq import F5Client
+    from library.module_utils.network.f5.bigiq import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import is_valid_ip
 except ImportError:
-    from ansible.module_utils.network.f5.bigiq import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigiq import F5Client
+    from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'deviceReference': 'device_reference',
+        'deviceAddress': 'device_address',
+        'httpsPort': 'device_port',
+        'unitOfMeasure': 'unit_of_measure'
     }
 
     api_attributes = [
-
+        'deviceReference', 'deviceAddress', 'httpsPort', 'managed', 'unitOfMeasure'
     ]
 
     returnables = [
-
+        'device_address', 'device_reference', 'device_username', 'device_password',
+        'device_port', 'managed', 'unit_of_measure'
     ]
 
     updatables = [
-
+        'device_reference', 'device_address', 'device_username', 'device_password',
+        'device_port', 'managed', 'unit_of_measure'
     ]
 
     def to_return(self):
@@ -105,7 +181,197 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    @property
+    def device_password(self):
+        if self._values['device_password'] is None:
+            return None
+        return self._values['device_password']
+
+    @property
+    def device_username(self):
+        if self._values['device_username'] is None:
+            return None
+        return self._values['device_username']
+
+    @property
+    def device_address(self):
+        if self.device_is_address:
+            return self._values['device']
+
+    @property
+    def device_port(self):
+        if self._values['device_port'] is None:
+            return None
+        return int(self._values['device_port'])
+
+    @property
+    def device_is_address(self):
+        if is_valid_ip(self.device):
+            return True
+        return False
+
+    @property
+    def device_is_id(self):
+        pattern = r'[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}'
+        if re.match(pattern, self.device):
+            return True
+        return False
+
+    @property
+    def device_is_name(self):
+        if not self.device_is_address and not self.device_is_id:
+            return True
+        return False
+
+    @property
+    def device_reference(self):
+        if not self.managed:
+            return None
+        if self.device_is_address:
+            # This range lookup is how you do lookups for single IP addresses. Weird.
+            filter = "address+eq+'{0}...{0}'".format(self.device)
+        elif self.device_is_name:
+            filter = "hostname+eq+'{0}'".format(self.device)
+        elif self.device_is_id:
+            filter = "uuid+eq+'{0}'".format(self.device)
+        else:
+            raise F5ModuleError(
+                "Unknown device format '{0}'".format(self.device)
+            )
+
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/?$filter={2}&$top=1".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            filter
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status == 200 and response['totalItems'] == 0:
+            raise F5ModuleError(
+                "No device with the specified address was found."
+            )
+        elif 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+        id = response['items'][0]['uuid']
+        result = dict(
+            link='https://localhost/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/{0}'.format(id)
+        )
+        return result
+
+    @property
+    def offering_id(self):
+        filter = "(name+eq+'{0}')".format(self.offering)
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/{2}/offerings?$filter={3}&$top=1'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.key,
+            filter
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status == 200 and response['totalItems'] == 0:
+            raise F5ModuleError(
+                "No offering with the specified name was found."
+            )
+        elif 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+        return response['items'][0]['id']
+
+    @property
+    def member_id(self):
+        if self.device_is_address:
+            # This range lookup is how you do lookups for single IP addresses. Weird.
+            filter = "deviceAddress+eq+'{0}...{0}'".format(self.device)
+        elif self.device_is_name:
+            filter = "deviceName+eq+'{0}'".format(self.device)
+        elif self.device_is_id:
+            filter = "deviceMachineId+eq+'{0}'".format(self.device)
+        else:
+            raise F5ModuleError(
+                "Unknown device format '{0}'".format(self.device)
+            )
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/{2}/offerings/{3}/members/?$filter={4}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.key,
+            self.offering_id,
+            filter
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status == 200 and response['totalItems'] == 0:
+            return None
+        elif 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+        result = response['items'][0]['id']
+        return result
+
+
 class Changes(Parameters):
+    pass
+
+
+class UsableChanges(Changes):
+    @property
+    def device_port(self):
+        if self._values['managed']:
+            return None
+        return self._values['device_port']
+
+    @property
+    def device_username(self):
+        if self._values['managed']:
+            return None
+        return self._values['device_username']
+
+    @property
+    def device_password(self):
+        if self._values['managed']:
+            return None
+        return self._values['device_password']
+
+    @property
+    def device_reference(self):
+        if not self._values['managed']:
+            return None
+        return self._values['device_reference']
+
+    @property
+    def device_address(self):
+        if self._values['managed']:
+            return None
+        return self._values['device_address']
+
+    @property
+    def managed(self):
+        return None
+
+
+class ReportableChanges(Changes):
     pass
 
 
@@ -135,7 +401,7 @@ class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-        self.want = ModuleParameters(params=self.module.params)
+        self.want = ModuleParameters(params=self.module.params, client=self.client)
         self.have = ApiParameters()
         self.changes = UsableChanges()
 
@@ -176,15 +442,13 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
@@ -200,27 +464,26 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return self.update()
-        else:
-            return self.create()
+            return False
+        return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        return result
-
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
+        if self.want.member_id is None:
             return False
-        if self.module.check_mode:
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/{2}/offerings/{3}/members/{4}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.key,
+            self.want.offering_id,
+            self.want.member_id
+        )
+        resp = self.client.api.get(uri)
+        if resp.status == 200:
             return True
-        self.update_on_device()
-        return True
+        return False
 
     def remove(self):
+        self._set_changed_options()
         if self.module.check_mode:
             return True
         self.remove_from_device()
@@ -230,26 +493,75 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        if not self.want.managed:
+            if self.want.device_username is None:
+                raise F5ModuleError(
+                    "You must specify a 'device_username' when working with unmanaged devices."
+                )
+            if self.want.device_password is None:
+                raise F5ModuleError(
+                    "You must specify a 'device_password' when working with unmanaged devices."
+                )
         if self.module.check_mode:
             return True
         self.create_on_device()
+        if not self.exists():
+            raise F5ModuleError(
+                "Failed to license the remote device."
+            )
+        self.wait_for_device_to_be_licensed()
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        params = self.changes.api_params()
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/{2}/offerings/{3}/members/'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.key,
+            self.want.offering_id,
         )
 
-    def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        if not self.want.managed:
+            params['username'] = self.want.device_username
+            params['password'] = self.want.device_password
+
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+    def wait_for_device_to_be_licensed(self):
+        count = 0
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/{2}/offerings/{3}/members/{4}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.key,
+            self.want.offering_id,
+            self.want.member_id,
         )
-        resource.modify(**params)
+        while count < 3:
+            resp = self.client.api.get(uri)
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if 'code' in response and response['code'] == 400:
+                if 'message' in response:
+                    raise F5ModuleError(response['message'])
+                else:
+                    raise F5ModuleError(resp.content)
+            if response['status'] == 'LICENSED':
+                count += 1
+            else:
+                count = 0
 
     def absent(self):
         if self.exists():
@@ -257,31 +569,49 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/{2}/offerings/{3}/members/{4}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.key,
+            self.want.offering_id,
+            self.want.member_id
         )
-        if resource:
-            resource.delete()
-
-    def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        result = resource.attrs
-        return Parameters(params=result)
+        params = {}
+        if not self.want.managed:
+            params.update(self.changes.api_params())
+            params['id'] = self.want.member_id
+            params['username'] = self.want.device_username
+            params['password'] = self.want.device_password
+        self.client.api.delete(uri, json=params)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            offering=dict(required=True),
+            unit_of_measure=dict(
+                default='hourly',
+                choices=[
+                    'hourly', 'daily', 'monthly', 'yearly'
+                ]
+            ),
+            key=dict(required=True, no_log=True),
+            device=dict(required=True),
+            managed=dict(type='bool'),
+            device_port=dict(type='int', default=443),
+            device_username=dict(no_log=True),
+            device_password=dict(no_log=True),
+            state=dict(default='present', choices=['absent', 'present'])
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
+        self.required_if = [
+            ['state', 'present', ['key', 'managed']],
+            ['managed', False, ['device', 'device_username', 'device_password']],
+            ['managed', True, ['device']]
+        ]
 
 
 def main():
@@ -289,18 +619,17 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode
+        supports_check_mode=spec.supports_check_mode,
+        required_if=spec.required_if
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        client = F5Client(**module.params)
+        client = F5RestClient(module=module)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
-        module.exit_json(**results)
-    except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        exit_json(module, results, client)
+    except F5ModuleError as ex:
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':
