@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigiq_regkey_license_assignment
-short_description: Manage regkey license assignment on BIG-IPs from a BIG-IQ.
+short_description: Manage regkey license assignment on BIG-IPs from a BIG-IQ
 description:
   - Manages the assignment of regkey licenses on a BIG-IQ. Assignment means that
     the license is assigned to a BIG-IP, or, it needs to be assigned to a BIG-IP.
