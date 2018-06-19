@@ -1,0 +1,10 @@
+---
+
+- name: Get a license key to re-use for tests
+  set_fact:
+    license_1: "{{ lookup('license_hopper', filename='/here/tmp/licenses/bigiq-utility-licenses.txt') }}"
+
+- name: Add a utility license
+  bigiq_utility_license:
+    license_key: "{{ license_1 }}"
+    accept_eula: yes
