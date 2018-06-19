@@ -1,6 +1,11 @@
 ---
 
-- name: Create route domain
+- name: Remove partition
+  bigip_partition:
+    name: part1
+    state: absent
+
+- name: Remove route domain
   bigip_routedomain:
     name: foo
     state: absent
