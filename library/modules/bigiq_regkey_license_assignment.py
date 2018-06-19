@@ -525,7 +525,7 @@ class ModuleManager(object):
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
-                raise F5ModuleError(resp._content)
+                raise F5ModuleError(resp.content)
 
     def wait_for_device_to_be_licensed(self):
         count = 0
@@ -547,7 +547,7 @@ class ModuleManager(object):
                 if 'message' in response:
                     raise F5ModuleError(response['message'])
                 else:
-                    raise F5ModuleError(resp._content)
+                    raise F5ModuleError(resp.content)
             if response['status'] == 'LICENSED':
                 count += 1
             else:
