@@ -26,7 +26,6 @@ Requirements
 The below requirements are needed on the host that executes this module.
 
 - f5-sdk >= 3.0.9
-- netaddr
 
 
 Parameters
@@ -35,8 +34,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -54,6 +53,23 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>arp</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the system accepts ARP requests.</div>
+                                                    <div>When <code>no</code>, specifies that the system does not accept ARP requests.</div>
+                                                    <div>When <code>yes</code>, then the packets are dropped.</div>
+                                                    <div>Note that both ARP and ICMP Echo must be disabled in order for forwarding virtual servers using that virtual address to forward ICMP packets.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>arp_state</b>
                                                         </td>
                                 <td>
@@ -64,6 +80,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether the system accepts ARP requests. When (disabled), specifies that the system does not accept ARP requests. Note that both ARP and ICMP Echo must be disabled in order for forwarding virtual servers using that virtual address to forward ICMP packets. If (enabled), then the packets are dropped.</div>
+                                                    <div>Deprecated. Use the <code>arp</code> parameter instead.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -71,13 +88,10 @@ Parameters
                     <b>auto_delete</b>
                                                         </td>
                                 <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>enabled</li>
-                                                                                                                                                                                                <li>disabled</li>
-                                                                                    </ul>
-                                                                            </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>Specifies whether the system automatically deletes the virtual address with the deletion of the last associated virtual server. When <code>disabled</code>, specifies that the system leaves the virtual address even when all associated virtual servers have been deleted. When creating the virtual address, the default value is <code>enabled</code>.</div>
+                                                    <div><code>enabled</code> and <code>disabled</code> are deprecated and will be removed in Ansible 2.11. Instead, use known Ansible booleans such as <code>yes</code> and <code>no</code></div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -335,6 +349,19 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>spanning</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables all BIG-IP systems in a device group to listen for and process traffic on the same virtual address.</div>
+                                                    <div>Spanning for a virtual address occurs when you enable the <code>spanning</code> option on a device and then sync the virtual address to the other members of the device group.</div>
+                                                    <div>Spanning also relies on the upstream router to distribute application flows to the BIG-IP systems using ECMP routes. ECMP defines a route to the virtual address using distinct Floating self-IP addresses configured on each BIG-IP system.</div>
+                                                    <div>You must also configure MAC masquerade addresses and disable <code>arp</code> on the virtual address when Spanning is enabled.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
@@ -407,7 +434,6 @@ Notes
 -----
 
 .. note::
-    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
@@ -448,7 +474,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -468,15 +494,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>arp_state</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>arp</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
                                             <div>The new way the virtual address handles ARP requests.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">disabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -529,6 +555,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2345</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>spanning</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Whether spanning is enabled or not</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">disabled</div>
                                     </td>
             </tr>
                                 <tr>

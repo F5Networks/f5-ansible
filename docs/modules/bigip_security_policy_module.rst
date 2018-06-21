@@ -34,20 +34,42 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
+                    <b>description</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The description to attach to the policy.</div>
+                                                    <div>This parameter is only supported on versions of BIG-IP &gt;= 12.1.0. On earlier versions it will simply be ignored.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the ... .</div>
+                                                                        <div>The name of the policy to create.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>partition</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Device partition to manage resources on.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -173,6 +195,18 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>rules</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a list of rules that you want associated with this policy. The order of this list is the order they will be evaluated by BIG-IP. If the specified rules do not exist (for example when creating a new policy) then they will be created.</div>
+                                                    <div>Rules specified here, if they do not exist, will be created with &quot;default allow&quot; behavior. It is expected that you follow-up this module with the actual configuration for these rules.</div>
+                                                    <div>The <code>bigip_security_policy_rule</code> module can be used to create and edit existing and new rules.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -190,6 +224,21 @@ Parameters
                                     </td>
                                                                 <td>
                                                                         <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>state</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>absent</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>state</code> is <code>present</code>, ensures that the policy exists.</div>
+                                                    <div>When <code>state</code> is <code>absent</code>, ensures that the policy is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>

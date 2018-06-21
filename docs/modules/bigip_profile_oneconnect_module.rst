@@ -26,7 +26,6 @@ Requirements
 The below requirements are needed on the host that executes this module.
 
 - f5-sdk >= 3.0.9
-- netaddr
 
 
 Parameters
@@ -59,7 +58,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the number of seconds that a connection is idle before the connection flow is eligible for deletion.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>disabled</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                     <div>You may specify a number of seconds for the timeout override.</div>
                                                     <div>When <code>disabled</code>, specifies that there is no timeout override for the connection.</div>
                                                     <div>When <code>indefinite</code>, Specifies that a connection may be idle with no timeout override.</div>
@@ -81,7 +80,7 @@ Parameters
                                                     <div>When <code>idle</code>, idle connections will be dropped as the TCP connection limit is reached. For short intervals, during the overlap of the idle connection being dropped and the new connection being established, the TCP connection limit may be exceeded.</div>
                                                     <div>When <code>strict</code>, the TCP connection limit is honored with no exceptions. This means that idle connections will prevent new TCP connections from being made until they expire, even if they could otherwise be reused.</div>
                                                     <div><code>strict</code> is not a recommended configuration except in very special cases with short expiration timeouts.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default of <code>none</code> will be used.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -93,7 +92,7 @@ Parameters
                                                                 <td>
                                                                         <div>Specifies the maximum number of seconds allowed for a connection in the connection reuse pool.</div>
                                                     <div>For any connection with an age higher than this value, the system removes that connection from the re-use pool.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>86400</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -104,7 +103,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the maximum number of times that a server-side connection can be reused.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>1000</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -116,7 +115,7 @@ Parameters
                                                                 <td>
                                                                         <div>Specifies the maximum number of connections that the system holds in the connection reuse pool.</div>
                                                     <div>If the pool is already full, then a server-side connection closes after the response is completed.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>10000</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -306,7 +305,7 @@ Parameters
                                                                 <td>
                                                                         <div>Indicates that connections may be shared not only within a virtual server, but also among similar virtual servers</div>
                                                     <div>When <code>yes</code>, all virtual servers that use the same OneConnect and other internal network profiles can share connections.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default of <code>no</code> will be used.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -317,7 +316,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies a value that the system applies to the source address to determine its eligibility for reuse.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default of <code>0</code> will be used.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                     <div>The system applies the value of this setting to the server-side source address to determine its eligibility for reuse.</div>
                                                     <div>A mask of <code>0</code> causes the system to share reused connections across all source addresses. A host mask of <code>32</code> causes the system to share only those reused connections originating from the same source address.</div>
                                                     <div>When you are using a SNAT or SNAT pool, the server-side source address is translated first and then the OneConnect mask is applied to the translated address.</div>
@@ -370,7 +369,6 @@ Notes
 -----
 
 .. note::
-    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

@@ -22,7 +22,6 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_device_sshd_module`
   * :ref:`bigip_device_trust_module`
   * :ref:`bigip_dns_record_module`
-  * :ref:`bigip_dns_record_facts_module`
   * :ref:`bigip_dns_zone_module`
   * :ref:`bigip_drop_connection_module`
   * :ref:`bigip_facts_module`
@@ -49,6 +48,7 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_log_destination_module`
   * :ref:`bigip_log_publisher_module`
   * :ref:`bigip_management_route_module`
+  * :ref:`bigip_monitor_dns_module`
   * :ref:`bigip_monitor_external_module`
   * :ref:`bigip_monitor_http_module`
   * :ref:`bigip_monitor_https_module`
@@ -66,6 +66,7 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_profile_client_ssl_module`
   * :ref:`bigip_profile_dns_module`
   * :ref:`bigip_profile_oneconnect_module`
+  * :ref:`bigip_profile_persistence_src_addr_module`
   * :ref:`bigip_profile_tcp_module`
   * :ref:`bigip_profile_udp_module`
   * :ref:`bigip_provision_module`
@@ -73,7 +74,6 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_raw_module`
   * :ref:`bigip_remote_syslog_module`
   * :ref:`bigip_routedomain_module`
-  * :ref:`bigip_routedomain_facts_module`
   * :ref:`bigip_security_address_list_module`
   * :ref:`bigip_security_log_profile_module`
   * :ref:`bigip_security_policy_module`

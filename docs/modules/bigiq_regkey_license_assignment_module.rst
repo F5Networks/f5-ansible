@@ -5,8 +5,8 @@
 .. _bigiq_regkey_license_assignment_module:
 
 
-bigiq_regkey_license_assignment - Manage regkey license assignment on BIG-IPs from a BIG-IQ.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_regkey_license_assignment - Manage regkey license assignment on BIG-IPs from a BIG-IQ
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.6
 
@@ -335,7 +335,7 @@ Examples
         user: admin
       delegate_to: localhost
 
-    - name: Register an managed device, by name
+    - name: Register a managed device, by name
       bigiq_regkey_license_assignment:
         pool: my-regkey-pool
         key: XXXX-XXXX-XXXX-XXXX-XXXX
@@ -347,7 +347,7 @@ Examples
         user: admin
       delegate_to: localhost
 
-    - name: Register an managed device, by UUID
+    - name: Register a managed device, by UUID
       bigiq_regkey_license_assignment:
         pool: my-regkey-pool
         key: XXXX-XXXX-XXXX-XXXX-XXXX
