@@ -1,0 +1,14 @@
+---
+
+- name: Select software image facts
+  bigip_device_facts:
+    include:
+      - software-images
+  register: result
+
+- name: Assert Select software image facts
+  assert:
+    that:
+      - result is success
+      - result.software_images | selectattr("name", "match", "BIGIP-13.1.0.7-0.0.1.iso") | map(attribute='verified') | first == 'yes'
+      - result.software_images | json_query("[?name=='BIGIP-13.1.0.7-0.0.1.iso'].verified") | first == 'yes'
