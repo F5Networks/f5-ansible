@@ -273,7 +273,7 @@ allowed_divergence_type:
 allowed_divergence_value:
   description:
     - Value of the type of divergence used for adaptive response time monitoring.
-    - May be C(percent) or C(ms) depending on whether C(relative) or C(absolute). 
+    - May be C(percent) or C(ms) depending on whether C(relative) or C(absolute).
   returned: changed
   type: int
   sample: 25
@@ -320,7 +320,7 @@ receive:
   type: string
   sample: 2.3.2.4
 reverse:
-  description: Whether the monitor operates in reverse mode. 
+  description: Whether the monitor operates in reverse mode.
   returned: changed
   type: bool
   sample: yes
@@ -787,6 +787,13 @@ class ModuleManager(object):
             return False
         return True
 
+    def _address_type_matches_query_type(self, type, validator):
+        if self.want.query_type == type and self.have.query_type == type:
+            if self.want.receive is not None and validator(self.want.receive):
+                return True
+            if self.have.receive is not None and validator(self.have.receive):
+                return True
+
     def update(self):
         self.have = self.read_current_from_device()
         if not self.should_update():
@@ -800,15 +807,11 @@ class ModuleManager(object):
                 raise F5ModuleError(
                     "Monitors with the 'reverse' attribute are not currently compatible with 'time_until_up'."
                 )
-        if ((self.want.receive is not None and validate_ip_v6_address(self.want.receive) or
-             self.have.receive is not None and validate_ip_v6_address(self.have.receive)) and
-             (self.want.query_type == 'a' and self.have.query_type == 'a')):
+        if self._address_type_matches_query_type('a', validate_ip_v6_address):
             raise F5ModuleError(
                 "Monitor has a IPv6 address. Only a 'query_type' of 'aaaa' is supported for IPv6."
             )
-        elif ((self.want.receive is not None and validate_ip_address(self.want.receive) or
-              self.have.receive is not None and validate_ip_address(self.have.receive)) and
-              (self.want.query_type == 'aaaa' and self.have.query_type == 'aaaa')):
+        elif self._address_type_matches_query_type('aaaa', validate_ip_address):
             raise F5ModuleError(
                 "Monitor has a IPv4 address. Only a 'query_type' of 'a' is supported for IPv4."
             )
@@ -845,15 +848,11 @@ class ModuleManager(object):
                     "A 'receive' string must be specified when setting 'reverse'."
                 )
 
-        if (self.want.receive is not None and
-            validate_ip_v6_address(self.want.receive) and
-            self.want.query_type == 'a'):
+        if self.want.receive is not None and validate_ip_v6_address(self.want.receive) and self.want.query_type == 'a':
             raise F5ModuleError(
                 "Monitor has a IPv6 address. Only a 'query_type' of 'aaaa' is supported for IPv6."
             )
-        elif (self.want.receive is not None
-              and validate_ip_address(self.want.receive) and
-              self.want.query_type == 'aaaa'):
+        elif self.want.receive is not None and validate_ip_address(self.want.receive) and self.want.query_type == 'aaaa':
             raise F5ModuleError(
                 "Monitor has a IPv4 address. Only a 'query_type' of 'a' is supported for IPv4."
             )
