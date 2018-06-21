@@ -74,7 +74,7 @@ options:
     description:
       - When C(yes), specifies that the system allows you to specify that pool member connection
         limits will be overridden for persisted clients.
-      - Per-virtual connection limits remain hard limits and are not overridden. 
+      - Per-virtual connection limits remain hard limits and are not overridden.
     type: bool
 extends_documentation_fragment: f5
 author:
