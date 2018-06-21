@@ -1,0 +1,405 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create base profile
+  bigip_profile_persistence_src_addr:
+    name: profile1
+  register: result
+
+- name: Assert Create base profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create base profile - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+  register: result
+
+- name: Assert Create base profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create profile with more params
+  bigip_profile_persistence_src_addr:
+    name: profile2
+    match_across_services: yes
+    match_across_virtuals: yes
+    match_across_pools: yes
+    hash_algorithm: carp
+    entry_timeout: 200
+    override_connection_limit: yes
+  register: result
+
+- name: Assert Create profile with more params
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create profile with more params - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile2
+    match_across_services: yes
+    match_across_virtuals: yes
+    match_across_pools: yes
+    hash_algorithm: carp
+    entry_timeout: 200
+    override_connection_limit: yes
+  register: result
+
+- name: Assert Create profile with more params - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change match_across_services - yes
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_services: yes
+  register: result
+
+- name: Assert Change match_across_services - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change match_across_services - yes - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_services: yes
+  register: result
+
+- name: Assert Change match_across_services - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change match_across_services - no
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_services: no
+  register: result
+
+- name: Assert Change match_across_services - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change match_across_services - no - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_services: no
+  register: result
+
+- name: Assert Change match_across_services - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change match_across_virtuals - yes
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_virtuals: yes
+  register: result
+
+- name: Assert Change match_across_virtuals - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change match_across_virtuals - yes - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_virtuals: yes
+  register: result
+
+- name: Assert Change match_across_virtuals - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change match_across_virtuals - no
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_virtuals: no
+  register: result
+
+- name: Assert Change match_across_virtuals - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change match_across_virtuals - no - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_virtuals: no
+  register: result
+
+- name: Assert Change match_across_virtuals - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change match_across_pools - yes
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_pools: yes
+  register: result
+
+- name: Assert Change match_across_pools - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change match_across_pools - yes - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_pools: yes
+  register: result
+
+- name: Assert Change match_across_pools - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change match_across_pools - no
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_pools: no
+  register: result
+
+- name: Assert Change match_across_pools - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change match_across_pools - no - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    match_across_pools: no
+  register: result
+
+- name: Assert Change match_across_pools - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change hash_algo - carp
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    hash_algorithm: carp
+  register: result
+
+- name: Assert Change hash_algo - carp
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change hash_algo - carp - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    hash_algorithm: carp
+  register: result
+
+- name: Assert Change hash_algo - carp - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change hash_algo - default
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    hash_algorithm: default
+  register: result
+
+- name: Assert Change hash_algo - default
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change hash_algo - default - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    hash_algorithm: default
+  register: result
+
+- name: Assert Change hash_algo - default - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change override_connection_limit - yes
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    override_connection_limit: yes
+  register: result
+
+- name: Assert Change override_connection_limit - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change override_connection_limit - yes - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    override_connection_limit: yes
+  register: result
+
+- name: Assert Change override_connection_limit - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change override_connection_limit - no
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    override_connection_limit: no
+  register: result
+
+- name: Assert Change override_connection_limit - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change override_connection_limit - no - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    override_connection_limit: no
+  register: result
+
+- name: Assert Change override_connection_limit - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change entry_timeout - numeric
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    entry_timeout: 100
+  register: result
+
+- name: Assert Change entry_timeout - numeric
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change entry_timeout - numeric - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    entry_timeout: 100
+  register: result
+
+- name: Assert Change entry_timeout - numeric - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change entry_timeout - indefinite
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    entry_timeout: indefinite
+  register: result
+
+- name: Assert Change entry_timeout - indefinite
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change entry_timeout - indefinite - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    entry_timeout: indefinite
+  register: result
+
+- name: Assert Change entry_timeout - indefinite - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove profile
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    state: absent
+  register: result
+
+- name: Assert Remove profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove profile - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    state: absent
+  register: result
+
+- name: Assert Remove profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create profile from parent
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    parent: profile2
+  register: result
+
+- name: Assert Create profile from parent
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create profile from parent - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: profile1
+    parent: profile2
+  register: result
+
+- name: Assert Create profile from parent - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove profiles
+  bigip_profile_persistence_src_addr:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - profile1
+    - profile2
+
+- import_tasks: teardown.yaml
