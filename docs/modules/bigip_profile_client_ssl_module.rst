@@ -106,7 +106,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the list of ciphers that the system supports. When creating a new profile, the default cipher list is <code>DEFAULT</code>.</div>
+                                                                        <div>Specifies the list of ciphers that the system supports. When creating a new profile, the default cipher list is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>

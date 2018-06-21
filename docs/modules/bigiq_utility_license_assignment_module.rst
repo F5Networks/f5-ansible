@@ -5,8 +5,8 @@
 .. _bigiq_utility_license_assignment_module:
 
 
-bigiq_utility_license_assignment - __SHORT_DESCRIPTION__
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_utility_license_assignment - Manage utility license assignment on BIG-IPs from a BIG-IQ
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -17,7 +17,7 @@ bigiq_utility_license_assignment - __SHORT_DESCRIPTION__
 
 Synopsis
 --------
-- __LONG DESCRIPTION__.
+- Manages the assignment of utility licenses on a BIG-IQ. Assignment means that the license is assigned to a BIG-IP, or, it needs to be assigned to a BIG-IP. Additionally, this module supported revoking the assignments from BIG-IP devices.
 
 
 
@@ -34,20 +34,92 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>name</b>
+                    <b>device</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>managed</code> is <code>no</code>, specifies the address, or hostname, where the BIG-IQ can reach the remote device to register.</div>
+                                                    <div>When <code>managed</code> is <code>yes</code>, specifies the managed device, or device UUID, that you want to register.</div>
+                                                    <div>If <code>managed</code> is <code>yes</code>, it is very important that you do not have more than one device with the same name. BIG-IQ internally recognizes devices by their ID, and therefore, this module&#x27;s cannot guarantee that the correct device will be registered. The device returned is the device that will be used.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>device_password</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The password of the <code>device_username</code>.</div>
+                                                    <div>When <code>managed</code> is <code>no</code>, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>device_port</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specifies the port of the remote device to connect to.</div>
+                                                    <div>If this parameter is not specified, the default of <code>443</code> will be used.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>device_username</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The username used to connect to the remote device.</div>
+                                                    <div>This username should be one that has sufficient privileges on the remote device to do licensing. Usually this is the <code>Administrator</code> role.</div>
+                                                    <div>When <code>managed</code> is <code>no</code>, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>key</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the ... .</div>
+                                                                        <div>The registration key that you want choose an offering from.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>managed</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Whether the specified device is a managed or un-managed device.</div>
+                                                    <div>When <code>state</code> is <code>present</code>, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>offering</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Name of the license offering to assign to the device.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -194,6 +266,32 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>state</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>absent</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>present</code>, ensures that the device is assigned the specified license.</div>
+                                                    <div>When <code>absent</code>, ensures the license is revokes from the remote device and freed on the BIG-IQ.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>unit_of_measure</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Sets the rate at which this license usage is billed.</div>
+                                                    <div>Depending on your license, you may have different units of measures available to you. If a particular unit is not available to you, the module will notify you at licensing time.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -234,58 +332,49 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Register an unmanaged device
       bigiq_utility_license_assignment:
-        name: foo
-        password: secret
-        server: lb.mydomain.com
+        key: XXXX-XXXX-XXXX-XXXX-XXXX
+        offering: F5-BIG-MSP-AFM-10G-LIC
+        device: 1.1.1.1
+        managed: no
+        device_username: admin
+        device_password: secret
         state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Register a managed device, by name
+      bigiq_utility_license_assignment:
+        key: XXXX-XXXX-XXXX-XXXX-XXXX
+        offering: F5-BIG-MSP-AFM-10G-LIC
+        device: bigi1.foo.com
+        managed: yes
+        state: present
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Register a managed device, by UUID
+      bigiq_utility_license_assignment:
+        key: XXXX-XXXX-XXXX-XXXX-XXXX
+        offering: F5-BIG-MSP-AFM-10G-LIC
+        device: 7141a063-7cf8-423f-9829-9d40599fa3e0
+        managed: yes
+        state: present
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
 
-
-Return Values
--------------
-Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
-            <th colspan="1">Key</th>
-            <th>Returned</th>
-            <th width="100%">Description</th>
-        </tr>
-                    <tr>
-                                <td colspan="1">
-                    <b>param1</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new param1 value of the resource.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>param2</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new param2 value of the resource.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
-                                    </td>
-            </tr>
-                        </table>
-    <br/><br/>
 
 
 Status

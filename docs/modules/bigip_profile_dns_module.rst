@@ -52,7 +52,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether the DNS Express engine is enabled.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>yes</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                     <div>The DNS Express engine receives zone transfers from the authoritative DNS server for the zone. If the <code>enable_zone_transfer</code> setting is also <code>yes</code> on this profile, the DNS Express engine also responds to zone transfer requests made by the nameservers configured as zone transfer clients for the DNS Express zone.</div>
                                                                                 </td>
             </tr>
@@ -68,7 +68,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether DNS firewall capability is enabled.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>no</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -83,7 +83,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether the system signs responses with DNSSEC keys and replies to DNSSEC specific queries (e.g., DNSKEY query type).</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>yes</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -98,7 +98,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether the system uses Global Traffic Manager to manage the response.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>yes</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -113,7 +113,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether the system answers zone transfer requests for a DNS zone created on the system.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>no</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                     <div>The <code>enable_dns_express</code> and <code>enable_zone_transfer</code> settings on a DNS profile affect how the system responds to zone transfer requests.</div>
                                                     <div>When the <code>enable_dns_express</code> and <code>enable_zone_transfer</code> settings are both <code>yes</code>, if a zone transfer request matches a DNS Express zone, then DNS Express answers the request.</div>
                                                     <div>When the <code>enable_dns_express</code> setting is <code>no</code> and the <code>enable_zone_transfer</code> setting is <code>yes</code>, the BIG-IP system processes zone transfer requests based on the last action and answers the request from local BIND or a pool member.</div>
@@ -174,7 +174,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether to process client-side DNS packets with Recursion Desired set in the header.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>yes</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                     <div>If set to <code>no</code>, processing of the packet is subject to the unhandled-query-action option.</div>
                                                                                 </td>
             </tr>
@@ -337,7 +337,7 @@ Parameters
                                                                 <td>
                                                                         <div>Specifies whether the system forwards non-wide IP queries to the local BIND server on the BIG-IP system.</div>
                                                     <div>For best performance, disable this setting when using a DNS cache.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is <code>yes</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>

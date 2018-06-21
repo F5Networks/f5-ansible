@@ -26,7 +26,6 @@ Requirements
 The below requirements are needed on the host that executes this module.
 
 - f5-sdk >= 3.0.9
-- netaddr
 
 
 Parameters
