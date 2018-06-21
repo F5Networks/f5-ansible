@@ -27,3 +27,5 @@ valid_includes:
 #  - "virtual_address"
 #  - "virtual_server"
 #  - "vlan"
+
+software_image: BIGIP-13.1.0.7-0.0.1.iso

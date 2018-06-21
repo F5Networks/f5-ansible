@@ -43,6 +43,8 @@ options:
       - provision-info
       - self-ips
       - software-volumes
+      - software-images
+      - software-hotfixes
       - ssl-certs
       - ssl-keys
       - system-db
@@ -1503,6 +1505,75 @@ self_ips:
       type: bool
       sample: no
   sample: hash/dictionary of values
+software_images:
+  description: List of software images.
+  returned: When C(software-images) is specified in C(gather_subset).
+  type: complex
+  contains:
+    name:
+      description:
+        - Name of the image.
+      returned: changed
+      type: string
+      sample: BIGIP-13.1.0.7-0.0.1.iso
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: BIGIP-13.1.0.7-0.0.1.iso
+    build:
+      description:
+        - Build number of the image.
+        - This is usually a sub-string of the C(name).
+      returned: changed
+      type: string
+      sample: 0.0.1
+    build_date:
+      description:
+        - Date of the build.
+      returned: changed
+      type: string
+      sample: "2018-05-05T15:26:30"
+    checksum:
+      description:
+        - MD5 checksum of the image.
+        - Note that this is the checksum that is stored inside the ISO. It is not
+          the actual checksum of the ISO.
+      returned: changed
+      type: string
+      sample: df1ec715d2089d0fa54c0c4284656a98
+    file_size:
+      description:
+        - Size, in megabytes, of the image.
+      returned: changed
+      type: int
+      sample: 1938
+    last_modified:
+      description:
+        - Last modified date of the ISO.
+      returned: changed
+      type: string
+      sample: "2018-05-05T15:26:30"
+    product:
+      description:
+        - Product contained in the ISO.
+      returned: changed
+      type: string
+      sample: BIG-IP
+    verified:
+      description:
+        - Whether or not the system has verified this image.
+      returned: changed
+      type: bool
+      sample: yes
+    version:
+      description:
+        - Version of software contained in the image.
+        - This is a sub-string of the C(name).
+      returned: changed
+      type: string
+      sample: 13.1.0.7
 software_volumes:
   description: List of software volumes.
   returned: When C(software-volumes) is specified in C(gather_subset).
@@ -1535,6 +1606,12 @@ software_volumes:
       returned: changed
       type: string
       sample: HD1.1
+    default_boot_location:
+      description:
+        - Whether this volume is the default boot location or not.
+      returned: changed
+      type: bool
+      sample: yes
     name:
       description:
         - Relative name of the resource in BIG-IP.
@@ -4347,6 +4424,7 @@ class SoftwareVolumesParameters(BaseParameters):
         'status',
         'version',
         'install_volume',
+        'default_boot_location'
     ]
 
     @property
@@ -4354,6 +4432,12 @@ class SoftwareVolumesParameters(BaseParameters):
         if self._values['media'] is None:
             return None
         return self._values['media'].get('name', None)
+
+    @property
+    def default_boot_location(self):
+        if self._values['media'] is None:
+            return None
+        return flatten_boolean(self._values['media'].get('defaultBootLocation', None))
 
     @property
     def active(self):
@@ -4393,6 +4477,123 @@ class SoftwareVolumesFactManager(BaseManager):
 
     def read_collection_from_device(self):
         result = self.client.api.tm.sys.software.volumes.get_collection()
+        return result
+
+
+class SoftwareImagesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'buildDate': 'build_date',
+        'fileSize': 'file_size',
+        'lastModified': 'last_modified',
+    }
+
+    returnables = [
+        'name',
+        'full_path',
+        'build',
+        'build_date',
+        'checksum',
+        'file_size',
+        'last_modified',
+        'product',
+        'verified',
+        'version',
+    ]
+
+    @property
+    def file_size(self):
+        if self._values['file_size'] is None:
+            return None
+        matches = re.match('\d+', self._values['file_size'])
+        if matches:
+            return int(matches.group(0))
+
+    @property
+    def build_date(self):
+        """Normalizes the build_date string
+
+        The ISOs usually ship with a broken format
+
+        ex: Tue May 15 15 26 30 PDT 2018
+
+        This will re-format that time so that it looks like ISO 8601 without
+        microseconds
+
+        ex: 2018-05-15T15:26:30
+
+        :return:
+        """
+        if self._values['build_date'] is None:
+            return None
+        result = datetime.datetime.strptime(self._values['build_date'], '%a %b %d %H %M %S PDT %Y').isoformat()
+        return result
+
+    @property
+    def last_modified(self):
+        """Normalizes the last_modified string
+
+        The strings that the system reports look like the following
+
+        ex: Tue May 15 15:26:30 2018
+
+        This property normalizes this value to be isoformat
+
+        ex: 2018-05-15T15:26:30
+
+        :return:
+        """
+        if self._values['last_modified'] is None:
+            return None
+        result = datetime.datetime.strptime(self._values['last_modified'], '%a %b %d %H:%M:%S %Y').isoformat()
+        return result
+
+
+class SoftwareImagesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SoftwareImagesFactManager, self).__init__(**kwargs)
+        self.want = SoftwareImagesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(software_images=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = SoftwareImagesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/image".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -5976,6 +6177,14 @@ class ModuleManager(object):
             'software-volumes': dict(
                 manager=SoftwareVolumesFactManager
             ),
+            'software-images': dict(
+                manager=SoftwareImagesFactManager,
+                client=F5RestClient
+            ),
+            #'software-hotfixes': dict(
+            #    manager=SoftwareHotfixesFactManager,
+            #    client=F5RestClient
+            #),
             'ssl-certs': dict(
                 manager=SslCertificatesFactManager
             ),

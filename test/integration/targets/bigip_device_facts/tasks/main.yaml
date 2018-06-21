@@ -399,6 +399,11 @@
       - "'virtual_servers' in result"
       - "'vlans' in result"
 
+- import_tasks: software-images.yaml
+  when: software_image is defined
+  tags:
+    - software-images
+
 - import_tasks: teardown.yaml
 
 - import_tasks: issue-00082.yaml
