@@ -1505,6 +1505,71 @@ self_ips:
       type: bool
       sample: no
   sample: hash/dictionary of values
+software_hotfixes:
+  description: List of software hotfixes.
+  returned: When C(software-hotfixes) is specified in C(gather_subset).
+  type: complex
+  contains:
+    name:
+      description:
+        - Name of the image.
+      returned: changed
+      type: string
+      sample: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
+    build:
+      description:
+        - Build number of the image.
+        - This is usually a sub-string of the C(name).
+      returned: changed
+      type: string
+      sample: 3.0.1679
+    checksum:
+      description:
+        - MD5 checksum of the image.
+        - Note that this is the checksum that is stored inside the ISO. It is not
+          the actual checksum of the ISO.
+      returned: changed
+      type: string
+      sample: df1ec715d2089d0fa54c0c4284656a98
+    product:
+      description:
+        - Product contained in the ISO.
+      returned: changed
+      type: string
+      sample: BIG-IP
+    id:
+      description:
+        - ID component of the image.
+        - This is usually a sub-string of the C(name).
+      returned: changed
+      type: string
+      sample: HF3
+    title:
+      description:
+        - Human friendly name of the image.
+      returned: changed
+      type: string
+      sample: Hotfix Version 3.0.1679
+    verified:
+      description:
+        - Whether or not the system has verified this image.
+      returned: changed
+      type: bool
+      sample: yes
+    version:
+      description:
+        - Version of software contained in the image.
+        - This is a sub-string of the C(name).
+      returned: changed
+      type: string
+      sample: 13.0.0
+  sample: hash/dictionary of values
 software_images:
   description: List of software images.
   returned: When C(software-images) is specified in C(gather_subset).
@@ -1574,6 +1639,7 @@ software_images:
       returned: changed
       type: string
       sample: 13.1.0.7
+  sample: hash/dictionary of values
 software_volumes:
   description: List of software volumes.
   returned: When C(software-volumes) is specified in C(gather_subset).
@@ -4480,6 +4546,72 @@ class SoftwareVolumesFactManager(BaseManager):
         return result
 
 
+class SoftwareHotfixesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+    }
+
+    returnables = [
+        'name',
+        'full_path',
+        'build',
+        'checksum',
+        'id',
+        'product',
+        'title',
+        'verified',
+        'version',
+    ]
+
+
+class SoftwareHotfixesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SoftwareHotfixesFactManager, self).__init__(**kwargs)
+        self.want = SoftwareHotfixesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(software_hotfixes=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = SoftwareHotfixesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/hotfix".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class SoftwareImagesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -4505,7 +4637,7 @@ class SoftwareImagesParameters(BaseParameters):
     def file_size(self):
         if self._values['file_size'] is None:
             return None
-        matches = re.match('\d+', self._values['file_size'])
+        matches = re.match(r'\d+', self._values['file_size'])
         if matches:
             return int(matches.group(0))
 
@@ -6181,10 +6313,10 @@ class ModuleManager(object):
                 manager=SoftwareImagesFactManager,
                 client=F5RestClient
             ),
-            #'software-hotfixes': dict(
-            #    manager=SoftwareHotfixesFactManager,
-            #    client=F5RestClient
-            #),
+            'software-hotfixes': dict(
+                manager=SoftwareHotfixesFactManager,
+                client=F5RestClient
+            ),
             'ssl-certs': dict(
                 manager=SslCertificatesFactManager
             ),

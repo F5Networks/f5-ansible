@@ -10,5 +10,5 @@
   assert:
     that:
       - result is success
-      - result.software_images | selectattr("name", "match", "BIGIP-13.1.0.7-0.0.1.iso") | map(attribute='verified') | first == 'yes'
-      - result.software_images | json_query("[?name=='BIGIP-13.1.0.7-0.0.1.iso'].verified") | first == 'yes'
+      - result.software_images | selectattr("name", "match", "{{ software_image }}") | map(attribute='verified') | first == 'yes'
+      - result.software_images | json_query("[?name=='{{ software_image }}'].verified") | first == 'yes'

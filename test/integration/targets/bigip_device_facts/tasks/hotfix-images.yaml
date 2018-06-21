@@ -1,0 +1,14 @@
+---
+
+- name: Select hotfix image facts
+  bigip_device_facts:
+    include:
+      - software-hotfixes
+  register: result
+
+- name: Assert Select hotfix image facts
+  assert:
+    that:
+      - result is success
+      - result.software_hotfixes | selectattr("name", "match", "{{ hotfix_image }}") | map(attribute='verified') | first == 'yes'
+      - result.software_hotfixes | json_query("[?name=='{{ hotfix_image }}'].verified") | first == 'yes'

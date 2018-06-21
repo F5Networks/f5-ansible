@@ -34,3 +34,10 @@ valid_includes:
 # existing ISO on the system. Not just the installed image.
 #
 # software_image: BIGIP-13.1.0.7-0.0.1.iso
+
+# Un-comment this value to run the checks for hotfix-images
+#
+# Note: To allow this to work, it is required that you have an
+# existing ISO on the system. Not just the installed image.
+#
+# hotfix_image: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
