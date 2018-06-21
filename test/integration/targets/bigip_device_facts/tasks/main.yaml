@@ -404,6 +404,11 @@
   tags:
     - software-images
 
+- import_tasks: hotfix-images.yaml
+  when: hotfix_image is defined
+  tags:
+    - hotfix-images
+
 - import_tasks: teardown.yaml
 
 - import_tasks: issue-00082.yaml
