@@ -1,0 +1,6 @@
+---
+
+- name: Provision necessary modules
+  bigip_provision:
+    name: afm
+    state: absent
