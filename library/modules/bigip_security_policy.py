@@ -15,15 +15,43 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_security_policy
-short_description: __SHORT_DESCRIPTION__
+short_description: Manage AFM security firewall policies on a BIG-IP
 description:
-  - __LONG DESCRIPTION__.
-version_added: "2.5"
+  - Manages AFM security firewall policies on a BIG-IP.
+version_added: 2.7
 options:
   name:
     description:
-      - Specifies the name of the ... .
+      - The name of the policy to create.
     required: True
+  description:
+    description:
+      - The description to attach to the policy.
+      - This parameter is only supported on versions of BIG-IP >= 12.1.0. On earlier
+        versions it will simply be ignored.
+  state:
+    description:
+      - When C(state) is C(present), ensures that the policy exists.
+      - When C(state) is C(absent), ensures that the policy is removed.
+    choices:
+      - present
+      - absent
+    default: present
+  rules:
+    description:
+      - Specifies a list of rules that you want associated with this policy.
+        The order of this list is the order they will be evaluated by BIG-IP.
+        If the specified rules do not exist (for example when creating a new
+        policy) then they will be created.
+      - Rules specified here, if they do not exist, will be created with "default deny"
+        behavior. It is expected that you follow-up this module with the actual
+        configuration for these rules.
+      - The C(bigip_security_policy_rule) module can be used to also create, as well as
+        edit, existing and new rules.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -41,16 +69,16 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+description:
+  description: The new description of the policy.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: My firewall policy
+rules:
+  description: The list of rules, in the order that they are evaluated, on the device.
+  returned: changed
+  type: list
+  sample: ['rule1', 'rule2', 'rule3']
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -58,43 +86,43 @@ from ansible.module_utils.basic import env_fallback
 
 try:
     from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import transform_name
 except ImportError:
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import transform_name
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'rulesReference': 'rules'
     }
 
     api_attributes = [
-
+        'description'
     ]
 
     returnables = [
-
+        'description',
+        'rules',
     ]
 
     updatables = [
-
+        'description',
+        'rules'
     ]
 
     def to_return(self):
@@ -108,7 +136,37 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ModuleParameters(Parameters):
+    @property
+    def rules(self):
+        if self._values['rules'] is None:
+            return None
+        # In case rule values are unicode (as they may be coming from the API
+        result = [str(x) for x in self._values['rules']]
+        return result
+
+
+class ApiParameters(Parameters):
+    @property
+    def rules(self):
+        result = []
+        if self._values['rules'] is None or 'items' not in self._values['rules']:
+            return []
+        for idx, item in enumerate(self._values['rules']['items']):
+            result.append(dict(item=item['fullPath'], order=idx))
+        result = [x['item'] for x in sorted(result, key=lambda k: k['order'])]
+        return result
+
+
 class Changes(Parameters):
+    pass
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
     pass
 
 
@@ -132,6 +190,15 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def rules(self):
+        if self.want.rules is None:
+            return None
+        if self.have.rules is None:
+            return self.want.rules
+        if set(self.want.rules) != set(self.have.rules):
+            return self.want.rules
 
 
 class ModuleManager(object):
@@ -179,13 +246,10 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
 
         changes = self.changes.to_return()
         result.update(**changes)
@@ -208,11 +272,19 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        return result
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -239,20 +311,50 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        params = self.changes.api_params()
+        params['name'] = self.want.name
+        params['partition'] = self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
         )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if self.want.rules:
+            self._upsert_policy_rules_on_device()
+        return response['selfLink']
 
     def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        params = self.changes.api_params()
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        resource.modify(**params)
+        if params:
+            resp = self.client.api.patch(uri, json=params)
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if 'code' in response and response['code'] == 400:
+                if 'message' in response:
+                    raise F5ModuleError(response['message'])
+                else:
+                    raise F5ModuleError(resp.content)
+            return response['selfLink']
+        if self.changes.rules is not None:
+            self._upsert_policy_rules_on_device()
 
     def absent(self):
         if self.exists():
@@ -260,27 +362,145 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        if resource:
-            resource.delete()
+        resp = self.client.api.delete(uri)
+        if resp.status == 200:
+            return True
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}/?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        result = resource.attrs
-        return ApiParameters(params=result)
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return ApiParameters(params=response)
+
+    def rule_exists(self, rule):
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}/rules/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name),
+            rule.replace('/', '_')
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
+
+    def create_default_rule_on_device(self, rule):
+        params = dict(
+            name=rule.replace('/', '_'),
+            action='reject',
+            # Adding items to the end of the list causes the list of rules to match
+            # what the user specified in the original list.
+            placeAfter='last',
+        )
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}/rules/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name),
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return response['selfLink']
+
+    def remove_rule_from_device(self, rule):
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}/rules/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name),
+            rule.replace('/', '_'),
+        )
+        # this response returns no payload
+        resp = self.client.api.delete(uri)
+        if resp.status in [400, 403]:
+            raise F5ModuleError(resp.content)
+
+    def move_rule_to_front(self, rule):
+        params = dict(
+            placeAfter='last'
+        )
+        uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}/rules/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name),
+            rule.replace('/', '_')
+        )
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return response['selfLink']
+
+    def _upsert_policy_rules_on_device(self):
+        rules = self.changes.rules
+        if rules is None:
+            rules = []
+        self._remove_rule_difference(rules)
+
+        for idx, rule in enumerate(rules):
+            if not self.rule_exists(rule):
+                self.create_default_rule_on_device(rule)
+        for idx, rule in enumerate(rules):
+            self.move_rule_to_front(rule)
+
+    def _remove_rule_difference(self, rules):
+        if rules is None or self.have.rules is None:
+            return
+        have_rules = set(self.have.rules)
+        want_rules = set(rules)
+        removable = have_rules.difference(want_rules)
+        for remove in removable:
+            self.remove_rule_from_device(remove)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__",
+            name=dict(required=True),
+            description=dict(),
+            rules=dict(type='list'),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
@@ -300,20 +520,16 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode
+        supports_check_mode=spec.supports_check_mode,
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        client = F5Client(**module.params)
+        client = F5RestClient(module=module)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
-        cleanup_tokens(client)
-        module.exit_json(**results)
+        exit_json(module, results, client)
     except F5ModuleError as ex:
-        cleanup_tokens(client)
-        module.fail_json(msg=str(ex))
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':
