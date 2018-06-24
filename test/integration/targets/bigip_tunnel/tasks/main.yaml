@@ -1,0 +1,1093 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create basic tunnel - dslite
+  bigip_tunnel:
+    name: tunnel1
+    profile: dslite
+    local_address: 1.1.1.1
+  register: result
+
+- name: Assert Create basic tunnel - dslite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - dslite - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    profile: dslite
+    local_address: 1.1.1.1
+  register: result
+
+- name: Assert Create basic tunnel - dslite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - etherip
+  bigip_tunnel:
+    name: tunnel2
+    profile: etherip
+    local_address: 1.1.1.2
+    remote_address: 2.2.2.2
+  register: result
+
+- name: Assert Create basic tunnel - etherip
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - etherip - Idempotent check
+  bigip_tunnel:
+    name: tunnel2
+    profile: etherip
+    local_address: 1.1.1.2
+    remote_address: 2.2.2.2
+  register: result
+
+- name: Assert Create basic tunnel - etherip - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - fec
+  bigip_tunnel:
+    name: tunnel3
+    profile: fec
+    local_address: 1.1.1.3
+  register: result
+
+- name: Assert Create basic tunnel - fec
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - fec - Idempotent check
+  bigip_tunnel:
+    name: tunnel3
+    profile: fec
+    local_address: 1.1.1.3
+  register: result
+
+- name: Assert Create basic tunnel - fec - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - geneve
+  bigip_tunnel:
+    name: tunnel4
+    profile: geneve
+    local_address: 1.1.1.4
+  register: result
+
+- name: Assert Create basic tunnel - geneve
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - geneve - Idempotent check
+  bigip_tunnel:
+    name: tunnel4
+    profile: geneve
+    local_address: 1.1.1.4
+  register: result
+
+- name: Assert Create basic tunnel - geneve - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - gre
+  bigip_tunnel:
+    name: tunnel5
+    profile: gre
+    local_address: 1.1.1.5
+  register: result
+
+- name: Assert Create basic tunnel - gre
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - gre - Idempotent check
+  bigip_tunnel:
+    name: tunnel5
+    profile: gre
+    local_address: 1.1.1.5
+  register: result
+
+- name: Assert Create basic tunnel - gre - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - ip4ip4
+  bigip_tunnel:
+    name: tunnel6
+    profile: ip4ip4
+    local_address: 1.1.1.6
+  register: result
+
+- name: Assert Create basic tunnel - ip4ip4
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - ip4ip4 - Idempotent check
+  bigip_tunnel:
+    name: tunnel6
+    profile: ip4ip4
+    local_address: 1.1.1.6
+  register: result
+
+- name: Assert Create basic tunnel - ip4ip4 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - ip4ip6
+  bigip_tunnel:
+    name: tunnel7
+    profile: ip4ip6
+    local_address: 1.1.1.7
+  register: result
+
+- name: Assert Create basic tunnel - ip4ip6
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - ip4ip6 - Idempotent check
+  bigip_tunnel:
+    name: tunnel7
+    profile: ip4ip6
+    local_address: 1.1.1.7
+  register: result
+
+- name: Assert Create basic tunnel - ip4ip6 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - ip6ip4
+  bigip_tunnel:
+    name: tunnel8
+    profile: ip6ip4
+    local_address: 1.1.1.8
+  register: result
+
+- name: Assert Create basic tunnel - ip6ip4
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - ip6ip4 - Idempotent check
+  bigip_tunnel:
+    name: tunnel8
+    profile: ip6ip4
+    local_address: 1.1.1.8
+  register: result
+
+- name: Assert Create basic tunnel - ip6ip4 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - ip6ip6
+  bigip_tunnel:
+    name: tunnel9
+    profile: ip6ip6
+    local_address: 1.1.1.9
+  register: result
+
+- name: Assert Create basic tunnel - ip6ip6
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - ip6ip6 - Idempotent check
+  bigip_tunnel:
+    name: tunnel9
+    profile: ip6ip6
+    local_address: 1.1.1.9
+  register: result
+
+- name: Assert Create basic tunnel - ip6ip6 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - ipip
+  bigip_tunnel:
+    name: tunnel10
+    profile: ipip
+    local_address: 1.1.1.10
+  register: result
+
+- name: Assert Create basic tunnel - ipip
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - ipip - Idempotent check
+  bigip_tunnel:
+    name: tunnel10
+    profile: ipip
+    local_address: 1.1.1.10
+  register: result
+
+- name: Assert Create basic tunnel - ipip - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - ipsec
+  bigip_tunnel:
+    name: tunnel11
+    profile: ipsec
+    local_address: 1.1.1.11
+    remote_address: 2.2.2.11
+  register: result
+
+- name: Assert Create basic tunnel - ipsec
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - ipsec - Idempotent check
+  bigip_tunnel:
+    name: tunnel11
+    profile: ipsec
+    local_address: 1.1.1.11
+    remote_address: 2.2.2.11
+  register: result
+
+- name: Assert Create basic tunnel - ipsec - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - nvgre
+  bigip_tunnel:
+    name: tunnel12
+    profile: nvgre
+    local_address: 1.1.1.12
+  register: result
+
+- name: Assert Create basic tunnel - nvgre
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - nvgre - Idempotent check
+  bigip_tunnel:
+    name: tunnel12
+    profile: nvgre
+    local_address: 1.1.1.12
+  register: result
+
+- name: Assert Create basic tunnel - nvgre - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - ppp
+  bigip_tunnel:
+    name: tunnel13
+    profile: ppp
+  register: result
+
+- name: Assert Create basic tunnel - ppp
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - ppp - Idempotent check
+  bigip_tunnel:
+    name: tunnel13
+    profile: ppp
+  register: result
+
+- name: Assert Create basic tunnel - ppp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - tcp-forward
+  bigip_tunnel:
+    name: tunnel14
+    profile: tcp-forward
+  register: result
+
+- name: Assert Create basic tunnel - tcp-forward
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - tcp-forward - Idempotent check
+  bigip_tunnel:
+    name: tunnel14
+    profile: tcp-forward
+  register: result
+
+- name: Assert Create basic tunnel - tcp-forward - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - vxlan
+  bigip_tunnel:
+    name: tunnel15
+    profile: vxlan
+    local_address: 1.1.1.15
+    remote_address: 224.0.0.1
+  register: result
+
+- name: Assert Create basic tunnel - vxlan
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - vxlan - Idempotent check
+  bigip_tunnel:
+    name: tunnel15
+    profile: vxlan
+    local_address: 1.1.1.15
+    remote_address: 224.0.0.1
+  register: result
+
+- name: Assert Create basic tunnel - vxlan - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - vxlan-gpe
+  bigip_tunnel:
+    name: tunnel16
+    profile: vxlan-gpe
+    local_address: 1.1.1.16
+  register: result
+
+- name: Assert Create basic tunnel - vxlan-gpe
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - vxlan-gpe - Idempotent check
+  bigip_tunnel:
+    name: tunnel16
+    profile: vxlan-gpe
+    local_address: 1.1.1.16
+  register: result
+
+- name: Assert Create basic tunnel - vxlan-gpe - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - vxlan-ovsdb
+  bigip_tunnel:
+    name: tunnel17
+    profile: vxlan-ovsdb
+    local_address: 1.1.1.17
+  register: result
+
+- name: Assert Create basic tunnel - vxlan-ovsdb
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - vxlan-ovsdb - Idempotent check
+  bigip_tunnel:
+    name: tunnel17
+    profile: vxlan-ovsdb
+    local_address: 1.1.1.17
+  register: result
+
+- name: Assert Create basic tunnel - vxlan-ovsdb - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - vxlan-ovsdb-multipoint
+  bigip_tunnel:
+    name: tunnel18
+    profile: vxlan-ovsdb-multipoint
+    local_address: 1.1.1.18
+  register: result
+
+- name: Assert Create basic tunnel - vxlan-ovsdb-multipoint
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - vxlan-ovsdb-multipoint - Idempotent check
+  bigip_tunnel:
+    name: tunnel18
+    profile: vxlan-ovsdb-multipoint
+    local_address: 1.1.1.18
+  register: result
+
+- name: Assert Create basic tunnel - vxlan-ovsdb-multipoint - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - vxlan-ovsdb-no-flooding
+  bigip_tunnel:
+    name: tunnel19
+    profile: vxlan-ovsdb-no-flooding
+    local_address: 1.1.1.19
+  register: result
+
+- name: Assert Create basic tunnel - vxlan-ovsdb-no-flooding
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - vxlan-ovsdb-no-flooding - Idempotent check
+  bigip_tunnel:
+    name: tunnel19
+    profile: vxlan-ovsdb-no-flooding
+    local_address: 1.1.1.19
+  register: result
+
+- name: Assert Create basic tunnel - vxlan-ovsdb-no-flooding - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create basic tunnel - wccpgre
+  bigip_tunnel:
+    name: tunnel20
+    profile: wccpgre
+    local_address: 1.1.1.20
+  register: result
+
+- name: Assert Create basic tunnel - wccpgre
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic tunnel - wccpgre - Idempotent check
+  bigip_tunnel:
+    name: tunnel20
+    profile: wccpgre
+    local_address: 1.1.1.20
+  register: result
+
+- name: Assert Create basic tunnel - wccpgre - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove basic tunnels
+  bigip_tunnel:
+    name: "tunnel{{ item }}"
+    state: absent
+  register: result
+  with_sequence: start=1 end=20
+
+- name: Assert Remove basic tunnels
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove basic tunnels - Idempotent check
+  bigip_tunnel:
+    name: "tunnel{{ item }}"
+    state: absent
+  register: result
+  with_sequence: start=1 end=20
+
+- name: Assert Remove basic tunnels - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a new ipip profile for testing changes
+  bigip_tunnel:
+    name: tunnel1
+    profile: ipip
+    description: my tunnel
+    local_address: 2.2.2.2
+    remote_address: any
+    mode: bidirectional
+    mtu: 0
+    use_pmtu: yes
+    tos: preserve
+    auto_last_hop: default
+    transparent: no
+    traffic_group: none
+  register: result
+
+- name: Assert Create a new ipip profile for testing changes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a new ipip profile for testing changes - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    profile: ipip
+    description: my tunnel
+    local_address: 2.2.2.2
+    remote_address: any
+    mode: bidirectional
+    mtu: 0
+    use_pmtu: yes
+    tos: preserve
+    auto_last_hop: default
+    transparent: no
+    traffic_group: none
+  register: result
+
+- name: Assert Create a new ipip profile for testing changes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Attempt to change profile - Expected failure
+  bigip_tunnel:
+    name: tunnel1
+    profile: dslite
+  register: result
+  failed_when: result is success
+
+- name: Assert Attempt to change profile - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description
+  bigip_tunnel:
+    name: tunnel1
+    description: my other tunnel
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    description: my other tunnel
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change local address
+  bigip_tunnel:
+    name: tunnel1
+    local_address: 3.3.3.3
+  register: result
+
+- name: Assert Change local address
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change local address - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    local_address: 3.3.3.3
+  register: result
+
+- name: Assert Change local address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change remote address - IP
+  bigip_tunnel:
+    name: tunnel1
+    remote_address: 4.4.4.4
+  register: result
+
+- name: Assert Change remote address - IP
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change remote address - IP - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    remote_address: 4.4.4.4
+  register: result
+
+- name: Assert Change remote address - IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change remote address - any
+  bigip_tunnel:
+    name: tunnel1
+    remote_address: any
+  register: result
+
+- name: Assert Change remote address - any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change remote address - any - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    profile: ipip
+    remote_address: any
+  register: result
+
+- name: Assert Change remote address - any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mode - inbound
+  bigip_tunnel:
+    name: tunnel1
+    mode: inbound
+  register: result
+
+- name: Assert Change mode - inbound
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mode - inbound - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    mode: inbound
+  register: result
+
+- name: Assert Change mode inbound - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change remote address for testing outbound
+  bigip_tunnel:
+    name: tunnel1
+    remote_address: 4.4.4.4
+  register: result
+
+- name: Change mode - outbound
+  bigip_tunnel:
+    name: tunnel1
+    mode: outbound
+  register: result
+
+- name: Assert Change mode - outbound
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mode - outbound - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    mode: outbound
+  register: result
+
+- name: Assert Change mode - outbound - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mode - bidirectional
+  bigip_tunnel:
+    name: tunnel1
+    mode: bidirectional
+  register: result
+
+- name: Assert Change mode - bidirectional
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mode - bidirectional - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    mode: bidirectional
+  register: result
+
+- name: Assert Change mode - bidirectional - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mtu
+  bigip_tunnel:
+    name: tunnel1
+    mtu: 1000
+  register: result
+
+- name: Assert Change mtu
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mtu - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    mtu: 1000
+  register: result
+
+- name: Assert Change mtu - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use PMTU - no
+  bigip_tunnel:
+    name: tunnel1
+    use_pmtu: no
+  register: result
+
+- name: Assert Change use PMTU - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use PMTU - no - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    use_pmtu: no
+  register: result
+
+- name: Assert Change use PMTU - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use PMTU - yes
+  bigip_tunnel:
+    name: tunnel1
+    use_pmtu: yes
+  register: result
+
+- name: Assert Change use PMTU - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use PMTU - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    use_pmtu: yes
+  register: result
+
+- name: Assert Change use PMTU - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change TOS - numeric
+  bigip_tunnel:
+    name: tunnel1
+    tos: 100
+  register: result
+
+- name: Assert Change TOS - numeric
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change TOS - numeric - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    tos: 100
+  register: result
+
+- name: Assert Change TOS - numeric - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change TOS - preserve
+  bigip_tunnel:
+    name: tunnel1
+    tos: preserve
+  register: result
+
+- name: Assert Change TOS - preserve
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change TOS - preserve - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    tos: preserve
+  register: result
+
+- name: Assert Change TOS - preserve - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auto lasthop - disasbled
+  bigip_tunnel:
+    name: tunnel1
+    auto_last_hop: disabled
+  register: result
+
+- name: Assert Change auto lasthop - disabled
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auto lasthop - disabled - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    auto_last_hop: disabled
+  register: result
+
+- name: Assert Change auto lasthop - disabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auto lasthop - default
+  bigip_tunnel:
+    name: tunnel1
+    auto_last_hop: default
+  register: result
+
+- name: Assert Change auto lasthop - default
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auto lasthop - default - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    auto_last_hop: default
+  register: result
+
+- name: Assert Change auto lasthop - default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auto lasthop - enabled
+  bigip_tunnel:
+    name: tunnel1
+    auto_last_hop: enabled
+  register: result
+
+- name: Assert Change auto lasthop - enabled
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auto lasthop - enabled - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    auto_last_hop: enabled
+  register: result
+
+- name: Assert Change auto lasthop - enabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change transparent with non-wildcard remote - Expected failure
+  bigip_tunnel:
+    name: tunnel1
+    transparent: yes
+  register: result
+  failed_when: result is success
+
+- name: Assert Change transparent with non-wildcard remote - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change remote address for testing transparent
+  bigip_tunnel:
+    name: tunnel1
+    remote_address: any
+  register: result
+
+- name: Change transparent - yes
+  bigip_tunnel:
+    name: tunnel1
+    transparent: yes
+  register: result
+
+- name: Assert Change transparent - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change transparent - yes - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    transparent: yes
+  register: result
+
+- name: Assert Change transparent - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change transparent - no
+  bigip_tunnel:
+    name: tunnel1
+    transparent: no
+  register: result
+
+- name: Assert Change transparent - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change transparent - no - Idempotent check
+  bigip_tunnel:
+    name: tunnel1
+    transparent: no
+  register: result
+
+- name: Assert Change transparent - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change traffic group - Expected failure
+  bigip_tunnel:
+    name: tunnel1
+    traffic_group: traffic-group-1
+  register: result
+  failed_when: result is success
+
+- name: Assert Change traffic group - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create tunnel with traffic group
+  bigip_tunnel:
+    name: tunnel2
+    profile: ipip
+    local_address: 2.2.2.2
+    traffic_group: traffic-group-1
+  register: result
+
+- name: Assert Create tunnel with traffic group
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create tunnel with traffic group - Idempotent check
+  bigip_tunnel:
+    name: tunnel2
+    profile: ipip
+    local_address: 2.2.2.2
+    traffic_group: traffic-group-1
+  register: result
+
+- name: Assert Create tunnel with traffic group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove tunnels
+  bigip_tunnel:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - tunnel1
+    - tunnel2
+
+- import_tasks: teardown.yaml
