@@ -351,7 +351,6 @@ from ansible.module_utils.network.common.utils import validate_ip_v6_address
 from ansible.module_utils.network.common.utils import validate_ip_address
 
 try:
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
@@ -364,7 +363,6 @@ try:
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import is_valid_ip
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
