@@ -93,6 +93,24 @@ options:
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
     type: bool
+  enable_dns_cache:
+    description:
+      - Specifies whether the system caches DNS responses.
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
+      - When C(yes), the BIG-IP system caches DNS responses handled by the virtual
+        servers associated with this profile. When you enable this setting, you must
+        also specify a value for C(cache_name).
+      - When C(no), the BIG-IP system does not cache DNS responses handled by the
+        virtual servers associated with this profile. However, the profile retains
+        the association with the DNS cache in the C(cache_name) parameter. Disable
+        this setting when you want to debug the system.
+    type: bool
+  cache_name:
+    description:
+      - Specifies the user-created cache that the system uses to cache DNS responses.
+      - When you select a cache for the system to use, you must also set C(enable_dns_cache)
+        to C(yes)
   partition:
     description:
       - Device partition to manage resources on.
@@ -204,6 +222,8 @@ class Parameters(AnsibleF5Parameters):
         'processXfr': 'enable_zone_transfer',
         'enableDnsExpress': 'enable_dns_express',
         'defaultsFrom': 'parent',
+        'enableCache': 'enable_cache',
+        'cache': 'cache_name'
     }
 
     api_attributes = [
@@ -214,7 +234,9 @@ class Parameters(AnsibleF5Parameters):
         'enableDnssec',
         'processXfr',
         'enableDnsExpress',
-        'defaultsFrom'
+        'defaultsFrom',
+        'cache',
+        'enableCache',
     ]
 
     returnables = [
@@ -225,6 +247,8 @@ class Parameters(AnsibleF5Parameters):
         'enable_dnssec',
         'enable_zone_transfer',
         'enable_dns_express',
+        'cache_name',
+        'enable_cache',
     ]
 
     updatables = [
@@ -235,6 +259,8 @@ class Parameters(AnsibleF5Parameters):
         'enable_dnssec',
         'enable_zone_transfer',
         'enable_dns_express',
+        'cache_name',
+        'enable_cache',
     ]
 
 
@@ -272,6 +298,14 @@ class ApiParameters(Parameters):
         return False
 
     @property
+    def enable_cache(self):
+        if self._values['enable_cache'] is None:
+            return None
+        if self._values['enable_cache'] == 'yes':
+            return True
+        return False
+
+    @property
     def enable_dnssec(self):
         if self._values['enable_dnssec'] is None:
             return None
@@ -302,6 +336,15 @@ class ModuleParameters(Parameters):
         if self._values['parent'] is None:
             return None
         result = fq_name(self.partition, self._values['parent'])
+        return result
+
+    @property
+    def cache_name(self):
+        if self._values['cache_name'] is None:
+            return None
+        if self._values['cache_name'] == '':
+            return ''
+        result = fq_name(self.partition, self._values['cache_name'])
         return result
 
 
@@ -347,6 +390,14 @@ class UsableChanges(Changes):
         if self._values['enable_gtm'] is None:
             return None
         if self._values['enable_gtm']:
+            return 'yes'
+        return 'no'
+
+    @property
+    def enable_cache(self):
+        if self._values['enable_cache'] is None:
+            return None
+        if self._values['enable_cache']:
             return 'yes'
         return 'no'
 
@@ -413,6 +464,14 @@ class ReportableChanges(Changes):
         if self._values['enable_dnssec'] is None:
             return None
         if self._values['enable_dnssec'] == 'yes':
+            return True
+        return False
+
+    @property
+    def enable_cache(self):
+        if self._values['enable_cache'] is None:
+            return None
+        if self._values['enable_cache'] == 'yes':
             return True
         return False
 
@@ -540,6 +599,11 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
+        if self.changes.enable_cache is True or self.have.enable_cache is True:
+            if not self.have.cache_name or self.changes.cache_name == '':
+                raise F5ModuleError(
+                    "To enable DNS cache, a DNS cache must be specified."
+                )
         if self.module.check_mode:
             return True
         self.update_on_device()
@@ -555,6 +619,11 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        if self.want.enable_cache is True and not self.want.cache_name:
+            raise F5ModuleError(
+                "You must specify a 'cache_name' when creating a DNS profile that sets 'enable_cache' to 'yes'."
+            )
+
         if self.module.check_mode:
             return True
         self.create_on_device()
@@ -611,6 +680,8 @@ class ArgumentSpec(object):
             process_recursion_desired=dict(type='bool'),
             use_local_bind=dict(type='bool'),
             enable_dns_firewall=dict(type='bool'),
+            enable_cache=dict(type='bool'),
+            cache_name=dict(),
             state=dict(
                 default='present',
                 choices=['present', 'absent']

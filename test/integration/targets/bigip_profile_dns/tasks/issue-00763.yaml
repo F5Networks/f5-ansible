@@ -1,0 +1,93 @@
+---
+
+- name: Create DNS cache on the system
+  bigip_command:
+    commands:
+      - tmsh create ltm dns cache resolver foo { route-domain 0 }
+
+- name: Create DNS profile using cache, no cache - Expected failure
+  bigip_profile_dns:
+    name: issue-00763-1
+    enable_cache: yes
+  register: result
+  failed_when: result is success
+
+- name: Assert Create DNS profile using cache, no cache - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create DNS profile specify cache, default disable
+  bigip_profile_dns:
+    name: issue-00763-1
+    cache_name: foo
+  register: result
+
+- name: Assert Create DNS profile specify cache, default disable
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create DNS profile specify cache, default disable - Idempotent check
+  bigip_profile_dns:
+    name: issue-00763-1
+    cache_name: foo
+  register: result
+
+- name: Assert Create DNS profile specify cache, default disable - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Enable cache on profile
+  bigip_profile_dns:
+    name: issue-00763-1
+    cache_name: foo
+    enable_cache: yes
+  register: result
+
+- name: Assert Enable cache on profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Enable cache on profile - Idempotent check
+  bigip_profile_dns:
+    name: issue-00763-1
+    cache_name: foo
+    enable_cache: yes
+  register: result
+
+- name: Assert Enable cache on profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove cache from enabled profile - Expected failure
+  bigip_profile_dns:
+    name: issue-00763-1
+    cache_name: ''
+    enable_cache: yes
+  register: result
+  failed_when: result is success
+
+- name: Assert Remove cache from enabled profile - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove profile
+  bigip_profile_dns:
+    name: issue-00763-1
+    state: absent
+
+- name: Remove DNS cache
+  bigip_command:
+    commands:
+      - tmsh delete ltm dns cache resolver foo
