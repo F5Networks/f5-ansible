@@ -150,37 +150,47 @@ enable_dns_express:
   description: Whether DNS Express is enabled on the resource or not.
   returned: changed
   type: bool
-  sample: True
+  sample: yes
 enable_zone_transfer:
   description: Whether zone transfer are enabled on the resource or not.
   returned: changed
   type: bool
-  sample: False
+  sample: no
 enable_dnssec:
   description: Whether DNSSEC is enabled on the resource or not.
   returned: changed
   type: bool
-  sample: False
+  sample: no
 enable_gtm:
   description: Whether GTM is used to manage the resource or not.
   returned: changed
   type: bool
-  sample: True
+  sample: yes
 process_recursion_desired:
   description: Whether client-side DNS packets are processed with Recursion Desired set.
   returned: changed
   type: bool
-  sample: True
+  sample: yes
 use_local_bind:
   description: Whether non-wide IP queries are forwarded to the local BIND server or not.
   returned: changed
   type: bool
-  sample: False
+  sample: no
 enable_dns_firewall:
   description: Whether DNS firewall capability is enabled or not.
   returned: changed
   type: bool
-  sample: False
+  sample: no
+enable_cache:
+  description: Whether DNS caching is enabled or not.
+  returned: changed
+  type: bool
+  sample: no
+cache_name:
+  description: Name of the cache used by DNS.
+  returned: changed
+  type: string
+  sample: /Common/cache1
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -427,69 +437,7 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    @property
-    def enable_dns_firewall(self):
-        if self._values['enable_dns_firewall'] is None:
-            return None
-        if self._values['enable_dns_firewall'] == 'yes':
-            return True
-        return False
-
-    @property
-    def use_local_bind(self):
-        if self._values['use_local_bind'] is None:
-            return None
-        if self._values['use_local_bind'] == 'yes':
-            return True
-        return False
-
-    @property
-    def process_recursion_desired(self):
-        if self._values['process_recursion_desired'] is None:
-            return None
-        if self._values['process_recursion_desired'] == 'yes':
-            return True
-        return False
-
-    @property
-    def enable_gtm(self):
-        if self._values['enable_gtm'] is None:
-            return None
-        if self._values['enable_gtm'] == 'yes':
-            return True
-        return False
-
-    @property
-    def enable_dnssec(self):
-        if self._values['enable_dnssec'] is None:
-            return None
-        if self._values['enable_dnssec'] == 'yes':
-            return True
-        return False
-
-    @property
-    def enable_cache(self):
-        if self._values['enable_cache'] is None:
-            return None
-        if self._values['enable_cache'] == 'yes':
-            return True
-        return False
-
-    @property
-    def enable_zone_transfer(self):
-        if self._values['enable_zone_transfer'] is None:
-            return None
-        if self._values['enable_zone_transfer'] == 'yes':
-            return True
-        return False
-
-    @property
-    def enable_dns_express(self):
-        if self._values['enable_dns_express'] is None:
-            return None
-        if self._values['enable_dns_express'] == 'yes':
-            return True
-        return False
+    pass
 
 
 class Difference(object):
