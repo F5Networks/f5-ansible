@@ -8,6 +8,7 @@ __metaclass__ = type
 
 
 import os
+import socket
 import sys
 
 from ansible.module_utils.urls import open_url, fetch_url
@@ -167,6 +168,10 @@ class Response(object):
 
     @property
     def content(self):
+        return self._content.decode('utf-8')
+
+    @property
+    def raw_content(self):
         return self._content
 
     def json(self):
@@ -274,7 +279,7 @@ class iControlRestSession(object):
 
         try:
             result = open_url(request.url, **params)
-            response._content = result.read().decode('utf-8')
+            response._content = result.read()
             response.status = result.getcode()
             response.url = result.geturl()
             response.msg = "OK (%s bytes)" % result.headers.get('Content-Length', 'unknown')
@@ -315,3 +320,62 @@ def debug_prepared_request(url, method, headers, data=None):
             kwargs = _json.loads(data.decode('utf-8'))
             result = result + " -d '" + _json.dumps(kwargs, sort_keys=True) + "'"
     return result
+
+
+def download_file(client, url, dest):
+    """Download a file from the remote device
+
+    This method handles chunking needed to download a file from
+    a given URL on the BIG-IP.
+
+    :param client:
+    :param url:
+    :param dest:
+    :return:
+    """
+    with open(dest, 'wb') as fileobj:
+        chunk_size = 512 * 1024
+        start = 0
+        end = chunk_size - 1
+        size = 0
+        current_bytes = 0
+
+        while True:
+            content_range = "%s-%s/%s" % (start, end, size)
+            headers = {
+                'Content-Range': content_range,
+                'Content-Type': 'application/octet-stream'
+            }
+            data = {
+                'headers': headers,
+                'verify': False,
+                'stream': False
+            }
+            response = client.api.get(url, headers=headers, json=data)
+            if response.status == 200:
+                # If the size is zero, then this is the first time through
+                # the loop and we don't want to write data because we
+                # haven't yet figured out the total size of the file.
+                if size > 0:
+                    current_bytes += chunk_size
+                    fileobj.write(response.raw_content)
+            # Once we've downloaded the entire file, we can break out of
+            # the loop
+            if end == size:
+                break
+            crange = response.headers['content-range']
+            # Determine the total number of bytes to read.
+            if size == 0:
+                size = int(crange.split('/')[-1]) - 1
+                # If the file is smaller than the chunk_size, the BigIP
+                # will return an HTTP 400. Adjust the chunk_size down to
+                # the total file size...
+                if chunk_size > size:
+                    end = size
+                # ...and pass on the rest of the code.
+                continue
+            start += chunk_size
+            if (current_bytes + chunk_size) > size:
+                end = size
+            else:
+                end = start + chunk_size - 1
