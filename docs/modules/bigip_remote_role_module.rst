@@ -51,6 +51,7 @@ Parameters
                                                     <div>When creating a new remote role, if this parameter is not provided, the default is <code>none</code>.</div>
                                                     <div>The <code>partition_access</code> parameter controls which partitions the account can access.</div>
                                                     <div>The chosen role may affect the partitions that one is allowed to specify. Specifically, roles such as <code>administrator</code>, <code>auditor</code> and <code>resource-administrator</code> required a <code>partition_access</code> of <code>all</code>.</div>
+                                                    <div>A set of pre-existing roles ship with the system. They are <code>none</code>, <code>guest</code>, <code>operator</code>, <code>application-editor</code>, <code>manager</code>, <code>certificate-manager</code>, <code>irule-manager</code>, <code>user-manager</code>, <code>resource-administrator</code>, <code>auditor</code>, <code>administrator</code>, <code>firewall-manager</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -278,6 +279,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies terminal-based accessibility for remote accounts not already explicitly assigned a user role.</div>
+                                                    <div>Common values for this include <code>tmsh</code> and <code>none</code>, however custom values may also be specified.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -325,10 +327,18 @@ Examples
     - name: Create a remote role
       bigip_remote_role:
         name: foo
-        password: secret
-        server: lb.mydomain.com
+        group_name: ldap_group
+        line_order: 1
+        attribute_string: memberOf=cn=ldap_group,cn=ldap.group,ou=ldap
+        remote_access: enabled
+        assigned_role: administrator
+        partition_access: all
+        terminal_access: disabled
         state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -391,6 +401,3 @@ Author
 
 - Tim Rupp (@caphrim007)
 
-
-.. hint::
-    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/bigip_remote_role.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.
