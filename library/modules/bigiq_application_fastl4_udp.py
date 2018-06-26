@@ -117,7 +117,7 @@ EXAMPLES = r'''
         port: 8080
       - address: 5.6.7.8
         port: 8080
-    load_balancer:
+    inbound_virtual:
       name: foo
       destination: 2.2.2.2
       netmask: 255.255.255.255
