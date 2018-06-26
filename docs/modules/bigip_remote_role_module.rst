@@ -1,14 +1,14 @@
-:source: modules/bigip_software_facts.py
+:source: modules/bigip_remote_role.py
 
 :orphan:
 
-.. _bigip_software_facts_module:
+.. _bigip_remote_role_module:
 
 
-bigip_software_facts - Collect software facts from BIG-IP devices
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_remote_role - Manage remote roles on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_software_facts - Collect software facts from BIG-IP devices
 
 Synopsis
 --------
-- Collect information about installed volumes, existing ISOs for images and hotfixes on the BIG-IP device.
+- Manages remote roles on a BIg-IP. Remote roles are used in situations where user authentication is handled off-box. Local access control to the BIG-IP is controlled by the defined remote role. Where-as authentication (and by extension, assignment to the role) is handled off-box.
 
 
 
@@ -34,37 +34,69 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>filter</b>
+                    <b>assigned_role</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Filter responses based on the attribute and value provided. Valid filters are required to be in <code>key:value</code> format, with keys being one of the following; name, build, version, status, active.</div>
+                                                                        <div>Specifies the authorization (level of access) for the account.</div>
+                                                    <div>When creating a new remote role, if this parameter is not provided, the default is <code>none</code>.</div>
+                                                    <div>The <code>partition_access</code> parameter controls which partitions the account can access.</div>
+                                                    <div>The chosen role may affect the partitions that one is allowed to specify. Specifically, roles such as <code>administrator</code>, <code>auditor</code> and <code>resource-administrator</code> required a <code>partition_access</code> of <code>all</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>include</b>
+                    <b>attribute_string</b>
                                                         </td>
                                 <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>all</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>image</li>
-                                                                                                                                                                                                <li>hotfix</li>
-                                                                                                                                                                                                <li>volume</li>
-                                                                                    </ul>
-                                                                                    <b>Default:</b><br/><div style="color: blue">[&#39;all&#39;]</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>Type of information to collect.</div>
+                                                                        <div>Specifies the user account attributes saved in the group, in the format <code>cn=, ou=, dc=</code>.</div>
+                                                    <div>When creating a new remote role, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>line_order</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the order of the line in the file <code>/config/bigip/auth/remoterole</code>.</div>
+                                                    <div>The LDAP and Active Directory servers read this file line by line.</div>
+                                                    <div>The order of the information is important; therefore, F5 recommends that you set the first line at 1000. This allows you, in the future, to insert lines before the first line.</div>
+                                                    <div>When creating a new remote role, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the remote role.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>partition_access</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the accessible partitions for the account.</div>
+                                                    <div>This parameter supports the reserved names <code>all</code> and <code>Common</code>, as well as specific partitions a user may access.</div>
+                                                    <div>Users who have access to a partition can operate on objects in that partition, as determined by the permissions conferred by the user&#x27;s <code>assigned_role</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -190,6 +222,20 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>remote_access</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables remote access for the specified group of remotely authenticated users.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -207,6 +253,31 @@ Parameters
                                     </td>
                                                                 <td>
                                                                         <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>state</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>absent</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>present</code>, guarantees that the remote role exists.</div>
+                                                    <div>When <code>absent</code>, removes the remote role from the system.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>terminal_access</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies terminal-based accessibility for remote accounts not already explicitly assigned a user role.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -251,13 +322,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Gather image facts filter on version
-      bigip_software_facts:
-        server: lb.mydomain.com
-        user: admin
+    - name: Create a remote role
+      bigip_remote_role:
+        name: foo
         password: secret
-        include: image
-        filter: version:12.1.1
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
 
 
@@ -270,48 +341,35 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>hotfixes</b>
-                    <br/><div style="font-size: small; color: red">list of dict</div>
+                    <b>param1</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>List of hotfix ISOs that are present on the unit.</div>
+                                            <div>The new param1 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;hotfixes&#x27;: [{&#x27;build&#x27;: &#x27;2.0.204&#x27;, &#x27;fileSize&#x27;: &#x27;1997 MB&#x27;, &#x27;lastModified&#x27;: &#x27;Sun Oct  2 20:50:04 2016&#x27;, &#x27;name&#x27;: &#x27;12.1.1-hf2.iso&#x27;, &#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;}]}</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>images</b>
-                    <br/><div style="font-size: small; color: red">list of dict</div>
+                    <b>param2</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>List of base image ISOs that are present on the unit.</div>
+                                            <div>The new param2 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;images&#x27;: [{&#x27;build&#x27;: &#x27;0.0.184&#x27;, &#x27;fileSize&#x27;: &#x27;1997 MB&#x27;, &#x27;lastModified&#x27;: &#x27;Sun Oct  2 20:50:04 2016&#x27;, &#x27;name&#x27;: &#x27;BIGIP-12.1.1.0.0.184.iso&#x27;, &#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;}]}</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>volumes</b>
-                    <br/><div style="font-size: small; color: red">list of dict</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>List the volumes present on device.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;volumes&#x27;: [{&#x27;basebuild&#x27;: &#x27;0.0.184&#x27;, &#x27;build&#x27;: &#x27;0.0.184&#x27;, &#x27;name&#x27;: &#x27;HD1.2&#x27;, &#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;status&#x27;: &#x27;complete&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;}]}</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
                                     </td>
             </tr>
                         </table>
@@ -331,8 +389,8 @@ This module is flagged as **preview** which means that it is not guaranteed to h
 Author
 ~~~~~~
 
-- Wojciech Wypior (@wojtek0806)
+- Tim Rupp (@caphrim007)
 
 
 .. hint::
-    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/bigip_software_facts.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.
+    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/bigip_remote_role.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.

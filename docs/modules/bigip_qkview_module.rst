@@ -341,47 +341,6 @@ Examples
 
 
 
-Return Values
--------------
-Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
-            <th colspan="1">Key</th>
-            <th>Returned</th>
-            <th width="100%">Description</th>
-        </tr>
-                    <tr>
-                                <td colspan="1">
-                    <b>stdout</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>always</td>
-                <td>
-                                            <div>The set of responses from the commands</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;...&#x27;, &#x27;...&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>stdout_lines</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>always</td>
-                <td>
-                                            <div>The value of stdout split into a list</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[[&#x27;...&#x27;, &#x27;...&#x27;], [&#x27;...&#x27;], [&#x27;...&#x27;]]</div>
-                                    </td>
-            </tr>
-                        </table>
-    <br/><br/>
-
 
 Status
 ------
