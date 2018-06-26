@@ -1,14 +1,14 @@
-:source: modules/bigip_security_policy.py
+:source: modules/bigip_profile_persistence_src_addr.py
 
 :orphan:
 
-.. _bigip_security_policy_module:
+.. _bigip_profile_persistence_src_addr_module:
 
 
-bigip_security_policy - Manage AFM security firewall policies on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_persistence_src_addr - Manage source address persistence profiles
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.7
+.. versionadded:: 2.6
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_security_policy - Manage AFM security firewall policies on a BIG-IP
 
 Synopsis
 --------
-- Manages AFM security firewall policies on a BIG-IP.
+- Manages source address persistence profiles.
 
 
 
@@ -34,21 +34,72 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>description</b>
+                    <b>hash_algorithm</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>default</li>
+                                                                                                                                                                                                <li>carp</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>The description to attach to the policy.</div>
-                                                    <div>This parameter is only supported on versions of BIG-IP &gt;= 12.1.0. On earlier versions it will simply be ignored.</div>
+                                                                        <div>Specifies the algorithm the system uses for hash persistence load balancing. The hash result is the input for the algorithm.</div>
+                                                    <div>When <code>default</code>, specifies that the system uses the index of pool members to obtain the hash result for the input to the algorithm.</div>
+                                                    <div>When <code>carp</code>, specifies that the system uses the Cache Array Routing Protocol (CARP) to obtain the hash result for the input to the algorithm.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>match_across_pools</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code>, specifies that the system can use any pool that contains this persistence record.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>match_across_services</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code>, specifies that all persistent connections from a client IP address that go to the same virtual IP address also go to the same node.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>match_across_virtuals</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code>, specifies that all persistent connections from the same client IP address go to the same node.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -58,18 +109,33 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The name of the policy to create.</div>
+                                                                        <div>Specifies the name of the profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>partition</b>
+                    <b>override_connection_limit</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
-                                    </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Device partition to manage resources on.</div>
+                                                                        <div>When <code>yes</code>, specifies that the system allows you to specify that pool member connection limits will be overridden for persisted clients.</div>
+                                                    <div>Per-virtual connection limits remain hard limits and are not overridden.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>parent</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the profile from which this profile inherits settings.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>source_addr</code> profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -195,18 +261,6 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>rules</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a list of rules that you want associated with this policy. The order of this list is the order they will be evaluated by BIG-IP. If the specified rules do not exist (for example when creating a new policy) then they will be created.</div>
-                                                    <div>Rules specified here, if they do not exist, will be created with &quot;default deny&quot; behavior. It is expected that you follow-up this module with the actual configuration for these rules.</div>
-                                                    <div>The <code>bigip_security_policy_rule</code> module can be used to also create, as well as edit, existing and new rules.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -228,17 +282,15 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>state</b>
+                    <b>timeout</b>
                                                         </td>
                                 <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>absent</li>
-                                                                                    </ul>
-                                                                            </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>When <code>state</code> is <code>present</code>, ensures that the policy exists.</div>
-                                                    <div>When <code>state</code> is <code>absent</code>, ensures that the policy is removed.</div>
+                                                                        <div>Specifies the duration of the persistence entries.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                    <div>To specify an indefinite timeout, use the value <code>indefinite</code>.</div>
+                                                    <div>If specifying a numeric timeout, the value must be between <code>1</code> and <code>4294967295</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -283,13 +335,16 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
-      bigip_security_policy:
+    - name: Create a profile
+      bigip_profile_persistence_src_addr:
         name: foo
         password: secret
         server: lb.mydomain.com
         state: present
         user: admin
+        hash_algorithm: carp
+        match_across_services: yes
+        match_across_virtuals: yes
       delegate_to: localhost
 
 
@@ -309,28 +364,28 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>param1</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new description of the policy.</div>
+                                            <div>The new param1 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My firewall policy</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>rules</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>param2</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The list of rules, in the order that they are evaluated, on the device.</div>
+                                            <div>The new param2 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;rule1&#x27;, &#x27;rule2&#x27;, &#x27;rule3&#x27;]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
                                     </td>
             </tr>
                         </table>
@@ -354,4 +409,4 @@ Author
 
 
 .. hint::
-    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/bigip_security_policy.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.
+    If you notice any issues in this documentation you can `edit this document <https://github.com/ansible/ansible/edit/devel/lib/ansible/modules/modules/bigip_profile_persistence_src_addr.py?description=%3C!---%20Your%20description%20here%20--%3E%0A%0A%2Blabel:%20docsite_pr>`_ to improve it.

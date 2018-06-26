@@ -34,13 +34,41 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>cache_name</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the user-created cache that the system uses to cache DNS responses.</div>
+                                                    <div>When you select a cache for the system to use, you must also set <code>enable_dns_cache</code> to <code>yes</code></div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>enable_dns_cache</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the system caches DNS responses.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                    <div>When <code>yes</code>, the BIG-IP system caches DNS responses handled by the virtual servers associated with this profile. When you enable this setting, you must also specify a value for <code>cache_name</code>.</div>
+                                                    <div>When <code>no</code>, the BIG-IP system does not cache DNS responses handled by the virtual servers associated with this profile. However, the profile retains the association with the DNS cache in the <code>cache_name</code> parameter. Disable this setting when you want to debug the system.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>enable_dns_express</b>
                                                         </td>
@@ -407,12 +435,36 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
+                                <td colspan="1">
+                    <b>cache_name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Name of the cache used by DNS.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/cache1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>enable_cache</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Whether DNS caching is enabled or not.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
                                 <td colspan="1">
                     <b>enable_dns_express</b>
                     <br/><div style="font-size: small; color: red">bool</div>

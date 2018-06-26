@@ -34,20 +34,37 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>force</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                                                                    <li>yes</li>
+                                                                                                                                                                                                                                                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                                    <b>Default:</b><br/><div style="color: blue">no</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>If <code>yes</code> will upload the file every time and replace the file on the device. If <code>no</code>, the file will only be uploaded if it does not already exist. Generally should be <code>yes</code> only in cases where you have reason to believe that the image was corrupted during upload.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>image</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the ... .</div>
+                                                                        <div>The image to put on the remote device.</div>
+                                                    <div>This may be an absolute or relative location on the Ansible controller.</div>
+                                                    <div>You may also supply a URL to have the image downloaded directly to the BIG-IP. To take advantage of this, your BIG-IP will need to be able to reach the service hosting your image.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -190,6 +207,22 @@ Parameters
                                     </td>
                                                                 <td>
                                                                         <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>state</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>absent</li>
+                                                                                                                                                                                                <li>present</li>
+                                                                                    </ul>
+                                                                                    <b>Default:</b><br/><div style="color: blue">activated</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>When <code>present</code>, ensures that the image is uploaded.</div>
+                                                    <div>When <code>absent</code>, ensures that the image is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>

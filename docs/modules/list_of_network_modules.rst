@@ -80,6 +80,7 @@ F5
   * :ref:`bigip_provision_module`
   * :ref:`bigip_qkview_module`
   * :ref:`bigip_raw_module`
+  * :ref:`bigip_remote_role_module`
   * :ref:`bigip_remote_syslog_module`
   * :ref:`bigip_routedomain_module`
   * :ref:`bigip_security_address_list_module`
@@ -95,7 +96,6 @@ F5
   * :ref:`bigip_snmp_community_module`
   * :ref:`bigip_snmp_trap_module`
   * :ref:`bigip_software_module`
-  * :ref:`bigip_software_facts_module`
   * :ref:`bigip_software_image_module`
   * :ref:`bigip_software_install_module`
   * :ref:`bigip_software_update_module`
@@ -107,6 +107,7 @@ F5
   * :ref:`bigip_timer_policy_module`
   * :ref:`bigip_traffic_group_module`
   * :ref:`bigip_trunk_module`
+  * :ref:`bigip_tunnel_module`
   * :ref:`bigip_ucs_module`
   * :ref:`bigip_ucs_fetch_module`
   * :ref:`bigip_user_module`
