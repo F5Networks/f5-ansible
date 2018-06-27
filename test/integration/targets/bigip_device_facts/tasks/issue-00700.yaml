@@ -26,6 +26,19 @@
       - result.fastl4_profiles | selectattr("name", "match", "fastL4") | map(attribute='idle_timeout') | first == 300
       - result.fastl4_profiles | json_query("[?name=='fastL4'].idle_timeout") | first == 300
 
+- name: Issue 00700 - Select oneconnect-profile facts
+  bigip_device_facts:
+    include:
+      - oneconnect-profiles
+  register: result
+
+- name: Issue 00700 - Assert Select oneconnect-profile facts
+  assert:
+    that:
+      - result is success
+      - result.oneconnect_profiles | selectattr("name", "match", "oneconnect") | map(attribute='max_age') | first == 86400
+      - result.oneconnect_profiles | json_query("[?name=='oneconnect'].max_age") | first == 86400
+
 - name: Issue 00700 - Select all profile facts
   bigip_device_facts:
     include:
@@ -39,4 +52,5 @@
       - "'fasthttp_profiles' in result"
       - "'fastl4_profiles' in result"
       - "'client_ssl_profiles' in result"
+      - "'oneconnect_profiles' in result"
       - "'system-info' not in result"
