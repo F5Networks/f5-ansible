@@ -5,3 +5,4 @@ cloud_sptheme
 sphinxjp.themes.basicstrap
 sphinxcontrib-napoleon
 git+https://github.com/ansible/ansible.git
+awscli
