@@ -42,8 +42,6 @@ You can install these modules by using pip (either globally or within a virtual 
 To view dependencies for a specific module, view the module's Documentation > Requirements section.
 
 
-
-
 .. |install_python| raw:: html
 
    <a href="http://www.python.org/" target="_blank">http://www.python.org/</a>
