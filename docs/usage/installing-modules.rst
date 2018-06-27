@@ -9,10 +9,10 @@ Other F5 modules are not installed when you install Ansible. These modules are e
 
 You might need to use experimental modules when you want to test something, or when you just can't wait for a module to be upstreamed to Ansible.
 
-You can install experimental modules on your system in one of a few ways.
+The safest way to install experimental modules on your system is via a relative location.
 
-Method 1: Install in a relative location (recommended)
-------------------------------------------------------
+Install in a relative location (recommended)
+--------------------------------------------
 
 Ansible allows you to put modules in a location that is relative to the project you are working on. To accomplish this, follow the instructions
 below.
@@ -111,47 +111,5 @@ either of the downloaded sources.
 
 Move this ``library`` directory to the location you specified in the ``ansible.cfg`` above. In the example above, this
 would be the same directory that the ``ansible.cfg`` is in.
-
-Method 2: Install in your Ansible install directory
----------------------------------------------------
-
-Different systems can put Ansible in different locations. The recommended way to install Ansible (via ``pip``) puts the modules here:
-
-- ``/usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/``
-
-To install the F5 modules in this repository, you can copy the contents of the ``library/modules/`` directory that F5 provides into the location mentioned
-previously.
-
-On Mac OS X, you can use the following location for the modules:
-
-- ``/Library/Frameworks/Python.framework/Versions/[PYTHON_VERSION]/lib/python[PYTHON_VERSION]/site-packages/ansible/modules/extras/network/f5``
-
-For example:
-
-.. code-block:: bash
-
-   cp library/* /usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/
-
-This command overwrites *all* of the modules with the ones in this repository. If you want only one or two modules, then just copy those. For example:
-
-.. code-block:: bash
-
-   cp library/bigip_iapp_service.py /usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/
-
-This example copies only the ``bigip_iapp_service`` module.
-
-Additionally, you will need to copy the module utils files in ``library/module_utils/`` to the appropriate location on disk. This location is similar to the
-modules path specified above, except that it is in the ``ansible/module_utils/network/f5/`` directory instead.
-
-Finally, you will need to update the action plugins that the F5 modules use. These can be found in the ``library/plugins/action/`` directory. In the same
-way that you moved the modules and module utils files, you will also want to move the action plugins. The plugins have a similar location to modules and module
-utils. Their directory is found at ``ansible/plugins/action/``.
-
-Caveats
--------
-
-If you use **Method 2** and then update your Ansible installation, the update will *remove* the changes you made to your installation.
-
-For this reason, F5 recommends you **Method 1**.
 
 .. _Github repository: https://github.com/F5Networks/f5-ansible

@@ -5,12 +5,13 @@ F5 tests and supports the following versions.
 
 The F5 Modules for Ansible may work with versions not shown here; F5 has not verified functionality in those versions.
 
-========================== ======================= ==========================
-**Ansible Version**        **BIG-IP versions**     **BIG-IQ versions**
--------------------------- ----------------------- --------------------------
-v2.5                       v12.x, v13.x            v5.4.x
-========================== ======================= ==========================
-   
++-------------------------+-----------------------+----------------------+
+| **Ansible Version**     | **BIG-IP versions**   | **BIG-IQ versions**  |
++=========================+=======================+======================+
+| * v2.5                  | * v12.x               | * v5.4.x             |
+|                         | * v13.x               |                      |
++-------------------------+-----------------------+----------------------+
+
 .. important::
 
    F5 Networks does not back-port changes to earlier versions of Ansible.
