@@ -1,0 +1,247 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a basic remote role
+  bigip_remote_role:
+    name: role1
+    line_order: 5
+    attribute_string: memberOf=cn=ldap_group,cn=ldap.group,ou=ldap
+  register: result
+
+- name: Assert Create a basic remote role
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a basic remote role - Idempotent check
+  bigip_remote_role:
+    name: role1
+    line_order: 5
+    attribute_string: memberOf=cn=ldap_group,cn=ldap.group,ou=ldap
+  register: result
+
+- name: Assert Create a basic remote role - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change line order
+  bigip_remote_role:
+    name: role1
+    line_order: 10
+  register: result
+
+- name: Assert Change line order
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change line order - Idempotent check
+  bigip_remote_role:
+    name: role1
+    line_order: 10
+  register: result
+
+- name: Assert Change line order - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attribute_string
+  bigip_remote_role:
+    name: role1
+    attribute_string: foo
+  register: result
+
+- name: Assert Change attribute_string
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attribute_string - Idempotent check
+  bigip_remote_role:
+    name: role1
+    attribute_string: foo
+  register: result
+
+- name: Assert Change attribute_string - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change remote access - no
+  bigip_remote_role:
+    name: role1
+    remote_access: no
+  register: result
+
+- name: Assert Change remote access - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change remote access - no - Idempotent check
+  bigip_remote_role:
+    name: role1
+    remote_access: no
+  register: result
+
+- name: Assert Change remote access - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change remote access - yes
+  bigip_remote_role:
+    name: role1
+    remote_access: yes
+  register: result
+
+- name: Assert Change remote access - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change remote access - yes - Idempotent check
+  bigip_remote_role:
+    name: role1
+    remote_access: yes
+  register: result
+
+- name: Assert Change remote access - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change terminal access - tmsh
+  bigip_remote_role:
+    name: role1
+    terminal_access: tmsh
+  register: result
+
+- name: Assert Change terminal access - tmsh
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change terminal access - tmsh - Idempotent check
+  bigip_remote_role:
+    name: role1
+    terminal_access: tmsh
+  register: result
+
+- name: Assert Change terminal access - tmsh - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change terminal access - none
+  bigip_remote_role:
+    name: role1
+    terminal_access: none
+  register: result
+
+- name: Assert Change terminal access - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change terminal access - none - Idempotent check
+  bigip_remote_role:
+    name: role1
+    terminal_access: none
+  register: result
+
+- name: Assert Change terminal access - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change assigned role
+  bigip_remote_role:
+    name: role1
+    assigned_role: manager
+  register: result
+
+- name: Assert Change assigned role
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change assigned role - Idempotent check
+  bigip_remote_role:
+    name: role1
+    assigned_role: manager
+  register: result
+
+- name: Assert Change assigned role - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change partition access
+  bigip_remote_role:
+    name: role1
+    partition_access: Common
+  register: result
+
+- name: Assert Change partition access
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change partition access - Idempotent check
+  bigip_remote_role:
+    name: role1
+    partition_access: Common
+  register: result
+
+- name: Assert Change partition access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove remote role
+  bigip_remote_role:
+    name: role1
+    state: absent
+  register: result
+
+- name: Assert Remove remote role
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove remote role - Idempotent check
+  bigip_remote_role:
+    name: role1
+    state: absent
+  register: result
+
+- name: Assert Remove remote role - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
