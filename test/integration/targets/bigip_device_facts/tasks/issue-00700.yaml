@@ -13,6 +13,19 @@
       - result.fasthttp_profiles | selectattr("name", "match", "fasthttp") | map(attribute='oneconnect_maximum_pool_size') | first == 2048
       - result.fasthttp_profiles | json_query("[?name=='fasthttp'].oneconnect_maximum_pool_size") | first == 2048
 
+- name: Issue 00700 - Select fastl4-profile facts
+  bigip_device_facts:
+    include:
+      - fastl4-profiles
+  register: result
+
+- name: Issue 00700 - Assert Select fastl4-profile facts
+  assert:
+    that:
+      - result is success
+      - result.fastl4_profiles | selectattr("name", "match", "fastL4") | map(attribute='idle_timeout') | first == 300
+      - result.fastl4_profiles | json_query("[?name=='fastL4'].idle_timeout") | first == 300
+
 - name: Issue 00700 - Select all profile facts
   bigip_device_facts:
     include:
@@ -24,4 +37,6 @@
     that:
       - result is success
       - "'fasthttp_profiles' in result"
+      - "'fastl4_profiles' in result"
+      - "'client_ssl_profiles' in result"
       - "'system-info' not in result"
