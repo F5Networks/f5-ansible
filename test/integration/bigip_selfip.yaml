@@ -74,9 +74,11 @@
 
   tasks:
     - name: Include role - Environment
-      include_role:
+      import_role:
         name: bigip_selfip
-        tasks_from: environment/main.yaml
+        tasks_from: environment.yaml
+      tags:
+        - environment
 
 - name: Test the bigip_selfip module - Provider
   hosts: "f5-test[0]"
@@ -86,8 +88,13 @@
   vars:
     limit_to: '*'
 
-  roles:
-    - bigip_selfip
+  tasks:
+    - name: Include role - Provider
+      import_role:
+        name: bigip_selfip
+        tasks_from: provider.yaml
+      tags:
+        - provider
 
 - name: Test the bigip_selfip module - Args
   hosts: "f5-test[0]"
@@ -97,5 +104,10 @@
   vars:
     limit_to: '*'
 
-  roles:
-    - bigip_selfip
+  tasks:
+    - name: Include role - Args
+      import_role:
+        name: bigip_selfip
+        tasks_from: args.yaml
+      tags:
+        - args
