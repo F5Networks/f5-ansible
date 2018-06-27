@@ -4,6 +4,7 @@
   bigip_vlan:
     name: "{{ item }}"
     state: absent
+    provider: "{{ provider }}"
   loop:
     - "{{ selfip_vlan }}"
     - "{{ selfip_vlan2 }}"
@@ -11,6 +12,7 @@
 - name: Create VLANs
   bigip_vlan:
     name: "{{ item }}"
+    provider: "{{ provider }}"
   loop:
     - "{{ selfip_vlan }}"
     - "{{ selfip_vlan2 }}"

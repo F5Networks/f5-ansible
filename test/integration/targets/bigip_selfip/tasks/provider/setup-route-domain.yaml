@@ -4,6 +4,7 @@
   bigip_selfip:
     name: "{{ item }}"
     state: absent
+    provider: "{{ provider }}"
   register: result
   loop:
     - "{{ selfip_vlan }}"
@@ -13,6 +14,7 @@
   bigip_vlan:
     name: "{{ item }}"
     state: absent
+    provider: "{{ provider }}"
   register: result
   loop:
     - "{{ selfip_vlan }}"
@@ -22,6 +24,7 @@
   bigip_vlan:
     name: "{{ item }}"
     state: present
+    provider: "{{ provider }}"
   register: result
   loop:
     - "{{ selfip_vlan }}"
@@ -31,6 +34,7 @@
     id: "{{ selfip_rd }}"
     vlans:
       - "{{ selfip_vlan }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create route domain

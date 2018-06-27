@@ -9,6 +9,7 @@
     netmask: "{{ selfip_netmask }}"
     vlan: "{{ selfip_vlan }}"
     route_domain: "{{ selfip_rd }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create Self IP, specify a Route Domain
@@ -23,6 +24,7 @@
     netmask: "{{ selfip_netmask }}"
     vlan: "{{ selfip_vlan }}"
     route_domain: "{{ selfip_rd }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create Self IP, specify a Route Domain - Idempotent check
@@ -35,6 +37,7 @@
     name: "{{ selfip_name }}"
     state: absent
     route_domain: "{{ selfip_rd }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Delete Self IP, specify a Route Domain
@@ -47,6 +50,7 @@
     name: "{{ selfip_name }}"
     state: absent
     route_domain: "{{ selfip_rd }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Delete Self IP, specify a Route Domain - Idempotent check
