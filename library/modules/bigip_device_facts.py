@@ -34,6 +34,7 @@ options:
       - devices
       - device-groups
       - fasthttp-profiles
+      - fastl4-profiles
       - interfaces
       - internal-data-groups
       - irules
@@ -745,7 +746,7 @@ fasthttp_profiles:
         - Length of time that a connection is idle (has no traffic) before the connection
           is eligible for deletion.
       returned: changed
-      type: bool
+      type: int
       sample: 300
     insert_x_forwarded_for:
       description:
@@ -815,6 +816,383 @@ fasthttp_profiles:
       returned: changed
       type: string
       sample: enabled
+  sample: hash/dictionary of values
+fastl4_profiles:
+  description: FastL4 profile related facts.
+  returned: When C(fastl4-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/fastl4
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: fastl4
+    client_timeout:
+      description:
+        - Specifies late binding client timeout in seconds.
+        - This is the number of seconds allowed for a client to transmit enough data to
+          select a server pool.
+        - If this timeout expires, the timeout-recovery option dictates whether
+          to drop the connection or fallback to the normal FastL4 load-balancing method
+          to pick a server pool.
+      returned: changed
+      type: int
+      sample: 30
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: fastl4
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My profile
+    explicit_flow_migration:
+      description:
+        - Specifies whether to have the iRule code determine exactly when
+          the FIX stream drops down to the ePVA hardware.
+      returned: changed
+      type: bool
+      sample: yes
+    hardware_syn_cookie:
+      description:
+        - Enables or disables hardware SYN cookie support when PVA10 is present on the system.
+        - This option is deprecated in version 13.0.0 and is replaced by C(syn-cookie-enable).
+      returned: changed
+      type: bool
+      sample: no
+    idle_timeout:
+      description:
+        - Specifies the number of seconds that a connection is idle before the connection is
+          eligible for deletion.
+        - Values will be in the range of 0 to 4294967295 (inclusive).
+        - C(0) is equivalent to the TMUI value "immediate".
+        - C(4294967295) is equivalent to the TMUI value "indefinite".
+      returned: changed
+      type: int
+      sample: 300
+    dont_fragment_flag:
+      description:
+        - Describes the Don't Fragment (DF) bit setting in the IP Header of
+          the outgoing TCP packet.
+        - When C(pmtu), sets the outgoing IP Header DF bit based on IP pmtu
+          setting(tm.pathmtudiscovery).
+        - When C(preserve), sets the outgoing Packet's IP Header DF bit to be same as incoming
+          IP Header DF bit.
+        - When C(set), sets the outgoing packet's IP Header DF bit.
+        - When C(clear), clears the outgoing packet's IP Header DF bit.
+      returned: changed
+      type: string
+      sample: pmtu
+    ip_tos_to_client:
+      description:
+        - Specifies an IP Type of Service (ToS) number for the client-side.
+        - This option specifies the ToS level that the traffic management
+          system assigns to IP packets when sending them to clients.
+      returned: changed
+      type: string or int
+      sample: 200
+    ip_tos_to_server:
+      description:
+        - Specifies an IP ToS number for the server side.
+        - This option specifies the ToS level that the traffic management system assigns
+          to IP packets when sending them to servers.
+      returned: changed
+      type: string or int
+      sample: pass-through
+    ttl_mode:
+      description:
+        - Describe the outgoing TCP packet's IP Header TTL mode.
+        - When C(proxy), sets the outgoing IP Header TTL value to 255/64 for ipv4/ipv6
+          respectively.
+        - When C(preserve), sets the outgoing IP Header TTL value to be same as the
+          incoming IP Header TTL value.
+        - When C(decrement), sets the outgoing IP Header TTL value to be one less than
+          the incoming TTL value.
+        - When C(set), sets the outgoing IP Header TTL value to a specific value(as
+          specified by C(ttl_v4) or C(ttl_v6).
+      returned: changed
+      type: string
+      sample: preserve
+    ttl_v4:
+      description:
+        - Specify the outgoing packet's IP Header TTL value for IPv4 traffic.
+        - Maximum value that can be specified is 255.
+      returned: changed
+      type: int
+      sample: 200
+    ttl_v6:
+      description:
+        - Specify the outgoing packet's IP Header TTL value for IPv6
+          traffic.
+        - Maximum value that can be specified is 255.
+      returned: changed
+      type: int
+      sample: 300
+    keep_alive_interval:
+      description:
+        - Specifies the keep-alive probe interval, in seconds.
+        - A value of 0 indicates keep-alive is disabled.
+      returned: changed
+      type: int
+      sample: 10
+    late_binding:
+      description:
+        - Specifies whether to enable or disable intelligent selection of a
+          back-end server pool.
+      returned: changed
+      type: bool
+      sample: yes
+    link_qos_to_client:
+      description:
+        - Specifies a Link Quality of Service (QoS) (VLAN priority) number
+          for the client side.
+        - This option specifies the QoS level that the system assigns to packets
+          when sending them to clients.
+      returned: changed
+      type: int or string
+      sample: 7
+    link_qos_to_server:
+      description:
+        - Specifies a Link QoS (VLAN priority) number for the server side.
+        - This option specifies the QoS level that the system assigns to
+          packets when sending them to servers.
+      returned: changed
+      type: int or string
+      sample: 5
+    loose_close:
+      description:
+        - Specifies that the system closes a loosely-initiated connection
+          when the system receives the first FIN packet from either the
+          client or the server.
+      returned: changed
+      type: bool
+      sample: no
+    loose_init:
+      description:
+        - Specifies that the system initializes a connection when it
+          receives any Transmission Control Protocol (TCP) packet, rather
+          than requiring a SYN packet for connection initiation.
+      returned: changed
+      type: bool
+      sample: yes
+    mss_override:
+      description:
+        - Specifies a maximum segment size (MSS) override for server
+          connections. Note that this is also the MSS advertised to a client
+          when a client first connects.
+        - C(0) (zero), means the option is disabled. Otherwise, the value will be
+          between 256 and 9162.
+      returned: changed
+      type: int
+      sample: 500
+    priority_to_client:
+      description:
+        - Specifies internal packet priority for the client side.
+        - This option specifies the internal packet priority that the system
+          assigns to packets when sending them to clients.
+      returned: changed
+      type: int or string
+      sample: 300
+    priority_to_server:
+      description:
+        - Specifies internal packet priority for the server side.
+        - This option specifies the internal packet priority that the system
+          assigns to packets when sending them to servers.
+      returned: changed
+      type: int or string
+      sample: 200
+    pva_acceleration:
+      description:
+        - Specifies the Packet Velocity(r) ASIC acceleration policy.
+      returned: changed
+      type: string
+      sample: full
+    pva_dynamic_client_packets:
+      description:
+        - Specifies the number of client packets before dynamic ePVA
+          hardware re-offloading occurs.
+        - Values will be between 0 and 10.
+      returned: changed
+      type: int
+      sample: 8
+    pva_dynamic_server_packets:
+      description:
+        - Specifies the number of server packets before dynamic ePVA
+          hardware re-offloading occurs.
+        - Values will be between 0 and 10.
+      returned: changed
+      type: int
+      sample: 5
+    pva_flow_aging:
+      description:
+        - Specifies if automatic aging from ePVA flow cache is enabled or not.
+      returned: changed
+      type: bool
+      sample: yes
+    pva_flow_evict:
+      description:
+        - Specifies if this flow can be evicted upon hash collision with a
+          new flow learn snoop request.
+      returned: changed
+      type: bool
+      sample: no
+    pva_offload_dynamic:
+      description:
+        - Specifies whether PVA flow dynamic offloading is enabled or not.
+      returned: changed
+      type: bool
+      sample: yes
+    pva_offload_state:
+      description:
+        - Specifies at what stage the ePVA performs hardware offload.
+        - When C(embryonic), implies at TCP CSYN or the first client UDP packet.
+        - When C(establish), implies TCP 3WAY handshaking or UDP CS round trip are
+          confirmed.
+      returned: changed
+      type: string
+      sample: embryonic
+    reassemble_fragments:
+      description:
+        - Specifies whether to reassemble fragments.
+      returned: changed
+      type: bool
+      sample: yes
+    receive_window:
+      description:
+        - Specifies the window size to use, in bytes.
+        - The maximum is 2^31 for window scale enabling.
+      returned: changed
+      type: int
+      sample: 1000
+    reset_on_timeout:
+      description:
+        - Specifies whether you want to reset connections on timeout.
+      returned: changed
+      type: bool
+      sample: yes
+    rtt_from_client:
+      description:
+        - Enables or disables the TCP timestamp options to measure the round
+          trip time to the client.
+      returned: changed
+      type: bool
+      sample: no
+    rtt_from_server:
+      description:
+        - Enables or disables the TCP timestamp options to measure the round
+          trip time to the server.
+      returned: changed
+      type: bool
+      sample: yes
+    server_sack:
+      description:
+        - Specifies whether to support server sack option in cookie response
+          by default.
+      returned: changed
+      type: bool
+      sample: no
+    server_timestamp:
+      description:
+        - Specifies whether to support server timestamp option in cookie
+          response by default.
+      returned: changed
+      type: bool
+      sample: yes
+    software_syn_cookie:
+      description:
+        - Enables or disables software SYN cookie support when PVA10 is not present
+          on the system.
+        - This option is deprecated in version 13.0.0 and is replaced by
+          C(syn_cookie_enabled).
+      returned: changed
+      type: bool
+      sample: yes
+    syn_cookie_enabled:
+      description:
+        - Enables syn-cookies capability on this virtual server.
+      returned: changed
+      type: bool
+      sample: no
+    syn_cookie_mss:
+      description:
+        - Specifies a maximum segment size (MSS) for server connections when
+          SYN Cookie is enabled.
+      returned: changed
+      type: int
+      sample: 2000
+    syn_cookie_whitelist:
+      description:
+        - Specifies whether or not to use a SYN Cookie WhiteList when doing
+          software SYN Cookies.
+      returned: changed
+      type: bool
+      sample: no
+    tcp_close_timeout:
+      description:
+        - Specifies a TCP close timeout in seconds.
+      returned: changed
+      type: int
+      sample: 100
+    generate_init_seq_number:
+      description:
+        - Specifies whether you want to generate TCP sequence numbers on all
+          SYNs that conform with RFC1948, and allow timestamp recycling.
+      returned: changed
+      type: bool
+      sample: yes
+    tcp_handshake_timeout:
+      description:
+        - Specifies a TCP handshake timeout in seconds.
+      returned: changed
+      type: int
+      sample: 5
+    strip_sack:
+      description:
+        - Specifies whether you want to block the TCP SackOK option from
+          passing to the server on an initiating SYN.
+      returned: changed
+      type: bool
+      sample: yes
+    tcp_time_wait_timeout:
+      description:
+        - Specifies a TCP time_wait timeout in milliseconds.
+      returned: changed
+      type: int
+      sample: 60
+    tcp_timestamp_mode:
+      description:
+        - Specifies how you want to handle the TCP timestamp.
+      returned: changed
+      type: string
+      sample: preserve
+    tcp_window_scale_mode:
+      description:
+        - Specifies how you want to handle the TCP window scale.
+      returned: changed
+      type: string
+      sample: preserve
+    timeout_recovery:
+      description:
+        - Specifies late binding timeout recovery mode. This is the action
+          to take when late binding timeout occurs on a connection.
+        - When C(disconnect), only the L7 iRule actions are acceptable to
+          pick a server.
+        - When C(fallback), the normal FastL4 load-balancing methods are acceptable
+          to pick a server.
+      returned: changed
+      type: string
+      sample: fallback
   sample: hash/dictionary of values
 interfaces:
   description: Interface related facts.
@@ -3598,6 +3976,16 @@ class FastHttpProfilesParameters(BaseParameters):
     def oneconnect_replenish(self):
         return flatten_boolean(self._values['oneconnect_replenish'])
 
+    @property
+    def idle_timeout(self):
+        if self._values['idle_timeout'] is None:
+            return None
+        elif self._values['idle_timeout'] == 'immediate':
+            return 0
+        elif self._values['idle_timeout'] == 'indefinite':
+            return 4294967295
+        return int(self._values['idle_timeout'])
+
 
 class FastHttpProfilesFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
@@ -3630,6 +4018,332 @@ class FastHttpProfilesFactManager(BaseManager):
 
     def read_collection_from_device(self):
         result = self.client.api.tm.ltm.profile.fasthttps.get_collection()
+        return result
+
+
+class FastL4ProfilesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'clientTimeout': 'client_timeout',
+        'defaultsFrom': 'parent',
+        'explicitFlowMigration': 'explicit_flow_migration',
+        'hardwareSynCookie': 'hardware_syn_cookie',
+        'idleTimeout': 'idle_timeout',
+        'ipDfMode': 'dont_fragment_flag',
+        'ipTosToClient': 'ip_tos_to_client',
+        'ipTosToServer': 'ip_tos_to_server',
+        'ipTtlMode': 'ttl_mode',
+        'ipTtlV4': 'ttl_v4',
+        'ipTtlV6': 'ttl_v6',
+        'keepAliveInterval': 'keep_alive_interval',
+        'lateBinding': 'late_binding',
+        'linkQosToClient': 'link_qos_to_client',
+        'linkQosToServer': 'link_qos_to_server',
+        'looseClose': 'loose_close',
+        'looseInitialization': 'loose_init',
+        'mssOverride': 'mss_override',
+        'priorityToClient': 'priority_to_client',
+        'priorityToServer': 'priority_to_server',
+        'pvaAcceleration': 'pva_acceleration',
+        'pvaDynamicClientPackets': 'pva_dynamic_client_packets',
+        'pvaDynamicServerPackets': 'pva_dynamic_server_packets',
+        'pvaFlowAging': 'pva_flow_aging',
+        'pvaFlowEvict': 'pva_flow_evict',
+        'pvaOffloadDynamic': 'pva_offload_dynamic',
+        'pvaOffloadState': 'pva_offload_state',
+        'reassembleFragments': 'reassemble_fragments',
+        'receiveWindowSize': 'receive_window',
+        'resetOnTimeout': 'reset_on_timeout',
+        'rttFromClient': 'rtt_from_client',
+        'rttFromServer': 'rtt_from_server',
+        'serverSack': 'server_sack',
+        'serverTimestamp': 'server_timestamp',
+        'softwareSynCookie': 'software_syn_cookie',
+        'synCookieEnable': 'syn_cookie_enabled',
+        'synCookieMss': 'syn_cookie_mss',
+        'synCookieWhitelist': 'syn_cookie_whitelist',
+        'tcpCloseTimeout': 'tcp_close_timeout',
+        'tcpGenerateIsn': 'generate_init_seq_number',
+        'tcpHandshakeTimeout': 'tcp_handshake_timeout',
+        'tcpStripSack': 'strip_sack',
+        'tcpTimeWaitTimeout': 'tcp_time_wait_timeout',
+        'tcpTimestampMode': 'tcp_timestamp_mode',
+        'tcpWscaleMode': 'tcp_window_scale_mode',
+        'timeoutRecovery': 'timeout_recovery',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'client_timeout',
+        'parent',
+        'description',
+        'explicit_flow_migration',
+        'hardware_syn_cookie',
+        'idle_timeout',
+        'dont_fragment_flag',
+        'ip_tos_to_client',
+        'ip_tos_to_server',
+        'ttl_mode',
+        'ttl_v4',
+        'ttl_v6',
+        'keep_alive_interval',
+        'late_binding',
+        'link_qos_to_client',
+        'link_qos_to_server',
+        'loose_close',
+        'loose_init',
+        'mss_override',  # Maximum Segment Size Override
+        'priority_to_client',
+        'priority_to_server',
+        'pva_acceleration',
+        'pva_dynamic_client_packets',
+        'pva_dynamic_server_packets',
+        'pva_flow_aging',
+        'pva_flow_evict',
+        'pva_offload_dynamic',
+        'pva_offload_state',
+        'reassemble_fragments',
+        'receive_window',
+        'reset_on_timeout',
+        'rtt_from_client',
+        'rtt_from_server',
+        'server_sack',
+        'server_timestamp',
+        'software_syn_cookie',
+        'syn_cookie_enabled',
+        'syn_cookie_mss',
+        'syn_cookie_whitelist',
+        'tcp_close_timeout',
+        'generate_init_seq_number',
+        'tcp_handshake_timeout',
+        'strip_sack',
+        'tcp_time_wait_timeout',
+        'tcp_timestamp_mode',
+        'tcp_window_scale_mode',
+        'timeout_recovery',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def strip_sack(self):
+        return flatten_boolean(self._values['strip_sack'])
+
+    @property
+    def generate_init_seq_number(self):
+        return flatten_boolean(self._values['generate_init_seq_number'])
+
+    @property
+    def syn_cookie_whitelist(self):
+        return flatten_boolean(self._values['syn_cookie_whitelist'])
+
+    @property
+    def syn_cookie_enabled(self):
+        return flatten_boolean(self._values['syn_cookie_enabled'])
+
+    @property
+    def software_syn_cookie(self):
+        return flatten_boolean(self._values['software_syn_cookie'])
+
+    @property
+    def server_timestamp(self):
+        return flatten_boolean(self._values['server_timestamp'])
+
+    @property
+    def server_sack(self):
+        return flatten_boolean(self._values['server_sack'])
+
+    @property
+    def rtt_from_server(self):
+        return flatten_boolean(self._values['rtt_from_server'])
+
+    @property
+    def rtt_from_client(self):
+        return flatten_boolean(self._values['rtt_from_client'])
+
+    @property
+    def reset_on_timeout(self):
+        return flatten_boolean(self._values['reset_on_timeout'])
+
+    @property
+    def explicit_flow_migration(self):
+        return flatten_boolean(self._values['explicit_flow_migration'])
+
+    @property
+    def reassemble_fragments(self):
+        return flatten_boolean(self._values['reassemble_fragments'])
+
+    @property
+    def pva_flow_aging(self):
+        return flatten_boolean(self._values['pva_flow_aging'])
+
+    @property
+    def pva_flow_evict(self):
+        return flatten_boolean(self._values['pva_flow_evict'])
+
+    @property
+    def pva_offload_dynamic(self):
+        return flatten_boolean(self._values['pva_offload_dynamic'])
+
+    @property
+    def hardware_syn_cookie(self):
+        return flatten_boolean(self._values['hardware_syn_cookie'])
+
+    @property
+    def loose_close(self):
+        return flatten_boolean(self._values['loose_close'])
+
+    @property
+    def loose_init(self):
+        return flatten_boolean(self._values['loose_init'])
+
+    @property
+    def late_binding(self):
+        return flatten_boolean(self._values['late_binding'])
+
+    @property
+    def tcp_handshake_timeout(self):
+        if self._values['tcp_handshake_timeout'] is None:
+            return None
+        elif self._values['tcp_handshake_timeout'] == 'immediate':
+            return 0
+        elif self._values['tcp_handshake_timeout'] == 'indefinite':
+            return 4294967295
+        return int(self._values['tcp_handshake_timeout'])
+
+    @property
+    def idle_timeout(self):
+        if self._values['idle_timeout'] is None:
+            return None
+        elif self._values['idle_timeout'] == 'immediate':
+            return 0
+        elif self._values['idle_timeout'] == 'indefinite':
+            return 4294967295
+        return int(self._values['idle_timeout'])
+
+    @property
+    def tcp_close_timeout(self):
+        if self._values['tcp_close_timeout'] is None:
+            return None
+        elif self._values['tcp_close_timeout'] == 'immediate':
+            return 0
+        elif self._values['tcp_close_timeout'] == 'indefinite':
+            return 4294967295
+        return int(self._values['tcp_close_timeout'])
+
+    @property
+    def keep_alive_interval(self):
+        if self._values['keep_alive_interval'] is None:
+            return None
+        elif self._values['keep_alive_interval'] == 'disabled':
+            return 0
+        return int(self._values['keep_alive_interval'])
+
+    @property
+    def ip_tos_to_client(self):
+        if self._values['ip_tos_to_client'] is None:
+            return None
+        try:
+            return int(self._values['ip_tos_to_client'])
+        except ValueError:
+            return self._values['ip_tos_to_client']
+
+    @property
+    def ip_tos_to_server(self):
+        if self._values['ip_tos_to_server'] is None:
+            return None
+        try:
+            return int(self._values['ip_tos_to_server'])
+        except ValueError:
+            return self._values['ip_tos_to_server']
+
+    @property
+    def link_qos_to_client(self):
+        if self._values['link_qos_to_client'] is None:
+            return None
+        try:
+            return int(self._values['link_qos_to_client'])
+        except ValueError:
+            return self._values['link_qos_to_client']
+
+    @property
+    def link_qos_to_server(self):
+        if self._values['link_qos_to_server'] is None:
+            return None
+        try:
+            return int(self._values['link_qos_to_server'])
+        except ValueError:
+            return self._values['link_qos_to_server']
+
+    @property
+    def priority_to_client(self):
+        if self._values['priority_to_client'] is None:
+            return None
+        try:
+            return int(self._values['priority_to_client'])
+        except ValueError:
+            return self._values['priority_to_client']
+
+    @property
+    def priority_to_server(self):
+        if self._values['priority_to_server'] is None:
+            return None
+        try:
+            return int(self._values['priority_to_server'])
+        except ValueError:
+            return self._values['priority_to_server']
+
+
+class FastL4ProfilesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(FastL4ProfilesFactManager, self).__init__(**kwargs)
+        self.want = FastL4ProfilesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(fastl4_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = FastL4ProfilesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/fastl4".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -6289,6 +7003,10 @@ class ModuleManager(object):
             ),
             'fasthttp-profiles': dict(
                 manager=FastHttpProfilesFactManager
+            ),
+            'fastl4-profiles': dict(
+                manager=FastL4ProfilesFactManager,
+                client=F5RestClient
             ),
             'interfaces': dict(
                 manager=InterfacesFactManager
