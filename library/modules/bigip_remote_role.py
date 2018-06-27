@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_remote_role
 short_description: Manage remote roles on a BIG-IP
 description:
-  - Manages remote roles on a BIg-IP. Remote roles are used in situations where
+  - Manages remote roles on a BIG-IP. Remote roles are used in situations where
     user authentication is handled off-box. Local access control to the BIG-IP
     is controlled by the defined remote role. Where-as authentication (and by
     extension, assignment to the role) is handled off-box.
