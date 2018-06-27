@@ -1,15 +1,5 @@
 ---
 
-- name: Issue 00753 - Create a vlan
-  bigip_vlan:
-    name: vlan1
-
-- name: Issue 00753 - Create route domain
-  bigip_routedomain:
-    id: 50
-    vlans:
-      - vlan1
-
 - name: Issue 00753 - Get device facts to determine management IP
   bigip_device_facts:
     gather_subset:
@@ -19,6 +9,16 @@
 - name: Issue 00753 - Set management address fact
   set_fact:
     management: "{{ f.devices | json_query(\"[?self=='yes'].management_address\") | first }}"
+
+- name: Issue 00753 - Create a vlan
+  bigip_vlan:
+    name: vlan1
+
+- name: Issue 00753 - Create route domain
+  bigip_routedomain:
+    id: 50
+    vlans:
+      - vlan1
 
 - name: Issue 00753 - Create a self-ip on same network as management - Expected failure
   bigip_selfip:
@@ -64,4 +64,82 @@
 - name: Issue 00753 - Remove vlan
   bigip_vlan:
     name: vlan1
+    state: absent
+
+
+- name: Issue 00753 - Create partition with default route domain
+  bigip_partition:
+    name: part1
+
+- name: Issue 00753 - Create another route domain
+  bigip_routedomain:
+    id: 50
+    partition: part1
+
+- name: Issue 00753 - Update partition with default route domain
+  bigip_partition:
+    name: part1
+    route_domain: 50
+
+- name: Issue 00753 - Create another vlan
+  bigip_vlan:
+    name: vlan1
+    partition: part1
+
+- name: Issue 00753 - Create a self-ip on same network as management, with default route domain
+  bigip_selfip:
+    name: self1
+    partition: part1
+    address: "{{ management | regex_replace('\\.\\d+$', '.100') }}"
+    netmask: 255.255.255.0
+    vlan: vlan1
+  register: result
+
+- name: Issue 00753 - Assert Create a self-ip on same network as management, default with route domain
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00753 - Create a self-ip on same network as management, with default route domain - Idempotent check
+  bigip_selfip:
+    name: self1
+    partition: part1
+    address: "{{ management | regex_replace('\\.\\d+$', '.100') }}"
+    netmask: 255.255.255.0
+    vlan: vlan1
+  register: result
+
+- name: Issue 00753 - Assert Create a self-ip on same network as management, with default route domain - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00753 - Remove another self-ip
+  bigip_selfip:
+    name: self1
+    partition: part1
+    state: absent
+
+- name: Issue 00753 - Remove another vlan
+  bigip_vlan:
+    name: vlan1
+    partition: part1
+    state: absent
+
+- name: Issue 00753 - Set default route domain back to 0
+  bigip_partition:
+    name: part1
+    route_domain: 0
+
+- name: Issue 00753 - Remove another route domain
+  bigip_routedomain:
+    id: 50
+    partition: part1
+    state: absent
+
+- name: Issue 00753 - Remove partition with default route domain
+  bigip_partition:
+    name: part1
     state: absent
