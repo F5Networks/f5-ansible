@@ -1,0 +1,67 @@
+---
+
+- name: Issue 00753 - Create a vlan
+  bigip_vlan:
+    name: vlan1
+
+- name: Issue 00753 - Create route domain
+  bigip_routedomain:
+    id: 50
+    vlans:
+      - vlan1
+
+- name: Issue 00753 - Get device facts to determine management IP
+  bigip_device_facts:
+    gather_subset:
+      - devices
+  register: f
+
+- name: Issue 00753 - Set management address fact
+  set_fact:
+    management: "{{ f.devices | json_query(\"[?self=='yes'].management_address\") | first }}"
+
+- name: Issue 00753 - Create a self-ip on same network as management - Expected failure
+  bigip_selfip:
+    name: self1
+    address: "{{ management | regex_replace('\\.\\d+$', '.100') }}"
+    netmask: 255.255.255.0
+    vlan: vlan1
+  register: result
+  failed_when: result is success
+
+- name: Issue 00753 - Assert Create a self-ip on same network as management - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+      - "'This IP shares a network with the management IP' in result.msg"
+
+- name: Issue 00753 - Create a self-ip on same network as management, with route domain
+  bigip_selfip:
+    name: self1
+    address: "{{ management | regex_replace('\\.\\d+$', '.100') }}"
+    netmask: 255.255.255.0
+    vlan: vlan1
+    route_domain: 50
+  register: result
+
+- name: Issue 00753 - Assert Create a self-ip on same network as management, with route domain
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00753 - Remove self-ip
+  bigip_selfip:
+    name: self1
+    state: absent
+
+- name: Issue 00753 - Remove route domain
+  bigip_routedomain:
+    id: 50
+    state: absent
+
+- name: Issue 00753 - Remove vlan
+  bigip_vlan:
+    name: vlan1
+    state: absent
