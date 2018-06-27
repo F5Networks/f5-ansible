@@ -4996,21 +4996,6 @@ class NodesFactManager(BaseManager):
         return result
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class OneConnectProfilesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -5106,10 +5091,6 @@ class OneConnectProfilesFactManager(BaseManager):
                 raise F5ModuleError(resp.content)
         result = response['items']
         return result
-
-
-
-
 
 
 class PartitionParameters(BaseParameters):
