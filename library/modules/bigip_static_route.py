@@ -79,12 +79,7 @@ options:
     choices:
       - present
       - absent
-notes:
-  - Requires the netaddr Python package on the host. This is as easy as pip
-    install netaddr.
 extends_documentation_fragment: f5
-requirements:
-  - netaddr
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -165,6 +160,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.compat.ipaddress import ip_network
 
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -178,17 +174,12 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.compat.ipaddress import ip_network
 
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -239,9 +230,9 @@ class ModuleParameters(Parameters):
         if self._values['gateway_address'] is None:
             return None
         try:
-            ip = netaddr.IPNetwork(self._values['gateway_address'])
-            return str(ip.ip)
-        except netaddr.core.AddrFormatError:
+            ip = ip_network(self._values['gateway_address'])
+            return str(ip.network_address)
+        except ValueError:
             raise F5ModuleError(
                 "The provided gateway_address is not an IP address"
             )
@@ -262,12 +253,12 @@ class ModuleParameters(Parameters):
         if self._values['destination'] == 'default-inet6':
             self._values['destination'] = '::/::'
         try:
-            ip = netaddr.IPNetwork(self.destination_ip)
+            ip = ip_network(self.destination_ip)
             if self.route_domain:
-                return '{0}%{2}/{1}'.format(ip.ip, ip.prefixlen, self.route_domain)
+                return '{0}%{2}/{1}'.format(str(ip.network_address), ip.prefixlen, self.route_domain)
             else:
-                return '{0}/{1}'.format(ip.ip, ip.prefixlen)
-        except netaddr.core.AddrFormatError:
+                return '{0}/{1}'.format(str(ip.network_address), ip.prefixlen)
+        except ValueError:
             raise F5ModuleError(
                 "The provided destination is not an IP address"
             )
@@ -275,35 +266,28 @@ class ModuleParameters(Parameters):
     @property
     def destination_ip(self):
         if self._values['destination']:
-            ip = netaddr.IPNetwork('{0}/{1}'.format(self._values['destination'], self.netmask))
-            return '{0}/{1}'.format(ip.ip, ip.prefixlen)
+            ip = ip_network('{0}/{1}'.format(self._values['destination'], self.netmask))
+            return '{0}/{1}'.format(str(ip.network_address), ip.prefixlen)
 
     @property
     def netmask(self):
         if self._values['netmask'] is None:
             return None
         # Check if numeric
-        if isinstance(self._values['netmask'], int):
+        try:
             result = int(self._values['netmask'])
-            if 0 < result < 256:
+            if 0 <= result < 256:
                 return result
             raise F5ModuleError(
                 'The provided netmask {0} is neither in IP or CIDR format'.format(result)
             )
-        else:
+        except ValueError:
             try:
-                # IPv4 netmask
-                address = '0.0.0.0/' + self._values['netmask']
-                ip = netaddr.IPNetwork(address)
-            except netaddr.AddrFormatError as ex:
-                try:
-                    # IPv6 netmask
-                    address = '::/' + self._values['netmask']
-                    ip = netaddr.IPNetwork(address)
-                except netaddr.AddrFormatError as ex:
-                    raise F5ModuleError(
-                        'The provided netmask {0} is neither in IP or CIDR format'.format(self._values['netmask'])
-                    )
+                ip = ip_network(self._values['netmask'])
+            except ValueError:
+                raise F5ModuleError(
+                    'The provided netmask {0} is neither in IP or CIDR format'.format(self._values['netmask'])
+                )
             result = int(ip.prefixlen)
         return result
 
@@ -330,16 +314,16 @@ class ApiParameters(Parameters):
         try:
             pattern = r'(?P<rd>%[0-9]+)'
             addr = re.sub(pattern, '', self._values['destination'])
-            ip = netaddr.IPNetwork(addr)
-            return '{0}/{1}'.format(ip.ip, ip.prefixlen)
-        except netaddr.core.AddrFormatError:
+            ip = ip_network(addr)
+            return '{0}/{1}'.format(str(ip.network_address), ip.prefixlen)
+        except ValueError:
             raise F5ModuleError(
                 "The provided destination is not an IP address"
             )
 
     @property
     def netmask(self):
-        ip = netaddr.IPNetwork(self.destination_ip)
+        ip = ip_network(self.destination_ip)
         return int(ip.prefixlen)
 
 
@@ -610,8 +594,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
