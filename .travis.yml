@@ -38,6 +38,7 @@ jobs:
     - stage: test
       script:
         - make docker-test && make docker-deploy
+        - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel
       python: 3.6
       env: TOXENV=docs-deploy
       if: branch = devel
