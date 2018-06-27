@@ -3,6 +3,7 @@
 - name: Create VLAN
   bigip_vlan:
     name: prod_vlan
+    provider: "{{ provider }}"
 
 - name: Create non-floating self IP
   bigip_selfip:
@@ -12,6 +13,7 @@
     vlan: prod_vlan
     allow_service: default
     traffic_group: traffic-group-local-only
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create non-floating self IP
@@ -27,6 +29,7 @@
     vlan: prod_vlan
     allow_service: default
     traffic_group: traffic-group-local-only
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create non-floating self IP - Idempotent check
@@ -42,6 +45,7 @@
     vlan: prod_vlan
     allow_service: default
     traffic_group: traffic-group-1
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create floating self IP
@@ -57,6 +61,7 @@
     vlan: prod_vlan
     allow_service: default
     traffic_group: traffic-group-1
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create floating self IP - Idempotent check
@@ -68,6 +73,7 @@
   bigip_selfip:
     name: "{{ item }}"
     state: absent
+    provider: "{{ provider }}"
   loop:
     - v1244_floating
     - v1244_non_floating
@@ -76,3 +82,4 @@
   bigip_vlan:
     name: prod_vlan
     state: absent
+    provider: "{{ provider }}"

@@ -7,6 +7,7 @@
 - name: Issue 00420 - Create VLAN
   bigip_vlan:
     name: issue-00420v
+    provider: "{{ provider }}"
 
 - name: Issue 00420 - Create Self IPV4 Trusted Address
   bigip_selfip:
@@ -16,6 +17,7 @@
     vlan: issue-00420v
     allow_service: none
     state: present
+    provider: "{{ provider }}"
   register: result
 
 - name: Issue 0040 - Assert Create Self IPV4 Trusted Address
@@ -31,6 +33,7 @@
     vlan: issue-00420v
     allow_service: none
     state: present
+    provider: "{{ provider }}"
   register: result
 
 - name: Issue 00420 - Create Self IPV4 Trusted Address - Idempotent check
@@ -42,8 +45,10 @@
   bigip_selfip:
     name: issue-00420n
     state: absent
+    provider: "{{ provider }}"
 
 - name: Issue 00420 - Remove VLAN
   bigip_vlan:
     name: issue-00420v
     state: absent
+    provider: "{{ provider }}"

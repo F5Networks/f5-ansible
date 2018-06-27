@@ -9,6 +9,7 @@
     name: "{{ selfip_name }}"
     netmask: "{{ selfip_netmask }}"
     vlan: "{{ selfip_vlan }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create Self IP
@@ -22,6 +23,7 @@
     name: "{{ selfip_name }}"
     netmask: "{{ selfip_netmask }}"
     vlan: "{{ selfip_vlan }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create Self IP - Idempotent check
@@ -33,6 +35,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     vlan: "{{ selfip_vlan2 }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set Self IP VLAN
@@ -44,6 +47,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     vlan: "{{ selfip_vlan2 }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set Self IP VLAN - Idempotent check
@@ -55,6 +59,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     netmask: "{{ selfip_netmask2 }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set Self IP netmask
@@ -66,6 +71,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     netmask: "{{ selfip_netmask2 }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set Self IP netmask - Idempotent check
@@ -77,6 +83,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_single }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set single protocol allow service
@@ -88,6 +95,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_single }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set single protocol allow service - Idempotent check
@@ -99,6 +107,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_multi }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set multiple protocol allow all service
@@ -110,6 +119,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_multi }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set multiple protocol allow all service - Idempotent check
@@ -122,6 +132,7 @@
     name: "{{ selfip_name }}"
     allow_service:
       - all
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set keyword "all" allow service
@@ -134,6 +145,7 @@
     name: "{{ selfip_name }}"
     allow_service:
       - all
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set keyword "all" allow service - Idempotent check
@@ -146,6 +158,7 @@
     name: "{{ selfip_name }}"
     allow_service:
       - default
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set keyword "default" allow service
@@ -158,6 +171,7 @@
     name: "{{ selfip_name }}"
     allow_service:
       - default
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set keyword "default" allow service - Idempotent check
@@ -170,6 +184,7 @@
     name: "{{ selfip_name }}"
     allow_service:
       - none
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set keyword "none" allow service
@@ -182,6 +197,7 @@
     name: "{{ selfip_name }}"
     allow_service:
       - none
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Set keyword "none" allow service - Idempotent check
@@ -193,6 +209,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Delete Self IP
@@ -204,6 +221,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Delete Self IP - Idempotent check
@@ -218,6 +236,7 @@
     netmask: "{{ selfip_netmask }}"
     traffic_group: "{{ default_traffic_group }}"
     vlan: "{{ selfip_vlan }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create Self IP, specify a traffic group
@@ -232,6 +251,7 @@
     netmask: "{{ selfip_netmask }}"
     traffic_group: "{{ default_traffic_group }}"
     vlan: "{{ selfip_vlan }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create Self IP, specify a traffic group - Idempotent check
@@ -243,6 +263,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Delete Self IP that specified traffic group
@@ -258,6 +279,7 @@
     allow_service:
       - all
     vlan: "{{ selfip_vlan }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Set 'all' access when creating Self IP
@@ -270,11 +292,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
-
-
-
-
-
+    provider: "{{ provider }}"
 
 - name: Set 'default' access when creating Self IP
   bigip_selfip:
@@ -284,6 +302,7 @@
     allow_service:
       - default
     vlan: "{{ selfip_vlan }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Set 'default' access when creating Self IP
@@ -296,9 +315,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
-
-
-
+    provider: "{{ provider }}"
 
 - name: Set 'none' access when creating Self IP
   bigip_selfip:
@@ -308,6 +325,7 @@
     allow_service:
       - none
     vlan: "{{ selfip_vlan }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Set 'none' access when creating Self IP
@@ -320,7 +338,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
-
+    provider: "{{ provider }}"
 
 - import_tasks: route-domain.yaml
 

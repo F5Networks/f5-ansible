@@ -4,6 +4,7 @@
   bigip_vlan:
     name: "{{ item }}"
     state: absent
+    provider: "{{ provider }}"
   register: result
   loop:
     - "{{ selfip_vlan }}"
@@ -13,6 +14,7 @@
   bigip_routedomain:
     id: "{{ selfip_rd }}"
     state: absent
+    provider: "{{ provider }}"
   register: result
 
 - name: Remove Create route domain
