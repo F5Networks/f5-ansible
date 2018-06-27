@@ -1,7 +1,15 @@
 ---
 
 - name: Include task to setup the remote device
-  import_tasks: environment/setup-main.yaml
+  import_tasks: setup-main.yaml
+
+- name: Create Self IP
+  bigip_selfip:
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+  register: result
 
 - name: Assert Create Self IP
   assert:
