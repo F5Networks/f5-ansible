@@ -522,6 +522,12 @@ devices:
       returned: changed
       type: string
       sample: 2.2.2.2
+    self:
+      description:
+        - Whether this device is the one that was queried for facts, or not.
+      returned: changed
+      type: bool
+      sample: yes
     software_version:
       description:
         - Displays the software version number.
@@ -3379,7 +3385,8 @@ class DevicesParameters(BaseParameters):
         'version': 'software_version',
         'timeLimitedModules': 'timelimited_modules',
         'timeZone': 'timezone',
-        'unicastAddress': 'unicast_addresses'
+        'unicastAddress': 'unicast_addresses',
+        'selfDevice': 'self'
     }
 
     returnables = [
@@ -3406,10 +3413,11 @@ class DevicesParameters(BaseParameters):
         'primary_mirror_address',
         'product',
         'secondary_mirror_address',
+        'self',
         'software_version',
         'timelimited_modules',
         'timezone',
-        'unicast_addresses'
+        'unicast_addresses',
     ]
 
     @property
@@ -3421,6 +3429,11 @@ class DevicesParameters(BaseParameters):
             parts = x.split('|')
             result += parts[2:]
         return list(set(result))
+
+    @property
+    def self(self):
+        result = flatten_boolean(self._values['self'])
+        return result
 
     @property
     def configsync_address(self):
