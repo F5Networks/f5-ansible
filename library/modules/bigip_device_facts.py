@@ -1733,6 +1733,93 @@ nodes:
       type: string
       sample: and_list
   sample: hash/dictionary of values
+oneconnect_profiles:
+  description: OneConnect profile related facts.
+  returned: When C(oneconnect-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/oneconnect
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: oneconnect
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: oneconnect
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My profile
+    idle_timeout_override:
+      description:
+        - Specifies the number of seconds that a connection is idle before
+          the connection flow is eligible for deletion.
+      returned: changed
+      type: int
+      sample: 1000
+    limit_type:
+      description:
+        - When C(none), simultaneous in-flight requests and responses over TCP
+          connections to a pool member are counted toward the limit.
+        - When C(idle), idle connections will be dropped as the TCP connection
+          limit is reached.
+        - When C(strict), the TCP connection limit is honored with no
+          exceptions. This means that idle connections will prevent new TCP
+          connections from being made until they expire, even if they could
+          otherwise be reused.
+      returned: changed
+      type: string
+      sample: idle
+    max_age:
+      description:
+        - Specifies the maximum age, in number of seconds, of a connection
+          in the connection reuse pool.
+      returned: changed
+      type: int
+      sample: 100
+    max_reuse:
+      description:
+        - Specifies the maximum number of times that a server connection can
+          be reused.
+      returned: changed
+      type: int
+      sample: 1000
+    max_size:
+      description:
+        - Specifies the maximum number of connections that the system holds
+          in the connection reuse pool.
+        - If the pool is already full, then the server connection closes after
+          the response is completed.
+      returned: changed
+      type: int
+      sample: 1000
+    share_pools:
+      description:
+        - Indicates that connections may be shared not only within a virtual
+          server, but also among similar virtual servers.
+      returned: changed
+      type: bool
+      sample: yes
+    source_mask:
+      description:
+        - Specifies a source IP mask.
+        - If no mask is provided, the value C(any6) is used.
+      returned: changed
+      type: string
+      sample: 255.255.255.0
+  sample: hash/dictionary of values
 partitions:
   description: Partition related information.
   returned: When C(partitions) is specified in C(gather_subset).
@@ -4909,6 +4996,122 @@ class NodesFactManager(BaseManager):
         return result
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class OneConnectProfilesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'clientTimeout': 'client_timeout',
+        'defaultsFrom': 'parent',
+        'idleTimeoutOverride': 'idle_timeout_override',
+        'limitType': 'limit_type',
+        'maxAge': 'max_age',
+        'maxReuse': 'max_reuse',
+        'maxSize': 'max_size',
+        'sharePools': 'share_pools',
+        'sourceMask': 'source_mask',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'idle_timeout_override',
+        'limit_type',
+        'max_age',
+        'max_reuse',
+        'max_size',
+        'share_pools',
+        'source_mask',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def idle_timeout_override(self):
+        if self._values['idle_timeout_override'] is None:
+            return None
+        elif self._values['idle_timeout_override'] == 'disabled':
+            return 0
+        elif self._values['idle_timeout_override'] == 'indefinite':
+            return 4294967295
+        return int(self._values['idle_timeout_override'])
+
+    @property
+    def share_pools(self):
+        return flatten_boolean(self._values['share_pools'])
+
+
+class OneConnectProfilesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(OneConnectProfilesFactManager, self).__init__(**kwargs)
+        self.want = OneConnectProfilesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(oneconnect_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = OneConnectProfilesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/one-connect".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+
+
+
+
 class PartitionParameters(BaseParameters):
     api_map = {
         'defaultRouteDomain': 'default_route_domain',
@@ -7022,6 +7225,10 @@ class ModuleManager(object):
             ),
             'nodes': dict(
                 manager=NodesFactManager
+            ),
+            'oneconnect-profiles': dict(
+                manager=OneConnectProfilesFactManager,
+                client=F5RestClient
             ),
             'partitions': dict(
                 manager=PartitionFactManager,
