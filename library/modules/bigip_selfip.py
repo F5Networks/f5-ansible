@@ -557,6 +557,10 @@ class ModuleManager(object):
         )
         resource.modify(**params)
 
+    def read_partition_default_route_domain_from_device(self):
+        resource = self.client.api.tm.auth.partitions.partition.load(name=self.want.partition)
+        return int(resource.defaultRouteDomain)
+
     def create(self):
         if self.want.address is None or self.want.netmask is None:
             raise F5ModuleError(
@@ -566,6 +570,10 @@ class ModuleManager(object):
             raise F5ModuleError(
                 'A VLAN name must be specified'
             )
+        if self.want.route_domain is None:
+            rd = self.read_partition_default_route_domain_from_device()
+            self.want.update({'route_domain': rd})
+
         if self.want.traffic_group is None:
             self.want.update({'traffic_group': '/Common/traffic-group-local-only'})
         if self.want.route_domain is None:
