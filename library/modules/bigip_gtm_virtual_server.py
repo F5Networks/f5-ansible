@@ -355,7 +355,7 @@ class ApiParameters(Parameters):
             # IPv4
             parts = self._values['destination'].split(':')
         if is_valid_ip(parts[0]):
-            return str(addr)
+            return str(parts[0])
         raise F5ModuleError(
             "'address' parameter from API was not an IP address."
         )
