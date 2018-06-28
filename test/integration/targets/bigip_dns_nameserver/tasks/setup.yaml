@@ -1,0 +1,10 @@
+---
+
+- name: Create a route domain
+  bigip_routedomain:
+    id: 500
+
+- name: Create a TSIG key
+  bigip_command:
+    commands:
+      - create ltm dns tsig-key key1 { secret foo }
