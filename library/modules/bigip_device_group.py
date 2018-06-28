@@ -344,10 +344,19 @@ class ModuleManager(object):
     def remove(self):
         if self.module.check_mode:
             return True
+        self.remove_members_in_group_from_device()
         self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to delete the device group")
         return True
+
+    def remove_members_in_group_from_device(self):
+        resource = self.client.api.tm.cm.device_groups.device_group.load(
+            name=self.want.name
+        )
+        collection = resource.devices_s.get_collection()
+        for item in collection:
+            item.delete()
 
     def create(self):
         self._set_changed_options()
