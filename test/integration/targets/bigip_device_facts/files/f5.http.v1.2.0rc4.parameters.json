@@ -1,0 +1,113 @@
+{
+  "lists": [
+    {
+      "name": "irules__irules",
+      "value": []
+    }
+  ],
+  "tables": [
+    {
+      "name": "basic__snatpool_members"
+    },
+    {
+      "name": "net__snatpool_members"
+    },
+    {
+      "name": "optimizations__hosts"
+    },
+    {
+      "name": "pool__hosts",
+      "columnNames": [
+        "name"
+      ],
+      "rows": [
+        {
+          "row": [
+            "internal.company.bar"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pool__members",
+      "columnNames": [
+        "addr",
+        "port",
+        "connection_limit"
+      ],
+      "rows": [
+        {
+          "row": [
+            "",
+            "80",
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "server_pools__servers"
+    }
+  ],
+  "variables": [
+    {
+      "name": "client__http_compression",
+      "encrypted": "no",
+      "value": "/#create_new#"
+    },
+    {
+      "name": "monitor__monitor",
+      "encrypted": "no",
+      "value": "/#create_new#"
+    },
+    {
+      "name": "monitor__response",
+      "encrypted": "no"
+    },
+    {
+      "name": "monitor__uri",
+      "encrypted": "no",
+      "value": "/"
+    },
+    {
+      "name": "net__client_mode",
+      "encrypted": "no",
+      "value": "wan"
+    },
+    {
+      "name": "net__server_mode",
+      "encrypted": "no",
+      "value": "lan"
+    },
+    {
+      "name": "pool__addr",
+      "encrypted": "no",
+      "value": "10.10.10.10"
+    },
+    {
+      "name": "pool__pool_to_use",
+      "encrypted": "no",
+      "value": "/#create_new#"
+    },
+    {
+      "name": "pool__port",
+      "encrypted": "no",
+      "value": "80"
+    },
+    {
+      "name": "ssl__mode",
+      "encrypted": "no",
+      "value": "no_ssl"
+    },
+    {
+      "name": "ssl_encryption_questions__advanced",
+      "encrypted": "no",
+      "value": "no"
+    },
+    {
+      "name": "ssl_encryption_questions__help",
+      "encrypted": "no",
+      "value": "hide"
+    }
+  ]
+}
