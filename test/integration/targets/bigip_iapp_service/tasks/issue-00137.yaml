@@ -1,0 +1,314 @@
+---
+
+- name: Create a partition
+  bigip_partition:
+    name: part1
+
+- name: Issue 00137 - Create HTTP iApp template
+  bigip_iapp_template:
+    content: "{{ lookup('file', item) }}"
+  loop:
+    - f5.http.v1.2.0rc4.tmpl
+  register: result
+
+- name: Issue 00137 - Create service with description
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-description.json') }}"
+  register: result
+
+- name: Issue 00137 - Assert Create service with description
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00137 - Create service with description - Idempotent check
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-description.json') }}"
+  register: result
+
+- name: Issue 00137 - Assert Create service with description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00137 - Delete service with description
+  bigip_iapp_service:
+    name: service1
+    state: absent
+
+- name: Issue 00137 - Create service with description - override
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-description.json') }}"
+    description: another description
+  register: result
+
+- name: Issue 00137 - Assert Create service with description - override
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00137 - Create service with description - override - Idempotent check
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-description.json') }}"
+    description: another description
+  register: result
+
+- name: Issue 00137 - Assert Create service with description - override - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00137 - Delete service with description - override
+  bigip_iapp_service:
+    name: service1
+    state: absent
+
+- name: Issue 00137 - Create service in another partition - wrong partition - Expected failure
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-description.json') }}"
+    partition: part1
+  register: result
+  failed_when: result is success
+
+- name: Issue 00137 - Create service in another partition - wrong partition - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00137 - Create service in another partition
+  bigip_iapp_service:
+    name: service1
+    template: /Common/f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-description.json') }}"
+    partition: part1
+  register: result
+
+- name: Issue 00137 - Assert Create service in another partition
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00137 - Create service in another partition - Idempotent check
+  bigip_iapp_service:
+    name: service1
+    template: /Common/f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-description.json') }}"
+    partition: part1
+  register: result
+
+- name: Issue 00137 - Assert Create service in another partition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00137 - Delete service in another partition
+  bigip_iapp_service:
+    name: service1
+    partition: part1
+    state: absent
+
+- name: Issue 00137 - Create a device group
+  bigip_device_group:
+    name: dg1
+    type: sync-failover
+
+- name: Issue 00137 - Add member to device group
+  bigip_device_group_member:
+    name: bigip1
+    device_group: dg1
+
+- name: Issue 00137 - Create service with device group
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-device_group.json') }}"
+  register: result
+
+- name: Issue 00137 - Assert Create service with device group
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00137 - Create service with device group - Idempotent check
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-device_group.json') }}"
+  register: result
+
+- name: Issue 00137 - Assert Create service with device group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00137 - Delete service with device group
+  bigip_iapp_service:
+    name: service1
+    state: absent
+
+- name: Issue 00137 - Remove device group
+  bigip_device_group:
+    name: dg1
+    state: absent
+
+- name: Issue 00137 - Create a device group
+  bigip_device_group:
+    name: dg2
+    type: sync-failover
+
+- name: Issue 00137 - Add member to device group
+  bigip_device_group_member:
+    name: bigip1
+    device_group: dg2
+
+- name: Issue 00137 - Create service with device group - override
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-device_group.json') }}"
+    device_group: dg2
+  register: result
+
+- name: Issue 00137 - Assert Create service with device group - override
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00137 - Create service with device group - override - Idempotent check
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-device_group.json') }}"
+    device_group: dg2
+  register: result
+
+- name: Issue 00137 - Assert Create service with device group - override - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00137 - Delete service with device group - override
+  bigip_iapp_service:
+    name: service1
+    state: absent
+
+- name: Issue 00137 - Delete other device group
+  bigip_device_group:
+    name: dg2
+    state: absent
+
+- name: Issue 00137 - Create service with metadata
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-metadata.json') }}"
+  register: result
+
+- name: Issue 00137 - Assert Create service with metadata
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00137 - Create service with metadata - Idempotent check
+  bigip_iapp_service:
+    name: service1
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-metadata.json') }}"
+  register: result
+
+- name: Issue 00137 - Assert Create service with metadata - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00137 - Delete HTTP iApp service
+  bigip_iapp_service:
+    name: service1
+    state: absent
+
+- name: Issue 00137 - Create service, override metadata
+  bigip_iapp_service:
+    name: service2
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-metadata.json') }}"
+    metadata:
+      - name: teddy bear
+        persist: yes
+      - name: kitty cat
+        persist: yes
+  register: result
+
+- name: Issue 00137 - Assert Create service, override metadata
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00137 - Create service, override metadata - Idempotent check
+  bigip_iapp_service:
+    name: service2
+    template: f5.http.v1.2.0rc4
+    parameters: "{{ lookup('file', 'issue-00137-metadata.json') }}"
+    metadata:
+      - name: teddy bear
+        persist: yes
+      - name: kitty cat
+        persist: yes
+  register: result
+
+- name: Issue 00137 - Assert Create service, override metadata - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00137 - Change metadata
+  bigip_iapp_service:
+    name: service2
+    template: f5.http.v1.2.0rc4
+    metadata:
+      - name: hi
+        persist: yes
+      - name: there
+        persist: yes
+  register: result
+
+- name: Issue 00137 - Assert Create service, override metadata
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00137 - Change metadata - Idempotent check
+  bigip_iapp_service:
+    name: service2
+    template: f5.http.v1.2.0rc4
+    metadata:
+      - name: hi
+        persist: yes
+      - name: there
+        persist: yes
+  register: result
+
+- name: Issue 00137 - Assert Change metadata - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00137 - Delete HTTP iApp service
+  bigip_iapp_service:
+    name: service2
+    state: absent
+
+- name: Issue 00137 - Remove a partition
+  bigip_partition:
+    name: part1
+    state: absent
