@@ -1,0 +1,207 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a nameserver
+  bigip_dns_nameserver:
+    name: server1
+  register: result
+
+- name: Assert Create a nameserver
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a nameserver - Idempotent check
+  bigip_dns_nameserver:
+    name: server1
+  register: result
+
+- name: Assert Create a nameserver - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create a nameserver with values
+  bigip_dns_nameserver:
+    name: server2
+    address: 10.10.10.10
+    service_port: 5353
+    route_domain: 500
+    tsig_key: key1
+  register: result
+
+- name: Assert Create a nameserver with values
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a nameserver with values - Idempotent check
+  bigip_dns_nameserver:
+    name: server2
+    address: 10.10.10.10
+    service_port: 5353
+    route_domain: 500
+    tsig_key: key1
+  register: result
+
+- name: Assert Create a nameserver with values - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change address
+  bigip_dns_nameserver:
+    name: server1
+    address: 20.20.20.20
+  register: result
+
+- name: Assert Change address
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change address - Idempotent check
+  bigip_dns_nameserver:
+    name: server1
+    address: 20.20.20.20
+  register: result
+
+- name: Assert Change address - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change service port
+  bigip_dns_nameserver:
+    name: server1
+    service_port: 8080
+  register: result
+
+- name: Assert Change service port
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change service port - Idempotent check
+  bigip_dns_nameserver:
+    name: server1
+    service_port: 8080
+  register: result
+
+- name: Assert Change service port - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change route domain
+  bigip_dns_nameserver:
+    name: server1
+    route_domain: 500
+  register: result
+
+- name: Assert Change route domain
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change route domain - Idempotent check
+  bigip_dns_nameserver:
+    name: server1
+    route_domain: 500
+  register: result
+
+- name: Assert Change route domain - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change TSIG key
+  bigip_dns_nameserver:
+    name: server1
+    tsig_key: key1
+  register: result
+
+- name: Assert Change TSIG key
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change TSIG key - Idempotent check
+  bigip_dns_nameserver:
+    name: server1
+    tsig_key: key1
+  register: result
+
+- name: Assert Change TSIG key - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove TSIG key
+  bigip_dns_nameserver:
+    name: server1
+    tsig_key: ''
+  register: result
+
+- name: Assert Remove TSIG key
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove TSIG key - Idempotent check
+  bigip_dns_nameserver:
+    name: server1
+    tsig_key: ''
+  register: result
+
+- name: Assert Remove TSIG key - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove nameserver
+  bigip_dns_nameserver:
+    name: server1
+    state: absent
+  register: result
+
+- name: Assert Remove nameserver
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove nameserver - Idempotent check
+  bigip_dns_nameserver:
+    name: server1
+    state: absent
+  register: result
+
+- name: Assert Remove nameserver - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove other nameserver
+  bigip_dns_nameserver:
+    name: server2
+    state: absent
+  register: result
+
+- import_tasks: teardown.yaml

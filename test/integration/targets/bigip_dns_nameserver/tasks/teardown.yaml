@@ -1,0 +1,11 @@
+---
+
+- name: Remove a route domain
+  bigip_routedomain:
+    id: 500
+    state: absent
+
+- name: Remove TSIG key
+  bigip_command:
+    commands:
+      - delete ltm dns tsig-key key1
