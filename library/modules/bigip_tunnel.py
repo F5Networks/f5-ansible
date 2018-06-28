@@ -364,6 +364,7 @@ class Difference(object):
                 "'traffic_group' cannot be changed after it is set."
             )
 
+
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
