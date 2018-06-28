@@ -212,7 +212,7 @@ class ModuleParameters(Parameters):
         for address in addresses:
             try:
                 # Check for valid IPv4 or IPv6 entries
-                ip_network(address)
+                ip_network(u'%s' % str(address))
                 result.append(address)
             except ValueError:
                 # else fallback to checking reasonably well formatted hostnames
