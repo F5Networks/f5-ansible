@@ -230,7 +230,7 @@ class ModuleParameters(Parameters):
         if self._values['gateway_address'] is None:
             return None
         try:
-            ip = ip_network(self._values['gateway_address'])
+            ip = ip_network(u'%s' % str(self._values['gateway_address']))
             return str(ip.network_address)
         except ValueError:
             raise F5ModuleError(
@@ -253,7 +253,7 @@ class ModuleParameters(Parameters):
         if self._values['destination'] == 'default-inet6':
             self._values['destination'] = '::/::'
         try:
-            ip = ip_network(self.destination_ip)
+            ip = ip_network(u'%s' % str(self.destination_ip))
             if self.route_domain:
                 return '{0}%{2}/{1}'.format(str(ip.network_address), ip.prefixlen, self.route_domain)
             else:
@@ -266,7 +266,7 @@ class ModuleParameters(Parameters):
     @property
     def destination_ip(self):
         if self._values['destination']:
-            ip = ip_network('{0}/{1}'.format(self._values['destination'], self.netmask))
+            ip = ip_network(u'{0}/{1}'.format(self._values['destination'], self.netmask))
             return '{0}/{1}'.format(str(ip.network_address), ip.prefixlen)
 
     @property
@@ -283,7 +283,7 @@ class ModuleParameters(Parameters):
             )
         except ValueError:
             try:
-                ip = ip_network(self._values['netmask'])
+                ip = ip_network(u'%s' % str(self._values['netmask']))
             except ValueError:
                 raise F5ModuleError(
                     'The provided netmask {0} is neither in IP or CIDR format'.format(self._values['netmask'])
@@ -314,7 +314,7 @@ class ApiParameters(Parameters):
         try:
             pattern = r'(?P<rd>%[0-9]+)'
             addr = re.sub(pattern, '', self._values['destination'])
-            ip = ip_network(addr)
+            ip = ip_network(u'%s' % str(addr))
             return '{0}/{1}'.format(str(ip.network_address), ip.prefixlen)
         except ValueError:
             raise F5ModuleError(
@@ -323,7 +323,7 @@ class ApiParameters(Parameters):
 
     @property
     def netmask(self):
-        ip = ip_network(self.destination_ip)
+        ip = ip_network(u'%s' % str(self.destination_ip))
         return int(ip.prefixlen)
 
 
