@@ -35,6 +35,7 @@ options:
       - device-groups
       - fasthttp-profiles
       - fastl4-profiles
+      - iapp-services
       - interfaces
       - internal-data-groups
       - irules
@@ -1193,6 +1194,91 @@ fastl4_profiles:
       returned: changed
       type: string
       sample: fallback
+  sample: hash/dictionary of values
+iapp_services:
+  description: iApp v1 service related facts.
+  returned: When C(iapp-services) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/service1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: service1
+    device_group:
+      description:
+        - The device group the iApp service is part of.
+      returned: changed
+      type: string
+      sample: /Common/dg1
+    inherited_device_group:
+      description:
+        - Whether the device group is inherited or not.
+      returned: changed
+      type: bool
+      sample: yes
+    inherited_traffic_group:
+      description:
+        - Whether the traffic group is inherited or not.
+      returned: changed
+      type: bool
+      sample: yes
+    strict_updates:
+      description:
+        - Whether strict updates are enabled or not.
+      returned: changed
+      type: bool
+      sample: yes
+    template_modified:
+      description:
+        - Whether template that the service is based on is modified from its
+          default value, or not.
+      returned: changed
+      type: bool
+      sample: yes
+    traffic_group:
+      description:
+        - Traffic group the service is a part of.
+      returned: changed
+      type: string
+      sample: /Common/tg
+    tables:
+      description:
+        - List of the tabular data used to create the service.
+      returned: changed
+      type: complex
+      sample: [{"name": "basic__snatpool_members"},...]
+    variables:
+      description:
+        - List of the variable data used to create the service.
+      returned: changed
+      type: complex
+      sample: [{"name": "afm__policy"},{"encrypted": "no"},{"value": "/#no_not_use#"},...]
+    metadata:
+      description:
+        - List of the metadata data used to create the service..
+      returned: changed
+      type: complex
+      sample: [{"name": "var1"},{"persist": "true"},...]
+    lists:
+      description:
+        - List of the lists data used to create the service.
+      returned: changed
+      type: complex
+      sample: [{"name": "irules__irules"},{"value": []},...]
+    description:
+      description:
+        - Description of the service
+      returned: changed
+      type: string
+      sample: My service
   sample: hash/dictionary of values
 interfaces:
   description: Interface related facts.
@@ -4434,6 +4520,104 @@ class FastL4ProfilesFactManager(BaseManager):
         return result
 
 
+class IappServicesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'deviceGroup': 'device_group',
+        'inheritedDevicegroup': 'inherited_device_group',
+        'inheritedTrafficGroup': 'inherited_traffic_group',
+        'strictUpdates': 'strict_updates',
+        'templateModified': 'template_modified',
+        'trafficGroup': 'traffic_group',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'device_group',
+        'inherited_device_group',
+        'inherited_traffic_group',
+        'strict_updates',
+        'template_modified',
+        'traffic_group',
+        'tables',
+        'variables',
+        'metadata',
+        'lists',
+        'description',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def inherited_device_group(self):
+        return flatten_boolean(self._values['inherited_device_group'])
+
+    @property
+    def inherited_traffic_group(self):
+        return flatten_boolean(self._values['inherited_traffic_group'])
+
+    @property
+    def strict_updates(self):
+        return flatten_boolean(self._values['strict_updates'])
+
+    @property
+    def template_modified(self):
+        return flatten_boolean(self._values['template_modified'])
+
+
+class IappServicesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(IappServicesFactManager, self).__init__(**kwargs)
+        self.want = IappServicesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(iapp_services=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = IappServicesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/application/service".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class InterfacesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -7190,6 +7374,10 @@ class ModuleManager(object):
             ),
             'fastl4-profiles': dict(
                 manager=FastL4ProfilesFactManager,
+                client=F5RestClient
+            ),
+            'iapp-services': dict(
+                manager=IappServicesFactManager,
                 client=F5RestClient
             ),
             'interfaces': dict(
