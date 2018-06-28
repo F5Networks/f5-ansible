@@ -1,14 +1,14 @@
-:source: modules/bigip_iapp_template.py
+:source: modules/bigip_dns_nameserver.py
 
 :orphan:
 
-.. _bigip_iapp_template_module:
+.. _bigip_dns_nameserver_module:
 
 
-bigip_iapp_template - Manages TCL iApp templates on a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_dns_nameserver - Manage LTM DNS nameservers on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_iapp_template - Manages TCL iApp templates on a BIG-IP
 
 Synopsis
 --------
-- Manages TCL iApp templates on a BIG-IP. This module will allow you to deploy iApp templates to the BIG-IP and manage their lifecycle. The conventional way to use this module is to import new iApps as needed or by extracting the contents of the iApp archive that is provided at downloads.f5.com and then importing all the iApps with this module. This module can also update existing iApps provided that the source of the iApp changed while the name stayed the same. Note however that this module will not reconfigure any services that may have been created using the ``bigip_iapp_service`` module. iApps are normally not updated in production. Instead, new versions are deployed and then existing services are changed to consume that new template. As such, the ability to update templates in-place requires the ``force`` option to be used.
+- Manages LTM DNS nameservers on a BIG-IP. These nameservers form part of what is known as DNS Express on a BIG-IP. This module does not configure GTM related functionality, nor does it configure system-level name servers that affect the base system's ability to resolve DNS names.
 
 
 
@@ -34,44 +34,31 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>content</b>
+                    <b>address</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Sets the contents of an iApp template directly to the specified value. This is for simple values, but can be used with lookup plugins for anything complex or with formatting. <code>content</code> must be provided when creating new templates.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>force</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether or not to force the uploading of an iApp. When <code>yes</code>, will force update the iApp even if there are iApp services using it. This will not update the running service though. Use <code>bigip_iapp_service</code> to do that. When <code>no</code>, will update the iApp only if there are no iApp services using the template.</div>
+                                                                        <div>Specifies the IP address on which the DNS nameserver (client) or back-end DNS authoritative server (DNS Express server) listens for DNS messages.</div>
+                                                    <div>When creating a new nameserver, if this value is not specified, the default is <code>127.0.0.1</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
                     <b>name</b>
-                                                        </td>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The name of the iApp template that you want to delete. This option is only available when specifying a <code>state</code> of <code>absent</code> and is provided as a way to delete templates that you may no longer have the source of.</div>
+                                                                        <div>Specifies the name of the nameserver.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -208,6 +195,17 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>route_domain</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the local route domain that the DNS nameserver (client) or back-end DNS authoritative server (DNS Express server) uses for outbound traffic.</div>
+                                                    <div>When creating a new nameserver, if this value is not specified, the default is <code>0</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -229,6 +227,17 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>service_port</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the service port on which the DNS nameserver (client) or back-end DNS authoritative server (DNS Express server) listens for DNS messages.</div>
+                                                    <div>When creating a new nameserver, if this value is not specified, the default is <code>53</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
@@ -238,7 +247,20 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Whether the iApp template should exist or not.</div>
+                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
+                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>tsig_key</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the TSIG key the system uses to communicate with this DNS nameserver (client) or back-end DNS authoritative server (DNS Express server) for AXFR zone transfers.</div>
+                                                    <div>If the nameserver is a client, then the system uses this TSIG key to verify the request and sign the response.</div>
+                                                    <div>If this nameserver is a DNS Express server, then this TSIG key must match the TSIG key for the zone on the back-end DNS authoritative server.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -283,36 +305,61 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Add the iApp contained in template iapp.tmpl
-      bigip_iapp_template:
-        content: "{{ lookup('template', 'iapp.tmpl') }}"
-        password: secret
-        server: lb.mydomain.com
+    - name: Create a nameserver
+      bigip_dns_nameserver:
+        name: foo
+        address: 10.10.10.10
+        service_port: 53
         state: present
-        user: admin
-      delegate_to: localhost
-
-    - name: Update a template in place
-      bigip_iapp_template:
-        content: "{{ lookup('template', 'iapp-new.tmpl') }}"
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
-      delegate_to: localhost
-
-    - name: Update a template in place that has existing services created from it.
-      bigip_iapp_template:
-        content: "{{ lookup('template', 'iapp-new.tmpl') }}"
-        force: yes
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
 
+
+Return Values
+-------------
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=0 cellpadding=0 class="documentation-table">
+                                                                                        <tr>
+            <th colspan="1">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
+        </tr>
+                    <tr>
+                                <td colspan="1">
+                    <b>address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Address which the nameserver listens for DNS messages.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">127.0.0.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>service_port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Service port on which the nameserver listens for DNS messages.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">53</div>
+                                    </td>
+            </tr>
+                        </table>
+    <br/><br/>
 
 
 Status
@@ -320,7 +367,7 @@ Status
 
 
 
-This module is flagged as **stableinterface** which means that the maintainers for this module guarantee that no backward incompatible interface changes will be made.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
 
 
