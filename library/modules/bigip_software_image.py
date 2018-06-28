@@ -20,10 +20,31 @@ description:
   - __LONG DESCRIPTION__.
 version_added: 2.6
 options:
-  name:
+  force:
     description:
-      - Specifies the name of the ... .
-    required: True
+      - If C(yes) will upload the file every time and replace the file on the
+        device. If C(no), the file will only be uploaded if it does not already
+        exist. Generally should be C(yes) only in cases where you have reason
+        to believe that the image was corrupted during upload.
+    default: no
+    choices:
+      - yes
+      - no
+  state:
+    description:
+      - When C(present), ensures that the image is uploaded.
+      - When C(absent), ensures that the image is removed.
+    default: activated
+    choices:
+      - absent
+      - present
+  image:
+    description:
+      - The image to put on the remote device.
+      - This may be an absolute or relative location on the Ansible controller.
+      - You may also supply a URL to have the image downloaded directly to the BIG-IP.
+        To take advantage of this, your BIG-IP will need to be able to reach the
+        service hosting your image.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

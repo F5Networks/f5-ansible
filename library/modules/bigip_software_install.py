@@ -20,10 +20,23 @@ description:
   - __LONG DESCRIPTION__.
 version_added: 2.6
 options:
-  name:
+  image:
     description:
-      - Specifies the name of the ... .
-    required: True
+      - Image to install on the remote device.
+  volume:
+    description:
+      - The volume to install the software and, optionally, the hotfix to. This
+        parameter is only required when the C(state) is C(activated) or
+        C(installed).
+  reuse_inactive_volume:
+    description:
+      - Automatically chooses the first inactive volume in alphanumeric order.
+        If there is no inactive volume, new volume with incremented volume name
+        will be created. For example, if HD1.1 is currently active and no other
+        volume exists, then the module will create HD1.2 and install the
+        software. If volume name does not end with numeric character,
+        then add C(.1) to the current active volume name. When C(volume) is
+        specified, this option will be ignored.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
