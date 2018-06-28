@@ -29,6 +29,7 @@ F5
   * :ref:`bigip_device_ntp_module`
   * :ref:`bigip_device_sshd_module`
   * :ref:`bigip_device_trust_module`
+  * :ref:`bigip_dns_nameserver_module`
   * :ref:`bigip_dns_record_module`
   * :ref:`bigip_dns_zone_module`
   * :ref:`bigip_drop_connection_module`

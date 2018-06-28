@@ -51,6 +51,8 @@ Parameters
                                                                                                                                                                                                 <li>devices</li>
                                                                                                                                                                                                 <li>device-groups</li>
                                                                                                                                                                                                 <li>fasthttp-profiles</li>
+                                                                                                                                                                                                <li>fastl4-profiles</li>
+                                                                                                                                                                                                <li>iapp-services</li>
                                                                                                                                                                                                 <li>interfaces</li>
                                                                                                                                                                                                 <li>internal-data-groups</li>
                                                                                                                                                                                                 <li>irules</li>
@@ -104,62 +106,12 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>server</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>server_port</b>
+                    <b>ssh_keyfile</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>validate_certs</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -177,12 +129,62 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>ssh_keyfile</b>
-                                                        </td>
+                    <b>server</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
+                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>server_port</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>validate_certs</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -306,14 +308,17 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                             
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
@@ -323,17 +328,17 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
                                     
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                
+                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                    
+                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                             <tr>
             <th colspan="4">Key</th>
             <th>Returned</th>
@@ -353,34 +358,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                                             <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>policies</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The total number of ASM policies on the device.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>policies_active</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The number of ASM policies that are marked as active.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3</div>
-                                    </td>
-            </tr>
-                                <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>policies_attached</b>
@@ -404,6 +381,34 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                                                                         <div>The number of ASM policies that are marked as inactive.</div>
                                                                 <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>policies_active</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The number of ASM policies that are marked as active.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>policies</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The total number of ASM policies on the device.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3</div>
                                     </td>
             </tr>
                                 <tr>
@@ -437,52 +442,24 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/bigip02.internal</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bigip02.internal</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>alert_timeout</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Maximum time period in seconds to keep the SSL session active after alert message is sent, or indefinite.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>allow_non_ssl</b>
+                    <b>modssl_methods</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Enables or disables non-SSL connections.</div>
+                                                                        <div>Enables or disables ModSSL method emulation.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>profile_mode_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the profile mode, which enables or disables SSL processing.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -491,57 +468,13 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>authenticate_depth</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>forward_proxy_lookup_by_ipaddr_port</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies the authenticate depth. This is the client certificate chain maximum traversal depth.</div>
+                                                                        <div>Specifies whether to perform certificate look up by IP address and port number.</div>
                                                                 <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">9</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>authenticate_frequency</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies how often the system authenticates a user.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">once</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>ca_file</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the certificate authority (CA) file name.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/default-ca.crt</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>cache_size</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the SSL session cache size.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">262144</div>
                                     </td>
             </tr>
                                 <tr>
@@ -561,57 +494,41 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>certificate_file</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>strict_resume</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies the name of the certificate installed on the traffic management system for the purpose of terminating or initiating an SSL connection.</div>
+                                                                        <div>Enables or disables strict-resume.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/default.crt</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>chain_file</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>allow_non_ssl</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies or builds a certificate chain file that a client can use to authenticate the profile.</div>
+                                                                        <div>Enables or disables non-SSL connections.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/ca-chain.crt</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>ciphers</b>
+                    <b>forward_proxy_ca_certificate_file</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies a list of cipher names.</div>
+                                                                        <div>Specifies the name of the certificate file that is used as the certification authority certificate when SSL forward proxy feature is enabled.</div>
                                                                 <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;DEFAULT&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>crl_file</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the certificate revocation list file name.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/default.crl</div>
                                     </td>
             </tr>
                                 <tr>
@@ -631,6 +548,102 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>server_name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the server names to be matched with SNI (server name indication) extension information in ClientHello from a client connection.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bigip01</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>renegotiation</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether renegotiations are enabled.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>certificate_file</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the name of the certificate installed on the traffic management system for the purpose of terminating or initiating an SSL connection.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/default.crt</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>sni_default</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>When <code>yes</code>, this profile is the default SSL profile when the server name in a client connection does not match any configured server names, or a client connection does not specify any server name at all.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>forward_proxy_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables SSL forward proxy feature.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>forward_proxy_certificate_extension_include</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the extensions of the web server certificates to be included in the generated certificates using SSL Forward Proxy.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;basic-constraints&#x27;, &#x27;subject-alternative-name&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>sni_require</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>When this option is <code>yes</code>, a client connection that does not specify a known server name or does not support SNI extension will be rejected.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -645,12 +658,238 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>modssl_methods</b>
+                    <b>chain_file</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies or builds a certificate chain file that a client can use to authenticate the profile.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/ca-chain.crt</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>authenticate_depth</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the authenticate depth. This is the client certificate chain maximum traversal depth.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">9</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>forward_proxy_ca_passphrase</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the passphrase of the key file that is used as the certification authority key when SSL forward proxy feature is enabled.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>secure_renegotiation_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the secure renegotiation mode.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">require</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ca_file</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the certificate authority (CA) file name.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/default-ca.crt</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>retain_certificate</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Enables or disables ModSSL method emulation.</div>
+                                                                        <div>APM module requires storing certificate in SSL session. When <code>no</code>, certificate will not be stored in SSL session.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/bigip02.internal</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>renegotiation_period</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Number of seconds required to renegotiate an SSL session.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bigip02.internal</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ciphers</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a list of cipher names.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;DEFAULT&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>alert_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Maximum time period in seconds to keep the SSL session active after alert message is sent, or indefinite.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>renegotiation_maximum_record_delay</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Maximum number of SSL records that the traffic management system can receive before it renegotiates an SSL session.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>authenticate_frequency</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies how often the system authenticates a user.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">once</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>crl_file</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the certificate revocation list file name.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/default.crl</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>forward_proxy_ca_key_file</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the name of the key file that is used as the certification authority key when SSL forward proxy feature is enabled.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>session_ticket</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables session-ticket.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>cache_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the SSL session cache size.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">262144</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>unclean_shutdown</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether to force the SSL profile to perform a clean shutdown of all SSL connections or not</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -671,192 +910,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>sni_require</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>When this option is <code>yes</code>, a client connection that does not specify a known server name or does not support SNI extension will be rejected.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>sni_default</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>When <code>yes</code>, this profile is the default SSL profile when the server name in a client connection does not match any configured server names, or a client connection does not specify any server name at all.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>strict_resume</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Enables or disables strict-resume.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>profile_mode_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the profile mode, which enables or disables SSL processing.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>renegotiation_maximum_record_delay</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Maximum number of SSL records that the traffic management system can receive before it renegotiates an SSL session.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>renegotiation_period</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Number of seconds required to renegotiate an SSL session.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>renegotiation</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies whether renegotiations are enabled.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>server_name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the server names to be matched with SNI (server name indication) extension information in ClientHello from a client connection.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bigip01</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>session_ticket</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Enables or disables session-ticket.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>unclean_shutdown</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether to force the SSL profile to perform a clean shutdown of all SSL connections or not</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>retain_certificate</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>APM module requires storing certificate in SSL session. When <code>no</code>, certificate will not be stored in SSL session.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>secure_renegotiation_mode</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the secure renegotiation mode.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">require</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>handshake_timeout</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the handshake timeout in seconds.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>forward_proxy_certificate_extension_include</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the extensions of the web server certificates to be included in the generated certificates using SSL Forward Proxy.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;basic-constraints&#x27;, &#x27;subject-alternative-name&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>forward_proxy_certificate_lifespan</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
@@ -871,63 +924,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>forward_proxy_lookup_by_ipaddr_port</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>handshake_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies whether to perform certificate look up by IP address and port number.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>forward_proxy_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Enables or disables SSL forward proxy feature.</div>
+                                                                        <div>Specifies the handshake timeout in seconds.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>forward_proxy_ca_passphrase</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the passphrase of the key file that is used as the certification authority key when SSL forward proxy feature is enabled.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>forward_proxy_ca_certificate_file</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the name of the certificate file that is used as the certification authority certificate when SSL forward proxy feature is enabled.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>forward_proxy_ca_key_file</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the name of the key file that is used as the certification authority key when SSL forward proxy feature is enabled.</div>
-                                                                <br/>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
                                     </td>
             </tr>
                     
@@ -947,15 +952,27 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>autosync_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Whether the device group automatically synchronizes configuration data to its members.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>incremental_config_sync_size_maximum</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum size (in KB) to devote to incremental config sync cached transactions.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/fasthttp</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1024</div>
                                     </td>
             </tr>
                                 <tr>
@@ -975,27 +992,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>autosync_enabled</b>
+                    <b>asm_sync_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the device group automatically synchronizes configuration data to its members.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Description of the device group.</div>
+                                                                        <div>Specifies whether to synchronize ASM configurations of device group members.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My device group</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1010,34 +1015,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/bigip02.internal&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>full_load_on_sync</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies that the entire configuration for a device group is sent when configuration synchronization is performed.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>incremental_config_sync_size_maximum</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the maximum size (in KB) to devote to incremental config sync cached transactions.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1024</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1071,15 +1048,43 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>asm_sync_enabled</b>
+                    <b>full_load_on_sync</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies whether to synchronize ASM configurations of device group members.</div>
+                                                                        <div>Specifies that the entire configuration for a device group is sent when configuration synchronization is performed.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/fasthttp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the device group.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My device group</div>
                                     </td>
             </tr>
                     
@@ -1099,29 +1104,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>comment</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>User comments about the device.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/bigip02.internal</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bigip02.internal</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My device</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1141,99 +1132,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>base_mac_address</b>
+                    <b>product</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Media Access Control address (MAC address) of the device.</div>
+                                                                        <div>Displays the software product name.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fa:16:3e:c3:42:6f</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>build</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The minor version information of the total product version.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.0.1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>chassis_id</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Serial number of the device.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">11111111-2222-3333-444444444444</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>chassis_type</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Displays the chassis type. The possible values are <code>individual</code> and <code>viprion</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">individual</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>comment</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>User comments about the device.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My device</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>configsync_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>IP address used for configuration synchronization.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.10.10.10</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>contact</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Administrator contact information.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The User</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1253,15 +1160,43 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>edition</b>
+                    <b>software_version</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Displays the software edition.</div>
+                                                                        <div>Displays the software version number.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Point Release 7</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.1.0.7</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>chassis_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Displays the chassis type. The possible values are <code>individual</code> and <code>viprion</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">individual</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>configsync_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>IP address used for configuration synchronization.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.10.10.10</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1281,6 +1216,233 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>secondary_mirror_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Secondary IP address used for state mirroring.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.2.2.2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>timelimited_modules</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Displays the licensed modules that are time-limited.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;IP Intelligence, 3Yr, ...&#x27;, &#x27;PEM URL Filtering, 3Yr, ...&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>edition</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Displays the software edition.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Point Release 7</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>base_mac_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Media Access Control address (MAC address) of the device.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fa:16:3e:c3:42:6f</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>timezone</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Displays the time zone configured on the device.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">UTC</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>multicast_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the multicast IP address used for failover.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">4.4.4.4</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>unicast_addresses</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the entire set of unicast addresses used for failover.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>ip</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The IP address that the failover daemon will listen on for packets from its peers.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5.4.3.5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>effective_ip</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The IP address that peers can use to reach this unicast address IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5.4.3.5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The IP port that the failover daemon uses to accept packets from its peers.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1026</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>effective_port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The port that peers can use to reach this unicast address.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1026</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>primary_mirror_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the IP address used for state mirroring.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5.5.5.5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>optional_modules</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Modules that are available for the current platform, but are not currently licensed.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;App Mode (TMSH Only, No Root/Bash)&#x27;, &#x27;BIG-IP VE, Multicast Routing&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>marketing_name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Marketing name of the device platform.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP Virtual Edition</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bigip02.internal</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>self</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether this device is the one that was queried for facts, or not.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>hostname</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -1290,6 +1452,48 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bigip02.internal</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>chassis_id</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Serial number of the device.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">11111111-2222-3333-444444444444</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>platform_id</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Displays the device platform identifier.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Z100</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>contact</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Administrator contact information.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The User</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1323,217 +1527,32 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>marketing_name</b>
+                    <b>full_path</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Marketing name of the device platform.</div>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP Virtual Edition</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/bigip02.internal</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>multicast_address</b>
+                    <b>build</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies the multicast IP address used for failover.</div>
+                                                                        <div>The minor version information of the total product version.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">4.4.4.4</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>optional_modules</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Modules that are available for the current platform, but are not currently licensed.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;App Mode (TMSH Only, No Root/Bash)&#x27;, &#x27;BIG-IP VE, Multicast Routing&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>platform_id</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Displays the device platform identifier.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Z100</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>primary_mirror_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the IP address used for state mirroring.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5.5.5.5</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Displays the software product name.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>secondary_mirror_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Secondary IP address used for state mirroring.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.2.2.2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>software_version</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Displays the software version number.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.1.0.7</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>timelimited_modules</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Displays the licensed modules that are time-limited.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;IP Intelligence, 3Yr, ...&#x27;, &#x27;PEM URL Filtering, 3Yr, ...&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>timezone</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Displays the time zone configured on the device.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">UTC</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>unicast_addresses</b>
-                    <br/><div style="font-size: small; color: red">complex</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the entire set of unicast addresses used for failover.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                                            <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>effective_ip</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The IP address that peers can use to reach this unicast address IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5.4.3.5</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>effective_port</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The port that peers can use to reach this unicast address.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1026</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>ip</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The IP address that the failover daemon will listen on for packets from its peers.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5.4.3.5</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>port</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The IP port that the failover daemon uses to accept packets from its peers.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1026</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.0.1</div>
                                     </td>
             </tr>
                     
-                                    
                                                 <tr>
                                 <td colspan="4">
                     <b>fasthttp_profiles</b>
@@ -1550,15 +1569,157 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>receive_window_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Amount of data the BIG-IP system can accept without acknowledging the server.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>maximum_segment_size_override</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Maximum segment size (MSS) override for server-side connections.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Description of the resource.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/fasthttp</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My profile</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>oneconnect_idle_timeout_override</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Number of seconds after which a server-side connection in a OneConnect pool is eligible for deletion, when the connection has no traffic.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>insert_x_forwarded_for</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the system inserts the X-Forwarded-For header in an HTTP request with the client IP address, to use with connection pooling.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>request_header_insert</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>A string that the system inserts as a header in an HTTP request. If the header exists already, the system does not replace it.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">X-F5-Authentication: foo</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>oneconnect_ramp_up_increment</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The increment in which the system makes additional connections available, when all available connections are in use.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">4</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>oneconnect_replenish'</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies, when <code>yes</code>, that the system will not keep a steady-state maximum of connections to the back-end unless the number of connections to the pool have dropped beneath the <code>minimum_pool_size</code> specified in the profile.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>idle_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Length of time that a connection is idle (has no traffic) before the connection is eligible for deletion.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">300</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>http_1_1_close_workarounds</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies, when <code>yes</code>, that the server uses workarounds for HTTP 1.1 close issues.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>oneconnect_minimum_pool_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Minimum number of connections to a load balancing pool.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>server_close_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Number of seconds after which the system closes a client connection, when the system either receives a server FIN packet or sends a FIN packet to the server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1578,6 +1739,18 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>server_sack</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the BIG-IP system processes Selective ACK (Sack) packets in cookie responses from the server.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>client_close_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
@@ -1592,12 +1765,66 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>oneconnect_idle_timeout_override</b>
+                    <b>server_timestamp</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the BIG-IP system processes timestamp request packets in cookie responses from the server.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fasthttp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>reset_on_timeout</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies, when <code>yes</code>, that the system sends a reset packet (RST) in addition to deleting the connection, when a connection exceeds the idle timeout value.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>maximum_header_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Number of seconds after which a server-side connection in a OneConnect pool is eligible for deletion, when the connection has no traffic.</div>
+                                                                        <div>Maximum amount of HTTP header data that the system buffers before making a load balancing decision.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">32768</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>maximum_requests</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Maximum number of requests that the system can receive on a client-side connection, before the system closes the connection.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -1630,24 +1857,216 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>oneconnect_minimum_pool_size</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>unclean_shutdown</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Minimum number of connections to a load balancing pool.</div>
+                                                                        <div>How the system handles closing connections. Values provided may be <code>enabled</code>, <code>disabled</code>, or <code>fast</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>force_http_1_0_response</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies, when <code>yes</code>, that the server sends responses to clients in the HTTP/1.0 format.</div>
                                                                 <br/>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>oneconnect_replenish'</b>
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/fasthttp</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
+                    <b>fastl4_profiles</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>fastl4-profiles</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>FastL4 profile related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>receive_window</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the window size to use, in bytes.</div>
+                                                    <div>The maximum is 2^31 for window scale enabling.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>pva_dynamic_client_packets</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the number of client packets before dynamic ePVA hardware re-offloading occurs.</div>
+                                                    <div>Values will be between 0 and 10.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>tcp_handshake_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a TCP handshake timeout in seconds.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>hardware_syn_cookie</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies, when <code>yes</code>, that the system will not keep a steady-state maximum of connections to the back-end unless the number of connections to the pool have dropped beneath the <code>minimum_pool_size</code> specified in the profile.</div>
+                                                                        <div>Enables or disables hardware SYN cookie support when PVA10 is present on the system.</div>
+                                                    <div>This option is deprecated in version 13.0.0 and is replaced by <code>syn-cookie-enable</code>.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ttl_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Describe the outgoing TCP packet&#x27;s IP Header TTL mode.</div>
+                                                    <div>When <code>proxy</code>, sets the outgoing IP Header TTL value to 255/64 for ipv4/ipv6 respectively.</div>
+                                                    <div>When <code>preserve</code>, sets the outgoing IP Header TTL value to be same as the incoming IP Header TTL value.</div>
+                                                    <div>When <code>decrement</code>, sets the outgoing IP Header TTL value to be one less than the incoming TTL value.</div>
+                                                    <div>When <code>set</code>, sets the outgoing IP Header TTL value to a specific value(as specified by <code>ttl_v4</code> or <code>ttl_v6</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preserve</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>priority_to_client</b>
+                    <br/><div style="font-size: small; color: red">int or string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies internal packet priority for the client side.</div>
+                                                    <div>This option specifies the internal packet priority that the system assigns to packets when sending them to clients.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">300</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>pva_offload_state</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies at what stage the ePVA performs hardware offload.</div>
+                                                    <div>When <code>embryonic</code>, implies at TCP CSYN or the first client UDP packet.</div>
+                                                    <div>When <code>establish</code>, implies TCP 3WAY handshaking or UDP CS round trip are confirmed.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">embryonic</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ttl_v6</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specify the outgoing packet&#x27;s IP Header TTL value for IPv6 traffic.</div>
+                                                    <div>Maximum value that can be specified is 255.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">300</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ip_tos_to_client</b>
+                    <br/><div style="font-size: small; color: red">string or int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies an IP Type of Service (ToS) number for the client-side.</div>
+                                                    <div>This option specifies the ToS level that the traffic management system assigns to IP packets when sending them to clients.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>tcp_timestamp_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies how you want to handle the TCP timestamp.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preserve</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>late_binding</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether to enable or disable intelligent selection of a back-end server pool.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -1656,29 +2075,265 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>oneconnect_ramp_up_increment</b>
+                    <b>mss_override</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The increment in which the system makes additional connections available, when all available connections are in use.</div>
+                                                                        <div>Specifies a maximum segment size (MSS) override for server connections. Note that this is also the MSS advertised to a client when a client first connects.</div>
+                                                    <div><code>0</code> (zero), means the option is disabled. Otherwise, the value will be between 256 and 9162.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">4</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">500</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>parent</b>
+                    <b>loose_init</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies that the system initializes a connection when it receives any Transmission Control Protocol (TCP) packet, rather than requiring a SYN packet for connection initiation.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>software_syn_cookie</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables software SYN cookie support when PVA10 is not present on the system.</div>
+                                                    <div>This option is deprecated in version 13.0.0 and is replaced by <code>syn_cookie_enabled</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>dont_fragment_flag</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                        <div>Describes the Don&#x27;t Fragment (DF) bit setting in the IP Header of the outgoing TCP packet.</div>
+                                                    <div>When <code>pmtu</code>, sets the outgoing IP Header DF bit based on IP pmtu setting(tm.pathmtudiscovery).</div>
+                                                    <div>When <code>preserve</code>, sets the outgoing Packet&#x27;s IP Header DF bit to be same as incoming IP Header DF bit.</div>
+                                                    <div>When <code>set</code>, sets the outgoing packet&#x27;s IP Header DF bit.</div>
+                                                    <div>When <code>clear</code>, clears the outgoing packet&#x27;s IP Header DF bit.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fasthttp</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pmtu</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>tcp_close_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a TCP close timeout in seconds.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>priority_to_server</b>
+                    <br/><div style="font-size: small; color: red">int or string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies internal packet priority for the server side.</div>
+                                                    <div>This option specifies the internal packet priority that the system assigns to packets when sending them to servers.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>tcp_window_scale_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies how you want to handle the TCP window scale.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preserve</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>server_timestamp</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether to support server timestamp option in cookie response by default.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>link_qos_to_server</b>
+                    <br/><div style="font-size: small; color: red">int or string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a Link QoS (VLAN priority) number for the server side.</div>
+                                                    <div>This option specifies the QoS level that the system assigns to packets when sending them to servers.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>pva_dynamic_server_packets</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the number of server packets before dynamic ePVA hardware re-offloading occurs.</div>
+                                                    <div>Values will be between 0 and 10.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ttl_v4</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specify the outgoing packet&#x27;s IP Header TTL value for IPv4 traffic.</div>
+                                                    <div>Maximum value that can be specified is 255.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>tcp_time_wait_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a TCP time_wait timeout in milliseconds.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">60</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>pva_flow_aging</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies if automatic aging from ePVA flow cache is enabled or not.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ip_tos_to_server</b>
+                    <br/><div style="font-size: small; color: red">string or int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies an IP ToS number for the server side.</div>
+                                                    <div>This option specifies the ToS level that the traffic management system assigns to IP packets when sending them to servers.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>client_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies late binding client timeout in seconds.</div>
+                                                    <div>This is the number of seconds allowed for a client to transmit enough data to select a server pool.</div>
+                                                    <div>If this timeout expires, the timeout-recovery option dictates whether to drop the connection or fallback to the normal FastL4 load-balancing method to pick a server pool.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">30</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>pva_offload_dynamic</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether PVA flow dynamic offloading is enabled or not.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>syn_cookie_whitelist</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether or not to use a SYN Cookie WhiteList when doing software SYN Cookies.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>keep_alive_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the keep-alive probe interval, in seconds.</div>
+                                                    <div>A value of 0 indicates keep-alive is disabled.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1698,50 +2353,29 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>force_http_1_0_response</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies, when <code>yes</code>, that the server sends responses to clients in the HTTP/1.0 format.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>request_header_insert</b>
+                    <b>parent</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>A string that the system inserts as a header in an HTTP request. If the header exists already, the system does not replace it.</div>
+                                                                        <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">X-F5-Authentication: foo</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>http_1_1_close_workarounds</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies, when <code>yes</code>, that the server uses workarounds for HTTP 1.1 close issues.</div>
-                                                                <br/>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fastl4</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>idle_timeout</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Length of time that a connection is idle (has no traffic) before the connection is eligible for deletion.</div>
+                                                                        <div>Specifies the number of seconds that a connection is idle before the connection is eligible for deletion.</div>
+                                                    <div>Values will be in the range of 0 to 4294967295 (inclusive).</div>
+                                                    <div><code>0</code> is equivalent to the TMUI value &quot;immediate&quot;.</div>
+                                                    <div><code>4294967295</code> is equivalent to the TMUI value &quot;indefinite&quot;.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">300</div>
@@ -1750,74 +2384,12 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>insert_x_forwarded_for</b>
+                    <b>reassemble_fragments</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the system inserts the X-Forwarded-For header in an HTTP request with the client IP address, to use with connection pooling.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>maximum_header_size</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Maximum amount of HTTP header data that the system buffers before making a load balancing decision.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">32768</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>maximum_requests</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Maximum number of requests that the system can receive on a client-side connection, before the system closes the connection.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>maximum_segment_size_override</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Maximum segment size (MSS) override for server-side connections.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>receive_window_size</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Amount of data the BIG-IP system can accept without acknowledging the server.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>reset_on_timeout</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies, when <code>yes</code>, that the system sends a reset packet (RST) in addition to deleting the connection, when a connection exceeds the idle timeout value.</div>
+                                                                        <div>Specifies whether to reassemble fragments.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -1826,15 +2398,71 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>server_close_timeout</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>timeout_recovery</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Number of seconds after which the system closes a client connection, when the system either receives a server FIN packet or sends a FIN packet to the server.</div>
+                                                                        <div>Specifies late binding timeout recovery mode. This is the action to take when late binding timeout occurs on a connection.</div>
+                                                    <div>When <code>disconnect</code>, only the L7 iRule actions are acceptable to pick a server.</div>
+                                                    <div>When <code>fallback</code>, the normal FastL4 load-balancing methods are acceptable to pick a server.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fallback</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>syn_cookie_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables syn-cookies capability on this virtual server.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>generate_init_seq_number</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether you want to generate TCP sequence numbers on all SYNs that conform with RFC1948, and allow timestamp recycling.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fastl4</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>strip_sack</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether you want to block the TCP SackOK option from passing to the server on an initiating SYN.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1845,34 +2473,339 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the BIG-IP system processes Selective ACK (Sack) packets in cookie responses from the server.</div>
+                                                                        <div>Specifies whether to support server sack option in cookie response by default.</div>
                                                                 <br/>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>server_timestamp</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether the BIG-IP system processes timestamp request packets in cookie responses from the server.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>unclean_shutdown</b>
+                    <b>pva_acceleration</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>How the system handles closing connections. Values provided may be <code>enabled</code>, <code>disabled</code>, or <code>fast</code>.</div>
+                                                                        <div>Specifies the Packet Velocity(r) ASIC acceleration policy.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">full</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>reset_on_timeout</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether you want to reset connections on timeout.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>rtt_from_client</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables the TCP timestamp options to measure the round trip time to the client.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>rtt_from_server</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables the TCP timestamp options to measure the round trip time to the server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>explicit_flow_migration</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether to have the iRule code determine exactly when the FIX stream drops down to the ePVA hardware.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>pva_flow_evict</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies if this flow can be evicted upon hash collision with a new flow learn snoop request.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>link_qos_to_client</b>
+                    <br/><div style="font-size: small; color: red">int or string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a Link Quality of Service (QoS) (VLAN priority) number for the client side.</div>
+                                                    <div>This option specifies the QoS level that the system assigns to packets when sending them to clients.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">7</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>loose_close</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies that the system closes a loosely-initiated connection when the system receives the first FIN packet from either the client or the server.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/fastl4</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>syn_cookie_mss</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a maximum segment size (MSS) for server connections when SYN Cookie is enabled.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2000</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
+                    <b>iapp_services</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>iapp-services</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>iApp v1 service related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>tables</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>List of the tabular data used to create the service.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;name&#x27;: &#x27;basic__snatpool_members&#x27;}, &#x27;...&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">service1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>inherited_traffic_group</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the traffic group is inherited or not.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>strict_updates</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether strict updates are enabled or not.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>inherited_device_group</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the device group is inherited or not.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>device_group</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The device group the iApp service is part of.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/dg1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>template_modified</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether template that the service is based on is modified from its default value, or not.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>lists</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>List of the lists data used to create the service.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;name&#x27;: &#x27;irules__irules&#x27;}, {&#x27;value&#x27;: []}, &#x27;...&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>traffic_group</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Traffic group the service is a part of.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/tg</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>metadata</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>List of the metadata data used to create the service..</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;name&#x27;: &#x27;var1&#x27;}, {&#x27;persist&#x27;: &#x27;true&#x27;}, &#x27;...&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>variables</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>List of the variable data used to create the service.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;name&#x27;: &#x27;afm__policy&#x27;}, {&#x27;encrypted&#x27;: &#x27;no&#x27;}, {&#x27;value&#x27;: &#x27;/#no_not_use#&#x27;}, &#x27;...&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/service1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the service</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My service</div>
                                     </td>
             </tr>
                     
@@ -1892,62 +2825,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/irul1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">irule1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>active_media_type</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Displays the current media setting for the interface.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100TX-FD</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>flow_control</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies how the system controls the sending of PAUSE frames for flow control.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tx-rx</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -1957,20 +2834,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My interface</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>bundle</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The bundle capability on the port.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">not-supported</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1990,15 +2853,83 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>enabled</b>
+                    <b>sflow_poll_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum interval in seconds between two pollings.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>bundle</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The bundle capability on the port.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">not-supported</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>active_media_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Displays the current media setting for the interface.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100TX-FD</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>sflow_poll_interval_global</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the interface is enabled or not</div>
+                                                                        <div>Specifies whether the global interface poll-interval setting overrides the object-level poll-interval setting.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>prefer_port</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Indicates which side of a combo port the interface uses, if both sides of the port have the potential for external links.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">sfp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>stp_link_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the STP link type for the interface.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">auto</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2018,29 +2949,43 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>mac_address</b>
+                    <b>name</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Displays the 6-byte ethernet address in non-case-sensitive hexadecimal colon notation.</div>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">00:0b:09:88:00:9a</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">irule1</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>media_sfp</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>stp_auto_edge_port</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The settings for an SFP (pluggable) interface.</div>
+                                                                        <div>STP edge port detection.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">auto</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the interface is enabled or not</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2074,60 +3019,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>prefer_port</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Indicates which side of a combo port the interface uses, if both sides of the port have the potential for external links.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">sfp</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>sflow_poll_interval</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the maximum interval in seconds between two pollings.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>sflow_poll_interval_global</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies whether the global interface poll-interval setting overrides the object-level poll-interval setting.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>stp_auto_edge_port</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>STP edge port detection.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>stp_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -2140,15 +3031,57 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>stp_link_type</b>
+                    <b>flow_control</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies the STP link type for the interface.</div>
+                                                                        <div>Specifies how the system controls the sending of PAUSE frames for flow control.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tx-rx</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>mac_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Displays the 6-byte ethernet address in non-case-sensitive hexadecimal colon notation.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">00:0b:09:88:00:9a</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>media_sfp</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The settings for an SFP (pluggable) interface.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">auto</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/irul1</div>
                                     </td>
             </tr>
                     
@@ -2168,15 +3101,27 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>definition</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>The actual definition of the iRule.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/irul1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">when HTTP_REQUEST ...</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ignore_verification</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the verification of the iRule should be ignored or not.</div>
+                                                                <br/>
                                     </td>
             </tr>
                                 <tr>
@@ -2196,13 +3141,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>ignore_verification</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>signature</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the verification of the iRule should be ignored or not.</div>
+                                                                        <div>The calculated signature of the iRule.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">WsYy2M6xMqvosIKIEH/FSsvhtWMe6xKOA6i7f...</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2222,29 +3169,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>definition</b>
+                    <b>full_path</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The actual definition of the iRule.</div>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">when HTTP_REQUEST ...</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>signature</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The calculated signature of the iRule.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">WsYy2M6xMqvosIKIEH/FSsvhtWMe6xKOA6i7f...</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/irul1</div>
                                     </td>
             </tr>
                     
@@ -2264,6 +3197,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>minimum_up_members_action</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The action to take if the <code>minimum_up_members_checking</code> is enabled and the number of active pool members falls below the number specified in <code>minimum_up_members</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">failover</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>allow_nat</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -2273,90 +3220,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>allow_snat</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether SNATs are automatically enabled or disabled for any connections using this pool.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>client_ip_tos</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether the system sets a Type of Service (ToS) level within a packet sent to the client, based on the targeted pool.</div>
-                                                    <div>Values can range from <code>0</code> to <code>255</code>, or be set to <code>pass-through</code> or <code>mimic</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>client_link_qos</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether the system sets a Quality of Service (QoS) level within a packet sent to the client, based on the targeted pool.</div>
-                                                    <div>Values can range from <code>0</code> to <code>7</code>, or be set to <code>pass-through</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Description of the pool.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">my pool</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>ignore_persisted_weight</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Do not count the weight of persisted connections on pool members when making load balancing decisions.</div>
-                                                                <br/>
                                     </td>
             </tr>
                                 <tr>
@@ -2376,15 +3239,41 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>metadata</b>
-                    <br/><div style="font-size: small; color: red">complex</div>
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Dictionary of arbitrary key/value pairs set on the pool.</div>
+                                                                        <div>Description of the pool.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">my pool</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ignore_persisted_weight</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Do not count the weight of persisted connections on pool members when making load balancing decisions.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>server_link_qos</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The Quality of Service (QoS) level to use when sending packets to a server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2405,155 +3294,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>minimum_up_members</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The minimum number of pool members that must be up.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>minimum_up_members_action</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The action to take if the <code>minimum_up_members_checking</code> is enabled and the number of active pool members falls below the number specified in <code>minimum_up_members</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">failover</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>minimum_up_members_checking</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Enables or disables the <code>minimum_up_members</code> feature.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pool1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>priority_group_activation</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether the system load balances traffic according to the priority number assigned to the pool member.</div>
-                                                    <div>This parameter is identical to <code>minimum_active_members</code> and is just an alias for it.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>queue_depth_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The maximum number of connections that may simultaneously be queued to go to any member of this pool.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>queue_on_connection_limit</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Enable or disable queuing connections when pool member or node connection limits are reached.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>queue_time_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the maximum time, in milliseconds, a connection will remain enqueued.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>reselect_tries</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The number of times the system tries to contact a pool member after a passive failure.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>server_ip_tos</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The Type of Service (ToS) level to use when sending packets to a server.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>server_link_qos</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The Quality of Service (QoS) level to use when sending packets to a server.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>service_down_action</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -2563,21 +3303,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">none</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>slow_ramp_time</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The ramp time for the pool.</div>
-                                                    <div>This provides the ability to cause a pool member that has just been enabled, or marked up, to receive proportionally less traffic than other members in the pool.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2596,34 +3321,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>IP address of the pool member.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.1.1.1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>connection_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The maximum number of concurrent connections allowed for a pool member.</div>
-                                        <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -2633,21 +3330,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pool member 1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>dynamic_ratio</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>A range of numbers that you want the system to use in conjunction with the ratio load balancing method.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2669,31 +3351,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>fqdn_autopopulate</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether the node should scale to the IP address set returned by DNS.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>full_path</b>
+                    <b>encapsulation_profile</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
-                                                    <div>Includes the port in the name</div>
+                                                                        <div>The encapsulation profile to use for the pool member.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/member:80</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ip4ip4</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2713,12 +3379,57 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>logging</b>
+                    <b>session</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables the pool member for new sessions.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">monitor-enabled</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>IP address of the pool member.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.1.1.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>ratio</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The weight of the pool for load balancing purposes.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>rate_limit</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the monitor applied should log its actions.</div>
+                                                                        <div>The maximum number of connections per second allowed for a pool member.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -2726,15 +3437,13 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>monitors</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>logging</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Monitors active on the pool member. Monitor names are in their &quot;full_path&quot; form.</div>
+                                                                        <div>Whether the monitor applied should log its actions.</div>
                                                                 <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/http&#x27;]</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2771,71 +3480,28 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>priority_group</b>
+                    <b>connection_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The priority group within the pool for this pool member.</div>
-                                                                <br/>
+                                            <div>The maximum number of concurrent connections allowed for a pool member.</div>
+                                        <br/>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>encapsulation_profile</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>monitors</b>
+                    <br/><div style="font-size: small; color: red">list</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The encapsulation profile to use for the pool member.</div>
+                                                                        <div>Monitors active on the pool member. Monitor names are in their &quot;full_path&quot; form.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ip4ip4</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>rate_limit</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The maximum number of connections per second allowed for a pool member.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>ratio</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The weight of the pool for load balancing purposes.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>session</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Enables or disables the pool member for new sessions.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">monitor-enabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/http&#x27;]</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2853,8 +3519,275 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">down</div>
                                     </td>
             </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>dynamic_ratio</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>A range of numbers that you want the system to use in conjunction with the ratio load balancing method.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>fqdn_autopopulate</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the node should scale to the IP address set returned by DNS.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>priority_group</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The priority group within the pool for this pool member.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                    <div>Includes the port in the name</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/member:80</div>
+                                    </td>
+            </tr>
                     
-                                    
+                                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>queue_time_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum time, in milliseconds, a connection will remain enqueued.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pool1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>minimum_up_members</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The minimum number of pool members that must be up.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>priority_group_activation</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the system load balances traffic according to the priority number assigned to the pool member.</div>
+                                                    <div>This parameter is identical to <code>minimum_active_members</code> and is just an alias for it.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>allow_snat</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether SNATs are automatically enabled or disabled for any connections using this pool.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>client_link_qos</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the system sets a Quality of Service (QoS) level within a packet sent to the client, based on the targeted pool.</div>
+                                                    <div>Values can range from <code>0</code> to <code>7</code>, or be set to <code>pass-through</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>reselect_tries</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The number of times the system tries to contact a pool member after a passive failure.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>client_ip_tos</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the system sets a Type of Service (ToS) level within a packet sent to the client, based on the targeted pool.</div>
+                                                    <div>Values can range from <code>0</code> to <code>255</code>, or be set to <code>pass-through</code> or <code>mimic</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>slow_ramp_time</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The ramp time for the pool.</div>
+                                                    <div>This provides the ability to cause a pool member that has just been enabled, or marked up, to receive proportionally less traffic than other members in the pool.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>minimum_up_members_checking</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables the <code>minimum_up_members</code> feature.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>server_ip_tos</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The Type of Service (ToS) level to use when sending packets to a server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>queue_on_connection_limit</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enable or disable queuing connections when pool member or node connection limits are reached.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>queue_depth_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The maximum number of connections that may simultaneously be queued to go to any member of this pool.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>metadata</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Dictionary of arbitrary key/value pairs set on the pool.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                    
                                                 <tr>
                                 <td colspan="4">
                     <b>nodes</b>
@@ -2871,43 +3804,16 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>monitor_status</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Status of the node as reported by the monitor(s) associated with it.</div>
+                                                    <div>This value is also used in determining node <code>state</code>.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/5.6.7.8</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5.6.7.8</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>ratio</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Fixed size ratio used for node during <code>Ratio</code> load balancing.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">down</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2922,6 +3828,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My node</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>session_status</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>This value is also used in determining node <code>state</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
                                     </td>
             </tr>
                                 <tr>
@@ -2955,91 +3875,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>dynamic_ratio</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Dynamic ratio number for the node used when doing <code>Dynamic Ratio</code> load balancing.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>rate_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Maximum number of connections per second allowed for node.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>monitor_status</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Status of the node as reported by the monitor(s) associated with it.</div>
-                                                    <div>This value is also used in determining node <code>state</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">down</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>session_status</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>This value is also used in determining node <code>state</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>availability_status</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The availability of the node.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">offline</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>enabled_status</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The enabled-ness of the node.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>status_reason</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -3049,20 +3884,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/https_443 No successful responses received...</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>monitor_rule</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>A string representation of the full monitor rule.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/https_443 and /Common/icmp</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3082,6 +3903,104 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>ratio</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Fixed size ratio used for node during <code>Ratio</code> load balancing.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5.6.7.8</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>monitor_rule</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>A string representation of the full monitor rule.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/https_443 and /Common/icmp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>rate_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Maximum number of connections per second allowed for node.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>enabled_status</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The enabled-ness of the node.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/5.6.7.8</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>availability_status</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The availability of the node.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">offline</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>monitor_type</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -3091,6 +4010,192 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">and_list</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>dynamic_ratio</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Dynamic ratio number for the node used when doing <code>Dynamic Ratio</code> load balancing.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
+                    <b>oneconnect_profiles</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>oneconnect-profiles</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>OneConnect profile related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>idle_timeout_override</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the number of seconds that a connection is idle before the connection flow is eligible for deletion.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>max_age</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum age, in number of seconds, of a connection in the connection reuse pool.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">oneconnect</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">oneconnect</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>source_mask</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a source IP mask.</div>
+                                                    <div>If no mask is provided, the value <code>any6</code> is used.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">255.255.255.0</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>limit_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>When <code>none</code>, simultaneous in-flight requests and responses over TCP connections to a pool member are counted toward the limit.</div>
+                                                    <div>When <code>idle</code>, idle connections will be dropped as the TCP connection limit is reached.</div>
+                                                    <div>When <code>strict</code>, the TCP connection limit is honored with no exceptions. This means that idle connections will prevent new TCP connections from being made until they expire, even if they could otherwise be reused.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">idle</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>max_reuse</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum number of times that a server connection can be reused.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/oneconnect</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>share_pools</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Indicates that connections may be shared not only within a virtual server, but also among similar virtual servers.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>max_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum number of connections that the system holds in the connection reuse pool.</div>
+                                                    <div>If the pool is already full, then the server connection closes after the response is completed.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My profile</div>
                                     </td>
             </tr>
                     
@@ -3110,15 +4215,13 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>default_route_domain</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>ID of the route domain that is associated with the IP addresses that reside in the partition.</div>
                                                                 <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Common</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3130,6 +4233,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>changed</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Common</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Common</div>
@@ -3149,18 +4266,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Tenant 1</div>
                                     </td>
             </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>default_route_domain</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>ID of the route domain that is associated with the IP addresses that reside in the partition.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
                     
                                                 <tr>
                                 <td colspan="4">
@@ -3178,47 +4283,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">asm</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">asm</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>cpu_ratio</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Ratio of CPU allocated to this module.</div>
-                                                    <div>Only relevant if <code>level</code> was specified as <code>custom</code>. Otherwise, this value will be reported as <code>0</code>.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>disk_ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
@@ -3226,6 +4290,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                                                                         <div>Ratio of disk allocated to this module.</div>
                                                     <div>Only relevant if <code>level</code> was specified as <code>custom</code>. Otherwise, this value will be reported as <code>0</code>.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>level</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Provisioned level of the module on BIG-IP.</div>
+                                                    <div>Valid return values can include <code>none</code>, <code>minimum</code>, <code>nominal</code>, <code>dedicated</code> and <code>custom</code>.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -3245,14 +4322,42 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>level</b>
+                    <b>cpu_ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Provisioned level of the module on BIG-IP.</div>
-                                                    <div>Valid return values can include <code>none</code>, <code>minimum</code>, <code>nominal</code>, <code>dedicated</code> and <code>custom</code>.</div>
+                                                                        <div>Ratio of CPU allocated to this module.</div>
+                                                    <div>Only relevant if <code>level</code> was specified as <code>custom</code>. Otherwise, this value will be reported as <code>0</code>.</div>
                                                                 <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">asm</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">asm</div>
                                     </td>
             </tr>
                     
@@ -3272,15 +4377,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>service_policy</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Service policy assigned to the Self-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/self1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/service1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3300,15 +4405,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>description</b>
+                    <b>vlan</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Description of the Self-IP.</div>
+                                                                        <div>VLAN associated with the Self-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My self-ip</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/vlan1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3342,6 +4447,32 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>traffic_group_inherited</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether or not the traffic group is inherited.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/self1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>floating</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -3370,34 +4501,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>service_policy</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Service policy assigned to the Self-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/service1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>vlan</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>VLAN associated with the Self-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/vlan1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>allow_access_list</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
@@ -3413,13 +4516,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>traffic_group_inherited</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether or not the traffic group is inherited.</div>
+                                                                        <div>Description of the Self-IP.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My self-ip</div>
                                     </td>
             </tr>
                     
@@ -3439,6 +4544,34 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>product</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Product contained in the ISO.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>verified</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether or not the system has verified this image.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -3453,15 +4586,45 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>title</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Human friendly name of the image.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Hotfix Version 3.0.1679</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>checksum</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>MD5 checksum of the image.</div>
+                                                    <div>Note that this is the checksum that is stored inside the ISO. It is not the actual checksum of the ISO.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">df1ec715d2089d0fa54c0c4284656a98</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>version</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Version of software contained in the image.</div>
+                                                    <div>This is a sub-string of the <code>name</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.0.0</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3482,35 +4645,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>checksum</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>MD5 checksum of the image.</div>
-                                                    <div>Note that this is the checksum that is stored inside the ISO. It is not the actual checksum of the ISO.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">df1ec715d2089d0fa54c0c4284656a98</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Product contained in the ISO.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>id</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -3526,44 +4660,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>title</b>
+                    <b>full_path</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Human friendly name of the image.</div>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Hotfix Version 3.0.1679</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>verified</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether or not the system has verified this image.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>version</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Version of software contained in the image.</div>
-                                                    <div>This is a sub-string of the <code>name</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.0.0</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso</div>
                                     </td>
             </tr>
                     
@@ -3583,6 +4688,48 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>build_date</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Date of the build.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018-05-05T15:26:30</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>product</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Product contained in the ISO.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>verified</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether or not the system has verified this image.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -3597,15 +4744,30 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>checksum</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>MD5 checksum of the image.</div>
+                                                    <div>Note that this is the checksum that is stored inside the ISO. It is not the actual checksum of the ISO.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIGIP-13.1.0.7-0.0.1.iso</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">df1ec715d2089d0fa54c0c4284656a98</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>last_modified</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Last modified date of the ISO.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018-05-05T15:26:30</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3626,30 +4788,16 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>build_date</b>
+                    <b>version</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Date of the build.</div>
+                                                                        <div>Version of software contained in the image.</div>
+                                                    <div>This is a sub-string of the <code>name</code>.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018-05-05T15:26:30</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>checksum</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>MD5 checksum of the image.</div>
-                                                    <div>Note that this is the checksum that is stored inside the ISO. It is not the actual checksum of the ISO.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">df1ec715d2089d0fa54c0c4284656a98</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.1.0.7</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3669,58 +4817,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>last_modified</b>
+                    <b>full_path</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Last modified date of the ISO.</div>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018-05-05T15:26:30</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Product contained in the ISO.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>verified</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether or not the system has verified this image.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>version</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Version of software contained in the image.</div>
-                                                    <div>This is a sub-string of the <code>name</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.1.0.7</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIGIP-13.1.0.7-0.0.1.iso</div>
                                     </td>
             </tr>
                     
@@ -3740,16 +4845,46 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>active</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>status</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the volume is currently active or not.</div>
-                                                    <div>An active volume contains the currently running version of software.</div>
+                                                                        <div>Status of the software installed, or being installed, in the volume.</div>
+                                                    <div>When <code>complete</code>, indicates that the software has completed installing.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">complete</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>product</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The F5 product installed in this slot.</div>
+                                                    <div>This should always be BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                    <div>This usually matches the <code>full_name</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">HD1.1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3770,6 +4905,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>version</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Version of software installed in the volume, excluding the <code>build</code> number.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.1.0.4</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>build</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -3779,6 +4928,21 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.0.6</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>active</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the volume is currently active or not.</div>
+                                                    <div>An active volume contains the currently running version of software.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3809,65 +4973,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                    <div>This usually matches the <code>full_name</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">HD1.1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The F5 product installed in this slot.</div>
-                                                    <div>This should always be BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>status</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Status of the software installed, or being installed, in the volume.</div>
-                                                    <div>When <code>complete</code>, indicates that the software has completed installing.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">complete</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>version</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Version of software installed in the volume, excluding the <code>build</code> number.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.1.0.4</div>
-                                    </td>
-            </tr>
                     
                                                 <tr>
                                 <td colspan="4">
@@ -3883,15 +4988,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>last_update_time</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Specifies the last time at which the file-object was updated/modified.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/cert1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018-05-15T21:11:15Z</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3906,6 +5011,32 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">cert1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>expiration_date</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a string representation of the expiration date of the certificate.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Aug 13 21:21:29 2031 GMT</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>is_bundle</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether the certificate file is a bundle (that is, whether it contains more than one certificate).</div>
+                                                                <br/>
                                     </td>
             </tr>
                                 <tr>
@@ -3939,15 +5070,29 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>system_path</b>
+                    <b>create_time</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Path on the BIG-IP where the cert can be found.</div>
+                                                                        <div>Specifies the time at which the file-object was created.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/config/ssl/ssl.crt/f5-irule.crt</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018-05-15T21:11:15Z</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/cert1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -3967,60 +5112,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>subject</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies X509 information of the certificate&#x27;s subject.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">emailAddress=support@f5.com,CN=...</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>last_update_time</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the last time at which the file-object was updated/modified.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018-05-15T21:11:15Z</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>issuer</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies X509 information of the certificate&#x27;s issuer.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">emailAddress=support@f5.com,...CN=support.f5.com,</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>is_bundle</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies whether the certificate file is a bundle (that is, whether it contains more than one certificate).</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>fingerprint</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -4035,15 +5126,29 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>expiration_date</b>
+                    <b>system_path</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies a string representation of the expiration date of the certificate.</div>
+                                                                        <div>Path on the BIG-IP where the cert can be found.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Aug 13 21:21:29 2031 GMT</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/config/ssl/ssl.crt/f5-irule.crt</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>subject</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies X509 information of the certificate&#x27;s subject.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">emailAddress=support@f5.com,CN=...</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4063,15 +5168,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>create_time</b>
+                    <b>issuer</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies the time at which the file-object was created.</div>
+                                                                        <div>Specifies X509 information of the certificate&#x27;s issuer.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018-05-15T21:11:15Z</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">emailAddress=support@f5.com,...CN=support.f5.com,</div>
                                     </td>
             </tr>
                     
@@ -4089,34 +5194,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                                             <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/key1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">key1</div>
-                                    </td>
-            </tr>
-                                <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>key_type</b>
@@ -4147,15 +5224,29 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>security_type</b>
+                    <b>name</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies the type of security used to handle or store the key.</div>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">normal</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">key1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>sha1_checksum</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The SHA1 checksum of the key.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1fcf7de3dd8e834d613099d8e10b2060cd9ecc9f</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4175,15 +5266,29 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>sha1_checksum</b>
+                    <b>security_type</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The SHA1 checksum of the key.</div>
+                                                                        <div>Specifies the type of security used to handle or store the key.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1fcf7de3dd8e834d613099d8e10b2060cd9ecc9f</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">normal</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/key1</div>
                                     </td>
             </tr>
                     
@@ -4201,20 +5306,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">vendor.wwwurl</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -4224,6 +5315,32 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">vendor.wwwurl</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>value_range</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The accepted range of values for the key</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">string</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>scf_config</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the database key would be found in an SCF config or not.</div>
+                                                                <br/>
                                     </td>
             </tr>
                                 <tr>
@@ -4243,13 +5360,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>scf_config</b>
+                    <b>full_path</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the database key would be found in an SCF config or not.</div>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">vendor.wwwurl</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4264,20 +5383,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">www.f5.com</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>value_range</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The accepted range of values for the key</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">string</div>
                                     </td>
             </tr>
                     
@@ -4295,6 +5400,88 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>product_changelist</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Changelist that product branches from.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2557198</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>product_build_date</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Human readable build date.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Tue May 15 15:26:30 PDT 2018</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>package_version</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>A string combining the <code>product_build</code> and <code>product_build_date</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Build 0.0.1 - Tue May 15 15:26:30 PDT 2018</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>host_board_part_revision</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Revision of the host board.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>product_build</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Build version of the release version.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.0.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>platform</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Platform identifier.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Z100</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>base_mac_address</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -4304,6 +5491,76 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fa:16:3e:c3:42:6f</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>product_jobid</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>ID of the job that built the product version.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1012030</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>product_code</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Code identifying the product.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>package_edition</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Displays the software edition.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Point Release 7</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>product_built</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Unix timestamp of when the product was built.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">180515152630</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>uptime</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Time, in seconds, since the system booted.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">603202</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4323,6 +5580,136 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>host_board_serial</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Serial of the host board.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>chassis_serial</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Serial of the chassis</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">11111111-2222-3333-444444444444</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>hardware_information</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Information related to the hardware (drives and CPUs) of the system.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>model</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>The model of the hardware.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Virtual Disk</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>The type of hardware.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">physical-disk</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>The name of the hardware.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">HD1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>versions</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Hardware specific properties</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>version</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Value of the property</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">154.00G</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Name of the property</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Size</div>
+                                    </td>
+            </tr>
+                    
+                                    
+                                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>time</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -4336,15 +5723,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>day</b>
+                    <b>second</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The current day of the month, in numeric form.</div>
+                                                                        <div>The current second of the minute.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">7</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">51</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4360,6 +5747,36 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">18</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>year</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The current year in 4-digit form.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>day</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The current day of the month, in numeric form.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">7</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4392,318 +5809,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">6</div>
                                     </td>
             </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>second</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The current second of the minute.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">51</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>year</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The current year in 4-digit form.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2018</div>
-                                    </td>
-            </tr>
                     
                                                 <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>hardware_information</b>
-                    <br/><div style="font-size: small; color: red">complex</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Information related to the hardware (drives and CPUs) of the system.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                                            <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>model</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>The model of the hardware.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Virtual Disk</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>The name of the hardware.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">HD1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>type</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>The type of hardware.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">physical-disk</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="2">
-                    <b>versions</b>
-                    <br/><div style="font-size: small; color: red">complex</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Hardware specific properties</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                                            <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Name of the property</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Size</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>version</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Value of the property</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">154.00G</div>
-                                    </td>
-            </tr>
-                    
-                                    
-                                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>package_edition</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Displays the software edition.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Point Release 7</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>package_version</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>A string combining the <code>product_build</code> and <code>product_build_date</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Build 0.0.1 - Tue May 15 15:26:30 PDT 2018</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product_code</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Code identifying the product.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIG-IP</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product_build</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Build version of the release version.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.0.1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product_built</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Unix timestamp of when the product was built.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">180515152630</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product_build_date</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Human readable build date.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Tue May 15 15:26:30 PDT 2018</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product_changelist</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Changelist that product branches from.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2557198</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>product_jobid</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>ID of the job that built the product version.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1012030</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>chassis_serial</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Serial of the chassis</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">11111111-2222-3333-444444444444</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>host_board_part_revision</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Revision of the host board.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>host_board_serial</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Serial of the host board.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>platform</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Platform identifier.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Z100</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>switch_board_part_revision</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td></td>
-                <td>
-                                                                        <div>Switch board revision.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>switch_board_serial</b>
@@ -4718,15 +5825,13 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>uptime</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>switch_board_part_revision</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td></td>
                 <td>
-                                                                        <div>Time, in seconds, since the system booted.</div>
+                                                                        <div>Switch board revision.</div>
                                                                 <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">603202</div>
                                     </td>
             </tr>
                     
@@ -4744,15 +5849,41 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>mac_masquerade_address</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Specifies a MAC address for the traffic group.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/tg1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">00:98:76:54:32:10</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>is_floating</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Indicates whether the traffic group can fail over to other devices in the device group.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ha_order</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>This list of devices specifies the order in which the devices will become active for the traffic group when a failure occurs.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/device1&#x27;, &#x27;/Common/device2&#x27;]</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4767,34 +5898,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tg1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Description of the traffic group.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My traffic group</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>auto_failback_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies whether the traffic group fails back to the default device.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4828,41 +5931,43 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>ha_order</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>This list of devices specifies the order in which the devices will become active for the traffic group when a failure occurs.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/device1&#x27;, &#x27;/Common/device2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>is_floating</b>
+                    <b>auto_failback_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Indicates whether the traffic group can fail over to other devices in the device group.</div>
+                                                                        <div>Specifies whether the traffic group fails back to the default device.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>mac_masquerade_address</b>
+                    <b>full_path</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies a MAC address for the traffic group.</div>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">00:98:76:54:32:10</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/tg1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the traffic group.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My traffic group</div>
                                     </td>
             </tr>
                     
@@ -4880,34 +5985,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/trunk1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">trunk1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -4917,34 +5994,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My trunk</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>media_speed</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Speed of the media attached to the trunk.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10000</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>lacp_mode</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The operation mode for LACP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">passive</div>
                                     </td>
             </tr>
                                 <tr>
@@ -4964,29 +6013,30 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>stp_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>lacp_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether Spanning Tree Protocol (STP) is enabled or not.</div>
+                                                                        <div>The operation mode for LACP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">passive</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>operational_member_count</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>distribution_hash</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Number of working members associated with the trunk.</div>
+                                                                        <div>The basis for the has that the system uses as the frame distribution algorithm.</div>
+                                                    <div>The system uses this hash to determine which interface to use for forwarding traffic.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">src-dst-ipport</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5034,30 +6084,29 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>interfaces</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>stp_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The list of interfaces that are part of the trunk.</div>
+                                                                        <div>Whether Spanning Tree Protocol (STP) is enabled or not.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;1.2&#x27;, &#x27;1.3&#x27;]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>distribution_hash</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>operational_member_count</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The basis for the has that the system uses as the frame distribution algorithm.</div>
-                                                    <div>The system uses this hash to determine which interface to use for forwarding traffic.</div>
+                                                                        <div>Number of working members associated with the trunk.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">src-dst-ipport</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5072,6 +6121,62 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>media_speed</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Speed of the media attached to the trunk.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>interfaces</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The list of interfaces that are part of the trunk.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;1.2&#x27;, &#x27;1.3&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/trunk1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">trunk1</div>
                                     </td>
             </tr>
                     
@@ -5089,109 +6194,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
+                    <b>traffic_group</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Traffic group on which the virtual address is active.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/2.3.4.5</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The virtual IP address.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>arp_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether or not ARP is enabled for the specified virtual address.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>auto_delete_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Indicates if the virtual address will be deleted automatically on deletion of the last associated virtual server or not.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>connection_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Concurrent connection limit for one or more virtual servers.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The description of the virtual address.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My virtual address</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether the virtual address is enabled or not.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/traffic-group-1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5211,12 +6222,76 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>floating</b>
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>inherited_traffic_group</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Property derived from traffic-group. A floating virtual address is a virtual address for a VLAN that serves as a shared address by all devices of a BIG-IP traffic-group.</div>
+                                                                        <div>Indicates if the traffic-group is inherited from the parent folder.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>connection_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Concurrent connection limit for one or more virtual servers.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>route_advertisement</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the route advertisement setting for the virtual address.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the virtual address is enabled or not.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>arp_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether or not ARP is enabled for the specified virtual address.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -5239,27 +6314,27 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>route_advertisement</b>
+                    <b>auto_delete_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies the route advertisement setting for the virtual address.</div>
+                                                                        <div>Indicates if the virtual address will be deleted automatically on deletion of the last associated virtual server or not.</div>
                                                                 <br/>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>traffic_group</b>
+                    <b>address</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Traffic group on which the virtual address is active.</div>
+                                                                        <div>The virtual IP address.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/traffic-group-1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5277,13 +6352,43 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>inherited_traffic_group</b>
+                    <b>floating</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Indicates if the traffic-group is inherited from the parent folder.</div>
+                                                                        <div>Property derived from traffic-group. A floating virtual address is a virtual address for a VLAN that serves as a shared address by all devices of a BIG-IP traffic-group.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/2.3.4.5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The description of the virtual address.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My virtual address</div>
                                     </td>
             </tr>
                     
@@ -5303,29 +6408,83 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>translate_address</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Enables or disables address translation for the virtual server.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/2.3.4.5</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>name</b>
+                    <b>protocol</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                        <div>IP protocol for which you want the virtual server to direct traffic.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tcp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>fallback_persistence_profile</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Fallback persistence profile for the virtual server to use when the default persistence profile is not available.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/fallback1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>rate_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Maximum number of connections per second allowed for a virtual server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">34</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>rate_class</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Name of an existing rate class that you want the virtual server to use to enforce a throughput policy for incoming network traffic.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>destination_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Address portion of the <code>destination</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.3.2</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5345,15 +6504,57 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>bw_controller_policy</b>
+                    <b>destination</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>The bandwidth controller for the system to use to enforce a throughput policy for incoming network traffic.</div>
+                                                                        <div>Name of the virtual address and service on which the virtual server listens for connections.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/bw1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/2.2.3.3%1:76</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>rate_limit_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Indicates whether the rate limit is applied per virtual object, per source address, per destination address, or some combination thereof.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">object</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>irules</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>List of iRules that customize the virtual server to direct and manage traffic.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/rule1&#x27;, &quot;/Common/rule2&#x27;&quot;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>source_port_behavior</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether the system preserves the source port of the connection.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preserve</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5373,15 +6574,69 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>connection_limit</b>
+                    <b>rate_limit_source_mask</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Maximum number of concurrent connections you want to allow for the virtual server.</div>
+                                                                        <div>Specifies a mask, in bits, to be applied to the source address as part of the rate limiting.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>nat64_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether or not NAT64 is enabled.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ip_intelligence_policy</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>IP Intelligence policy assigned to the virtual</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/ip1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>source_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies an IP address or network from which the virtual server will accept traffic.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.0.0./0</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>connection_mirror_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether or not connection mirroring is enabled.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5415,223 +6670,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>fallback_persistence_profile</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Fallback persistence profile for the virtual server to use when the default persistence profile is not available.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/fallback1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>persistence_profile</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>The persistence profile you want the system to use as the default for this virtual server.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/persist1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>translate_port</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Enables or disables port translation.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>translate_address</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Enables or disables address translation for the virtual server.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>vlans</b>
+                    <b>authentication_profile</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>List of VLANs on which the virtual server is either enabled or disabled.</div>
+                                                                        <div>Specifies a list of authentication profile names, separated by spaces, that the virtual server uses to manage authentication.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/vlan1&#x27;, &#x27;/Common/vlan2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>destination</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Name of the virtual address and service on which the virtual server listens for connections.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/2.2.3.3%1:76</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>last_hop_pool</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Name of the last hop pool that you want the virtual server to use to direct reply traffic to the last hop router.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>nat64_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether or not NAT64 is enabled.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>source_port_behavior</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies whether the system preserves the source port of the connection.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preserve</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>ip_intelligence_policy</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>IP Intelligence policy assigned to the virtual</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/ip1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>protocol</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>IP protocol for which you want the virtual server to direct traffic.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tcp</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>default_pool</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Pool name that you want the virtual server to use as the default pool.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>rate_limit_mode</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Indicates whether the rate limit is applied per virtual object, per source address, per destination address, or some combination thereof.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">object</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>rate_limit_source_mask</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies a mask, in bits, to be applied to the source address as part of the rate limiting.</div>
-                                                                <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>rate_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Maximum number of connections per second allowed for a virtual server.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">34</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>snat_type</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies the type of source address translation associated with the specified virtual server.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">none</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/ssl_drldp&#x27;]</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5651,25 +6698,29 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>gtm_score</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>translate_port</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies a score that is associated with the virtual server.</div>
+                                                                        <div>Enables or disables port translation.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>rate_class</b>
+                    <b>persistence_profile</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Name of an existing rate class that you want the virtual server to use to enforce a throughput policy for incoming network traffic.</div>
+                                                                        <div>The persistence profile you want the system to use as the default for this virtual server.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/persist1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5689,57 +6740,43 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>source_address</b>
+                    <b>destination_port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Port potion of the <code>destination</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">80</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>vlans</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>List of VLANs on which the virtual server is either enabled or disabled.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/vlan1&#x27;, &#x27;/Common/vlan2&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>bw_controller_policy</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies an IP address or network from which the virtual server will accept traffic.</div>
+                                                                        <div>The bandwidth controller for the system to use to enforce a throughput policy for incoming network traffic.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.0.0./0</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>authentication_profile</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies a list of authentication profile names, separated by spaces, that the virtual server uses to manage authentication.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/ssl_drldp&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>connection_mirror_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether or not connection mirroring is enabled.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>irules</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>List of iRules that customize the virtual server to direct and manage traffic.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/rule1&#x27;, &quot;/Common/rule2&#x27;&quot;]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/bw1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5759,6 +6796,62 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
+                    <b>last_hop_pool</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Name of the last hop pool that you want the virtual server to use to direct reply traffic to the last hop router.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>snat_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the type of source address translation associated with the specified virtual server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">none</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>default_pool</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Pool name that you want the virtual server to use as the default pool.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
                     <b>type</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -5773,29 +6866,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>destination_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Address portion of the <code>destination</code>.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.3.2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>destination_port</b>
+                    <b>connection_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Port potion of the <code>destination</code>.</div>
+                                                                        <div>Maximum number of concurrent connections you want to allow for the virtual server.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">80</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
                                     </td>
             </tr>
                                 <tr>
@@ -5856,7 +6935,33 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                     
-                                    
+                                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>gtm_score</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies a score that is associated with the virtual server.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/2.3.4.5</div>
+                                    </td>
+            </tr>
+                    
                                                 <tr>
                                 <td colspan="4">
                     <b>vlans</b>
@@ -5871,34 +6976,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                                             <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>auto_lasthop</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Allows the system to send return traffic to the MAC address that transmitted the request, even if the routing table points to a different network or interface.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>cmp_hash_algorithm</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specifies how the traffic on the VLAN will be disaggregated.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">default</div>
-                                    </td>
-            </tr>
-                                <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>description</b>
@@ -5929,62 +7006,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>failsafe_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether failsafe is enabled or not.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>failsafe_timeout</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Number of seconds that an active unit can run without detecting network traffic on this VLAN before it starts a failover.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">90</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>if_index</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Index assigned to this VLAN. It is a unique identifier assigned for all objects displayed in the SNMP IF-MIB.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">176</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>learning_mode</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Whether switch ports placed in the VLAN are configured for switch learning, forwarding only, or dropped.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enable-forward</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
                     <b>interfaces</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -5998,15 +7019,13 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>full_path</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>tagged</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                        <div>Whether the interface is tagged or not.</div>
                                                                 <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.3</div>
                                     </td>
             </tr>
                                 <tr>
@@ -6028,31 +7047,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="2">
-                    <b>tagged</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the interface is tagged or not.</div>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.3</div>
                                     </td>
             </tr>
                     
                                                 <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="3">
-                    <b>mtu</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                                                        <div>Specific maximum transition unit (MTU) for the VLAN.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1500</div>
-                                    </td>
-            </tr>
-                                <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>sflow_poll_interval</b>
@@ -6067,13 +7074,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>sflow_poll_interval_global</b>
+                    <b>failsafe_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the global VLAN poll-interval setting, overrides the object-level poll-interval setting.</div>
+                                                                        <div>Whether failsafe is enabled or not.</div>
                                                                 <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -6091,29 +7100,69 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>sflow_sampling_rate_global</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>tag</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Whether the global VLAN sampling-rate setting, overrides the object-level sampling-rate setting.</div>
+                                                                        <div>Tag number for the VLAN.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">30</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>source_check_enabled</b>
+                    <b>learning_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether switch ports placed in the VLAN are configured for switch learning, forwarding only, or dropped.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enable-forward</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>auto_lasthop</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Allows the system to send return traffic to the MAC address that transmitted the request, even if the routing table points to a different network or interface.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>if_index</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Index assigned to this VLAN. It is a unique identifier assigned for all objects displayed in the SNMP IF-MIB.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">176</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>sflow_poll_interval_global</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Specifies that only connections that have a return route in the routing table are accepted.</div>
+                                                                        <div>Whether the global VLAN poll-interval setting, overrides the object-level poll-interval setting.</div>
                                                                 <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -6133,15 +7182,71 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
-                    <b>tag</b>
+                    <b>mtu</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                                                        <div>Tag number for the VLAN.</div>
+                                                                        <div>Specific maximum transition unit (MTU) for the VLAN.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">30</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1500</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>cmp_hash_algorithm</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies how the traffic on the VLAN will be disaggregated.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">default</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>source_check_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies that only connections that have a return route in the routing table are accepted.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>sflow_sampling_rate_global</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Whether the global VLAN sampling-rate setting, overrides the object-level sampling-rate setting.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>failsafe_timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Number of seconds that an active unit can run without detecting network traffic on this VLAN before it starts a failover.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">90</div>
                                     </td>
             </tr>
                     
