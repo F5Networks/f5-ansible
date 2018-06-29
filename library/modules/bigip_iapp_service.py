@@ -437,6 +437,12 @@ class ApiParameters(Parameters):
             return None
         return self.normalize_variables(self._values['variables'])
 
+    @property
+    def device_group(self):
+        if self._values['device_group'] in [None, 'none']:
+            return None
+        return self._values['device_group']
+
 
 class ModuleParameters(Parameters):
     @property
@@ -541,9 +547,9 @@ class ModuleParameters(Parameters):
 
     @property
     def device_group(self):
-        if self._values['device_group']:
+        if self._values['device_group'] not in [None, 'none']:
             result = fq_name(self.partition, self._values['device_group'])
-        elif self.param_device_group:
+        elif self.param_device_group not in [None, 'none']:
             result = self.param_device_group
         else:
             return None
@@ -569,9 +575,9 @@ class ModuleParameters(Parameters):
 
     @property
     def strict_updates(self):
-        if self._values['strict_updates']:
+        if self._values['strict_updates'] is not None:
             result = flatten_boolean(self._values['strict_updates'])
-        elif self.param_strict_updates:
+        elif self.param_strict_updates is not None:
             result = self.param_strict_updates
         else:
             return None
