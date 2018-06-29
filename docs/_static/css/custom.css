@@ -1,9 +1,12 @@
-#parameters table, th, td {
+#parameters table,
+#parameters table th,
+#parameters table td {
     border: 1px solid black !important;
     background-color: white !important;
 }
 
-#parameters th, td {
+#parameters th,
+#parameters td {
     padding: 4px !important;
     vertical-align: top !important;
 }
