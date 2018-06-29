@@ -9,7 +9,7 @@ The F5 Modules for Ansible may work with versions not shown here; F5 has not ver
 | **Ansible Version**     | **BIG-IP versions**   | **BIG-IQ versions**  |
 +=========================+=======================+======================+
 | * v2.5                  | * v12.x               | * v5.4.x             |
-|                         | * v13.x               |                      |
+| * v2.6                  | * v13.x               |                      |
 +-------------------------+-----------------------+----------------------+
 
 .. important::
