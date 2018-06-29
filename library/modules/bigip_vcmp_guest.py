@@ -126,7 +126,6 @@ notes:
     means that it is not unusual for a vCMP host with many guests to take a
     long time (60+ minutes) to reboot and bring all the guests online. The
     BIG-IP chassis will be available before all vCMP guests are online.
-  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -188,6 +187,8 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_valid_ip
+    from library.module_utils.compat.ipaddress import ip_interface
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.utils.responses.handlers import Stats
@@ -201,17 +202,13 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import is_valid_ip
+    from ansible.module_utils.compat.ipaddress import ip_interface
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.utils.responses.handlers import Stats
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    from netaddr import IPAddress, AddrFormatError, IPNetwork
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -255,10 +252,9 @@ class Parameters(AnsibleF5Parameters):
             return None
         elif self._values['mgmt_route'] == 'none':
             return 'none'
-        try:
-            result = IPAddress(self._values['mgmt_route'])
-            return str(result)
-        except AddrFormatError:
+        if is_valid_ip(self._values['mgmt_route']):
+            return self._values['mgmt_route']
+        else:
             raise F5ModuleError(
                 "The specified 'mgmt_route' is not a valid IP address"
             )
@@ -268,10 +264,9 @@ class Parameters(AnsibleF5Parameters):
         if self._values['mgmt_address'] is None:
             return None
         try:
-            addr = IPNetwork(self._values['mgmt_address'])
-            result = '{0}/{1}'.format(addr.ip, addr.prefixlen)
-            return result
-        except AddrFormatError:
+            addr = ip_interface(u'%s' % str(self._values['mgmt_address']))
+            return str(addr.with_prefixlen)
+        except ValueError as ex:
             raise F5ModuleError(
                 "The specified 'mgmt_address' is not a valid IP address"
             )
@@ -670,8 +665,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
