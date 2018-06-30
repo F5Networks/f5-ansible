@@ -1,13 +1,13 @@
 ---
 
-- name: Create route domain
+- name: Issue 00545 - Create route domain
   bigip_routedomain:
     id: "{{ item }}"
   loop:
     - 1
     - 2
 
-- name: Create static route with route domain
+- name: Issue 00545 - Create static route with route domain
   bigip_static_route:
     destination: 1.1.1.1
     netmask: 255.255.255.255
@@ -16,12 +16,12 @@
     reject: yes
   register: result
 
-- name: Assert Create static route with route domain
+- name: Issue 00545 - Assert Create static route with route domain
   assert:
     that:
       - result is changed
 
-- name: Create static route with route domain - Idempotent check
+- name: Issue 00545 - Create static route with route domain - Idempotent check
   bigip_static_route:
     destination: 1.1.1.1
     netmask: 255.255.255.255
@@ -30,30 +30,30 @@
     reject: yes
   register: result
 
-- name: Assert Create static route with - Idempotent check
+- name: Issue 00545 - Assert Create static route with - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Attempt to change route domain
+- name: Issue 00545 - Attempt to change route domain
   bigip_static_route:
     route_domain: 3
     name: issue-00545
   register: result
   failed_when: result is success
 
-- name: Assert Create static route with
+- name: Issue 00545 - Assert Create static route with
   assert:
     that:
       - result is success
 
-- name: Remove static route
+- name: Issue 00545 - Remove static route
   bigip_static_route:
     name: issue-00545
     state: absent
   register: result
 
-- name: Remove route domain
+- name: Issue 00545 - Remove route domain
   bigip_routedomain:
     id: "{{ item }}"
     state: absent
