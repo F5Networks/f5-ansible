@@ -22,9 +22,7 @@ For a detailed list of BIG-IP versions that are currently supported by F5, see |
 
    <a href="https://support.f5.com/csp/article/K5903" target="_blank">this solution article</a>
 
-When a version of BIG-IP reaches end of technical support, F5 supports it until the next Ansible release.
-
-For example, if a version of BIG-IP reaches end of technical support on January 1, and Ansible releases a new version on March 1, then F5 supports the modules on that version of BIG-IP until March 1.
+F5 follows Ansible’s model and supports the two most recent major stable releases.
 
 Experimental Module Support
 ```````````````````````````
