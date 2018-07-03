@@ -35,13 +35,35 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>description</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Description of the iApp service.</div>
+                                                    <div>If this option is specified in the Ansible task, it will take precedence over any similar setting in the iApp Service payload that you provide in the <code>parameters</code> field.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>device_group</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The device group for the iApp service.</div>
+                                                    <div>If this option is specified in the Ansible task, it will take precedence over any similar setting in the iApp Service payload that you provide in the <code>parameters</code> field.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>force</b>
                                                         </td>
@@ -58,7 +80,7 @@ Parameters
                                 <tr>
                                                                 <td colspan="2">
                     <b>metadata</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
@@ -83,7 +105,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>A hash of all the required template variables for the iApp template. If your parameters are stored in a file (the more common scenario) it is recommended you use either the `file` or `template` lookups to supply the expected parameters.</div>
+                                                                        <div>A hash of all the required template variables for the iApp template. If your parameters are stored in a file (the more common scenario) it is recommended you use either the <code>file</code> or <code>template</code> lookups to supply the expected parameters.</div>
                                                     <div>These parameters typically consist of the <code>lists</code>, <code>tables</code>, and <code>variables</code> fields.</div>
                                                                                 </td>
             </tr>
@@ -278,7 +300,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The iApp template from which to instantiate a new service. This template must exist on your BIG-IP before you can successfully create a service. This parameter is required if the <code>state</code> parameter is <code>present</code>.</div>
+                                                                        <div>The iApp template from which to instantiate a new service. This template must exist on your BIG-IP before you can successfully create a service.</div>
+                                                    <div>When creating a new service, this parameter is required.</div>
                                                                                 </td>
             </tr>
                                 <tr>
