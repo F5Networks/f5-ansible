@@ -41,16 +41,18 @@ As it stands, these requirements mean that you would need to rely on ``tmsh`` it
 
 This means working with a tool that provides free-form output, rather than structured output.
 
-There is a ``--oneline`` argument that may be supplied to ``tmsh`` commands, but it is not clear how parseable, or reliable, this format is.
+A ``--oneline`` argument exists that may be supplied to ``tmsh`` commands, but it is not clear how parseable, or reliable, this format is.
 
 Conclusion
 ----------
 
-For the above reasons, if you pursue CLI functionality for any of these modules, F5 recommends that the functionality be allowed for users with one of the following roles only:
+For the above reasons, if you pursue CLI functionality for any of these modules, F5 recommends that the functionality
+be allowed for users with one of the following roles only:
 
 - Administrator
 - Resource Administrator
 
 These roles can access **all** modules.
 
-Without making this a requirement, it may not be possible to provide you with a reliable way to configure the system, due to restrictions put in place by other roles.
+Without making this a requirement, it may not be possible to provide you with a reliable way to configure the system,
+due to restrictions put in place by other roles.

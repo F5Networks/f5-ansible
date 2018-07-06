@@ -63,7 +63,7 @@ Usage of this method could then be done in the monitor-related modules, like thi
 
 Where ``the_function`` is replaced with the name of the function.
 
-So by all means, write as many internal methods as you can.
+Write as many internal methods as you need.
 
 @property methods
 -----------------
@@ -75,7 +75,7 @@ These methods are used whenever you call the name of the property via the ``self
 This object **is** the ``ApiParameters`` class. You should make sure that you have as many
 properties as needed to make your development easier.
 
-There is an additional, special, piece of functionality that all ``ApiParameters`` inherit;
+All ``ApiParameters`` inherit an additional, special, piece of functionality, which is,
 they can be populated by the ``api_map``. If you'll remember back to the previous section
 on the base ``Parameters`` class, one of the top-of-class variables was the ``api_map``
 variable. The ``ApiParameters`` class is where this variable is most useful because it will
