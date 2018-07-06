@@ -363,7 +363,7 @@ In the next section, the concept of integration tests will be explored in greate
 Integration tests are the most important tests that can be run because they confirm or reject
 the correctness of a module.
 
-.. _can be found here: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/test/unit/test_bigip_policy_rule.py
-.. _load_ltm_policy_draft_rule_http-uri_forward.json: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/test/unit/fixtures/load_ltm_policy_draft_rule_http-uri_forward.json
+.. _can be found here: https://github.com/ansible/ansible/blob/stable-2.5/lib/ansible/modules/network/f5/bigip_policy_rule.py
+.. _load_ltm_policy_draft_rule_http-uri_forward.json: https://github.com/ansible/ansible/tree/stable-2.5/test/units/modules/network/f5/fixturesload_ltm_policy_draft_rule_http-uri_forward.json
 .. _pytest: https://docs.pytest.org/en/latest/
 .. _unittest documentation: https://docs.python.org/2/library/unittest.html

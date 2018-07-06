@@ -98,4 +98,4 @@ that needed to be compared.
 
 In the next section, we'll look at the ``UsableChanges`` counter-class, the ``ReportableChanges``.
 
-.. _can be found here: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L483
+.. _can be found here: https://github.com/ansible/ansible/blob/stable-2.5/lib/ansible/modules/network/f5/bigip_policy_rule.py#L483

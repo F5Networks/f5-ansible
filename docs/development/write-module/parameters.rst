@@ -97,4 +97,4 @@ the ``ApiParameters`` and ``ModuleParameters`` classes. The most common of these
 top-of-class variables. Links to deeper dives on the concrete classes are listed at the top
 of this topic. Use them as an introduction to those classes and their purpose in the module.
 
-.. _to this link: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L231
+.. _to this link: https://github.com/ansible/ansible/blob/stable-2.5/lib/ansible/modules/network/f5/bigip_policy_rule.py#L231
