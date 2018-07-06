@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_profile_tcp
 short_description: Manage TCP profiles on a BIG-IP
 description:
-  - Manage TCP profiles on a BIG-IP. There are a variety of TCP profiles, each with their
+  - Manage TCP profiles on a BIG-IP. Many TCP profiles; each with their
     own adjustments to the standard C(tcp) profile. Users of this module should be aware
     that many of the adjustable knobs have no module default. Instead, the default is
     assigned by the BIG-IP system itself which, in most cases, is acceptable.

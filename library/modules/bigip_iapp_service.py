@@ -19,9 +19,7 @@ short_description: Manages TCL iApp services on a BIG-IP
 description:
   - Manages TCL iApp services on a BIG-IP.
   - If you are looking for the API that is communicated with on the BIG-IP,
-    the one the is used is C(/mgmt/tm/sys/application/service/). There are a
-    couple of APIs in a BIG-IP that might seem like they are relevant to iApp
-    Services, but the API mentioned here is the one that is used.
+    the one the is used is C(/mgmt/tm/sys/application/service/).
 version_added: 2.4
 options:
   name:
