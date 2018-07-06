@@ -68,13 +68,11 @@ requirements:
 # Build and test docs in a Docker container
 docker-test:
 	docker pull f5devcentral/containthedocs
-	cd docs
 	./docs/scripts/test-docs.sh
 
 # Build and test docs in a Docker container
 docker-test-debug:
 	docker pull f5devcentral/containthedocs
-	cd docs
 	./docs/scripts/test-docs-debug.sh
 
 # Deploy docs to clouddocs
