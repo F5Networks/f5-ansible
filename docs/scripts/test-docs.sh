@@ -4,11 +4,6 @@ set -x
 
 : ${DOC_IMG:=f5devcentral/containthedocs:latest}
 
-LOCAL_USER_ID=`id -u`
-if [ $LOCAL_USER_ID -eq 0 ]; then
-    LOCAL_USER_ID=10443
-fi
-
 exec docker run -i \
   -v $PWD:/here --workdir /here \
   ${DOC_IMG} /bin/bash -s <<EOF
@@ -18,12 +13,12 @@ set -e
 pip install --user -r requirements.readthedocs.txt
 
 echo "Building docs with Sphinx"
-make -C clean || true
-make docs || true
+make -C docs/ clean
+make docs
 
 echo "Checking grammar and style"
-write-good \$(find ./docs -name '*.rst') --passive --so --no-illusion --thereIs --cliches 2>&1 > /dev/null || true
+write-good \$(find ./docs -name '*.rst') --passive --so --no-illusion --thereIs --cliches 2>&1 > /dev/null
 
 echo "Checking links"
-make -C docs linkcheck || true
+make -C docs/ linkcheck
 EOF
