@@ -23,33 +23,32 @@ options:
   password:
     description:
       - The password for the user account used to connect to the BIG-IP.
-        You can omit this option if the environment variable C(F5_PASSWORD)
-        is set.
+      - You may omit this option by setting the environment variable C(F5_PASSWORD).
     required: true
     aliases: ['pass', 'pwd']
   server:
     description:
-      - The BIG-IP host. You can omit this option if the environment
-        variable C(F5_SERVER) is set.
+      - The BIG-IP host.
+      - You may omit this option by setting the environment variable C(F5_SERVER).
     required: true
   server_port:
     description:
-      - The BIG-IP server port. You can omit this option if the environment
-        variable C(F5_SERVER_PORT) is set.
+      - The BIG-IP server port.
+      - You may omit this option by setting the environment variable C(F5_SERVER_PORT).
     default: 443
     version_added: 2.2
   user:
     description:
       - The username to connect to the BIG-IP with. This user must have
-        administrative privileges on the device. You can omit this option
-        if the environment variable C(F5_USER) is set.
+        administrative privileges on the device.
+      - You may omit this option by setting the environment variable C(F5_USER).
     required: true
   validate_certs:
     description:
       - If C(no), SSL certificates will not be validated. Use this only
         on personally controlled sites using self-signed certificates.
-        You can omit this option if the environment variable
-        C(F5_VALIDATE_CERTS) is set.
+      - You may omit this option by setting the environment variable
+        C(F5_VALIDATE_CERTS).
     default: yes
     type: bool
     version_added: 2.0
@@ -62,32 +61,30 @@ options:
       password:
         description:
           - The password for the user account used to connect to the BIG-IP.
-            You can omit this option if the environment variable C(F5_PASSWORD)
-            is set.
+          - You may omit this option by setting the environment variable C(F5_PASSWORD).
         required: true
         aliases: ['pass', 'pwd']
       server:
         description:
-          - The BIG-IP host. You can omit this option if the environment
-            variable C(F5_SERVER) is set.
+          - The BIG-IP host.
+          - You may omit this option by setting the environment variable C(F5_SERVER).
         required: true
       server_port:
         description:
-          - The BIG-IP server port. You can omit this option if the environment
-            variable C(F5_SERVER_PORT) is set.
+          - The BIG-IP server port.
+          - You may omit this option by setting the environment variable C(F5_SERVER_PORT).
         default: 443
       user:
         description:
           - The username to connect to the BIG-IP with. This user must have
-            administrative privileges on the device. You can omit this option
-            if the environment variable C(F5_USER) is set.
+            administrative privileges on the device.
+          - You may omit this option by setting the environment variable C(F5_USER).
         required: true
       validate_certs:
         description:
           - If C(no), SSL certificates will not be validated. Use this only
             on personally controlled sites using self-signed certificates.
-            You can omit this option if the environment variable
-            C(F5_VALIDATE_CERTS) is set.
+          - You may omit this option by setting the environment variable C(F5_VALIDATE_CERTS).
         default: yes
         type: bool
       timeout:
