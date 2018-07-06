@@ -44,4 +44,4 @@ module will often offer arguments that do not map cleanly to the F5 product's AP
 
 In the next section, the ``Difference`` class will be explored in greater detail.
 
-.. _navigate to the appropriate section: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L327
+.. _navigate to the appropriate section: https://github.com/ansible/ansible/blob/stable-2.5/lib/ansible/modules/network/f5/bigip_policy_rule.py#L327
