@@ -348,7 +348,7 @@ At the time of this writing, some of the rules are:
 - If you are adding new parameters to an *existing* module, then those parameters must
   have a ``version_added`` field that matches the current ``devel`` version of Ansible.
 
-There are a number of other rules that Ansible enforces. All of them will be checked for
+Ansible enforces a number of other rules. All of them will be checked for
 when you attempt to upstream a new module.
 
 Conclusion
