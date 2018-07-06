@@ -23,9 +23,13 @@ sanity:
 	python test/ansible/sanity/f5-sdk-install-missing-code-highlighting.py
 	python test/ansible/sanity/short-description-ends-with-period.py
 
-docs:
+docs: module-docs docs-build
+
+module-docs:
 	rm docs/modules/* || true
 	python devtools/bin/plugin_formatter.py --module-dir library/ --template-dir devtools/templates/ --output-dir docs/modules/ -v --limit-to $(shell python ./devtools/bin/limit_module_docs.py)
+
+docs-build:
 	cd docs && make html
 
 style:
