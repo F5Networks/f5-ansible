@@ -36,7 +36,7 @@ at that boilerplate and what it means.
 The top-of-class variables
 ``````````````````````````
 
-There are several variables that each ``Parameters`` class usually defines.
+Each ``Parameters`` class defines several class variables.
 
 +------------------+-------------------------------------------------------------------------+
 | Variable         | Purpose                                                                 |
