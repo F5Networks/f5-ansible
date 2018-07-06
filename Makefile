@@ -25,7 +25,7 @@ sanity:
 
 docs:
 	rm docs/modules/* || true
-	python devtools/bin/plugin_formatter.py --module-dir library/ --template-dir devtools/templates/ --output-dir docs/modules/ -v --limit-to $(shell ls -m library/modules/bigip* library/modules/bigiq* library/modules/iworkflow* | sed -e 's/library\/modules\///g' | sed -e 's/.py//g' | sed -e 's/, /,/g' | tr -d '\n')
+	python devtools/bin/plugin_formatter.py --module-dir library/ --template-dir devtools/templates/ --output-dir docs/modules/ -v --limit-to $(shell python ./devtools/bin/limit_module_docs.py)
 	cd docs && make html
 
 style:
@@ -68,11 +68,13 @@ requirements:
 # Build and test docs in a Docker container
 docker-test:
 	docker pull f5devcentral/containthedocs
+	cd docs
 	./docs/scripts/test-docs.sh
 
 # Build and test docs in a Docker container
 docker-test-debug:
 	docker pull f5devcentral/containthedocs
+	cd docs
 	./docs/scripts/test-docs-debug.sh
 
 # Deploy docs to clouddocs
