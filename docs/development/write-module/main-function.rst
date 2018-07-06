@@ -128,4 +128,4 @@ you followed along and copied code correctly, you should have a functioning modu
 In the remaining sections, we'll cover the business of testing: a requirement for F5 module
 development.
 
-.. _bottom of the source code: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L859
+.. _bottom of the source code: https://github.com/ansible/ansible/blob/stable-2.5/lib/ansible/modules/network/f5/bigip_policy_rule.py#L859

@@ -321,4 +321,4 @@ Understanding and using the ``ApiParameters`` class is a core tenant of understa
 the F5 Modules for Ansible. From here, you may want to go back and consider exploring the
 twin of this class (but which operates on the user's side): the ``ModuleParameters`` class.
 
-.. _navigate to the appropriate section: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L271
+.. _navigate to the appropriate section: https://github.com/ansible/ansible/blob/stable-2.5/lib/ansible/modules/network/f5/bigip_policy_rule.py#L271

@@ -298,4 +298,4 @@ easier for the lay-developer.
 
 In the next section, we'll touch upon the ``Changes`` classes that you will encounter in modules.
 
-.. _development begins here: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L522
+.. _development begins here: https://github.com/ansible/ansible/blob/stable-2.5/lib/ansible/modules/network/f5/bigip_policy_rule.py#L522
