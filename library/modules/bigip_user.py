@@ -31,8 +31,8 @@ options:
       - Full name of the user.
   username_credential:
     description:
-      - Name of the user to create, remove or modify. There is a special case
-        that exists for the user C(root).
+      - Name of the user to create, remove or modify.
+      - The C(root) user may not be removed.
     required: True
     aliases:
       - name
