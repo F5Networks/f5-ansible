@@ -388,7 +388,8 @@ Status
 {%     if metadata.status %}
 
 {%       for cur_state in metadata.status %}
-This module is flagged as **@{cur_state}@** which means that @{module_states[cur_state]}@.
+{# NOTE: F5 Removed passive voice #}
+This module is **@{cur_state}@** which means that @{module_states[cur_state]}@.
 {%       endfor %}
 
 {%     endif %}
@@ -405,7 +406,8 @@ please refer to this `Knowledge Base article <https://access.redhat.com/articles
 
 {% else %}
 
-This module is flagged as **deprecated** and will be removed in version @{ deprecated['removed_in'] | default('') | string | convert_symbols_to_format }@. For more information see `DEPRECATED`_.
+{# NOTE: F5 Removed passive voice #}
+This module is **deprecated** and will be removed in version @{ deprecated['removed_in'] | default('') | string | convert_symbols_to_format }@. For more information see `DEPRECATED`_.
 
 {% endif %}
 
