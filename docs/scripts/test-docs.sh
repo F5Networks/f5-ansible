@@ -12,10 +12,6 @@ set -e
 #echo "Installing project dependencies"
 pip install --user -r requirements.readthedocs.txt
 
-echo "Building docs with Sphinx"
-make -C docs/ clean
-make docs
-
 echo "Checking grammar and style"
 write-good \$(find ./docs -name '*.rst') --passive --so --no-illusion --thereIs --cliches 2>&1 > /dev/null
 
