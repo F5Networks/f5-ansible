@@ -191,7 +191,7 @@ arguments to the CLI at runtime.
 Calling the test
 ----------------
 
-There are two ways to run the tests. They are:
+Tests are run in two ways.
 
 * Use a ``make`` command
 * Run the playbook directly

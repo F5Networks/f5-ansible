@@ -153,7 +153,7 @@ the classes that are defined in the module. It will test these classes later.
 
 .. note::
 
-   There is an ongoing disagreement among developers about what constitutes a "unit" for test.
+   An ongoing disagreement exists among developers as to what constitutes a "unit" for test.
    F5 considers the "unit" under test **the class**, not **the methods of the class**.
 
 Fixture setup
@@ -225,7 +225,7 @@ expected value.
 
 All of the ``Parameter`` tests resemble this format.
 
-There is no limit on the number of tests you are allowed to write. The general rule of thumb
+F5 imposes no limit on the number of tests you are allowed to write. The general rule of thumb
 is to follow code-coverage reports to determine what tests are missing.
 
 ModuleManager unit tests
