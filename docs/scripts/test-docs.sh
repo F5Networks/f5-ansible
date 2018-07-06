@@ -14,7 +14,7 @@ pip install --user -r requirements.readthedocs.txt
 
 echo "Building docs with Sphinx"
 make -C docs/ clean
-make docs
+make docs-build
 
 echo "Checking links"
 make -C docs/ linkcheck
