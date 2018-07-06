@@ -42,8 +42,7 @@ options:
         type of each certificate/key type. This means that you can only have one
         RSA, one DSA, and one ECDSA per profile. If you attempt to assign two
         RSA, DSA, or ECDSA certificate/key combo, the device will reject this.
-      - This list is a complex list that specifies a number of keys. There are
-        several supported keys.
+      - This list is a complex list that specifies a number of keys.
     suboptions:
       cert:
         description:

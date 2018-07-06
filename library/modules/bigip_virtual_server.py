@@ -150,11 +150,11 @@ options:
       - If you want to add a profile to the list of profiles currently active
         on the virtual, then simply add it to the C(profiles) list. See
         examples for an illustration of this.
-      - B(Profiles matter). There is a good chance that this module will fail to configure
-        a BIG-IP if you mix up your profiles, or, if you attempt to set an IP protocol
-        which your current, or new, profiles do not support. Both this module, and BIG-IP,
-        will tell you when you are wrong, with an error resembling C(lists profiles
-        incompatible with its protocol).
+      - B(Profiles matter). This module will fail to configure a BIG-IP if you mix up
+        your profiles, or, if you attempt to set an IP protocol which your current,
+        or new, profiles do not support. Both this module, and BIG-IP, will tell you
+        when you are wrong, with an error resembling C(lists profiles incompatible
+        with its protocol).
       - If you are unsure what correct profile combinations are, then have a BIG-IP
         available to you in which you can make changes and copy what the correct
         combinations are.
