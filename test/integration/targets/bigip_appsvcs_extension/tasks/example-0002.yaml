@@ -20,6 +20,28 @@
     that:
       - result is not changed
 
+- name: Update with force
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0002.json') }}"
+    force: yes
+  register: result
+
+- name: Assert Update with force
+  assert:
+    that:
+      - result is changed
+
+- name: Update with force - Idempotent check - Expected non-idempotence
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0002.json') }}"
+    force: yes
+  register: result
+
+- name: Assert Update with force
+  assert:
+    that:
+      - result is changed
+
 - name: Remove all declarations
   bigip_appsvcs_extension:
     tenants: all
