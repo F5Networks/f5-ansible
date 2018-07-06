@@ -12,9 +12,6 @@ set -e
 #echo "Installing project dependencies"
 pip install --user -r requirements.readthedocs.txt
 
-echo "Checking grammar and style"
-write-good \$(find ./docs -name '*.rst') --so --no-illusion --thereIs --cliches 2>&1 > /dev/null
-
 echo "Checking links"
 make -C docs/ linkcheck
 EOF
