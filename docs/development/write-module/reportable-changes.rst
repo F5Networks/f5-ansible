@@ -20,7 +20,7 @@ Additionally, because this class is nothing more than another Adapter, its imple
 completely optional. It will exist as a stub in your module by default. It is your responsibility
 to implement it as needed.
 
-So what sort of data do you need to adapt at this point in the module?
+What sort of data do you need to adapt at this point in the module?
 
 Consider the implementation that is found in the module that is being studied here.
 
@@ -103,9 +103,8 @@ is not always this way. Indeed, you will often find this variable defined in the
 Conclusion
 ----------
 
-There is really not much more to say about this class. You're now aware of its place in the
-pipeline, and prior to that knowledge, you already had a firm understanding of the purpose of
-the various adapters in the module.
+You're now aware of its place in the pipeline, and prior to that knowledge, you already had
+a firm understanding of the purpose of the various adapters in the module.
 
 It's not always necessary to implement this class. Indeed, in a good API, you will never need
 to be concerned with this class. Situations that warrant it usually involve complex data types

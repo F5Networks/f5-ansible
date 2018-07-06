@@ -122,7 +122,7 @@ environment where you do not want the module to actually run.
 Conclusion
 ----------
 
-This concludes the entirety of the core module development tutorial. At this point in time, if
+This concludes the entirety of the core module development tutorial. If
 you followed along and copied code correctly, you should have a functioning module.
 
 In the remaining sections, we'll cover the business of testing: a requirement for F5 module
