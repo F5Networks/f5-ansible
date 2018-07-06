@@ -1,0 +1,62 @@
+---
+
+- name: Set a single routing protocol, valid
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    routing_protocol: BGP
+  register: result
+
+- name: Assert Set a single routing protocol, valid
+  assert:
+    that:
+      - result is changed
+
+- name: Set a single routing protocol, valid - Idempotent check
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    routing_protocol: BGP
+  register: result
+
+- name: Assert Set a single routing protocol, valid - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set routing protocol, none
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    routing_protocol: none
+  register: result
+
+- name: Assert Set routing protocol, none
+  assert:
+    that:
+      - result is changed
+
+- name: Set routing protocol, none - Idempotent check
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    routing_protocol: none
+  register: result
+
+- name: Assert Set routing protocol, none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set routing protocol, empty - Idempotent check
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    routing_protocol: ''
+  register: result
+
+- name: Assert Set routing protocol, empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove routing protocol
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    state: absent
+  register: result
