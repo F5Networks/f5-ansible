@@ -38,7 +38,7 @@ The first method that a developer will encounter is the ``__init__`` method. The
 need to change any of the code in this method.
 
 The purpose of the method is to initialize a ``Difference`` object from the class itself.
-There is a well-defined set of work that this method does, respective to this class. In
+This method performs a well-defined set of work, respective to this class. In
 particular, it sets two instance variables to the values that are passed to the class.
 
 The variables are:

@@ -1,16 +1,7 @@
 Releases and Versioning
 -----------------------
 
-F5 tests and supports the following versions.
-
-The F5 Modules for Ansible may work with versions not shown here; F5 has not verified functionality in those versions.
-
-+-------------------------+-----------------------+----------------------+
-| **Ansible Version**     | **BIG-IP versions**   | **BIG-IQ versions**  |
-+=========================+=======================+======================+
-| * v2.5                  | * v12.x               | * v5.4.x             |
-| * v2.6                  | * v13.x               |                      |
-+-------------------------+-----------------------+----------------------+
+F5 Ansible modules in 2.5.0 & 2.6.0 are supported on TMOS 12.x & 13.x.
 
 .. important::
 

@@ -3,22 +3,20 @@ Upstreaming
 
 Upstreaming refers to opening a PR with the Ansible core product.
 
-F5's goal with this repository is to serve as an incubator for modules to mature. Eventually, the modules in this repository should find their way to the upstream Ansible product (core or extras).
+F5's goal with this repository is to serve as an incubator for modules to mature. Eventually, the
+modules in this repository should find their way to the upstream Ansible product (core or extras).
 
 Experimental modules
 --------------------
 
-Experimental modules follow the same naming convention as those in the Ansible product. Experimental modules are easy to distinguish, because their filenames do **not** include a leading underscore.
-
-You can obtain experimental modules by using the installation steps outlined here: :ref:`installunstable`.
+Experimental modules follow the same naming convention as those in the Ansible product.
 
 An experimental module may or may not work at any point in time.
 
 .. note::
 
-   Just because a module is experimental does not mean that it is unstable. Many modules remain in the incubator because the community has not expressed enough interest in them.
-
-An experimental module should have an associated Issue in Github so everyone can track the module's progress and so that others do not repeat work.
+   Just because a module is experimental does not mean that it is unstable. Many modules remain in the
+   incubator because the community has not expressed enough interest in them.
 
 Qualifications for upstreaming
 ------------------------------

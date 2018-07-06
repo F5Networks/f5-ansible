@@ -42,7 +42,7 @@ use the API, rather than SSH, to connect.
 .. note::
 
    The one exception is the ``bigip_command`` module, which defaults to the REST API, but that you can use with
-   SSH. For details, see :ref:`Run tmsh commands`.
+   SSH.
 
 
 Running playbooks
@@ -138,14 +138,14 @@ Then you can use Ansible to provision BIG-IP modules.
            validate_certs: "{{ validate_certs }}"
        delegate_to: localhost
 
-For more ideas on how you might use Ansible for initial BIG-IP setup `see this doc <https://devcentral.f5.com/codeshare/automate-f5-initial-setup-icontrol-amp-ansible-930>`_.
+For more ideas on how you might use Ansible for initial BIG-IP setup `see this doc <https://devcentral.f5.com/codeshare/automate-f5-initial-setup-icontrol-amp-ansible-930>`__.
 
 Create pool members, a pool, and a virtual server
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
 You can use the F5 Modules for Ansible to create a pool and add members to it, and to add the pool to the virtual server.
 
-For a full walkthrough of this example, `see this doc <http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/playbook_tutorial.html>`_.
+For a full walkthrough of this example, `see this doc <http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/playbook_tutorial.html>`__.
 
 .. code-block:: yaml
 
@@ -220,7 +220,7 @@ To delete an object, set the state to ``absent``.
          validate_certs: "{{ validate_certs }}"
      delegate_to: localhost
 
-`Details about this module <http://docs.ansible.com/ansible/latest/modules/bigip_virtual_server_module.html>`_.
+`Details about this module <http://docs.ansible.com/ansible/latest/modules/bigip_virtual_server_module.html>`__.
 
 Modify the virtual server's port
 ++++++++++++++++++++++++++++++++
@@ -243,7 +243,7 @@ You can use Ansible to update existing objects.
          validate_certs: "{{ validate_certs }}"
      delegate_to: localhost
 
-`Details about this module <http://docs.ansible.com/ansible/latest/modules/bigip_virtual_server_module.html>`_.
+`Details about this module <http://docs.ansible.com/ansible/latest/modules/bigip_virtual_server_module.html>`__.
 
 
 Import SSL certificates
@@ -315,7 +315,7 @@ More Information
 
 F5 provides informal and community-based support for the F5 Modules for Ansible.
 
-For help using the modules, `see this doc <http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/support.html>`_.
+For help using the modules, `see this doc <http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/support.html>`__.
 
 
 .. seealso::
