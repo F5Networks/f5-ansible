@@ -15,6 +15,10 @@ pip install --user -r requirements.readthedocs.txt
 echo "Checking grammar and style"
 write-good \$(find ./docs -name '*.rst') --so --no-illusion --thereIs --cliches
 
+echo "Building docs with Sphinx"
+make -C docs/ clean
+make docs
+
 echo "Checking links"
 make -C docs/ linkcheck
 EOF
