@@ -25,7 +25,6 @@ The code is open source and |f5_ansible_github|. Additionally, some modules have
    /usage/playbook_tutorial
    /usage/connection-local-or-delegate-to
    /usage/support
-   /usage/installing-modules
 
 .. toctree::
    :maxdepth: 2
