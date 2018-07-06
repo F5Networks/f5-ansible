@@ -45,7 +45,7 @@ options:
     required: true
   validate_certs:
     description:
-      - If C(no), SSL certificates will not be validated. Use this only
+      - If C(no), SSL certificates are not validated. Use this only
         on personally controlled sites using self-signed certificates.
       - You may omit this option by setting the environment variable
         C(F5_VALIDATE_CERTS).
@@ -82,7 +82,7 @@ options:
         required: true
       validate_certs:
         description:
-          - If C(no), SSL certificates will not be validated. Use this only
+          - If C(no), SSL certificates are not validated. Use this only
             on personally controlled sites using self-signed certificates.
           - You may omit this option by setting the environment variable C(F5_VALIDATE_CERTS).
         default: yes
@@ -97,8 +97,7 @@ options:
         description:
           - Specifies the SSH keyfile to use to authenticate the connection to
             the remote device.  This argument is only used for I(cli) transports.
-            If the value is not specified in the task, the value of environment
-            variable C(ANSIBLE_NET_SSH_KEYFILE) will be used instead.
+          - You may omit this option by setting the environment variable C(ANSIBLE_NET_SSH_KEYFILE).
       transport:
         description:
           - Configures the transport connection to use when connecting to the
