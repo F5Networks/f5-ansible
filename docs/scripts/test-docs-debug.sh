@@ -13,7 +13,7 @@ set -e
 pip install --user -r requirements.readthedocs.txt
 
 echo "Checking grammar and style"
-write-good \$(find ./docs -name '*.rst') --passive --so --no-illusion --thereIs --cliches
+write-good \$(find ./docs -name '*.rst') --so --no-illusion --thereIs --cliches
 
 echo "Checking links"
 make -C docs/ linkcheck
