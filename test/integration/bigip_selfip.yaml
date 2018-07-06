@@ -87,6 +87,13 @@
 
   vars:
     limit_to: '*'
+    provider:
+      transport: rest
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
 
   tasks:
     - name: Include role - Provider
