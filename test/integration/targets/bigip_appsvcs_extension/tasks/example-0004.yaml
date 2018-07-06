@@ -1,0 +1,27 @@
+---
+
+- name: Simple HTTP application referencing an externally hosted iRule
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0004.json') }}"
+  register: result
+
+- name: Assert TCP Simple HTTP application referencing an externally hosted iRule
+  assert:
+    that:
+      - result is changed
+
+- name: Simple HTTP application referencing an externally hosted iRule - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0004.json') }}"
+  register: result
+
+- name: Assert Simple HTTP application referencing an externally hosted iRule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result

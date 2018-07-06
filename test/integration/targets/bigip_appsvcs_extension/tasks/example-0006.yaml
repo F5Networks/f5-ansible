@@ -1,0 +1,27 @@
+---
+
+- name: TCP load-balanced to ICAP with custom monitor
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0006.json') }}"
+  register: result
+
+- name: Assert TCP load-balanced to ICAP with custom monitor
+  assert:
+    that:
+      - result is changed
+
+- name: TCP load-balanced to ICAP with custom monitor - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0006.json') }}"
+  register: result
+
+- name: Assert TCP load-balanced to ICAP with custom monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result

@@ -1,0 +1,27 @@
+---
+
+- name: HTTP with extra corp-only virtual
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0008.json') }}"
+  register: result
+
+- name: Assert HTTP with extra corp-only virtual
+  assert:
+    that:
+      - result is changed
+
+- name: HTTP with extra corp-only virtual - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0008.json') }}"
+  register: result
+
+- name: Assert HTTP with extra corp-only virtual - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result
