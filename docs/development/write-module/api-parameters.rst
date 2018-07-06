@@ -33,7 +33,7 @@ In fact, its original implementation was not written by F5, but by customer cont
 F5 ever became involved.
 
 This method is used to combine a resource's name and its partition. This behavior is
-so common that it affects *every* resource on the device. Therefore, it was a great
+common, and affects *every* resource on the device. Therefore, it was a great
 candidate for inclusion in the common methods.
 
 This same process of deducing what is common, and then re-using it across modules,
@@ -50,7 +50,7 @@ use in common subsets of modules. Examples might be "the GTM modules", or "the m
 The combinations may vary, but including them is all the same.
 
 Suppose there was a common function used in all monitor-related modules. This
-function is only relevant to monitors though, so it makes no sense to include it in all
+function is only relevant to monitors though. It makes no sense to include it in all
 modules. The result is that the developer may create a new file in F5's ``module_utils``
 directory called ``monitors.py`` and inside of that file, put the implementation of the
 function.
