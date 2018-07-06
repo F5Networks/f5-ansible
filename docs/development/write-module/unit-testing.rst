@@ -329,7 +329,7 @@ The purpose of the F5 Ansible module unit tests is to confirm that:
 - invokes a known series of methods
 - to produce a known result
 
-That's it. There is noneed to mock the actual API calls. The best way to test actual API calls is via functional tests.
+That's it. You do not need to mock the actual API calls. The best way to test actual API calls is via functional tests.
 
 Therefore, to put it simply, the F5 module unit tests are there to test drive code
 execution paths.
@@ -338,11 +338,11 @@ Using the above as an example, given the parameters that are set, if the ``Mock`
 called during execution of the module, then the module will logically return the asserted
 result.
 
-If, however, there is a problem in the logic of the module such that a different code path
+If, however, a problem exists in the logic of the module such that a different code path
 is taken than expected, then ``pytest`` will fail because it will attempt to call an API
 method. This failure should pique your interest because it means there is a bug in the module.
 
-So, one last time, unit tests are meant to confirm code path execution. Nothing more.
+Unit tests are meant to confirm code path execution. Nothing more.
 
 Conclusion
 ----------
@@ -355,7 +355,7 @@ run these tests as part of their basic test suite. Therefore, it is important th
 * Correct
 * Fast
 
-There are *hundreds*, if not *thousands*, of tests. If the F5 unit tests are slowing down the
+*Hundreds* of tests exist in the F5 Ansible code-base. If the F5 unit tests are slowing down the
 total execution time of the test suite (beyond reason of course) then this should be
 considered a bug and fixed.
 

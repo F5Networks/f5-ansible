@@ -36,7 +36,7 @@ associated stubs.
 
 Use the ``git status`` command to see that a number of files are reported as deleted now. Now, recreate the stubs from scratch.
 
-There are a number of files and directories you must create to hold the various test and validation code, in addition to the module code itself and docs.
+You must create number of files and directories to hold the various test and validation code, in addition to the module code itself and docs.
 
 To create the necessary directories and files automatically, use this command:
 

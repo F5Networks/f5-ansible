@@ -79,8 +79,7 @@ tokens on the F5 device.
    can fail in a variety of places due to ``F5ModuleException``'s being raised by error checking
    code. This function must be run **after** manager execution.
 
-Finally, the module cleanly exits with the ``exit_json`` method if everything up to this point
-has gone well.
+Finally, the module cleanly exits with the ``exit_json`` method if everything has gone well.
 
 If failure occurred at any time, the ``except`` block is invoked and a cleanup of authentication
 tokens is done. The failing module reports back to Ansible with the ``fail_json`` method of
