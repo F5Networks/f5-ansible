@@ -25,7 +25,7 @@ Requirements
 ~~~~~~~~~~~~
 The below requirements are needed on the host that executes this module.
 
-- f5-sdk >= 3.0.9
+- f5-sdk >= 3.0.16
 
 
 Parameters
@@ -105,7 +105,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
             </tr>
@@ -114,7 +115,8 @@ Parameters
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">None</div>
+                                    </td>
                                                                 <td>
                                                                         <div>A dict object containing connection details.</div>
                                                                                 </td>
@@ -127,7 +129,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
             </tr>
@@ -139,7 +142,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
+                                                                        <div>The BIG-IP host.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -151,7 +155,8 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">443</div>
                                     </td>
                                                                 <td>
-                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                        <div>The BIG-IP server port.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -162,7 +167,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -171,13 +177,14 @@ Parameters
                     <b>validate_certs</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
                                                                                                                                                                 <li>no</li>
                                                                                                                                                                                                 <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -200,7 +207,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -240,7 +248,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
+                                                                        <div>The BIG-IP host.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -251,7 +260,8 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">443</div>
                                     </td>
                                                                 <td>
-                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                        <div>The BIG-IP server port.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -290,7 +300,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -298,13 +309,14 @@ Parameters
                     <b>validate_certs</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
                                 <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
                                                                                                                                                                 <li>no</li>
                                                                                                                                                                                                 <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -319,6 +331,7 @@ Notes
     - Requires BIG-IP >= 12.1.x.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
+    - Requires BIG-IP software version >= 12.
 
 
 Examples
@@ -446,7 +459,7 @@ Status
 
 
 
-This module is flagged as **stableinterface** which means that the maintainers for this module guarantee that no backward incompatible interface changes will be made.
+This module is **stableinterface** which means that the maintainers for this module guarantee that no backward incompatible interface changes will be made.
 
 
 

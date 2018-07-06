@@ -138,7 +138,7 @@ Status
 
 
 
-This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
+This module is **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
 
 
