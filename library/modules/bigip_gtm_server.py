@@ -46,7 +46,7 @@ options:
     description:
       - Lists the self IP addresses and translations for each device. When creating a
         new GTM server, this value is required. This list is a complex list that
-        specifies a number of keys. There are several supported keys.
+        specifies a number of keys.
       - The C(name) key specifies a name for the device. The device name must
         be unique per server. This key is required.
       - The C(address) key contains an IP address, or list of IP addresses, for the

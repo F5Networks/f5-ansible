@@ -107,8 +107,7 @@ options:
             per profile.
           - If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo,
             the device will reject this.
-          - This list is a complex list that specifies a number of keys. There are
-            several supported keys.
+          - This list is a complex list that specifies a number of keys.
           - When creating a new profile, if this parameter is not specified, the
             default value of C(inherit) will be used.
         suboptions:
