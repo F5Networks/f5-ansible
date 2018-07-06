@@ -49,10 +49,16 @@ from six import iteritems, string_types
 
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_bytes, to_text
-from ansible.plugins.loader import fragment_loader
+from ansible.plugins.loader import PluginLoader
 from ansible.utils import plugin_docs
 from ansible.utils.display import Display
 
+fragment_loader = PluginLoader(
+    'ModuleDocFragment',  # class_name
+    '',  # package
+    '/here/library/utils/module_docs_fragments',  # config
+    '',  # subdir
+)
 
 #####################################################################################
 # constants and paths
