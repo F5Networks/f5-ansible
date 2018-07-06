@@ -19,3 +19,9 @@
   assert:
     that:
       - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result

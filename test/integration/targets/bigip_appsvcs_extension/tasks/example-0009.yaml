@@ -1,0 +1,27 @@
+---
+
+- name: An HTTP and an HTTPS application
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0009.json') }}"
+  register: result
+
+- name: Assert An HTTP and an HTTPS application
+  assert:
+    that:
+      - result is changed
+
+- name: An HTTP and an HTTPS application - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0009.json') }}"
+  register: result
+
+- name: Assert An HTTP and an HTTPS application - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result

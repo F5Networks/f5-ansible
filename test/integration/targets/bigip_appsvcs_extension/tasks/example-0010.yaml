@@ -1,0 +1,27 @@
+---
+
+- name: Two applications sharing a pool
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0010.json') }}"
+  register: result
+
+- name: Assert Two applications sharing a pool
+  assert:
+    that:
+      - result is changed
+
+- name: Two applications sharing a pool - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0010.json') }}"
+  register: result
+
+- name: Assert Two applications sharing a pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result

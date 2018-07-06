@@ -1,0 +1,27 @@
+---
+
+- name: Sample of a UDP DNS Load Balancer Service
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0011.json') }}"
+  register: result
+
+- name: Assert Sample of a UDP DNS Load Balancer Service
+  assert:
+    that:
+      - result is changed
+
+- name: Sample of a UDP DNS Load Balancer Service - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0011.json') }}"
+  register: result
+
+- name: Assert Sample of a UDP DNS Load Balancer Service - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result

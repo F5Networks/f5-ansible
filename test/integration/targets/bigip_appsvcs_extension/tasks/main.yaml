@@ -1,7 +1,17 @@
 ---
 
-- import_tasks: setup.yaml
+#- import_tasks: setup.yaml
 
+- import_tasks: example-0001.yaml
+- import_tasks: example-0002.yaml
+- import_tasks: example-0003.yaml
+- import_tasks: example-0004.yaml
 - import_tasks: example-0005.yaml
+- import_tasks: example-0006.yaml
+- import_tasks: example-0007.yaml
+- import_tasks: example-0008.yaml
+- import_tasks: example-0009.yaml
+- import_tasks: example-0010.yaml
+- import_tasks: example-0011.yaml
 
-- import_tasks: teardown.yaml
+#- import_tasks: teardown.yaml

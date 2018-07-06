@@ -1,0 +1,27 @@
+---
+
+- name: HTTP with custom persistence
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0007.json') }}"
+  register: result
+
+- name: Assert HTTP with custom persistence
+  assert:
+    that:
+      - result is changed
+
+- name: HTTP with custom persistence - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0007.json') }}"
+  register: result
+
+- name: Assert HTTP with custom persistence - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result

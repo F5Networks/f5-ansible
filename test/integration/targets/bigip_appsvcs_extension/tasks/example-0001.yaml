@@ -1,0 +1,27 @@
+---
+
+- name: Simple HTTP application with RR pool
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0001.json') }}"
+  register: result
+
+- name: Assert Simple HTTP application with RR pool
+  assert:
+    that:
+      - result is changed
+
+- name: Simple HTTP application with RR pool - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0001.json') }}"
+  register: result
+
+- name: Assert Simple HTTP application with RR pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result

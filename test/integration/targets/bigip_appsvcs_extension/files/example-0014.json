@@ -1,0 +1,43 @@
+{
+  "class": "AS3",
+  "action": "deploy",
+  "persist": true,
+  "declaration": {
+    "class": "ADC",
+    "schemaVersion": "3.2.0",
+    "id": "vlan-allow",
+    "label": "Sample 14",
+    "remark": "Simple HTTP application VLAN restriction",
+    "Sample_14": {
+      "class": "Tenant",
+      "A1": {
+        "class": "Application",
+        "template": "http",
+        "serviceMain": {
+          "class": "Service_HTTP",
+          "virtualAddresses": [
+            "10.0.1.10"
+          ],
+          "pool": "web_pool",
+          "allowVlans": [
+            { "bigip":"/Common/internal-sales" },
+            { "bigip":"/Common/internal-marketing" }
+          ]
+        },
+        "web_pool": {
+          "class": "Pool",
+          "monitors": [
+            "http"
+          ],
+          "members": [{
+            "servicePort": 80,
+            "serverAddresses": [
+              "192.0.1.10",
+              "192.0.1.11"
+            ]
+          }]
+        }
+      }
+    }
+  }
+}

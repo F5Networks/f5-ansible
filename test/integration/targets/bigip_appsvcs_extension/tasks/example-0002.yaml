@@ -1,0 +1,27 @@
+---
+
+- name: HTTPS with predictive-node pool
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0002.json') }}"
+  register: result
+
+- name: Assert HTTPS with predictive-node pool
+  assert:
+    that:
+      - result is changed
+
+- name: HTTPS with predictive-node pool - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'example-0002.json') }}"
+  register: result
+
+- name: Assert HTTPS with predictive-node pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result
