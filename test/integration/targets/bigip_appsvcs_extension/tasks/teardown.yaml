@@ -1,6 +1,11 @@
 ---
 
-- name: Install AS3 rpm
+- name: Remove AS3 rpm
   bigip_iapplx_package:
-    package: "{{ role_path }}/files/f5-appsvcs-latest.noarch.rpm"
+    package: /tmp/as3.rpm
+    state: absent
+
+- name: Remove old AS3 RPM
+  file:
+    path: /tmp/as3.rpm
     state: absent

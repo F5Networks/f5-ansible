@@ -1,5 +1,10 @@
 ---
 
+- name: Download AS3
+  get_url:
+    url: "{{ as3_url }}"
+    dest: /tmp/as3.rpm
+
 - name: Install AS3 rpm
   bigip_iapplx_package:
-    package: "{{ role_path }}/files/f5-appsvcs-latest.noarch.rpm"
+    package: /tmp/as3.rpm

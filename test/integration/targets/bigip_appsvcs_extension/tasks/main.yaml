@@ -2,8 +2,6 @@
 
 - import_tasks: setup.yaml
 
-- name: Deploy an app services configuration
-  bigip_appsvcs_extension:
-
+- import_tasks: example-0005.yaml
 
 - import_tasks: teardown.yaml
