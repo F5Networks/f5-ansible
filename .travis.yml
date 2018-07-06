@@ -38,7 +38,7 @@ jobs:
 
     - stage: test
       script:
-        - make docs
+        - make docs-build
         - make docker-test && make docker-deploy
         - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel
       python: 3.6
