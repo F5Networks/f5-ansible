@@ -32,7 +32,7 @@ options:
         should only be used for the absolute smallest of configurations to prevent your
         Playbooks from becoming too large.
       - If you C(content) includes encrypted values (such as ciphertexts, passphrases, etc),
-        the returned C(changed) value will always be true. 
+        the returned C(changed) value will always be true.
     required: True
   tenants:
     description:
