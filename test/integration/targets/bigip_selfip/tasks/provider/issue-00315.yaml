@@ -1,15 +1,15 @@
 ---
 
-- name: Issue 00315 - Include issue variables
+- name: Issue 00315 - Include issue variables - Provider
   include_vars:
     file: issue-00315.yaml
 
-- name: Issue 00315 - Ensure internal VLAN exists
+- name: Issue 00315 - Ensure internal VLAN exists - Provider
   bigip_vlan:
     name: internal
     provider: "{{ provider }}"
 
-- name: Issue 00315 - Create self-IPs
+- name: Issue 00315 - Create self-IPs - Provider
   bigip_selfip:
     name: "{{ item.name }}"
     address: "{{ item.address|ipaddr('address') }}"
@@ -23,12 +23,12 @@
   loop: "{{ issue_315 }}"
   register: result
 
-- name: Issue 00315 - Assert Create self-IPs
+- name: Issue 00315 - Assert Create self-IPs - Provider
   assert:
     that:
       - result is changed
 
-- name: Issue 00315 - Create self-IPs - Idempotent check
+- name: Issue 00315 - Create self-IPs - Provider - Idempotent check
   bigip_selfip:
     name: "{{ item.name }}"
     address: "{{ item.address|ipaddr('address') }}"
@@ -42,19 +42,19 @@
   loop: "{{ issue_315 }}"
   register: result
 
-- name: Issue 00315 - Assert Create self-IPs - Idempotent check
+- name: Issue 00315 - Assert Create self-IPs - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00315 - Remove self-IPs
+- name: Issue 00315 - Remove self-IPs - Provider
   bigip_selfip:
     name: "{{ item.name }}"
     state: absent
     provider: "{{ provider }}"
   loop: "{{ issue_315 }}"
 
-- name: Issue 00315 - Remove VLANs
+- name: Issue 00315 - Remove VLANs - Provider
   bigip_vlan:
     name: internal
     state: absent

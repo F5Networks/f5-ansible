@@ -1,9 +1,9 @@
 ---
 
-- name: Include task to setup the remote device
+- name: Include task to setup the remote device - Provider
   import_tasks: setup-main.yaml
 
-- name: Create Self IP
+- name: Create Self IP - Provider
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -12,12 +12,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create Self IP
+- name: Assert Create Self IP - Provider
   assert:
     that:
       - result is changed
 
-- name: Create Self IP - Idempotent check
+- name: Create Self IP - Provider - Idempotent check
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -26,108 +26,108 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create Self IP - Idempotent check
+- name: Assert Create Self IP - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set Self IP VLAN
+- name: Set Self IP VLAN - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     vlan: "{{ selfip_vlan2 }}"
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set Self IP VLAN
+- name: Assert Set Self IP VLAN - Provider
   assert:
     that:
       - result is changed
 
-- name: Set Self IP VLAN - Idempotent check
+- name: Set Self IP VLAN - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     vlan: "{{ selfip_vlan2 }}"
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set Self IP VLAN - Idempotent check
+- name: Assert Set Self IP VLAN - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set Self IP netmask
+- name: Set Self IP netmask - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     netmask: "{{ selfip_netmask2 }}"
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set Self IP netmask
+- name: Assert Set Self IP netmask - Provider
   assert:
     that:
       - result is changed
 
-- name: Set Self IP netmask - Idempotent check
+- name: Set Self IP netmask - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     netmask: "{{ selfip_netmask2 }}"
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set Self IP netmask - Idempotent check
+- name: Assert Set Self IP netmask - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set single protocol allow service
+- name: Set single protocol allow service - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_single }}"
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set single protocol allow service
+- name: Assert Set single protocol allow service - Provider
   assert:
     that:
       - result is changed
 
-- name: Set single protocol allow service - Idempotent check
+- name: Set single protocol allow service - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_single }}"
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set single protocol allow service - Idempotent check
+- name: Assert Set single protocol allow service - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set multiple protocol allow all service
+- name: Set multiple protocol allow all service - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_multi }}"
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set multiple protocol allow all service
+- name: Assert Set multiple protocol allow all service - Provider
   assert:
     that:
       - result is changed
 
-- name: Set multiple protocol allow all service - Idempotent check
+- name: Set multiple protocol allow all service - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_multi }}"
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set multiple protocol allow all service - Idempotent check
+- name: Assert Set multiple protocol allow all service - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set keyword "all" allow service
+- name: Set keyword "all" allow service - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -135,12 +135,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set keyword "all" allow service
+- name: Assert Set keyword "all" allow service - Provider
   assert:
     that:
       - result is changed
 
-- name: Set keyword "all" allow service - Idempotent check
+- name: Set keyword "all" allow service - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -148,12 +148,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set keyword "all" allow service - Idempotent check
+- name: Assert Set keyword "all" allow service - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set keyword "default" allow service
+- name: Set keyword "default" allow service - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -161,12 +161,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set keyword "default" allow service
+- name: Assert Set keyword "default" allow service - Provider
   assert:
     that:
       - result is changed
 
-- name: Set keyword "default" allow service - Idempotent check
+- name: Set keyword "default" allow service - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -174,12 +174,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set keyword "default" allow service - Idempotent check
+- name: Assert Set keyword "default" allow service - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set keyword "none" allow service
+- name: Set keyword "none" allow service - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -187,12 +187,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set keyword "none" allow service
+- name: Assert Set keyword "none" allow service - Provider
   assert:
     that:
       - result is changed
 
-- name: Set keyword "none" allow service - Idempotent check
+- name: Set keyword "none" allow service - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -200,36 +200,36 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Set keyword "none" allow service - Idempotent check
+- name: Assert Set keyword "none" allow service - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Delete Self IP
+- name: Delete Self IP - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Delete Self IP
+- name: Assert Delete Self IP - Provider
   assert:
     that:
       - result is changed
 
-- name: Delete Self IP - Idempotent check
+- name: Delete Self IP - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Delete Self IP - Idempotent check
+- name: Assert Delete Self IP - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Create Self IP, specify a traffic group
+- name: Create Self IP, specify a traffic group - Provider
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -239,12 +239,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create Self IP, specify a traffic group
+- name: Assert Create Self IP, specify a traffic group - Provider
   assert:
     that:
       - result is changed
 
-- name: Create Self IP, specify a traffic group - Idempotent check
+- name: Create Self IP, specify a traffic group - Provider - Idempotent check
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -254,24 +254,24 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create Self IP, specify a traffic group - Idempotent check
+- name: Assert Create Self IP, specify a traffic group - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Delete Self IP that specified traffic group
+- name: Delete Self IP that specified traffic group - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Delete Self IP that specified traffic group
+- name: Assert Delete Self IP that specified traffic group - Provider
   assert:
     that:
       - result is changed
 
-- name: Set 'all' access when creating Self IP
+- name: Set 'all' access when creating Self IP - Provider
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -282,19 +282,19 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Set 'all' access when creating Self IP
+- name: Set 'all' access when creating Self IP - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove 'all' access Self IP
+- name: Remove 'all' access Self IP - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
     provider: "{{ provider }}"
 
-- name: Set 'default' access when creating Self IP
+- name: Set 'default' access when creating Self IP - Provider
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -305,19 +305,19 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Set 'default' access when creating Self IP
+- name: Set 'default' access when creating Self IP - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove 'default' access Self IP
+- name: Remove 'default' access Self IP - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
     provider: "{{ provider }}"
 
-- name: Set 'none' access when creating Self IP
+- name: Set 'none' access when creating Self IP - Provider
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -328,13 +328,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Set 'none' access when creating Self IP
+- name: Set 'none' access when creating Self IP - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove 'none' access Self IP
+- name: Remove 'none' access Self IP - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent

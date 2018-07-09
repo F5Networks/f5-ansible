@@ -1,11 +1,11 @@
 ---
 
-- name: Issue 00365 - Ensure internal VLAN exists
+- name: Issue 00365 - Ensure internal VLAN exists - Provider
   bigip_vlan:
     name: internal
     provider: "{{ provider }}"
 
-- name: Issue 00365 - Create self-IPs, type a
+- name: Issue 00365 - Create self-IPs, type a - Provider
   bigip_selfip:
     name: issue-00365-a
     address: "2700:bc00:1f10:101::6"
@@ -16,12 +16,12 @@
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type a
+- name: Issue 00365 - Assert Create self-IPs, type a - Provider
   assert:
     that:
       - result is changed
 
-- name: Issue 00365 - Create self-IPs, type a - Idempotent check
+- name: Issue 00365 - Create self-IPs, type a - Provider - Idempotent check
   bigip_selfip:
     name: issue-00365-a
     address: "2700:bc00:1f10:101::6"
@@ -32,12 +32,12 @@
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type a - Idempotent check
+- name: Issue 00365 - Assert Create self-IPs, type a - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00365 - Create self-IPs, type b
+- name: Issue 00365 - Create self-IPs, type b - Provider
   bigip_selfip:
     name: issue-00365-b
     address: "2600:bc00:1f10:101::5"
@@ -48,12 +48,12 @@
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type b
+- name: Issue 00365 - Assert Create self-IPs, type b - Provider
   assert:
     that:
       - result is changed
 
-- name: Issue 00365 - Create self-IPs, type b - Idempotent check
+- name: Issue 00365 - Create self-IPs, type b - Provider - Idempotent check
   bigip_selfip:
     name: issue-00365-b
     address: "2600:bc00:1f10:101::5"
@@ -64,12 +64,12 @@
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type b - Idempotent check
+- name: Issue 00365 - Assert Create self-IPs, type b - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00365 - Create self-IPs, type c
+- name: Issue 00365 - Create self-IPs, type c - Provider
   bigip_selfip:
     name: issue-00365-c
     address: "2500:bc00:1f10:100:f::3"
@@ -80,12 +80,12 @@
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type c
+- name: Issue 00365 - Assert Create self-IPs, type c - Provider
   assert:
     that:
       - result is changed
 
-- name: Issue 00365 - Create self-IPs, type c - Idempotent check
+- name: Issue 00365 - Create self-IPs, type c - Provider - Idempotent check
   bigip_selfip:
     name: issue-00365-c
     address: "2500:bc00:1f10:100:f::3"
@@ -96,12 +96,12 @@
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type c - Idempotent check
+- name: Issue 00365 - Assert Create self-IPs, type c - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00365 - Remove self-IPs
+- name: Issue 00365 - Remove self-IPs - Provider
   bigip_selfip:
     name: "{{ item }}"
     state: absent
@@ -111,7 +111,7 @@
     - issue-00365-b
     - issue-00365-c
 
-- name: Issue 00365 - Remove VLANs
+- name: Issue 00365 - Remove VLANs - Provider
   bigip_vlan:
     name: internal
     state: absent

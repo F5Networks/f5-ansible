@@ -1,14 +1,19 @@
 ---
 
-- name: Issue 00315 - Include issue variables
+- name: Issue 00315 - Include issue variables - Args
   include_vars:
     file: issue-00315.yaml
 
-- name: Issue 00315 - Ensure internal VLAN exists
+- name: Issue 00315 - Ensure internal VLAN exists - Args
   bigip_vlan:
     name: internal
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
 
-- name: Issue 00315 - Create self-IPs
+- name: Issue 00315 - Create self-IPs - Args
   bigip_selfip:
     name: "{{ item.name }}"
     address: "{{ item.address|ipaddr('address') }}"
@@ -17,16 +22,20 @@
     route_domain: "{{ item.route_domain|default(omit) }}"
     allow_service: default
     state: present
-  delegate_to: localhost
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
   loop: "{{ issue_315 }}"
   register: result
 
-- name: Issue 00315 - Assert Create self-IPs
+- name: Issue 00315 - Assert Create self-IPs - Args
   assert:
     that:
       - result is changed
 
-- name: Issue 00315 - Create self-IPs - Idempotent check
+- name: Issue 00315 - Create self-IPs - Args - Idempotent check
   bigip_selfip:
     name: "{{ item.name }}"
     address: "{{ item.address|ipaddr('address') }}"
@@ -35,22 +44,36 @@
     route_domain: "{{ item.route_domain|default(omit) }}"
     allow_service: default
     state: present
-  delegate_to: localhost
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
   loop: "{{ issue_315 }}"
   register: result
 
-- name: Issue 00315 - Assert Create self-IPs - Idempotent check
+- name: Issue 00315 - Assert Create self-IPs - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00315 - Remove self-IPs
+- name: Issue 00315 - Remove self-IPs - Args
   bigip_selfip:
     name: "{{ item.name }}"
     state: absent
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
   loop: "{{ issue_315 }}"
 
-- name: Issue 00315 - Remove VLANs
+- name: Issue 00315 - Remove VLANs - Args
   bigip_vlan:
     name: internal
     state: absent
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"

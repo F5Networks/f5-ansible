@@ -1,6 +1,6 @@
 ---
 
-- name: Issue 00229 - Create partition
+- name: Issue 00229 - Create partition - Args
   bigip_partition:
     name: Tenant1A
     state: present
@@ -10,7 +10,7 @@
     server_port: "{{ bigip_port }}"
     validate_certs: "{{ validate_certs }}"
 
-- name: Issue 00229 - Create VLAN
+- name: Issue 00229 - Create VLAN - Args
   bigip_vlan:
     name: External
     partition: Tenant1A
@@ -21,7 +21,7 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Create VLAN on Common
+- name: Issue 00229 - Create VLAN on Common - Args
   bigip_vlan:
     name: InternalCommon
     user: "{{ bigip_username }}"
@@ -31,7 +31,7 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Configure Self-IPs on the BIG-IP
+- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Args
   bigip_selfip:
     name: issue-229
     address: 1.2.3.4
@@ -46,12 +46,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP
+- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Args
   assert:
     that:
       - result is changed
 
-- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Idempotent check
+- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Args - Idempotent check
   bigip_selfip:
     name: issue-229
     address: 1.2.3.4
@@ -66,12 +66,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Idempotent check
+- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00229 - Remove Self-IP
+- name: Issue 00229 - Remove Self-IP - Args
   bigip_selfip:
     name: issue-229
     partition: Tenant1A
@@ -83,7 +83,7 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Configure Self-IPs with specific partitions
+- name: Issue 00229 - Configure Self-IPs with specific partitions - Args
   bigip_selfip:
     name: issue-229
     address: 1.2.3.4
@@ -99,12 +99,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs with specific partitions
+- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Args
   assert:
     that:
       - result is changed
 
-- name: Issue 00229 - Configure Self-IPs with specific partitions - Idempotent check
+- name: Issue 00229 - Configure Self-IPs with specific partitions - Args - Idempotent check
   bigip_selfip:
     name: issue-229
     address: 1.2.3.4
@@ -120,12 +120,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Idempotent check
+- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00229 - Remove Self-IP
+- name: Issue 00229 - Remove Self-IP - Args
   bigip_selfip:
     name: issue-229
     partition: Tenant1A
@@ -137,7 +137,7 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Remove VLAN
+- name: Issue 00229 - Remove VLAN - Args
   bigip_vlan:
     name: External
     partition: Tenant1A
@@ -149,7 +149,7 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Remove Internal VLAN
+- name: Issue 00229 - Remove Internal VLAN - Args
   bigip_vlan:
     name: InternalCommon
     state: absent
@@ -160,7 +160,7 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 00229 - Remove Partition
+- name: Issue 00229 - Remove Partition - Args
   bigip_partition:
     name: Tenant1A
     state: absent

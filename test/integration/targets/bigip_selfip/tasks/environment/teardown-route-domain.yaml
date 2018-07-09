@@ -1,6 +1,6 @@
 ---
 
-- name: Remove VLANs
+- name: Remove VLANs - Environment
   bigip_vlan:
     name: "{{ item }}"
     state: absent
@@ -9,13 +9,13 @@
     - "{{ selfip_vlan }}"
     - "{{ selfip_vlan2 }}"
 
-- name: Remove route domain
+- name: Remove route domain - Environment
   bigip_routedomain:
     id: "{{ selfip_rd }}"
     state: absent
   register: result
 
-- name: Remove Create route domain
+- name: Remove Create route domain - Environment
   assert:
     that:
       - result is changed

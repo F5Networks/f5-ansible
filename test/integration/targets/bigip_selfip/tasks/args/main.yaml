@@ -1,9 +1,9 @@
 ---
 
-- name: Include task to setup the remote device
+- name: Include task to setup the remote device - Args
   import_tasks: setup-main.yaml
 
-- name: Create Self IP
+- name: Create Self IP - Args
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -16,12 +16,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create Self IP
+- name: Assert Create Self IP - Args
   assert:
     that:
       - result is changed
 
-- name: Create Self IP - Idempotent check
+- name: Create Self IP - Args - Idempotent check
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -34,12 +34,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create Self IP - Idempotent check
+- name: Assert Create Self IP - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set Self IP VLAN
+- name: Set Self IP VLAN - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     vlan: "{{ selfip_vlan2 }}"
@@ -50,12 +50,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set Self IP VLAN
+- name: Assert Set Self IP VLAN - Args
   assert:
     that:
       - result is changed
 
-- name: Set Self IP VLAN - Idempotent check
+- name: Set Self IP VLAN - Args - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     vlan: "{{ selfip_vlan2 }}"
@@ -66,12 +66,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set Self IP VLAN - Idempotent check
+- name: Assert Set Self IP VLAN - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set Self IP netmask
+- name: Set Self IP netmask - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     netmask: "{{ selfip_netmask2 }}"
@@ -82,12 +82,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set Self IP netmask
+- name: Assert Set Self IP netmask - Args
   assert:
     that:
       - result is changed
 
-- name: Set Self IP netmask - Idempotent check
+- name: Set Self IP netmask - Args - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     netmask: "{{ selfip_netmask2 }}"
@@ -98,12 +98,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set Self IP netmask - Idempotent check
+- name: Assert Set Self IP netmask - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set single protocol allow service
+- name: Set single protocol allow service - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_single }}"
@@ -114,12 +114,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set single protocol allow service
+- name: Assert Set single protocol allow service - Args
   assert:
     that:
       - result is changed
 
-- name: Set single protocol allow service - Idempotent check
+- name: Set single protocol allow service - Args - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_single }}"
@@ -130,12 +130,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set single protocol allow service - Idempotent check
+- name: Assert Set single protocol allow service - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set multiple protocol allow all service
+- name: Set multiple protocol allow all service - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_multi }}"
@@ -146,12 +146,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set multiple protocol allow all service
+- name: Assert Set multiple protocol allow all service - Args
   assert:
     that:
       - result is changed
 
-- name: Set multiple protocol allow all service - Idempotent check
+- name: Set multiple protocol allow all service - Args - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service: "{{ allowed_services_multi }}"
@@ -162,12 +162,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set multiple protocol allow all service - Idempotent check
+- name: Assert Set multiple protocol allow all service - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set keyword "all" allow service
+- name: Set keyword "all" allow service - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -179,12 +179,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set keyword "all" allow service
+- name: Assert Set keyword "all" allow service - Args
   assert:
     that:
       - result is changed
 
-- name: Set keyword "all" allow service - Idempotent check
+- name: Set keyword "all" allow service - Args - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -196,12 +196,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set keyword "all" allow service - Idempotent check
+- name: Assert Set keyword "all" allow service - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set keyword "default" allow service
+- name: Set keyword "default" allow service - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -213,12 +213,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set keyword "default" allow service
+- name: Assert Set keyword "default" allow service - Args
   assert:
     that:
       - result is changed
 
-- name: Set keyword "default" allow service - Idempotent check
+- name: Set keyword "default" allow service - Args - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -230,12 +230,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set keyword "default" allow service - Idempotent check
+- name: Assert Set keyword "default" allow service - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set keyword "none" allow service
+- name: Set keyword "none" allow service - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -247,12 +247,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set keyword "none" allow service
+- name: Assert Set keyword "none" allow service - Args
   assert:
     that:
       - result is changed
 
-- name: Set keyword "none" allow service - Idempotent check
+- name: Set keyword "none" allow service - Args - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
@@ -264,12 +264,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set keyword "none" allow service - Idempotent check
+- name: Assert Set keyword "none" allow service - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Delete Self IP
+- name: Delete Self IP - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
@@ -280,12 +280,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Delete Self IP
+- name: Assert Delete Self IP - Args
   assert:
     that:
       - result is changed
 
-- name: Delete Self IP - Idempotent check
+- name: Delete Self IP - Args - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
@@ -296,12 +296,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Delete Self IP - Idempotent check
+- name: Assert Delete Self IP - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Create Self IP, specify a traffic group
+- name: Create Self IP, specify a traffic group - Args
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -315,12 +315,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create Self IP, specify a traffic group
+- name: Assert Create Self IP, specify a traffic group - Args
   assert:
     that:
       - result is changed
 
-- name: Create Self IP, specify a traffic group - Idempotent check
+- name: Create Self IP, specify a traffic group - Args - Idempotent check
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -334,12 +334,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create Self IP, specify a traffic group - Idempotent check
+- name: Assert Create Self IP, specify a traffic group - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Delete Self IP that specified traffic group
+- name: Delete Self IP that specified traffic group - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
@@ -350,12 +350,12 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Delete Self IP that specified traffic group
+- name: Assert Delete Self IP that specified traffic group - Args
   assert:
     that:
       - result is changed
 
-- name: Set 'all' access when creating Self IP
+- name: Set 'all' access when creating Self IP - Args
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -370,13 +370,13 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Set 'all' access when creating Self IP
+- name: Set 'all' access when creating Self IP - Args
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove 'all' access Self IP
+- name: Remove 'all' access Self IP - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
@@ -386,7 +386,7 @@
     server_port: "{{ bigip_port }}"
     validate_certs: "{{ validate_certs }}"
 
-- name: Set 'default' access when creating Self IP
+- name: Set 'default' access when creating Self IP - Args
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -401,13 +401,13 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Set 'default' access when creating Self IP
+- name: Set 'default' access when creating Self IP - Args
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove 'default' access Self IP
+- name: Remove 'default' access Self IP - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
@@ -417,7 +417,7 @@
     server_port: "{{ bigip_port }}"
     validate_certs: "{{ validate_certs }}"
 
-- name: Set 'none' access when creating Self IP
+- name: Set 'none' access when creating Self IP - Args
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -432,13 +432,13 @@
     validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Set 'none' access when creating Self IP
+- name: Set 'none' access when creating Self IP - Args
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove 'none' access Self IP
+- name: Remove 'none' access Self IP - Args
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent

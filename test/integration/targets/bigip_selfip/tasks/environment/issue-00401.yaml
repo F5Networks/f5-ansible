@@ -1,10 +1,10 @@
 ---
 
-- name: Issue 00401 - Ensure VLAN exists
+- name: Issue 00401 - Ensure VLAN exists - Environment
   bigip_vlan:
     name: issue-00401
 
-- name: Issue 00401 - Create initial non-floating self ip
+- name: Issue 00401 - Create initial non-floating self ip - Environment
   bigip_selfip:
     name: foo
     address: 1.2.3.4
@@ -13,7 +13,7 @@
     state: present
   register: result
 
-- name: Issue 00401 - Create initial floating address for non-floating address defined for this network
+- name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Environment
   bigip_selfip:
     name: foo-float
     address: 1.2.3.5
@@ -23,12 +23,12 @@
     state: present
   register: result
 
-- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network
+- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Environment
   assert:
     that:
       - result is changed
 
-- name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Idempotent check
+- name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Environment - Idempotent check
   bigip_selfip:
     name: foo-float
     address: 1.2.3.5
@@ -38,24 +38,24 @@
     state: present
   register: result
 
-- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Idempotent check
+- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Environment - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00401 - Remove floating address
+- name: Issue 00401 - Remove floating address - Environment
   bigip_selfip:
     name: foo-float
     state: absent
   register: result
 
-- name: Issue 00401 - Remove non-floating address
+- name: Issue 00401 - Remove non-floating address - Environment
   bigip_selfip:
     name: foo
     state: absent
   register: result
 
-- name: Issue 00401 - Remove vlan
+- name: Issue 00401 - Remove vlan - Environment
   bigip_vlan:
     name: issue-00401
     state: absent
