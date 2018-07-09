@@ -90,8 +90,8 @@ options:
       - present
       - absent
 notes:
-  - Requires the netaddr Python package on the host. This is as easy as pip
-    install netaddr.
+  - Requires the netaddr Python package on the host. This is as easy as
+    C(pip install netaddr).
   - This module does not support updating of existing nodes that were created
     with a C(cli_password_credential). The onboarding process will change your
     device's C(cli_username_credential) password, which will prevent you from

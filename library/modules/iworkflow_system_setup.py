@@ -45,8 +45,8 @@ options:
     default: ['pool.ntp.org']
     required: False
 notes:
-  - Required the netaddr Python package on the host. This is as easy as pip
-    install netaddr.
+  - Required the netaddr Python package on the host. This is as easy as
+    C(pip install netaddr).
 extends_documentation_fragment: f5
 requirements:
     - iWorkflow >= 2.1.0
