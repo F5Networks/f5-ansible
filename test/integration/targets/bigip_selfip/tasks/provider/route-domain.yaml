@@ -2,7 +2,7 @@
 
 - import_tasks: setup-route-domain.yaml
 
-- name: Create Self IP, specify a Route Domain
+- name: Create Self IP, specify a Route Domain - Provider
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -12,12 +12,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create Self IP, specify a Route Domain
+- name: Assert Create Self IP, specify a Route Domain - Provider
   assert:
     that:
       - result is changed
 
-- name: Create Self IP, specify a Route Domain - Idempotent check
+- name: Create Self IP, specify a Route Domain - Provider - Idempotent check
   bigip_selfip:
     address: "{{ selfip }}"
     name: "{{ selfip_name }}"
@@ -27,12 +27,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create Self IP, specify a Route Domain - Idempotent check
+- name: Assert Create Self IP, specify a Route Domain - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Delete Self IP, specify a Route Domain
+- name: Delete Self IP, specify a Route Domain - Provider
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
@@ -40,12 +40,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Delete Self IP, specify a Route Domain
+- name: Assert Delete Self IP, specify a Route Domain - Provider
   assert:
     that:
       - result is changed
 
-- name: Delete Self IP, specify a Route Domain - Idempotent check
+- name: Delete Self IP, specify a Route Domain - Provider - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
     state: absent
@@ -53,7 +53,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Delete Self IP, specify a Route Domain - Idempotent check
+- name: Assert Delete Self IP, specify a Route Domain - Provider - Idempotent check
   assert:
     that:
       - result is not changed

@@ -1,10 +1,10 @@
 ---
 
-- name: Issue 00365 - Ensure internal VLAN exists
+- name: Issue 00365 - Ensure internal VLAN exists - Environment
   bigip_vlan:
     name: internal
 
-- name: Issue 00365 - Create self-IPs, type a
+- name: Issue 00365 - Create self-IPs, type a - Environment
   bigip_selfip:
     name: "issue-00365-a"
     address: "2700:bc00:1f10:101::6"
@@ -14,87 +14,87 @@
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type a
+- name: Issue 00365 - Assert Create self-IPs, type a - Environment
   assert:
     that:
       - result is changed
 
-- name: Issue 00365 - Create self-IPs, type a - Idempotent check
+- name: Issue 00365 - Create self-IPs, type a - Environment - Idempotent check
   bigip_selfip:
-    name: "issue-00365-a"
+    name: issue-00365-a
     address: "2700:bc00:1f10:101::6"
     netmask: "ffff:ffff:ffff:ffff::"
-    vlan: "internal"
+    vlan: internal
     state: present
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type a - Idempotent check
+- name: Issue 00365 - Assert Create self-IPs, type a - Environment - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00365 - Create self-IPs, type b
+- name: Issue 00365 - Create self-IPs, type b - Environment
   bigip_selfip:
-    name: "issue-00365-b"
+    name: issue-00365-b
     address: "2600:bc00:1f10:101::5"
-    netmask: "64"
-    vlan: "internal"
+    netmask: 64
+    vlan: internal
     state: present
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type b
+- name: Issue 00365 - Assert Create self-IPs, type b - Environment
   assert:
     that:
       - result is changed
 
-- name: Issue 00365 - Create self-IPs, type b - Idempotent check
+- name: Issue 00365 - Create self-IPs, type b - Environment - Idempotent check
   bigip_selfip:
-    name: "issue-00365-b"
+    name: issue-00365-b
     address: "2600:bc00:1f10:101::5"
-    netmask: "64"
-    vlan: "internal"
+    netmask: 64
+    vlan: internal
     state: present
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type b - Idempotent check
+- name: Issue 00365 - Assert Create self-IPs, type b - Environment - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00365 - Create self-IPs, type c
+- name: Issue 00365 - Create self-IPs, type c - Environment
   bigip_selfip:
-    name: "issue-00365-c"
+    name: issue-00365-c
     address: "2500:bc00:1f10:100:f::3"
     netmask: "ffff:ffff:ffff:ffff::"
-    vlan: "internal"
+    vlan: internal
     state: present
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type c
+- name: Issue 00365 - Assert Create self-IPs, type c - Environment
   assert:
     that:
       - result is changed
 
-- name: Issue 00365 - Create self-IPs, type c - Idempotent check
+- name: Issue 00365 - Create self-IPs, type c - Environment - Idempotent check
   bigip_selfip:
-    name: "issue-00365-c"
+    name: issue-00365-c
     address: "2500:bc00:1f10:100:f::3"
     netmask: "ffff:ffff:ffff:ffff::"
-    vlan: "internal"
+    vlan: internal
     state: present
   delegate_to: localhost
   register: result
 
-- name: Issue 00365 - Assert Create self-IPs, type c - Idempotent check
+- name: Issue 00365 - Assert Create self-IPs, type c - Environment - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00365 - Remove self-IPs
+- name: Issue 00365 - Remove self-IPs - Environment
   bigip_selfip:
     name: "{{ item }}"
     state: absent
@@ -103,7 +103,7 @@
     - issue-00365-b
     - issue-00365-c
 
-- name: Issue 00365 - Remove VLANs
+- name: Issue 00365 - Remove VLANs - Environment
   bigip_vlan:
     name: internal
     state: absent

@@ -1,11 +1,11 @@
 ---
 
-- name: Create VLAN
+- name: Issue 00536 - Create VLAN - Provider
   bigip_vlan:
     name: prod_vlan
     provider: "{{ provider }}"
 
-- name: Create non-floating self IP
+- name: Issue 00536 - Create non-floating self IP - Provider
   bigip_selfip:
     address: 1.1.1.1
     netmask: 255.255.255.0
@@ -16,12 +16,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create non-floating self IP
+- name: Issue 00536 - Assert Create non-floating self IP - Provider
   assert:
     that:
       - result is changed
 
-- name: Create non-floating self IP - Idempotent check
+- name: Issue 00536 - Create non-floating self IP - Provider - Idempotent check
   bigip_selfip:
     address: 1.1.1.1
     netmask: 255.255.255.0
@@ -32,12 +32,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create non-floating self IP - Idempotent check
+- name: Issue 00536 - Assert Create non-floating self IP - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Create floating self IP
+- name: Issue 00536 - Create floating self IP - Provider
   bigip_selfip:
     address: 1.1.1.100
     netmask: 255.255.255.0
@@ -48,12 +48,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create floating self IP
+- name: Issue 00536 - Assert Create floating self IP - Provider
   assert:
     that:
       - result is changed
 
-- name: Create floating self IP - Idempotent check
+- name: Issue 00536 - Create floating self IP - Provider - Idempotent check
   bigip_selfip:
     address: 1.1.1.100
     netmask: 255.255.255.0
@@ -64,12 +64,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Create floating self IP - Idempotent check
+- name: Issue 00536 - Assert Create floating self IP - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Remove self IPs - floating must be removed first to prevent floating orphan
+- name: Issue 00536 - Remove self IPs - floating must be removed first to prevent floating orphan - Provider
   bigip_selfip:
     name: "{{ item }}"
     state: absent
@@ -78,7 +78,7 @@
     - v1244_floating
     - v1244_non_floating
 
-- name: Remove VLAN
+- name: Issue 00536 - Remove VLAN - Provider
   bigip_vlan:
     name: prod_vlan
     state: absent

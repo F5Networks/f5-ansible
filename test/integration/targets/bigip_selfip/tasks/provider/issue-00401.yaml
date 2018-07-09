@@ -1,11 +1,11 @@
 ---
 
-- name: Issue 00401 - Ensure VLAN exists
+- name: Issue 00401 - Ensure VLAN exists - Provider
   bigip_vlan:
     name: issue-00401
     provider: "{{ provider }}"
 
-- name: Issue 00401 - Create initial non-floating self ip
+- name: Issue 00401 - Create initial non-floating self ip - Provider
   bigip_selfip:
     name: foo
     address: 1.2.3.4
@@ -15,7 +15,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00401 - Create initial floating address for non-floating address defined for this network
+- name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Provider
   bigip_selfip:
     name: foo-float
     address: 1.2.3.5
@@ -26,12 +26,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network
+- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Provider
   assert:
     that:
       - result is changed
 
-- name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Idempotent check
+- name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Provider - Idempotent check
   bigip_selfip:
     name: foo-float
     address: 1.2.3.5
@@ -42,26 +42,26 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Idempotent check
+- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00401 - Remove floating address
+- name: Issue 00401 - Remove floating address - Provider
   bigip_selfip:
     name: foo-float
     state: absent
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00401 - Remove non-floating address
+- name: Issue 00401 - Remove non-floating address - Provider
   bigip_selfip:
     name: foo
     state: absent
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00401 - Remove vlan
+- name: Issue 00401 - Remove vlan - Provider
   bigip_vlan:
     name: issue-00401
     state: absent

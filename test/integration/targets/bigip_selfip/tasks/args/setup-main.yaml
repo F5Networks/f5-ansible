@@ -1,6 +1,6 @@
 ---
 
-- name: Remove VLANs
+- name: Remove VLANs - Args
   bigip_vlan:
     name: "{{ item }}"
     state: absent
@@ -13,7 +13,7 @@
     - "{{ selfip_vlan }}"
     - "{{ selfip_vlan2 }}"
 
-- name: Create VLANs
+- name: Create VLANs - Args
   bigip_vlan:
     name: "{{ item }}"
     user: "{{ bigip_username }}"

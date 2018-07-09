@@ -1,25 +1,25 @@
 ---
 
-- name: Issue 00229 - Create partition
+- name: Issue 00229 - Create partition - Provider
   bigip_partition:
     name: Tenant1A
     state: present
     provider: "{{ provider }}"
 
-- name: Issue 00229 - Create VLAN
+- name: Issue 00229 - Create VLAN - Provider
   bigip_vlan:
     name: External
     partition: Tenant1A
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Create VLAN on Common
+- name: Issue 00229 - Create VLAN on Common - Provider
   bigip_vlan:
     name: InternalCommon
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Configure Self-IPs on the BIG-IP
+- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Provider
   bigip_selfip:
     name: issue-229
     address: 1.2.3.4
@@ -30,12 +30,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP
+- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Provider
   assert:
     that:
       - result is changed
 
-- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Idempotent check
+- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Provider - Idempotent check
   bigip_selfip:
     name: issue-229
     address: 1.2.3.4
@@ -46,12 +46,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Idempotent check
+- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00229 - Remove Self-IP
+- name: Issue 00229 - Remove Self-IP - Provider
   bigip_selfip:
     name: issue-229
     partition: Tenant1A
@@ -59,7 +59,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Configure Self-IPs with specific partitions
+- name: Issue 00229 - Configure Self-IPs with specific partitions - Provider
   bigip_selfip:
     name: issue-229
     address: 1.2.3.4
@@ -71,12 +71,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs with specific partitions
+- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Provider
   assert:
     that:
       - result is changed
 
-- name: Issue 00229 - Configure Self-IPs with specific partitions - Idempotent check
+- name: Issue 00229 - Configure Self-IPs with specific partitions - Provider - Idempotent check
   bigip_selfip:
     name: issue-229
     address: 1.2.3.4
@@ -88,12 +88,12 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Idempotent check
+- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Provider - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00229 - Remove Self-IP
+- name: Issue 00229 - Remove Self-IP - Provider
   bigip_selfip:
     name: issue-229
     partition: Tenant1A
@@ -101,7 +101,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Remove VLAN
+- name: Issue 00229 - Remove VLAN - Provider
   bigip_vlan:
     name: External
     partition: Tenant1A
@@ -109,14 +109,14 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Remove Internal VLAN
+- name: Issue 00229 - Remove Internal VLAN - Provider
   bigip_vlan:
     name: InternalCommon
     state: absent
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00229 - Remove Partition
+- name: Issue 00229 - Remove Partition - Provider
   bigip_partition:
     name: Tenant1A
     state: absent

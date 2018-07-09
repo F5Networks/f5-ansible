@@ -1,10 +1,15 @@
 ---
 
-- name: Create VLAN
+- name: Issue 00536 - Create VLAN - Args
   bigip_vlan:
     name: prod_vlan
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
 
-- name: Create non-floating self IP
+- name: Issue 00536 - Create non-floating self IP - Args
   bigip_selfip:
     address: 1.1.1.1
     netmask: 255.255.255.0
@@ -12,14 +17,19 @@
     vlan: prod_vlan
     allow_service: default
     traffic_group: traffic-group-local-only
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create non-floating self IP
+- name: Issue 00536 - Assert Create non-floating self IP - Args
   assert:
     that:
       - result is changed
 
-- name: Create non-floating self IP - Idempotent check
+- name: Issue 00536 - Create non-floating self IP - Args - Idempotent check
   bigip_selfip:
     address: 1.1.1.1
     netmask: 255.255.255.0
@@ -27,14 +37,19 @@
     vlan: prod_vlan
     allow_service: default
     traffic_group: traffic-group-local-only
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create non-floating self IP - Idempotent check
+- name: Issue 00536 - Assert Create non-floating self IP - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Create floating self IP
+- name: Issue 00536 - Create floating self IP - Args
   bigip_selfip:
     address: 1.1.1.100
     netmask: 255.255.255.0
@@ -42,14 +57,19 @@
     vlan: prod_vlan
     allow_service: default
     traffic_group: traffic-group-1
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create floating self IP
+- name: Issue 00536 - Assert Create floating self IP - Args
   assert:
     that:
       - result is changed
 
-- name: Create floating self IP - Idempotent check
+- name: Issue 00536 - Create floating self IP - Args - Idempotent check
   bigip_selfip:
     address: 1.1.1.100
     netmask: 255.255.255.0
@@ -57,22 +77,32 @@
     vlan: prod_vlan
     allow_service: default
     traffic_group: traffic-group-1
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create floating self IP - Idempotent check
+- name: Issue 00536 - Assert Create floating self IP - Args - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Remove self IPs - floating must be removed first to prevent floating orphan
+- name: Issue 00536 - Remove self IPs - floating must be removed first to prevent floating orphan - Args
   bigip_selfip:
     name: "{{ item }}"
     state: absent
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
   loop:
     - v1244_floating
     - v1244_non_floating
 
-- name: Remove VLAN
+- name: Issue 00536 - Remove VLAN - Args
   bigip_vlan:
     name: prod_vlan
     state: absent

@@ -1,111 +1,111 @@
 ---
 
-- name: Issue 00229 - Create partition
+- name: Issue 00229 - Create partition - Environment
   bigip_partition:
-    name: "Tenant1A"
-    state: "present"
+    name: Tenant1A
+    state: present
 
-- name: Issue 00229 - Create VLAN
+- name: Issue 00229 - Create VLAN - Environment
   bigip_vlan:
-    name: "External"
-    partition: "Tenant1A"
+    name: External
+    partition: Tenant1A
   register: result
 
-- name: Issue 00229 - Create VLAN on Common
+- name: Issue 00229 - Create VLAN on Common - Environment
   bigip_vlan:
-    name: "InternalCommon"
+    name: InternalCommon
   register: result
 
-- name: Issue 00229 - Configure Self-IPs on the BIG-IP
+- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Environment
   bigip_selfip:
-    name: "issue-229"
-    address: "1.2.3.4"
-    netmask: "255.255.255.0"
-    vlan: "External"
-    partition: "Tenant1A"
-    state: "present"
+    name: issue-229
+    address: 1.2.3.4
+    netmask: 255.255.255.0
+    vlan: External
+    partition: Tenant1A
+    state: present
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP
+- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Environment
   assert:
     that:
       - result is changed
 
-- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Idempotent check
+- name: Issue 00229 - Configure Self-IPs on the BIG-IP - Environment - Idempotent check
   bigip_selfip:
-    name: "issue-229"
-    address: "1.2.3.4"
-    netmask: "255.255.255.0"
-    vlan: "External"
-    partition: "Tenant1A"
-    state: "present"
+    name: issue-229
+    address: 1.2.3.4
+    netmask: 255.255.255.0
+    vlan: External
+    partition: Tenant1A
+    state: present
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Idempotent check
+- name: Issue 00229 - Assert Configure Self-IPs on the BIG-IP - Environment - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00229 - Remove Self-IP
+- name: Issue 00229 - Remove Self-IP - Environment
   bigip_selfip:
-    name: "issue-229"
-    partition: "Tenant1A"
-    state: "absent"
+    name: issue-229
+    partition: Tenant1A
+    state: absent
   register: result
 
-- name: Issue 00229 - Configure Self-IPs with specific partitions
+- name: Issue 00229 - Configure Self-IPs with specific partitions - Environment
   bigip_selfip:
-    name: "issue-229"
-    address: "1.2.3.4"
-    netmask: "255.255.255.0"
-    vlan: "/Common/InternalCommon"
-    partition: "Tenant1A"
+    name: issue-229
+    address: 1.2.3.4
+    netmask: 255.255.255.0
+    vlan: /Common/InternalCommon
+    partition: Tenant1A
     traffic_group: /Common/traffic-group-local-only
-    state: "present"
+    state: present
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs with specific partitions
+- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Environment
   assert:
     that:
       - result is changed
 
-- name: Issue 00229 - Configure Self-IPs with specific partitions - Idempotent check
+- name: Issue 00229 - Configure Self-IPs with specific partitions - Environment - Idempotent check
   bigip_selfip:
-    name: "issue-229"
-    address: "1.2.3.4"
-    netmask: "255.255.255.0"
-    vlan: "/Common/InternalCommon"
-    partition: "Tenant1A"
+    name: issue-229
+    address: 1.2.3.4
+    netmask: 255.255.255.0
+    vlan: /Common/InternalCommon
+    partition: Tenant1A
     traffic_group: /Common/traffic-group-local-only
-    state: "present"
+    state: present
   register: result
 
-- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Idempotent check
+- name: Issue 00229 - Assert Configure Self-IPs with specific partitions - Environment - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00229 - Remove Self-IP
+- name: Issue 00229 - Remove Self-IP - Environment
   bigip_selfip:
-    name: "issue-229"
-    partition: "Tenant1A"
-    state: "absent"
+    name: issue-229
+    partition: Tenant1A
+    state: absent
   register: result
 
-- name: Issue 00229 - Remove VLAN
+- name: Issue 00229 - Remove VLAN - Environment
   bigip_vlan:
-    name: "External"
-    partition: "Tenant1A"
-    state: "absent"
+    name: External
+    partition: Tenant1A
+    state: absent
   register: result
 
-- name: Issue 00229 - Remove Internal VLAN
+- name: Issue 00229 - Remove Internal VLAN - Environment
   bigip_vlan:
-    name: "InternalCommon"
-    state: "absent"
+    name: InternalCommon
+    state: absent
   register: result
 
-- name: Issue 00229 - Remove Partition
+- name: Issue 00229 - Remove Partition - Environment
   bigip_partition:
-    name: "Tenant1A"
-    state: "absent"
+    name: Tenant1A
+    state: absent
