@@ -22,3 +22,10 @@
 .versionmodified {
     font-style: italic !important;
 }
+
+.support-matrix td {
+    text-align: center;
+    vertical-align: center;
+    font-family: Proxima, "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+}
+.support-matrix td:first-child { text-align: left; }

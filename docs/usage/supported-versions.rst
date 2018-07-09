@@ -1,19 +1,45 @@
 Releases and Versioning
 -----------------------
 
-F5 Ansible modules in 2.5.0 & 2.6.0 are supported on TMOS 12.x & 13.x.
+Learn more about our `Support Policy <https://f5.com/support/support-policies>`_ and
+`BIG-IP product support policies <https://support.f5.com/csp/article/K5903>`_.
 
 .. important::
 
-   F5 Networks does not back-port changes to earlier versions of Ansible.
+   * F5 follows Ansible’s model and supports the two most recent major stable releases.
+   * F5 does not back-port changes to earlier versions of Ansible.
 
-For a detailed list of BIG-IP versions that are currently supported by F5, see |k5903|.
+The tables below display F5 product and Ansible versions that are eligible for support.
 
-.. |k5903| raw:: html
+BIG-IP
+``````
 
-   <a href="https://support.f5.com/csp/article/K5903" target="_blank">this solution article</a>
+.. container:: support-matrix
 
-F5 follows Ansible’s model and supports the two most recent major stable releases.
+   +-------------------------+----------------------+------------------------+
+   |                         | Ansible 2.5          |  Ansible 2.6           |
+   +=========================+======================+========================+
+   | BIG-IP 13.x             | |check|              |  |check|               |
+   +-------------------------+----------------------+------------------------+
+   | BIG-IP 12.x             | |check|              |  |check|               |
+   +-------------------------+----------------------+------------------------+
+   | BIG-IP <= 11.x          | |x|                  |  |x|                   |
+   +-------------------------+----------------------+------------------------+
+
+BIG-IQ
+``````
+
+.. container:: support-matrix
+
+   +-------------------------+----------------------+------------------------+
+   |                         | Ansible 2.5          |  Ansible 2.6           |
+   +=========================+======================+========================+
+   | BIG-IQ 6.0              | |check|              |  |check|               |
+   +-------------------------+----------------------+------------------------+
+   | BIG-IQ 5.4              | |check|              |  |check|               |
+   +-------------------------+----------------------+------------------------+
+   | BIG-IQ <= 5.3           | |x|                  |  |x|                   |
+   +-------------------------+----------------------+------------------------+
 
 Experimental Module Support
 ```````````````````````````
@@ -32,3 +58,6 @@ then the module is likely complete and ready for testing. You can create issues 
 .. |github_repo| raw:: html
 
    <a href="https://github.com/F5Networks/f5-ansible" target="_blank">GitHub repo</a>
+
+.. |check| image:: ../_static/check.svg
+.. |x| image:: ../_static/x.svg
