@@ -166,6 +166,56 @@ services:
       - PYTHONDONTWRITEBYTECODE=1
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
       - PYTHONPATH=/here
+  py3.7:
+    image: f5ansible/py3.7:devel
+    build:
+      context: ..
+      dockerfile: devtools/dockerfiles/Dockerfile-py3.7
+    command: /bin/bash
+    secrets:
+      - source: .gitconfig
+        target: .gitconfig
+    extra_hosts:
+      - "localhost:1.2.3.4"
+    volumes:
+      - type: bind
+        source: ../
+        target: /here
+      - type: bind
+        source: ../tmp/ansible.junit/
+        target: /tmp/ansible.junit
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
+      - PYTHONPATH=/here
+  py3.7-bare:
+    image: f5ansible/py3.7-bare:devel
+    build:
+      context: ..
+      dockerfile: devtools/dockerfiles/Dockerfile-py3.7-bare
+    command: /bin/bash
+    secrets:
+      - source: .gitconfig
+        target: .gitconfig
+    extra_hosts:
+      - "localhost:1.2.3.4"
+    volumes:
+      - type: bind
+        source: ../
+        target: /here
+      - type: bind
+        source: ../tmp/ansible.junit/
+        target: /tmp/ansible.junit
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
+      - PYTHONPATH=/here
 secrets:
   .gitconfig:
     file: ./secrets/gitconfig.secret
