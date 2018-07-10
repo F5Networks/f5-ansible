@@ -5,7 +5,7 @@
     commands:
       - tmsh show sys version
     provider:
-      transport: cli
+      transport: rest
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
@@ -23,7 +23,7 @@
       - tmsh show sys clock
       - tmsh list auth
     provider:
-      transport: cli
+      transport: rest
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
@@ -40,7 +40,7 @@
     commands:
       - show sys clock
     provider:
-      transport: cli
+      transport: rest
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
@@ -58,7 +58,7 @@
       - tmsh show sys clock
       - list auth
     provider:
-      transport: cli
+      transport: rest
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
@@ -80,7 +80,7 @@
     wait_for:
       - result[0] contains Sys::Clock
     provider:
-      transport: cli
+      transport: rest
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
@@ -99,7 +99,7 @@
       - tmsh modify sys db setup.run value true
       - tmsh modify sys db setup.run value false
     provider:
-      transport: cli
+      transport: rest
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
@@ -118,7 +118,7 @@
       - tmsh modify sys db setup.run value false
       - tmsh show sys clock
     provider:
-      transport: cli
+      transport: rest
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
