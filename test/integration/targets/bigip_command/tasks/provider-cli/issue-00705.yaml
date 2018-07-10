@@ -56,7 +56,7 @@
       - result.stdout|count == 4
       - result.stdout_lines|count == 4
       - result.stdout_lines[0]|count == 1
-      - result.stdout_lines[1]|count == 3
+      - result.stdout_lines[1]|count == 1
       - result.stdout_lines[2]|count == 1
       - result.stdout_lines[3]|count == 1
       - "'show sys software' not in result.stdout[0]"
