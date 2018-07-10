@@ -111,6 +111,25 @@ options:
       - Specifies the user-created cache that the system uses to cache DNS responses.
       - When you select a cache for the system to use, you must also set C(enable_dns_cache)
         to C(yes)
+  unhandled_query_action:
+    description:
+      - Specifies the action to take when a query does not match a Wide IP or a DNS Express Zone.
+      - When C(allow), the BIG-IP system forwards queries to a DNS server or pool member.
+        If a pool is not associated with a listener and the Use BIND Server on BIG-IP setting
+        is set to Enabled, requests are forwarded to the local BIND server.
+      - When C(drop), the BIG-IP system does not respond to the query.
+      - When C(reject), the BIG-IP system returns the query with the REFUSED return code.
+      - When C(hint), the BIG-IP system returns the query with a list of root name servers.
+      - When C(no-error), the BIG-IP system returns the query with the NOERROR return code.
+      - When creating a new profile, if this parameter is not specified, the default
+        is provided by the parent profile.
+    choices:
+      - allow
+      - drop
+      - reject
+      - hint
+      - no-error
+    version_added: 2.7
   partition:
     description:
       - Device partition to manage resources on.
@@ -191,6 +210,11 @@ cache_name:
   returned: changed
   type: string
   sample: /Common/cache1
+unhandled_query_action:
+  description: What to do with unhandled queries
+  returned: changed
+  type: string
+  sample: allow
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -233,7 +257,8 @@ class Parameters(AnsibleF5Parameters):
         'enableDnsExpress': 'enable_dns_express',
         'defaultsFrom': 'parent',
         'enableCache': 'enable_cache',
-        'cache': 'cache_name'
+        'cache': 'cache_name',
+        'unhandledQueryAction': 'unhandled_query_action',
     }
 
     api_attributes = [
@@ -247,6 +272,7 @@ class Parameters(AnsibleF5Parameters):
         'defaultsFrom',
         'cache',
         'enableCache',
+        'unhandledQueryAction',
     ]
 
     returnables = [
@@ -259,6 +285,7 @@ class Parameters(AnsibleF5Parameters):
         'enable_dns_express',
         'cache_name',
         'enable_cache',
+        'unhandled_query_action',
     ]
 
     updatables = [
@@ -271,6 +298,7 @@ class Parameters(AnsibleF5Parameters):
         'enable_dns_express',
         'cache_name',
         'enable_cache',
+        'unhandled_query_action',
     ]
 
 
@@ -338,6 +366,14 @@ class ApiParameters(Parameters):
         if self._values['enable_dns_express'] == 'yes':
             return True
         return False
+
+    @property
+    def unhandled_query_action(self):
+        if self._values['unhandled_query_action'] is None:
+            return None
+        elif self._values['unhandled_query_action'] == 'noerror':
+            return 'no-error'
+        return self._values['unhandled_query_action']
 
 
 class ModuleParameters(Parameters):
@@ -434,6 +470,14 @@ class UsableChanges(Changes):
         if self._values['enable_dns_express']:
             return 'yes'
         return 'no'
+
+    @property
+    def unhandled_query_action(self):
+        if self._values['unhandled_query_action'] is None:
+            return None
+        elif self._values['unhandled_query_action'] == 'no-error':
+            return 'noerror'
+        return self._values['unhandled_query_action']
 
 
 class ReportableChanges(Changes):
@@ -629,6 +673,9 @@ class ArgumentSpec(object):
             use_local_bind=dict(type='bool'),
             enable_dns_firewall=dict(type='bool'),
             enable_cache=dict(type='bool'),
+            unhandled_query_action=dict(
+                choices=['allow', 'drop', 'reject', 'hint', 'no-error']
+            ),
             cache_name=dict(),
             state=dict(
                 default='present',
