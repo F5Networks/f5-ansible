@@ -1,0 +1,268 @@
+---
+
+- name: Issue 00788 - Create DNS profile, default allow
+  bigip_profile_dns:
+    name: profile1
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, default allow
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, default allow - Idempotent check
+  bigip_profile_dns:
+    name: profile1
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, default allow - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set allow
+  bigip_profile_dns:
+    name: profile2
+    unhandled_query_action: allow
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set allow
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set allow - Idempotent check
+  bigip_profile_dns:
+    name: profile2
+    unhandled_query_action: allow
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set allow - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set drop
+  bigip_profile_dns:
+    name: profile3
+    unhandled_query_action: drop
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set drop
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set drop - Idempotent check
+  bigip_profile_dns:
+    name: profile3
+    unhandled_query_action: drop
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set drop - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set reject
+  bigip_profile_dns:
+    name: profile4
+    unhandled_query_action: reject
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set reject
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set reject - Idempotent check
+  bigip_profile_dns:
+    name: profile4
+    unhandled_query_action: reject
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set reject - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set hint
+  bigip_profile_dns:
+    name: profile5
+    unhandled_query_action: hint
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set hint
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set hint - Idempotent check
+  bigip_profile_dns:
+    name: profile5
+    unhandled_query_action: hint
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set hint - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set no-error
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: no-error
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set no-error
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, set no-error - Idempotent check
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: no-error
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, set no-error - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update allow
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: allow
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update allow
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update allow - Idempotent check
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: allow
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update allow - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update drop
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: drop
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update drop
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update drop - Idempotent check
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: drop
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update drop - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update reject
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: reject
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update reject
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update reject - Idempotent check
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: reject
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update reject - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update hint
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: hint
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update hint
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update hint - Idempotent check
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: hint
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update hint - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update no-error
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: no-error
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update no-error
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00788 - Create DNS profile, update no-error - Idempotent check
+  bigip_profile_dns:
+    name: profile6
+    unhandled_query_action: no-error
+  register: result
+
+- name: Issue 00788 - Assert Create DNS profile, update no-error - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00788 - Remove DNS profile
+  bigip_profile_dns:
+    name: profile6
+    state: absent
