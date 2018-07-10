@@ -106,3 +106,8 @@
   bigip_vlan:
     name: prod_vlan
     state: absent
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
