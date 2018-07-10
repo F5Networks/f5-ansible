@@ -30,7 +30,7 @@ module-docs:
 	python devtools/bin/plugin_formatter.py --module-dir library/ --template-dir devtools/templates/ --output-dir docs/modules/ -v --limit-to $(shell python ./devtools/bin/limit_module_docs.py)
 
 docs-build:
-	cd docs && make html
+	cd docs && rm -rf _build && make html
 
 style:
 	pycodestyle .
@@ -104,6 +104,9 @@ py3.5-run:
 py3.6-run:
 	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6
 
+py3.7-run:
+	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.7
+
 bare-py2.7:
 	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py2.7-bare
 
@@ -112,6 +115,9 @@ bare-py3.5:
 
 bare-py3.6:
 	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6-bare
+
+bare-py3.7:
+	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.7-bare
 
 ip-alias:
 	sudo ifconfig lo0 alias 1.2.3.4
