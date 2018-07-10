@@ -1,0 +1,59 @@
+---
+
+- name: Issue 00785 - Run command
+  bigip_command:
+    commands:
+      - create /cli alias shared build_configlet { command 'load /sys config from-terminal merge' }
+  register: result
+
+- name: Issue 00785 - Assert Run command
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00785 - Run command - Idempotent check
+  bigip_command:
+    commands:
+      - create /cli alias shared build_configlet { command 'load /sys config from-terminal merge' }
+  register: result
+
+- name: Issue 00785 - Assert Run command - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00785 - Remove alias
+  bigip_command:
+    commands:
+      - delete /cli alias shared build_configlet
+
+- name: Issue 00785 - Run another command
+  bigip_command:
+    commands:
+      - create /sys log-config destination management-port AVR_to_Loginsight { ip-address 1.1.1.1 port 514 protocol udp }
+  register: result
+
+- name: Issue 00785 - Assert Run another command
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00785 - Run another command - Idempotent check
+  bigip_command:
+    commands:
+      - create /sys log-config destination management-port AVR_to_Loginsight { ip-address 1.1.1.1 port 514 protocol udp }
+  register: result
+
+- name: Issue 00785 - Assert Run another command - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00785 - Remove destination
+  bigip_command:
+    commands:
+      - delete /sys log-config destination management-port AVR_to_Loginsight

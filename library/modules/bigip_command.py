@@ -239,6 +239,35 @@ except ImportError:
     HAS_CLI_TRANSPORT = False
 
 
+class NoChangeReporter(object):
+    stdout_re = [
+        # A general error when a resource already exists
+        re.compile(r"The requested.*already exists"),
+
+        # Returned when creating a duplicate cli alias
+        re.compile(r"Data Input Error: shared.*already exists"),
+    ]
+
+    def find_no_change(self, responses):
+        """Searches the response for something that looks like a change
+
+        This method borrows heavily from Ansible's ``_find_prompt`` method
+        defined in the ``lib/ansible/plugins/connection/network_cli.py::Connection``
+        class.
+
+        Arguments:
+            response (string): The output from the command.
+
+        Returns:
+            bool: True when change is detected. False otherwise.
+        """
+        for response in responses:
+            for regex in self.stdout_re:
+                if regex.search(response):
+                    return True
+        return False
+
+
 class Parameters(AnsibleF5Parameters):
     returnables = ['stdout', 'stdout_lines', 'warnings', 'executed_commands']
 
@@ -505,6 +534,12 @@ class BaseManager(object):
         if self.want.warn:
             changes['warnings'] = self.warnings
         self.changes = Parameters(params=changes, module=self.module)
+        return self.determine_change(responses)
+
+    def determine_change(self, responses):
+        changer = NoChangeReporter()
+        if changer.find_no_change(responses):
+            return False
         if any(x for x in self.want.normalized_commands if x.startswith(self.changed_command_prefixes)):
             return True
         return False
@@ -519,15 +554,6 @@ class BaseManager(object):
                     "tmsh command printed its 'help' message instead of running your command. "
                     "This usually indicates unbalanced quotes."
                 )
-
-            # This breaks some existing playbooks that specifically checked for errors
-            # in stdout.
-            #
-            # FWIW, the Ansible command module does not, afaik, do any specific checking,
-            # so it appears this should be removed.
-            #
-            # if re.match(pattern, resp):
-            #    raise F5ModuleError(str(resp))
 
     def _transform_to_complex_commands(self, commands):
         spec = dict(
