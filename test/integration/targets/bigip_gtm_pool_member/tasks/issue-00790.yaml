@@ -1,0 +1,98 @@
+---
+
+- name: Issue 00790 - Create a pool
+  bigip_gtm_pool:
+    name: test.example.com_external
+    type: a
+
+- name: Issue 00790 - Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+
+- name: Issue 00790 - Create GTM server
+  bigip_gtm_server:
+    name: "{{ item.name }}"
+    devices:
+      - name: "{{ item.name }}"
+        address: "{{ item.address }}"
+    datacenter: "{{ dc_name1 }}"
+    state: present
+  loop:
+    - { name: server1.example.com, address: 3.3.3.3 }
+    - { name: server2.example.com, address: 4.4.4.4 }
+    - { name: server3.example.com, address: 5.5.5.5 }
+
+- name: Issue 00790 - Create a GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "{{ item.vs }}"
+    server_name: "{{ item.name }}"
+    address: "{{ item.address }}"
+    port: 80
+  loop:
+    - { name: 'server1.example.com', vs: 'test.example.com_443', address: 6.6.6.6 }
+    - { name: 'server2.example.com', vs: 'test.example.com_443', address: 7.7.7.7 }
+    - { name: 'server3.example.com', vs: 'test.example.com_443', address: 8.8.8.8 }
+
+- name: Issue 00790 - Add members to GTM pool test.example.com_external
+  bigip_gtm_pool_member:
+    description: ""
+    member_order: "{{ item.order }}"
+    pool: test.example.com_external
+    ratio: "{{ item.ratio }}"
+    server_name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    type: a
+    virtual_server: "{{ item.vs }}"
+  loop:
+    - { name: 'server1.example.com', vs: 'test.example.com_443', order: '0', ratio: '1', state: 'enabled' }
+    - { name: 'server2.example.com', vs: 'test.example.com_443', order: '1', ratio: '1', state: 'enabled' }
+    - { name: 'server3.example.com', vs: 'test.example.com_443', order: '2', ratio: '1', state: 'enabled' }
+  register: result
+
+- name: Issue 00790 - Assert Add members to GTM pool test.example.com_external
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00790 - Add members to GTM pool test.example.com_external - Idempotent check
+  bigip_gtm_pool_member:
+    description: ""
+    member_order: "{{ item.order }}"
+    pool: test.example.com_external
+    ratio: "{{ item.ratio }}"
+    server_name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    type: a
+    virtual_server: "{{ item.vs }}"
+  loop:
+    - { name: 'server1.example.com', vs: 'test.example.com_443', order: '0', ratio: '1', state: 'enabled' }
+    - { name: 'server2.example.com', vs: 'test.example.com_443', order: '1', ratio: '1', state: 'enabled' }
+    - { name: 'server3.example.com', vs: 'test.example.com_443', order: '2', ratio: '1', state: 'enabled' }
+  register: result
+
+- name: Issue 00790 - Assert Add members to GTM pool test.example.com_external - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00790 - Remove pool
+  bigip_gtm_pool:
+    name: test.example.com_external
+    type: a
+    state: absent
+
+- name: Issue 00790 - Remove GTM servers
+  bigip_gtm_server:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - server1.example.com
+    - server2.example.com
+    - server3.example.com
+
+- name: Issue 00790 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+    state: absent
