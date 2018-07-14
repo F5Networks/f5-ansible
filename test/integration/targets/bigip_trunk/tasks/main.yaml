@@ -6,6 +6,7 @@
   bigip_facts:
     include: system_info
   register: result
+  tags: issue-00783
 
 - name: Fail to create a trunk on VE with LACP - Expected failure
   bigip_trunk:
@@ -467,3 +468,7 @@
       - result is not changed
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-00783.yaml
+  tags: issue-00783
+  when: system_info.system_information.product_category != "Virtual Edition"
