@@ -1,0 +1,30 @@
+---
+
+- name: Issue 00783 - Create a trunk on hardware
+  bigip_trunk:
+    name: trunk2
+    qinq_ethertype: "0x9100"
+  register: result
+
+- name: Issue 00783 - Assert Create a trunk on hardware
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00783 - Create a trunk on hardware - Idempotent check
+  bigip_trunk:
+    name: trunk2
+    qinq_ethertype: "0x9100"
+  register: result
+
+- name: Issue 00783 - Assert Create a trunk on hardware - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00783 - Remove trunk on hardware
+  bigip_trunk:
+    name: trunk2
+    state: absent
