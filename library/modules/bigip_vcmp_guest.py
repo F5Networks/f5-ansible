@@ -187,7 +187,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
-    from library.module_utils.network.f5.common import is_valid_ip
+    from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.compat.ipaddress import ip_interface
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -202,7 +202,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import is_valid_ip
+    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.compat.ipaddress import ip_interface
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
