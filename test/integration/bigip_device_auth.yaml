@@ -1,24 +1,24 @@
 
-# Test the bigip_sys_auth module
+# Test the bigip_device_auth module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# bigip_sys_auth module behaves as expected.
+# bigip_device_auth module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, test/integration/bigip_sys_auth.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_device_auth.yaml
 #
 # Examples:
 #
-#    Run all tests on the bigip_sys_auth module
+#    Run all tests on the bigip_device_auth module
 #
-#    ansible-playbook -i notahost, test/integration/bigip_sys_auth.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_device_auth.yaml
 #
 
-- name: Test the bigip_sys_auth module
+- name: Test the bigip_device_auth module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
@@ -52,4 +52,4 @@
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-    - bigip_sys_auth
+    - bigip_device_auth
