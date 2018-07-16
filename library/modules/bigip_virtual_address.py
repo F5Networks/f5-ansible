@@ -64,6 +64,7 @@ options:
       - When creating a new virtual address, if this parameter is not specified,
         the default value is C(yes).
     type: bool
+    version_added: 2.7
   auto_delete:
     description:
       - Specifies whether the system automatically deletes the virtual
