@@ -48,9 +48,22 @@ options:
         both ARP and ICMP Echo must be disabled in order for forwarding
         virtual servers using that virtual address to forward ICMP packets.
         If (enabled), then the packets are dropped.
+      - Deprecated. Use the C(arp) parameter instead.
+      - When creating a new virtual address, if this parameter is not specified,
+        the default value is C(enabled).
     choices:
       - enabled
       - disabled
+  arp:
+    description:
+      - Specifies whether the system accepts ARP requests.
+      - When C(no), specifies that the system does not accept ARP requests.
+      - When C(yes), then the packets are dropped.
+      - Note that both ARP and ICMP Echo must be disabled in order for forwarding
+        virtual servers using that virtual address to forward ICMP packets.
+      - When creating a new virtual address, if this parameter is not specified,
+        the default value is C(yes).
+    type: bool
   auto_delete:
     description:
       - Specifies whether the system automatically deletes the virtual
@@ -58,9 +71,9 @@ options:
         When C(disabled), specifies that the system leaves the virtual
         address even when all associated virtual servers have been deleted.
         When creating the virtual address, the default value is C(enabled).
-    choices:
-      - enabled
-      - disabled
+      - C(enabled) and C(disabled) are deprecated and will be removed in
+        Ansible 2.11. Instead, use known Ansible booleans such as C(yes) and
+        C(no)
   icmp_echo:
     description:
       - Specifies how the systems sends responses to (ICMP) echo requests
@@ -157,6 +170,20 @@ options:
       - The route domain of the C(address) that you want to use.
       - This value cannot be modified after it is set.
     version_added: 2.6
+  spanning:
+    description:
+      - Enables all BIG-IP systems in a device group to listen for and process traffic
+        on the same virtual address.
+      - Spanning for a virtual address occurs when you enable the C(spanning) option on a
+        device and then sync the virtual address to the other members of the device group.
+      - Spanning also relies on the upstream router to distribute application flows to the
+        BIG-IP systems using ECMP routes. ECMP defines a route to the virtual address using
+        distinct Floating self-IP addresses configured on each BIG-IP system.
+      - You must also configure MAC masquerade addresses and disable C(arp) on the virtual
+        address when Spanning is enabled.
+      - When creating a new virtual address, if this parameter is not specified, the default
+        valus is C(no).
+    version_added: 2.7
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -210,11 +237,11 @@ netmask:
   returned: created
   type: int
   sample: 2345
-arp_state:
+arp:
   description: The new way the virtual address handles ARP requests.
   returned: changed
-  type: string
-  sample: disabled
+  type: bool
+  sample: yes
 address:
   description: The address of the virtual address.
   returned: created
@@ -225,12 +252,18 @@ state:
   returned: changed
   type: string
   sample: disabled
+spanning:
+  description: Whether spanning is enabled or not
+  returned: changed
+  type: string
+  sample: disabled
 '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
+from ansible.module_utils.parsing.convert_bool import BOOLEANS
 from distutils.version import LooseVersion
 
 try:
@@ -241,7 +274,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
-    from library.module_utils.network.f5.common import is_valid_ip
+    from library.module_utils.network.f5.ipaddress import is_valid_ip
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -254,7 +287,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import is_valid_ip
+    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -269,23 +302,47 @@ class Parameters(AnsibleF5Parameters):
         'connectionLimit': 'connection_limit',
         'serverScope': 'availability_calculation',
         'mask': 'netmask',
-        'arp': 'arp_state',
         'trafficGroup': 'traffic_group',
     }
 
     updatables = [
-        'route_advertisement_type', 'auto_delete', 'icmp_echo', 'connection_limit',
-        'arp_state', 'enabled', 'availability_calculation', 'traffic_group'
+        'route_advertisement_type',
+        'auto_delete',
+        'icmp_echo',
+        'connection_limit',
+        'arp',
+        'enabled',
+        'availability_calculation',
+        'traffic_group',
+        'spanning',
     ]
 
     returnables = [
-        'route_advertisement_type', 'auto_delete', 'icmp_echo', 'connection_limit',
-        'netmask', 'arp_state', 'address', 'state', 'traffic_group', 'route_domain'
+        'route_advertisement_type',
+        'auto_delete',
+        'icmp_echo',
+        'connection_limit',
+        'netmask',
+        'arp',
+        'address',
+        'state',
+        'traffic_group',
+        'route_domain',
+        'spanning',
     ]
 
     api_attributes = [
-        'routeAdvertisement', 'autoDelete', 'icmpEcho', 'connectionLimit',
-        'advertiseRoute', 'arp', 'mask', 'enabled', 'serverScope', 'trafficGroup'
+        'routeAdvertisement',
+        'autoDelete',
+        'icmpEcho',
+        'connectionLimit',
+        'advertiseRoute',
+        'arp',
+        'mask',
+        'enabled',
+        'serverScope',
+        'trafficGroup',
+        'spanning',
     ]
 
     @property
@@ -404,10 +461,34 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def arp(self):
+        if self._values['arp'] is None:
+            return None
+        elif self._values['arp'] == 'enabled':
+            return True
+        return False
+
+    @property
+    def spanning(self):
+        if self._values['spanning'] is None:
+            return None
+        if self._values['spanning'] == 'enabled':
+            return True
+        return False
 
 
 class ModuleParameters(Parameters):
+    @property
+    def arp(self):
+        if self._values['arp'] is None:
+            if self.arp_state and self.arp_state == 'enabled':
+                return True
+            elif self.arp_state and self.arp_state == 'disabled':
+                return False
+        else:
+            return self._values['arp']
+
     @property
     def address(self):
         if self._values['address'] is None:
@@ -468,9 +549,31 @@ class UsableChanges(Changes):
         result = "{0}%{1}".format(self._values['address'], self._values['route_domain'])
         return result
 
+    @property
+    def arp(self):
+        if self._values['arp'] is None:
+            return None
+        elif self._values['arp'] is True:
+            return 'enabled'
+        elif self._values['arp'] is False:
+            return 'disabled'
+
+    @property
+    def spanning(self):
+        if self._values['spanning'] is None:
+            return None
+        if self._values['spanning']:
+            return 'enabled'
+        return 'disabled'
+
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def arp(self):
+        if self._values['arp'] == 'disabled':
+            return 'no'
+        elif self._values['arp'] == 'enabled':
+            return 'yes'
 
 
 class Difference(object):
@@ -498,6 +601,20 @@ class Difference(object):
     def traffic_group(self):
         if self.want.traffic_group != self.have.traffic_group:
             return self.want.traffic_group
+
+    @property
+    def spanning(self):
+        if self.want.spanning is None:
+            return None
+        if self.want.spanning != self.have.spanning:
+            return self.want.spanning
+
+    @property
+    def arp_state(self):
+        if self.want.arp_state is None:
+            return None
+        if self.want.arp_state != self.have.arp_state:
+            return self.want.arp_state
 
 
 class ModuleManager(object):
@@ -606,6 +723,11 @@ class ModuleManager(object):
                     "The address cannot be changed. Delete and recreate "
                     "the virtual address if you need to do this."
                 )
+        if self.changes.arp and self.changes.spanning:
+            raise F5ModuleError(
+                "'arp' and 'spanning' cannot both be enabled on virtual address."
+            )
+
         if not self.should_update():
             return False
         if self.module.check_mode:
@@ -625,8 +747,18 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+
         if self.want.traffic_group is None:
             self.want.update({'traffic_group': '/Common/traffic-group-1'})
+        if self.want.arp is None:
+            self.want.update({'arp': True})
+        if self.want.spanning is None:
+            self.want.update({'spanning': False})
+
+        if self.want.arp and self.want.spanning:
+            raise F5ModuleError(
+                "'arp' and 'spanning' cannot both be enabled on virtual address."
+            )
         if self.module.check_mode:
             return True
         self.create_on_device()
@@ -679,12 +811,8 @@ class ArgumentSpec(object):
             connection_limit=dict(
                 type='int'
             ),
-            arp_state=dict(
-                choices=['enabled', 'disabled'],
-            ),
-            auto_delete=dict(
-                choices=['enabled', 'disabled'],
-            ),
+
+            auto_delete=dict(),
             icmp_echo=dict(
                 choices=['enabled', 'disabled', 'selective'],
             ),
@@ -692,6 +820,15 @@ class ArgumentSpec(object):
                 choices=['always', 'when_all_available', 'when_any_available'],
                 aliases=['advertise_route']
             ),
+            traffic_group=dict(),
+            partition=dict(
+                default='Common',
+                fallback=(env_fallback, ['F5_PARTITION'])
+            ),
+            route_domain=dict(),
+            spanning=dict(type='bool'),
+
+            # Deprecated pair - route advertisement
             use_route_advertisement=dict(
                 type='bool',
                 removed_in_version=2.9,
@@ -706,12 +843,13 @@ class ArgumentSpec(object):
                     'all',
                 ]
             ),
-            traffic_group=dict(),
-            partition=dict(
-                default='Common',
-                fallback=(env_fallback, ['F5_PARTITION'])
+
+            # Deprecated pair - ARP
+            arp_state=dict(
+                choices=['enabled', 'disabled'],
+                removed_in_version=2.11,
             ),
-            route_domain=dict()
+            arp=dict(type='bool'),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
@@ -720,7 +858,8 @@ class ArgumentSpec(object):
             ['name', 'address']
         ]
         self.mutually_exclusive = [
-            ['use_route_advertisement', 'route_advertisement']
+            ['use_route_advertisement', 'route_advertisement'],
+            ['arp_state', 'arp']
         ]
 
 
