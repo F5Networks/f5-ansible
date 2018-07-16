@@ -21,11 +21,11 @@ from ansible.compat.tests.mock import patch
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_sys_auth import TacacsApiParameters
-    from library.modules.bigip_sys_auth import TacacsModuleParameters
-    from library.modules.bigip_sys_auth import TacacsManager
-    from library.modules.bigip_sys_auth import ModuleManager
-    from library.modules.bigip_sys_auth import ArgumentSpec
+    from library.modules.bigip_device_auth import TacacsApiParameters
+    from library.modules.bigip_device_auth import TacacsModuleParameters
+    from library.modules.bigip_device_auth import TacacsManager
+    from library.modules.bigip_device_auth import ModuleManager
+    from library.modules.bigip_device_auth import ArgumentSpec
     from library.module_utils.network.f5.common import F5ModuleError
     from test.unit.modules.utils import set_module_args
 except ImportError:
