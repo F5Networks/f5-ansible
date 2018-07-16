@@ -1,0 +1,72 @@
+---
+
+- name: Issue 00797 - Add virtual address with spanning
+  bigip_virtual_address:
+    address: "{{ va_address }}"
+    arp: no
+    spanning: yes
+  register: result
+
+- name: Issue 00797 - Assert Add virtual address with spanning
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00797 - Add virtual address with spanning - Idempotent check
+  bigip_virtual_address:
+    address: "{{ va_address }}"
+    arp: no
+    spanning: yes
+  register: result
+
+- name: Issue 00797 - Assert Add virtual address with spanning - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00797 - Swap spanning and arp settings
+  bigip_virtual_address:
+    address: "{{ va_address }}"
+    arp: yes
+    spanning: no
+  register: result
+
+- name: Issue 00797 - Assert Swap spanning and arp settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00797 - Swap spanning and arp settings - Idempotent check
+  bigip_virtual_address:
+    address: "{{ va_address }}"
+    arp: yes
+    spanning: no
+  register: result
+
+- name: Issue 00797 - Assert Swap spanning and arp settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00797 - Set both spanning and arp - Expected failure
+  bigip_virtual_address:
+    address: "{{ va_address }}"
+    arp: yes
+    spanning: yes
+  register: result
+  failed_when: result is success
+
+- name: Issue 00797 - Set both spanning and arp - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00797 - Remove address
+  bigip_virtual_address:
+    address: "{{ va_address }}"
+    state: absent
