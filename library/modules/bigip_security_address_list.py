@@ -161,6 +161,10 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.compat.ipaddress import ip_address
+    from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.ipaddress import is_valid_ip_interface
+    from library.module_utils.network.f5.ipaddress import is_valid_ip_network
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -173,16 +177,14 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.compat.ipaddress import ip_address
+    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible.module_utils.network.f5.ipaddress import is_valid_ip_interface
+    from ansible.module_utils.network.f5.ipaddress import is_valid_ip_network
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -525,19 +527,12 @@ class ModuleParameters(Parameters):
         if self._values['addresses'] is None:
             return None
         for x in self._values['addresses']:
-            try:
-                netaddr.IPAddress(x)
-            except netaddr.core.AddrFormatError:
+            if is_valid_ip(x) or is_valid_ip_network(x) or is_valid_ip_interface(x):
+                continue
+            else:
                 raise F5ModuleError(
                     "Address {0} must be either an IPv4 or IPv6 address or network.".format(x)
                 )
-            except ValueError:
-                try:
-                    netaddr.IPNetwork(x)
-                except netaddr.core.AddrFormatError:
-                    raise F5ModuleError(
-                        "Address {0} must be either an IPv4 or IPv6 address or network.".format(x)
-                    )
         result = [str(x) for x in self._values['addresses']]
         result = sorted(result)
         return result
@@ -552,8 +547,8 @@ class ModuleParameters(Parameters):
             start = start.strip()
             stop = stop.strip()
 
-            start = netaddr.IPAddress(start)
-            stop = netaddr.IPAddress(stop)
+            start = ip_address(start)
+            stop = ip_address(stop)
             if start.version != stop.version:
                 raise F5ModuleError(
                     "When specifying a range, IP addresses must be of the same type; IPv4 or IPv6."
@@ -638,8 +633,8 @@ class ReportableChanges(Changes):
             start = start.strip()
             stop = stop.strip()
 
-            start = netaddr.IPAddress(start)
-            stop = netaddr.IPAddress(stop)
+            start = ip_address(start)
+            stop = ip_address(stop)
             if start.version != stop.version:
                 raise F5ModuleError(
                     "When specifying a range, IP addresses must be of the same type; IPv4 or IPv6."
@@ -924,8 +919,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
