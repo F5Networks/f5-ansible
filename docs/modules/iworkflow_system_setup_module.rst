@@ -280,7 +280,7 @@ Notes
 -----
 
 .. note::
-    - Required the netaddr Python package on the host. This is as easy as pip install netaddr.
+    - Required the netaddr Python package on the host. This is as easy as ``pip install netaddr``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
