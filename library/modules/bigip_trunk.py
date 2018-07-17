@@ -101,7 +101,7 @@ options:
       - Specifies the ether-type value used for the packets handled on this trunk when
         it is a member in a QinQ vlan.
       - The ether-type can be set to any string containing a valid hexadecimal 16 bits
-        number, or any of the well known ether-types: C(0x8100), C(0x9100), C(0x88a8).
+        number, or any of the well known ether-types; C(0x8100), C(0x9100), C(0x88a8).
       - This parameter is not supported on Virtual Editions.
       - You should always wrap this value in quotes to prevent Ansible from interpreting
         the value as a literal hexadecimal number and converting it to an integer.
