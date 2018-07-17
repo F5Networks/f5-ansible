@@ -8,7 +8,7 @@
 bigip_appsvcs_extension - Manage application service deployments
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -51,6 +51,22 @@ Parameters
                                                     <div>This parameter is most often used along with the <code>file</code> or <code>template</code> lookup plugins. Refer to the examples section for correct usage.</div>
                                                     <div>For anything advanced or with formatting consider using the <code>template</code> lookup.</div>
                                                     <div>This can additionally be used for specifying application service configurations directly in YAML, however that is not an encouraged practice and, if used at all, should only be used for the absolute smallest of configurations to prevent your Playbooks from becoming too large.</div>
+                                                    <div>If you <code>content</code> includes encrypted values (such as ciphertexts, passphrases, etc), the returned <code>changed</code> value will always be true.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>force</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Force updates a declaration.</div>
+                                                    <div>This parameter should be used in cases where your declaration includes items that are encrypted or in cases (such as WAF Policies) where you want a large reload to take place.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -312,6 +328,34 @@ Examples
 
 
 
+
+Return Values
+-------------
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=0 cellpadding=0 class="documentation-table">
+                                                        <tr>
+            <th colspan="1">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
+        </tr>
+                    <tr>
+                                <td colspan="1">
+                    <b>action</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The action performed.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">deploy</div>
+                                    </td>
+            </tr>
+                        </table>
+    <br/><br/>
 
 
 Status

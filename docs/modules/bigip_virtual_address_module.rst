@@ -54,7 +54,7 @@ Parameters
                                 <tr>
                                                                 <td colspan="2">
                     <b>arp</b>
-                                                        </td>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
                                 <td>
                                                                                                                                                                         <ul><b>Choices:</b>
                                                                                                                                                                 <li>no</li>
@@ -66,6 +66,7 @@ Parameters
                                                     <div>When <code>no</code>, specifies that the system does not accept ARP requests.</div>
                                                     <div>When <code>yes</code>, then the packets are dropped.</div>
                                                     <div>Note that both ARP and ICMP Echo must be disabled in order for forwarding virtual servers using that virtual address to forward ICMP packets.</div>
+                                                    <div>When creating a new virtual address, if this parameter is not specified, the default value is <code>yes</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -81,6 +82,7 @@ Parameters
                                                                 <td>
                                                                         <div>Specifies whether the system accepts ARP requests. When (disabled), specifies that the system does not accept ARP requests. Note that both ARP and ICMP Echo must be disabled in order for forwarding virtual servers using that virtual address to forward ICMP packets. If (enabled), then the packets are dropped.</div>
                                                     <div>Deprecated. Use the <code>arp</code> parameter instead.</div>
+                                                    <div>When creating a new virtual address, if this parameter is not specified, the default value is <code>enabled</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -360,7 +362,7 @@ Parameters
                                 <tr>
                                                                 <td colspan="2">
                     <b>spanning</b>
-                                                        </td>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
@@ -368,6 +370,7 @@ Parameters
                                                     <div>Spanning for a virtual address occurs when you enable the <code>spanning</code> option on a device and then sync the virtual address to the other members of the device group.</div>
                                                     <div>Spanning also relies on the upstream router to distribute application flows to the BIG-IP systems using ECMP routes. ECMP defines a route to the virtual address using distinct Floating self-IP addresses configured on each BIG-IP system.</div>
                                                     <div>You must also configure MAC masquerade addresses and disable <code>arp</code> on the virtual address when Spanning is enabled.</div>
+                                                    <div>When creating a new virtual address, if this parameter is not specified, the default valus is <code>no</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>

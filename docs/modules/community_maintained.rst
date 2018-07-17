@@ -11,6 +11,7 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_config_module`
   * :ref:`bigip_configsync_action_module`
   * :ref:`bigip_data_group_module`
+  * :ref:`bigip_device_auth_module`
   * :ref:`bigip_device_connectivity_module`
   * :ref:`bigip_device_dns_module`
   * :ref:`bigip_device_facts_module`

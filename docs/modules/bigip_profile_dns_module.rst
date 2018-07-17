@@ -35,7 +35,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -364,6 +364,29 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>unhandled_query_action</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>allow</li>
+                                                                                                                                                                                                <li>drop</li>
+                                                                                                                                                                                                <li>reject</li>
+                                                                                                                                                                                                <li>hint</li>
+                                                                                                                                                                                                <li>no-error</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the action to take when a query does not match a Wide IP or a DNS Express Zone.</div>
+                                                    <div>When <code>allow</code>, the BIG-IP system forwards queries to a DNS server or pool member. If a pool is not associated with a listener and the Use BIND Server on BIG-IP setting is set to Enabled, requests are forwarded to the local BIND server.</div>
+                                                    <div>When <code>drop</code>, the BIG-IP system does not respond to the query.</div>
+                                                    <div>When <code>reject</code>, the BIG-IP system returns the query with the REFUSED return code.</div>
+                                                    <div>When <code>hint</code>, the BIG-IP system returns the query with a list of root name servers.</div>
+                                                    <div>When <code>no-error</code>, the BIG-IP system returns the query with the NOERROR return code.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>use_local_bind</b>
                                                         </td>
                                 <td>
@@ -448,7 +471,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -547,6 +570,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>unhandled_query_action</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>What to do with unhandled queries</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">allow</div>
                                     </td>
             </tr>
                                 <tr>

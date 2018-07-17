@@ -35,7 +35,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -289,6 +289,19 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>qinq_ethertype</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the ether-type value used for the packets handled on this trunk when it is a member in a QinQ vlan.</div>
+                                                    <div>The ether-type can be set to any string containing a valid hexadecimal 16 bits number, or any of the well known ether-types; <code>0x8100</code>, <code>0x9100</code>, <code>0x88a8</code>.</div>
+                                                    <div>This parameter is not supported on Virtual Editions.</div>
+                                                    <div>You should always wrap this value in quotes to prevent Ansible from interpreting the value as a literal hexadecimal number and converting it to an integer.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -370,13 +383,21 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Create a trunk on hardware
       bigip_trunk:
-        name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        name: trunk1
+        interfaces:
+          - 1.1
+          - 1.2
+        link_selection_policy: maximum-bandwidth
+        frame_distribution_hash: destination-mac
+        lacp_enabled: yes
+        lacp_mode: passive
+        lacp_timeout: short
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -389,19 +410,58 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
+                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>param1</b>
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Description of the trunk.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My trunk</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>frame_distribution_hash</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Hash that the system uses as the frame distribution algorithm.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">src-dst-ipport</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>interfaces</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Interfaces that are part of the trunk.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;int1&#x27;, &#x27;int2&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>lacp_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param1 value of the resource.</div>
+                                            <div>Whether the system supports the link aggregation control protocol (LACP) or not.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -409,15 +469,54 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>param2</b>
+                    <b>lacp_mode</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param2 value of the resource.</div>
+                                            <div>Operation mode for LACP if the lacp option is enabled for the trunk.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">active</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>lacp_timeout</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Rate at which the system sends the LACP control packets.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">long</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>link_selection_policy</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>LACP policy that the trunk uses to determine which member link (interface) can handle new traffic.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">auto</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>qinq_ethertype</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Ether-type value used for the packets handled on this trunk when it is a member in a QinQ vlan.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">37120</div>
                                     </td>
             </tr>
                         </table>
