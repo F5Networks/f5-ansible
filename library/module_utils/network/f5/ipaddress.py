@@ -6,6 +6,26 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+from ansible.module_utils.network.common.utils import validate_ip_address
+from ansible.module_utils.network.common.utils import validate_ip_v6_address
+
+try:
+    from library.module_utils.compat.ipaddress import ip_interface
+    from library.module_utils.compat.ipaddress import ip_network
+except ImportError:
+    from ansible.module_utils.compat.ipaddress import ip_interface
+    from ansible.module_utils.compat.ipaddress import ip_network
+
+
+def is_valid_ip(addr, type='all'):
+    if type in ['all', 'ipv4']:
+        if validate_ip_address(addr):
+            return True
+    if type in ['all', 'ipv6']:
+        if validate_ip_v6_address(addr):
+            return True
+    return False
+
 
 def ipv6_netmask_to_cidr(mask):
     """converts an IPv6 netmask to CIDR form
@@ -39,3 +59,19 @@ def ipv6_netmask_to_cidr(mask):
         return count
     except:
         return -1
+
+
+def is_valid_ip_network(address):
+    try:
+        ip_network(address)
+        return True
+    except ValueError:
+        return False
+
+
+def is_valid_ip_interface(address):
+    try:
+        ip_interface(address)
+        return True
+    except ValueError:
+        return False

@@ -325,13 +325,16 @@ def debug_prepared_request(url, method, headers, data=None):
 def download_file(client, url, dest):
     """Download a file from the remote device
 
-    This method handles chunking needed to download a file from
+    This method handles the chunking needed to download a file from
     a given URL on the BIG-IP.
 
-    :param client:
-    :param url:
-    :param dest:
-    :return:
+    Arguments:
+        client (object): The F5RestClient connection object.
+        url (string): The URL to download.
+        dest (string): The location on (Ansible controller) disk to store the file.
+
+    Returns:
+        bool: True on success. False otherwise.
     """
     with open(dest, 'wb') as fileobj:
         chunk_size = 512 * 1024
@@ -379,3 +382,90 @@ def download_file(client, url, dest):
                 end = size
             else:
                 end = start + chunk_size - 1
+    return True
+
+
+def upload_file(client, url, dest):
+    """Upload a file to an arbitrary URL.
+
+    Arguments:
+        client (object): The F5RestClient connection object.
+        url (string): The URL to upload a file to.
+        dest (string): The file to be uploaded.
+
+    Returns:
+        bool: True on success. False otherwise.
+
+    Raises:
+        F5ModuleError: Raised if ``retries`` limit is exceeded.
+    """
+    with open(dest, 'rb') as fileobj:
+        size = os.stat(dest).st_size
+
+        # This appears to be the largest chunk size that iControlREST can handle.
+        #
+        # The trade-off you are making by choosing a chunk size is speed, over size of
+        # transmission. A lower chunk size will be slower because a smaller amount of
+        # data is read from disk and sent via HTTP. Lots of disk reads are slower and
+        # There is overhead in sending the request to the BIG-IP.
+        #
+        # Larger chunk sizes are faster because more data is read from disk in one
+        # go, and therefore more data is transmitted to the BIG-IP in one HTTP request.
+        #
+        # If you are transmitting over a slow link though, it may be more reliable to
+        # transmit many small chunks that fewer large chunks. It will clearly take
+        # longer, but it may be more robust.
+        chunk_size = 1024 * 7168
+        start = 0
+        retries = 0
+        basename = os.path.basename(dest)
+        url = '{0}/{1}'.format(url.rstrip('/'), basename)
+
+        while True:
+            if retries == 3:
+                # Retries are used here to allow the REST API to recover if you kill
+                # an upload mid-transfer.
+                #
+                # There exists a case where retrying a new upload will result in the
+                # API returning the POSTed payload (in bytes) with a non-200 response
+                # code.
+                #
+                # Retrying (after seeking back to 0) seems to resolve this problem.
+                raise F5ModuleError(
+                    "Failed to upload file too many times."
+                )
+            try:
+                file_slice = fileobj.read(chunk_size)
+                if not file_slice:
+                    break
+
+                current_bytes = len(file_slice)
+                if current_bytes < chunk_size:
+                    end = size
+                else:
+                    end = start + current_bytes
+                headers = {
+                    'Content-Range': '%s-%s/%s' % (start, end - 1, size),
+                    'Content-Type': 'application/octet-stream'
+                }
+
+                # Data should always be sent using the ``data`` keyword and not the
+                # ``json`` keyword. This allows bytes to be sent (such as in the case
+                # of uploading ISO files.
+                response = client.api.post(url, headers=headers, data=file_slice)
+
+                if response.status != 200:
+                    # When this fails, the output is usually the body of whatever you
+                    # POSTed. This is almost always unreadable because it is a series
+                    # of bytes.
+                    #
+                    # Therefore, including an empty exception here.
+                    raise F5ModuleError()
+                start += current_bytes
+            except F5ModuleError:
+                # You must seek back to the beginning of the file upon exception.
+                #
+                # If this is not done, then you risk uploading a partial file.
+                fileobj.seek(0)
+                retries += 1
+    return True
