@@ -7,6 +7,9 @@ pool_description: this is my pool
 pool_lb_method: round-robin
 pool_name: pool1
 
+# Used for vCMP tests
+initial_image: "{{ role_path }}/files/BIGIP-13.1.0.8-0.0.3.iso"
+
 valid_includes:
   - provision-info
 #  - "address_class"
