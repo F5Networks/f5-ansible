@@ -53,6 +53,7 @@ options:
       - system-info
       - traffic-groups
       - trunks
+      - vcmp-guests
       - virtual-addresses
       - virtual-servers
       - vlans
@@ -2770,6 +2771,117 @@ trunks:
       returned: changed
       type: int
       sample: 1
+vcmp_guests:
+  description: vCMP related facts.
+  returned: When C(vcmp-guests) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: guest1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: guest1
+    allowed_slots:
+      description:
+        - List of slots that the guest is allowed to be assigned to.
+      returned: changed
+      type: list
+      sample: [0, 1, 3]
+    assigned_slots:
+      description:
+        - Slots that the guest is assigned to.
+      returned: changed
+      type: list
+      sample: [0]
+    boot_priority:
+      description:
+        - Specifies boot priority of the guest. Lower number means earlier to boot.
+      returned: changed
+      type: int
+      sample: 65535
+    cores_per_slot:
+      description:
+        - Number of cores that the system allocates to the guest.
+      returned: changed
+      type: int
+      sample: 2
+    hostname:
+      description:
+        - FQDN assigned to the guest.
+      returned: changed
+      type: string
+      sample: guest1.localdomain
+    hotfix_image:
+      description:
+        - hotfix image to install onto any of this guest's newly created virtual disks.
+      returned: changed
+      type: string
+      sample: Hotfix-BIGIP-12.1.3.4-0.0.2-hf1.iso
+    initial_image:
+      description:
+        - Software image to install onto any of this guest's newly created virtual disks.
+      returned: changed
+      type: string
+      sample: BIGIP-12.1.3.4-0.0.2.iso
+    mgmt_route:
+      description:
+        - Management gateway IP address for the guest.
+      returned: changed
+      type: string
+      sample: 2.2.2.1
+    mgmt_address:
+      description:
+        - Management IP address configuration for the guest.
+      returned: changed
+      type: string
+      sample: 2.3.2.3
+    mgmt_network:
+      description:
+        - Accessibility of this vCMP guest's management network.
+      returned: changed
+      type: string
+      sample: bridged
+    min_number_of_slots:
+      description:
+        - Specifies the minimum number of slots that the guest must be assigned to.
+      returned: changed
+      type: int
+      sample: 2
+    number_of_slots:
+      description:
+        - Specifies the number of slots the guest should be assigned to.
+        - This number is always greater than, or equal to, C(min_number_of_slots).
+      returned: changed
+      type: int
+      sample: 2
+    ssl_mode:
+      description:
+        - The SSL hardware allocation mode for the guest.
+      returned: changed
+      type: string
+      sample: shared
+    state:
+      description:
+        - Specifies the state of the guest.
+        - May be one of C(configured), C(provisioned), or C(deployed).
+        - Each state implies the actions of all states before it.
+      returned: changed
+      type: string
+      sample: provisioned
+    virtual_disk:
+      description:
+        - The filename of the virtual disk to use for this guest.
+      returned: changed
+      type: string
+      sample: guest1.img
+  sample: hash/dictionary of values 
 virtual_addresses:
   description: Virtual address related facts.
   returned: When C(virtual-addresses) is specified in C(gather_subset).
@@ -2869,6 +2981,7 @@ virtual_addresses:
       returned: changed
       type: bool
       sample: no
+  sample: hash/dictionary of values
 virtual_servers:
   description: Virtual address related facts.
   returned: When C(virtual-addresses) is specified in C(gather_subset).
@@ -6065,11 +6178,15 @@ class SystemInfoParameters(BaseParameters):
     def chassis_serial(self):
         if self._values['system-info'] is None:
             return None
+        if 'bigipChassisSerialNum' not in self._values['system-info'][0]:
+            return None
         return self._values['system-info'][0]['bigipChassisSerialNum']
 
     @property
     def switch_board_serial(self):
         if self._values['system-info'] is None:
+            return None
+        if 'switchBoardSerialNum' not in self._values['system-info'][0]:
             return None
         if self._values['system-info'][0]['switchBoardSerialNum'].strip() == '':
             return None
@@ -6078,6 +6195,8 @@ class SystemInfoParameters(BaseParameters):
     @property
     def switch_board_part_revision(self):
         if self._values['system-info'] is None:
+            return None
+        if 'switchBoardPartRevNum' not in self._values['system-info'][0]:
             return None
         if self._values['system-info'][0]['switchBoardPartRevNum'].strip() == '':
             return None
@@ -6093,6 +6212,8 @@ class SystemInfoParameters(BaseParameters):
     def host_board_serial(self):
         if self._values['system-info'] is None:
             return None
+        if 'hostBoardSerialNum' not in self._values['system-info'][0]:
+            return None
         if self._values['system-info'][0]['hostBoardSerialNum'].strip() == '':
             return None
         return self._values['system-info'][0]['hostBoardSerialNum']
@@ -6100,6 +6221,8 @@ class SystemInfoParameters(BaseParameters):
     @property
     def host_board_part_revision(self):
         if self._values['system-info'] is None:
+            return None
+        if 'hostBoardPartRevNum' not in self._values['system-info'][0]:
             return None
         if self._values['system-info'][0]['hostBoardPartRevNum'].strip() == '':
             return None
@@ -6646,6 +6769,93 @@ class TrunksFactManager(BaseManager):
 
     def read_collection_from_device(self):
         result = self.client.api.tm.net.trunks.get_collection()
+        return result
+
+
+class VcmpGuestsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'allowedSlots': 'allowed_slots',
+        'assignedSlots': 'assigned_slots',
+        'bootPriority': 'boot_priority',
+        'coresPerSlot': 'cores_per_slot',
+        'initialImage': 'initial_image',
+        'initialHotfix': 'hotfix_image',
+        'managementGw': 'mgmt_route',
+        'managementIp': 'mgmt_address',
+        'managementNetwork': 'mgmt_network',
+        'minSlots': 'min_number_of_slots',
+        'slots': 'number_of_slots',
+        'sslMode': 'ssl_mode',
+        'virtualDisk': 'virtual_disk'
+    }
+
+    returnables = [
+        'name',
+        'full_path',
+        'allowed_slots',
+        'assigned_slots',
+        'boot_priority',
+        'cores_per_slot',
+        'hostname',
+        'hotfix_image',
+        'initial_image',
+        'mgmt_route',
+        'mgmt_address',
+        'mgmt_network',
+        'min_number_of_slots',
+        'number_of_slots',
+        'ssl_mode',
+        'state',
+        'virtual_disk',
+    ]
+
+
+class VcmpGuestsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(VcmpGuestsFactManager, self).__init__(**kwargs)
+        self.want = VcmpGuestsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(vcmp_guests=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = VcmpGuestsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/vcmp/guest".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -7443,6 +7653,10 @@ class ModuleManager(object):
             ),
             'trunks': dict(
                 manager=TrunksFactManager
+            ),
+            'vcmp-guests': dict(
+                manager=VcmpGuestsFactManager,
+                client=F5RestClient
             ),
             'virtual-addresses': dict(
                 manager=VirtualAddressesFactManager

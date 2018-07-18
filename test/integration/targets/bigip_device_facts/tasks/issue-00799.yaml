@@ -1,0 +1,49 @@
+---
+
+- name: Issue 00799 - Collect BIG-IP facts
+  bigip_device_facts:
+    include:
+      - system-info
+  register: info
+
+- block:
+    - name: Issue 00799 - Provision vCMP
+      bigip_provision:
+        module: vcmp
+        level: dedicated
+
+    - name: Issue 00799 - Upload initial image to be used
+      bigip_software_image:
+        image: "{{ initial_image }}"
+
+    - name: Issue 00799 - Create a deployed vCMP guest
+      bigip_vcmp_guest:
+        name: guest1
+        mgmt_network: bridged
+        mgmt_address: 10.10.10.10/24
+        initial_image: "{{ initial_image|basename }}"
+
+    - name: Issue 00799 - Select vcmp-guest facts
+      bigip_device_facts:
+        include:
+          - vcmp-guests
+      register: result
+
+    - name: Issue 00799 - Assert Select vcmp-guest facts
+      assert:
+        that:
+          - result is success
+          - result.vcmp_guests | selectattr("name", "match", "guest1") | map(attribute='hostname') | first == "guest1.localdomain"
+          - result.vcmp_guests | json_query("[?name=='guest1'].hostname") | first == "guest1.localdomain"
+
+    - name: Issue 00799 - Remove deployed vCMP guest
+      bigip_vcmp_guest:
+        name: guest1
+        state: absent
+        delete_virtual_disk: yes
+
+    - name: Issue 00799 - Deprovision vCMP
+      bigip_provision:
+        module: vcmp
+        state: absent
+  when: "'Virtual Edition' not in info.system_info.marketing_name"
