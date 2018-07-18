@@ -1,0 +1,68 @@
+---
+
+# This functionality is only available on bladed platforms, however the
+# configuration for it is available on all platforms. Therefore, its safe
+# to test on VEs even if it isn't actually activating code paths on the box
+
+- name: Issue 00801 - Set cluster mirroring with other config
+  bigip_device_connectivity:
+    failover_multicast: yes
+    multicast_interface: eth0
+    multicast_address: 224.0.0.245
+    multicast_port: 62960
+    cluster_mirroring: between-clusters
+  register: result
+
+- name: Issue 00801 - Assert Set cluster mirroring with other config
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00801 - Set cluster mirroring with other config - Idempotent check
+  bigip_device_connectivity:
+    failover_multicast: yes
+    multicast_interface: eth0
+    multicast_address: 224.0.0.245
+    multicast_port: 62960
+    cluster_mirroring: between-clusters
+  register: result
+
+- name: Issue 00801 - Assert Set cluster mirroring with other config - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00801 - Set same cluster mirroring without other config
+  bigip_device_connectivity:
+    cluster_mirroring: between-clusters
+  register: result
+
+- name: Issue 00801 - Assert Set same cluster mirroring without other config
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00801 - Set cluster mirroring without other config
+  bigip_device_connectivity:
+    cluster_mirroring: within-cluster
+  register: result
+
+- name: Issue 00801 - Assert Set cluster mirroring without other config
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00801 - Set cluster mirroring without other config - Idempotent check
+  bigip_device_connectivity:
+    cluster_mirroring: within-cluster
+  register: result
+
+- name: Issue 00801 - Assert Set cluster mirroring without other config - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
