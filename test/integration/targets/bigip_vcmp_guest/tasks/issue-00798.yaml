@@ -1,0 +1,94 @@
+---
+
+- name: Issue 00798 - Include issue variables
+  include_vars:
+    file: issue-00457.yaml
+
+- name: Issue 00798 - Provision vCMP
+  bigip_provision:
+    module: vcmp
+    level: dedicated
+
+- name: Issue 00798 - Upload initial image to be used
+  bigip_software:
+    base_image: "{{ initial_image }}"
+    state: present
+
+- name: Issue 00798 - Create a deployed vCMP guest, 1 core
+  bigip_vcmp_guest:
+    name: guest1
+    mgmt_network: bridged
+    mgmt_address: 10.10.10.10/24
+    initial_image: "{{ initial_image|basename }}"
+    cores_per_slot: 1
+  register: result
+
+- name: Issue 00798 - Assert Create a deployed vCMP guest, 1 core
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00798 - Create a deployed vCMP guest, 1 core - Idempotent check
+  bigip_vcmp_guest:
+    name: guest1
+    mgmt_network: bridged
+    mgmt_address: 10.10.10.10/24
+    initial_image: "{{ initial_image|basename }}"
+    cores_per_slot: 1
+  register: result
+
+- name: Issue 00798 - Assert Create a deployed vCMP guest, 1 core - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00798 - Remove deployed vCMP guest, 1 core
+  bigip_vcmp_guest:
+    name: guest1
+    state: absent
+    delete_virtual_disk: yes
+  register: result
+
+- name: Issue 00798 - Create a deployed vCMP guest, 2 cores
+  bigip_vcmp_guest:
+    name: guest1
+    mgmt_network: bridged
+    mgmt_address: 10.10.10.10/24
+    initial_image: "{{ initial_image|basename }}"
+    cores_per_slot: 2
+  register: result
+
+- name: Issue 00798 - Assert Create a deployed vCMP guest, 2 cores
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00798 - Create a deployed vCMP guest, 2 cores - Idempotent check
+  bigip_vcmp_guest:
+    name: guest1
+    mgmt_network: bridged
+    mgmt_address: 10.10.10.10/24
+    initial_image: "{{ initial_image|basename }}"
+    cores_per_slot: 2
+  register: result
+
+- name: Issue 00798 - Assert Create a deployed vCMP guest, 2 cores - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00798 - Remove deployed vCMP guest, 2 cores
+  bigip_vcmp_guest:
+    name: guest1
+    state: absent
+    delete_virtual_disk: yes
+  register: result
+
+- name: Issue 00798 - Deprovision vCMP
+  bigip_provision:
+    module: vcmp
+    state: absent

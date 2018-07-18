@@ -1,5 +1,17 @@
 ---
 
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include:
+      - system-info
+  register: result
+  tags:
+    - issue-00798
+
+- name: End play if on VE
+  meta: end_play
+  when: "'Virtual Edition' in result.system_info.marketing_name"
+
 - import_tasks: setup.yaml
 
 - name: Create a deployed vCMP guest
@@ -159,3 +171,6 @@
 
 - import_tasks: issue-00457.yaml
   tags: issue-00457
+
+- import_tasks: issue-00798.yaml
+  tags: issue-00798
