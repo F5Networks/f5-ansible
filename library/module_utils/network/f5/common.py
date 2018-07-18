@@ -14,8 +14,6 @@ from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.connection import exec_command
 from ansible.module_utils.network.common.utils import to_list
 from ansible.module_utils.network.common.utils import ComplexList
-from ansible.module_utils.network.common.utils import validate_ip_address
-from ansible.module_utils.network.common.utils import validate_ip_v6_address
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
@@ -367,16 +365,6 @@ def compare_dictionary(want, have):
 def is_ansible_debug(module):
     if module._debug and module._verbosity >= 4:
         return True
-    return False
-
-
-def is_valid_ip(addr, type='all'):
-    if type in ['all', 'ipv4']:
-        if validate_ip_address(addr):
-            return True
-    if type in ['all', 'ipv6']:
-        if validate_ip_v6_address(addr):
-            return True
     return False
 
 
