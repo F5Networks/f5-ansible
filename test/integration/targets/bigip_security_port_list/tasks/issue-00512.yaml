@@ -3,6 +3,8 @@
 - name: Issue 00512 - Provision AFM
   bigip_provision:
     name: afm
+  tags:
+    - module-provisioning
 
 - name: Issue 00512 - Include issue variables
   include_vars:
@@ -72,3 +74,6 @@
   bigip_provision:
     name: afm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
