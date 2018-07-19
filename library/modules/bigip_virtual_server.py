@@ -331,11 +331,6 @@ options:
       - The C(Log all requests) and C(Log illegal requests) are mutually exclusive and
         therefore, this module will raise an error if the two are specified together.
     version_added: 2.6
-notes:
-  - Requires the netaddr Python package on the host. This is as easy as
-    C(pip install netaddr).
-requirements:
-  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -622,6 +617,7 @@ try:
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.ipaddress import ip_interface
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -635,16 +631,11 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible.module_utils.network.f5.ipaddress import ip_interface
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
         HAS_F5SDK = False
-
-try:
-    import netaddr
-    HAS_NETADDR = True
-except ImportError:
-    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -953,10 +944,10 @@ class ApiParameters(Parameters):
         if self._values['source'] is None:
             return None
         try:
-            addr = netaddr.IPNetwork(self._values['source'])
-            result = '{0}/{1}'.format(str(addr.ip), addr.prefixlen)
+            addr = ip_interface(self._values['source'])
+            result = '{0}/{1}'.format(str(addr.ip), addr.network.prefixlen)
             return result
-        except netaddr.core.AddrFormatError:
+        except ValueError:
             raise F5ModuleError(
                 "The source IP address must be specified in CIDR format: address/prefix"
             )
@@ -1257,10 +1248,10 @@ class ModuleParameters(Parameters):
         if self._values['source'] is None:
             return None
         try:
-            addr = netaddr.IPNetwork(self._values['source'])
-            result = '{0}/{1}'.format(str(addr.ip), addr.prefixlen)
+            addr = ip_interface(self._values['source'])
+            result = '{0}/{1}'.format(str(addr.ip), addr.network.prefixlen)
             return result
-        except netaddr.core.AddrFormatError:
+        except ValueError:
             raise F5ModuleError(
                 "The source IP address must be specified in CIDR format: address/prefix"
             )
@@ -1854,8 +1845,8 @@ class VirtualServerValidator(object):
             F5ModuleError: Raised when the IP versions of source and destination differ.
         """
         if self.want.source and self.want.destination:
-            want = netaddr.IPNetwork(self.want.source)
-            have = netaddr.IPNetwork(self.want.destination_tuple.ip)
+            want = ip_interface(self.want.source)
+            have = ip_interface(self.want.destination_tuple.ip)
             if want.version != have.version:
                 raise F5ModuleError(
                     "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
@@ -2242,8 +2233,8 @@ class Difference(object):
     def source(self):
         if self.want.source is None:
             return None
-        want = netaddr.IPNetwork(self.want.source)
-        have = netaddr.IPNetwork(self.have.destination_tuple.ip)
+        want = ip_interface(self.want.source)
+        have = ip_interface(self.have.destination_tuple.ip)
         if want.version != have.version:
             raise F5ModuleError(
                 "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
@@ -2713,8 +2704,6 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
-    if not HAS_NETADDR:
-        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
