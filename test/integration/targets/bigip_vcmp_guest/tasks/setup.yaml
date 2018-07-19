@@ -4,6 +4,8 @@
   bigip_provision:
     module: vcmp
     level: dedicated
+  tags:
+    - module-provisioning
 
 - name: Upload initial image to be used
   bigip_software:

@@ -8,6 +8,8 @@
   bigip_provision:
     module: vcmp
     level: dedicated
+  tags:
+    - module-provisioning
 
 - name: Issue 00457 - Upload initial image to be used
   bigip_software:
@@ -95,6 +97,9 @@
   bigip_provision:
     module: vcmp
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
 
 #- name: Issue 00457 - Remove uploaded image
 #  bigip_software:
