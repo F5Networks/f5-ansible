@@ -3,4 +3,5 @@
 - name: Provision GTM on the device
   bigip_provision:
     module: gtm
-  register: result
+  tags:
+    - module-provisioning
