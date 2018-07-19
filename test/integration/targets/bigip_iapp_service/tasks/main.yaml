@@ -3,7 +3,8 @@
 - name: Ensure ASM is provisioned
   bigip_provision:
     module: asm
-    state: present
+  tags:
+    - module-provisioning
 
 - name: Create HTTP iApp template
   bigip_iapp_template:
@@ -104,6 +105,14 @@
   assert:
     that:
       - result is not changed
+
+- name: De-provision ASM
+  bigip_provision:
+    module: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
 
 - import_tasks: issue-00089.yaml
   tags: issue-00089
