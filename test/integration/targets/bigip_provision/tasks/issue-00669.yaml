@@ -9,3 +9,13 @@
   bigip_provision:
     module: ltm
     state: absent
+
+- name: De-provision AFM
+  bigip_provision:
+    module: afm
+    state: absent
+
+- name: Re-Provision LTM
+  bigip_provision:
+    module: ltm
+    state: nominal
