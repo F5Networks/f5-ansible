@@ -3,6 +3,8 @@
 - name: Provision GTM on the device
   bigip_provision:
     module: gtm
+  tags:
+    - module-provisioning
 
 - name: Create datacenter
   bigip_gtm_datacenter:
