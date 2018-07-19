@@ -2357,6 +2357,7 @@ ssl_certs:
       returned: changed
       type: string
       sample: "2018-05-15T21:11:15Z"
+  sample: hash/dictionary of values
 ssl_keys:
   description: SSL certificate related facts.
   returned: When C(ssl-certs) is specified in C(gather_subset).
@@ -2448,6 +2449,7 @@ system_db:
       returned: changed
       type: string
       sample: string
+  sample: hash/dictionary of values
 system_info:
   description: Traffic group related facts.
   returned: When C(traffic-groups) is specified in C(gather_subset).
@@ -2615,6 +2617,7 @@ system_info:
         - Time, in seconds, since the system booted.
       type: int
       sample: 603202
+  sample: hash/dictionary of values
 traffic_groups:
   description: Traffic group related facts.
   returned: When C(traffic-groups) is specified in C(gather_subset).
@@ -2679,6 +2682,7 @@ traffic_groups:
       returned: changed
       type: string
       sample: "00:98:76:54:32:10"
+  sample: hash/dictionary of values
 trunks:
   description: Trunk related facts.
   returned: When C(trunks) is specified in C(gather_subset).
@@ -2771,6 +2775,7 @@ trunks:
       returned: changed
       type: int
       sample: 1
+  sample: hash/dictionary of values
 vcmp_guests:
   description: vCMP related facts.
   returned: When C(vcmp-guests) is specified in C(gather_subset).
@@ -2881,7 +2886,7 @@ vcmp_guests:
       returned: changed
       type: string
       sample: guest1.img
-  sample: hash/dictionary of values 
+  sample: hash/dictionary of values
 virtual_addresses:
   description: Virtual address related facts.
   returned: When C(virtual-addresses) is specified in C(gather_subset).
