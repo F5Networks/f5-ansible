@@ -116,7 +116,6 @@
     that:
       - result is not changed
 
-
 - name: Deprovision AFM for testing port-misuse
   bigip_provision:
     module: afm

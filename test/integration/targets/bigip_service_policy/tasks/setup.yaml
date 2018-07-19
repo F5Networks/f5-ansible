@@ -3,6 +3,8 @@
 - name: Provision AFM
   bigip_provision:
     module: afm
+  tags:
+    - module-provisioning
 
 - name: Create policies
   bigip_command:
