@@ -4,3 +4,6 @@
   bigip_provision:
     name: afm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
