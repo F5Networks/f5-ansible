@@ -8,6 +8,8 @@
   bigip_provision:
     module: vcmp
     level: dedicated
+  tags:
+    - module-provisioning
 
 - name: Issue 00798 - Upload initial image to be used
   bigip_software:
@@ -92,3 +94,6 @@
   bigip_provision:
     module: vcmp
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
