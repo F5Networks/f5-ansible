@@ -3,6 +3,8 @@
 - name: Issue 00719 - Provision AFM
   bigip_provision:
     name: afm
+  tags:
+    - module-provisioning
 
 - name: Issue 00719 - Create address lists
   bigip_security_address_list:
@@ -89,3 +91,6 @@
   bigip_provision:
     name: afm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
