@@ -7,6 +7,8 @@
 - name: Provision ASM
   bigip_provision:
     name: asm
+  tags:
+    - module-provisioning
 
 - name: Create ASM policies
   bigip_asm_policy:
@@ -86,3 +88,6 @@
   bigip_provision:
     name: asm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
