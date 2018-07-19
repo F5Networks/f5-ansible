@@ -3,6 +3,8 @@
 - name: Issue 00125 - Provision GTM on the device
   bigip_provision:
     module: gtm
+  tags:
+    - module-provisioning
 
 - name: Issue 00125 - Create GTM pool
   bigip_gtm_pool:
@@ -42,3 +44,6 @@
   bigip_provision:
     module: gtm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

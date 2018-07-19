@@ -4,3 +4,6 @@
   bigip_provision:
     module: gtm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
