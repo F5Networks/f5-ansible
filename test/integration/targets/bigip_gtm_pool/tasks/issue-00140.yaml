@@ -7,6 +7,8 @@
 - name: Issue 00140 - Provision GTM on the device
   bigip_provision:
     module: gtm
+  tags:
+    - module-provisioning
 
 - name: Issue 00140 - Create datacenter
   bigip_gtm_datacenter:
@@ -220,3 +222,6 @@
   bigip_provision:
     module: gtm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

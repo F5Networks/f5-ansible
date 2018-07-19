@@ -8,6 +8,8 @@
 - name: Issue 00375 - Provision GTM on the device
   bigip_provision:
     module: gtm
+  tags:
+    - module-provisioning
 
 - name: Issue 00375 - Remove GTM pool
   bigip_gtm_pool:
@@ -49,3 +51,6 @@
   bigip_provision:
     module: gtm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

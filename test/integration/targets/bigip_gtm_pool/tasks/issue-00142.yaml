@@ -7,6 +7,8 @@
 - name: Issue 00142 - Provision GTM on the device
   bigip_provision:
     module: gtm
+  tags:
+    - module-provisioning
 
 - name: Issue 00142 - Create pool, type 'a'
   bigip_gtm_pool:
@@ -366,3 +368,6 @@
   bigip_provision:
     module: gtm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

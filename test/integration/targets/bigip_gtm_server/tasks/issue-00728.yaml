@@ -3,6 +3,8 @@
 - name: Issue 00728 - Provision GTM
   bigip_provision:
     name: gtm
+  tags:
+    - module-provisioning
 
 - name: Issue 00728 - Create datacenters
   bigip_gtm_datacenter:
@@ -64,3 +66,6 @@
   bigip_provision:
     name: gtm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
