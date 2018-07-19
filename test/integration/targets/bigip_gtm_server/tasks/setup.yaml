@@ -3,6 +3,8 @@
 - name: Provision GTM
   bigip_provision:
     name: gtm
+  tags:
+    - module-provisioning
 
 - name: Create datacenters
   bigip_gtm_datacenter:
