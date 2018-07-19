@@ -14,7 +14,7 @@
 #    base_image: "{{ initial_image }}"
 #    state: absent
 
-- name: Provision vCMP
+- name: De-provision vCMP
   bigip_provision:
     module: vcmp
     state: absent
