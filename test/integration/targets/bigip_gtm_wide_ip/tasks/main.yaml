@@ -3,7 +3,8 @@
 - name: Provision GTM
   bigip_provision:
     module: gtm
-    state: present
+  tags:
+    - module-provisioning
 
 - name: Collect BIG-IP facts
   bigip_facts:
@@ -18,6 +19,9 @@
   bigip_provision:
     module: gtm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
 
 - import_tasks: issue-00124.yaml
   tags: issue-00124

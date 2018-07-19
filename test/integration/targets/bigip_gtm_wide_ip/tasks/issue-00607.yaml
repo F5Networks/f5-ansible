@@ -7,7 +7,8 @@
 - name: Issue 00607 - Provision GTM
   bigip_provision:
     module: gtm
-    state: present
+  tags:
+    - module-provisioning
 
 - name: Issue 00607 - Collect BIG-IP facts
   bigip_facts:
@@ -69,3 +70,6 @@
   bigip_provision:
     module: gtm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
