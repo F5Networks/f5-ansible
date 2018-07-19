@@ -3,6 +3,8 @@
 - name: Issue 00579 - Provision AFM
   bigip_provision:
     module: afm
+  tags:
+    - module-provisioning
 
 - name: Issue 00579 - Add virtual server, valid with mutually exclusive log profiles - Expected failure
   bigip_virtual_server:
@@ -135,3 +137,6 @@
   bigip_provision:
     module: afm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
