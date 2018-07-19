@@ -12,6 +12,8 @@
 - name: Issue 00406 - Provision ASM
   bigip_provision:
     name: asm
+  tags:
+    - module-provisioning
 
 - name: Issue 00406 - Create partition
   bigip_partition:
@@ -698,3 +700,6 @@
   bigip_provision:
     module: asm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

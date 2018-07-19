@@ -12,6 +12,8 @@
 - name: Issue 00406 - Provision ASM
   bigip_provision:
     name: asm
+  tags:
+    - module-provisioning
 
 - name: Issue 00406 - Create ASM policy, compact XML file, legacy
   bigip_asm_policy:
@@ -45,3 +47,6 @@
   bigip_provision:
     name: asm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
