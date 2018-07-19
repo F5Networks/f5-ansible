@@ -3,6 +3,8 @@
 - name: Provision AFM
   bigip_provision:
     name: afm
+  tags:
+    - module-provisioning
 
 - name: Create a simple address list
   bigip_security_address_list:
@@ -65,3 +67,6 @@
   bigip_provision:
     name: afm
     state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

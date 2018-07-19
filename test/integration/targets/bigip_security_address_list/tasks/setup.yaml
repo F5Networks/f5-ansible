@@ -3,6 +3,8 @@
 - name: Provision AFM
   bigip_provision:
     name: afm
+  tags:
+    - module-provisioning
 
 - name: Create DNS resolver
   bigip_command:
