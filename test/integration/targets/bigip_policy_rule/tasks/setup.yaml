@@ -3,6 +3,8 @@
 - name: Provision ASM to test attaching ASM policies to LTM policy
   bigip_provision:
     module: asm
+  tags:
+    - module-provisioning
 
 - name: Collect BIG-IP facts
   bigip_facts:
