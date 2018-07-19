@@ -11,6 +11,8 @@
       bigip_provision:
         module: vcmp
         level: dedicated
+      tags:
+        - module-provisioning
 
     - name: Issue 00799 - Upload initial image to be used
       bigip_software_image:
@@ -46,4 +48,7 @@
       bigip_provision:
         module: vcmp
         state: absent
+      tags:
+        - module-provisioning
+        - deprovision-module
   when: "'Virtual Edition' not in info.system_info.marketing_name"
