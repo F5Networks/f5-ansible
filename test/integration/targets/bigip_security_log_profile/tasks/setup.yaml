@@ -1,5 +1,7 @@
 ---
 
-- name: Provision APM
+- name: Provision AFM
   bigip_provision:
-    name: apm
+    name: afm
+  tags:
+    - module-provisioning
