@@ -2,6 +2,62 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Upload an image to BIG-IP
+  bigip_software_image:
+    image: "{{ initial_image }}"
+  register: result
+
+- name: Assert Upload an image to BIG-IP
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload an image to BIG-IP - Idempotent check
+  bigip_software_image:
+    image: "{{ initial_image }}"
+  register: result
+
+- name: Assert Upload an image to BIG-IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Force upload an image to BIG-IP
+  bigip_software_image:
+    image: "{{ initial_image }}"
+    force: yes
+  register: result
+
+- name: Assert Force Upload an image to BIG-IP
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove image
+  bigip_software_image:
+    image: "{{ initial_image }}"
+    state: absent
+  register: result
+
+- name: Assert Remove image
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove image - Idempotent check
+  bigip_software_image:
+    image: "{{ initial_image }}"
+    state: absent
+  register: result
+
+- name: Assert Remove image - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - import_tasks: teardown.yaml

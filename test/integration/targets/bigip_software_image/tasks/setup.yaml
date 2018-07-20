@@ -1,0 +1,11 @@
+---
+
+- name: Stat the ISO file
+  stat:
+    path: "{{ initial_image }}"
+  register: st
+
+- name: Fail if the image is not big enough
+  fail:
+    msg: "You must specify a valid image. The one found is too small."
+  when: st.stat.size == 0
