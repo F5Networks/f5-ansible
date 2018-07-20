@@ -64,35 +64,60 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            filename='/path/to/BIGIP-13.0.0.0.0.1645.iso',
+            image='/path/to/BIGIP-13.0.0.0.0.1645.iso',
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.filename == 'BIGIP-13.0.0.0.0.1645.iso'
+        assert p.image == '/path/to/BIGIP-13.0.0.0.0.1645.iso'
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = dict(
+            file_size='1000 MB',
+            build='0.0.3',
+            checksum='8cdbd094195fab4b2b47ff4285577b70',
+            image_type='release',
+            version='13.1.0.8'
+        )
+
+        p = ApiParameters(params=args)
+        assert p.file_size == 1000
+        assert p.build == '0.0.3'
+        assert p.checksum == '8cdbd094195fab4b2b47ff4285577b70'
+        assert p.image_type == 'release'
+        assert p.version == '13.1.0.8'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        set_module_args(dict(
+            image='/path/to/BIGIP-13.0.0.0.0.1645.iso',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        current = ApiParameters(params=load_fixture('load_sys_software_image_1.json'))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[False, True])
+        mm.read_current_from_device = Mock(return_value=current)
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['file_size'] == 1948
