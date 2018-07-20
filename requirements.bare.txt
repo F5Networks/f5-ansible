@@ -10,3 +10,4 @@ pycodestyle
 netaddr
 click
 virtualenv
+invoke
