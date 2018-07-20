@@ -15,16 +15,19 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_software_image
-short_description: __SHORT_DESCRIPTION__
+short_description: Manage software images on a BIG-IP
 description:
-  - __LONG DESCRIPTION__.
-version_added: 2.6
+  - Manages software images on a BIG-IP. These images may include both base images
+    and hotfix images.
+version_added: 2.7
 options:
   force:
     description:
-      - If C(yes) will upload the file every time and replace the file on the
-        device. If C(no), the file will only be uploaded if it does not already
-        exist. Generally should be C(yes) only in cases where you have reason
+      - When C(yes), will upload the file every time and replace the file on the
+        device.
+      - When C(no), the file will only be uploaded if it does not already
+        exist.
+      - Generally should be C(yes) only in cases where you have reason
         to believe that the image was corrupted during upload.
     default: no
     choices:
@@ -42,70 +45,104 @@ options:
     description:
       - The image to put on the remote device.
       - This may be an absolute or relative location on the Ansible controller.
-      - You may also supply a URL to have the image downloaded directly to the BIG-IP.
-        To take advantage of this, your BIG-IP will need to be able to reach the
-        service hosting your image.
+      - Image names, whether they are base ISOs or hotfix ISOs, B(must) be unique.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Upload relative image to the BIG-IP
   bigip_software_image:
-    name: foo
-    password: secret
-    server: lb.mydomain.com
-    state: present
-    user: admin
+    image: BIGIP-13.0.0.0.0.1645.iso
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Upload absolute image to the BIG-IP
+  bigip_software_image:
+    image: /path/to/images/BIGIP-13.0.0.0.0.1645.iso
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Upload image in a role to the BIG-IP
+  bigip_software_image:
+    image: "{{ role_path }}/files/BIGIP-13.0.0.0.0.1645.iso"
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+image_type:
+  description: Whether the image is a release or hotfix image
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: release
+version:
+  description: Version of the software contained in the image.
+  returned: changed
+  type: string
+  sample: 13.1.0.8
+build:
+  description: Build version of the software contained in the image.
+  returned: changed
+  type: string
+  sample: 0.0.3
+checksum:
+  description: MD5 checksum of the ISO.
+  returned: changed
+  type: string
+  sample: 8cdbd094195fab4b2b47ff4285577b70
+file_size:
+  description: Size of the uploaded image in MB.
+  returned: changed
+  type: int
+  sample: 1948
 '''
+
+import os
+import socket
+import time
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.six.moves.urllib.parse import urlparse
 
 try:
     from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.icontrol import upload_file
 except ImportError:
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.icontrol import upload_file
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'fileSize': 'file_size'
     }
 
     api_attributes = [
@@ -113,7 +150,11 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     returnables = [
-
+        'image_type',
+        'version',
+        'build',
+        'checksum',
+        'file_size',
     ]
 
     updatables = [
@@ -122,11 +163,18 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def file_size(self):
+        if self._values['file_size'] is None:
+            return None
+        tmp = self._values['file_size'].split(' ')
+        return int(tmp[0])
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def filename(self):
+        return os.path.basename(self.image)
 
 
 class Changes(Parameters):
@@ -178,6 +226,7 @@ class ModuleManager(object):
         self.want = ModuleParameters(params=self.module.params)
         self.have = ApiParameters()
         self.changes = UsableChanges()
+        self.image_type = None
 
     def _set_changed_options(self):
         changed = {}
@@ -216,13 +265,10 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
@@ -246,51 +292,137 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        if self.image_exists() or self.image_exists():
+            return True
+        return False
+
+    def image_exists(self):
+        result = False
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/image/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.filename
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+            if resp.status == 404 or 'code' in response and response['code'] == 404:
+                result = False
+            else:
+                self.image_type = 'release'
+                result = True
+        except ValueError:
+            pass
+        return result
+
+    def hotfix_exists(self):
+        result = False
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/hotfix/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.filename
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+            if resp.status == 404 or 'code' in response and response['code'] == 404:
+                result = False
+            else:
+                self.image_type = 'hotfix'
+                result = True
+        except ValueError:
+            pass
         return result
 
     def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
-            return False
         if self.module.check_mode:
             return True
-        self.update_on_device()
-        return True
+        if self.want.force:
+            # The process of updating is a forced re-creation.
+            self.remove_from_device()
+            self.create_on_device()
+            return True
+        return False
 
     def remove(self):
         if self.module.check_mode:
             return True
         self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the resource.")
-        return True
+
+        # Deleting images involves a short period of inconsistency in the REST
+        # API due to needing to remove files from disk and update MCPD.
+        #
+        # This should not (realistically) take more than 30 seconds.
+        for x in range(0, 30):
+            if not self.exists():
+                return True
+            time.sleep(1)
+        raise F5ModuleError("Failed to delete the resource.")
 
     def create(self):
         self._set_changed_options()
         if self.module.check_mode:
             return True
+
         self.create_on_device()
-        return True
+
+        # Creating images involves a short period of inconsistency in the REST
+        # API likely due to having to move files into appropriate places on disk
+        # and update MCPD with information.
+        #
+        # This should not (realistically) take more than 30 seconds.
+        for x in range(0, 30):
+            if self.exists():
+                # We want to return some information about the image that was just uploaded
+                #
+                # This must appear after the creation process because the information
+                # does not exist on the device (has been parsed by BIG-IP) until the
+                # ISO is uploaded.
+                self.want = self.read_current_from_device()
+                self._set_changed_options()
+                return True
+            time.sleep(1)
+        raise F5ModuleError("Failed to create the resource.")
 
     def create_on_device(self):
-        params = self.changes.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        url = 'https://{0}:{1}/mgmt/cm/autodeploy/software-image-uploads'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
         )
+        try:
+            upload_file(self.client, url, self.want.image)
+        except F5ModuleError:
+            raise F5ModuleError(
+                "Failed to upload the file."
+            )
 
-    def update_on_device(self):
-        params = self.changes.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+    def read_current_from_device(self):
+        if self.image_exists():
+            return self.read_iso_from_device('image')
+        elif self.hotfix_exists():
+            return self.read_iso_from_device('hotfix')
+
+    def read_iso_from_device(self, type):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            type,
+            self.want.filename
         )
-        resource.modify(**params)
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = ApiParameters(params=response)
+        result.update({'image_type': self.image_type})
+        return result
 
     def absent(self):
         if self.exists():
@@ -298,27 +430,39 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        if resource:
-            resource.delete()
+        if self.image_exists():
+            self.remove_iso_from_device('image')
+        elif self.hotfix_exists():
+            self.remove_iso_from_device('hotfix')
 
-    def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+    def remove_iso_from_device(self, type):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            type,
+            self.want.filename
         )
-        result = resource.attrs
-        return ApiParameters(params=result)
+        resp = self.client.api.delete(uri)
+        if resp.status == 200:
+            return True
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            force=dict(type='bool'),
+            image=dict(required=True),
+            validate_image_url_certs=dict(type='bool', default='yes'),
+            state=dict(
+                default='present',
+                choices=['present', 'absent']
+            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
@@ -332,18 +476,14 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        client = F5Client(**module.params)
+        client = F5RestClient(module=module)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
-        cleanup_tokens(client)
-        module.exit_json(**results)
+        exit_json(module, results, client)
     except F5ModuleError as ex:
-        cleanup_tokens(client)
-        module.fail_json(msg=str(ex))
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':
