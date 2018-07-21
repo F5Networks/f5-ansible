@@ -1,0 +1,94 @@
+---
+
+- name: Create device group, sync-only, w/network_failover - Expected Failure
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    type: sync-only
+    network_failover: yes
+  register: result
+  failed_when: result is success
+
+- name: Assert Create device group, sync-only, w/network_failover - Expected Failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create device group, sync-failover, w/network_failover
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    type: sync-failover
+    network_failover: yes
+  register: result
+
+- name: Create device group, sync-failover, w/network_failover
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create device group, sync-failover, w/network_failover - Idempotent check
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    type: sync-failover
+    network_failover: yes
+  register: result
+
+- name: Create device group, sync-failover, w/network_failover - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change network_failover - no
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    network_failover: no
+  register: result
+
+- name: Change network_failover - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change network_failover - no - Idempotent check
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    network_failover: no
+  register: result
+
+- name: Change network_failover - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change network_failover - yes
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    network_failover: yes
+  register: result
+
+- name: Change network_failover - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change network_failover - yes - Idempotent check
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    network_failover: yes
+  register: result
+
+- name: Change network_failover - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove device group
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    state: absent
