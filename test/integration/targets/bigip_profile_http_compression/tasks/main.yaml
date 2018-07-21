@@ -2,6 +2,181 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create an HTTP compression profile
+  bigip_profile_http_compression:
+    name: profile1
+    description: my profile
+    buffer_size: 4096
+    gzip_level: 6
+    gzip_memory_level: 64
+    gzip_window_size: 32
+  register: result
+
+- name: Assert Create an HTTP compression profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create an HTTP compression profile - Idempotent check
+  bigip_profile_http_compression:
+    name: profile1
+    description: my profile
+    buffer_size: 4096
+    gzip_level: 6
+    gzip_memory_level: 64
+    gzip_window_size: 32
+  register: result
+
+- name: Assert Create an HTTP compression profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change buffer size
+  bigip_profile_http_compression:
+    name: profile1
+    buffer_size: 1024
+  register: result
+
+- name: Assert Change buffer size
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change buffer size - Idempotent check
+  bigip_profile_http_compression:
+    name: profile1
+    buffer_size: 1024
+  register: result
+
+- name: Assert Change buffer size - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change gzip level
+  bigip_profile_http_compression:
+    name: profile1
+    gzip_level: 1
+  register: result
+
+- name: Assert Change gzip level
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change gzip level - Idempotent check
+  bigip_profile_http_compression:
+    name: profile1
+    description: my profile
+    gzip_level: 1
+  register: result
+
+- name: Assert Create an HTTP compression profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change memory level
+  bigip_profile_http_compression:
+    name: profile1
+    gzip_memory_level: 128
+  register: result
+
+- name: Assert Change memory level
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change memory level - Idempotent check
+  bigip_profile_http_compression:
+    name: profile1
+    gzip_memory_level: 128
+  register: result
+
+- name: Assert Change memory level - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change window size
+  bigip_profile_http_compression:
+    name: profile1
+    gzip_window_size: 64
+  register: result
+
+- name: Assert Change window size
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change window size - Idempotent check
+  bigip_profile_http_compression:
+    name: profile1
+    gzip_window_size: 64
+  register: result
+
+- name: Assert Change window size - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description
+  bigip_profile_http_compression:
+    name: profile1
+    description: another profile
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - Idempotent check
+  bigip_profile_http_compression:
+    name: profile1
+    description: another profile
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove HTTP compression profile
+  bigip_profile_http_compression:
+    name: profile1
+    state: absent
+  register: result
+
+- name: Assert Remove HTTP compression profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove HTTP compression profile - Idempotent check
+  bigip_profile_http_compression:
+    name: profile1
+    state: absent
+  register: result
+
+- name: Assert Remove HTTP compression profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - import_tasks: teardown.yaml
