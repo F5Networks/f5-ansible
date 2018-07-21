@@ -12,9 +12,8 @@
     - module-provisioning
 
 - name: Issue 00457 - Upload initial image to be used
-  bigip_software:
-    base_image: "{{ initial_image }}"
-    state: present
+  bigip_software_image:
+    image: "{{ initial_image }}"
 
 - name: Issue 00457 - Create VLANs
   bigip_vlan:
