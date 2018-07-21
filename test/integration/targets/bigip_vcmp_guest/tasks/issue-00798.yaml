@@ -1,9 +1,5 @@
 ---
 
-- name: Issue 00798 - Include issue variables
-  include_vars:
-    file: issue-00457.yaml
-
 - name: Issue 00798 - Provision vCMP
   bigip_provision:
     module: vcmp
@@ -12,9 +8,8 @@
     - module-provisioning
 
 - name: Issue 00798 - Upload initial image to be used
-  bigip_software:
-    base_image: "{{ initial_image }}"
-    state: present
+  bigip_software_image:
+    image: "{{ initial_image }}"
 
 - name: Issue 00798 - Create a deployed vCMP guest, 1 core
   bigip_vcmp_guest:
