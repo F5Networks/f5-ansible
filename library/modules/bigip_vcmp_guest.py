@@ -246,7 +246,10 @@ class Parameters(AnsibleF5Parameters):
         'managementIp': 'mgmt_address',
         'initialImage': 'initial_image',
         'virtualDisk': 'virtual_disk',
-        'coresPerSlot': 'cores_per_slot'
+        'coresPerSlot': 'cores_per_slot',
+        'slots': 'number_of_slots',
+        'minSlots': 'min_number_of_slots',
+        'allowedSlots': 'allowed_slots',
     }
 
     api_attributes = [
@@ -256,7 +259,10 @@ class Parameters(AnsibleF5Parameters):
         'initialImage',
         'managementGw',
         'state',
-        'coresPerSlot'
+        'coresPerSlot',
+        'slots',
+        'minSlots',
+        'allowedSlots',
     ]
 
     returnables = [
@@ -267,6 +273,9 @@ class Parameters(AnsibleF5Parameters):
         'mgmt_route',
         'name',
         'cores_per_slot',
+        'number_of_slots',
+        'min_number_of_slots',
+        'allowed_slots',
     ]
 
     updatables = [
@@ -276,7 +285,10 @@ class Parameters(AnsibleF5Parameters):
         'initial_image',
         'mgmt_route',
         'state',
-        'cores_per_slot'
+        'cores_per_slot',
+        'number_of_slots',
+        'min_number_of_slots',
+        'allowed_slots',
     ]
 
     def to_return(self):
@@ -365,8 +377,32 @@ class Parameters(AnsibleF5Parameters):
                 return True
         return False
 
+    @property
+    def allowed_slots(self):
+        if self._values['allowed_slots'] is None:
+            return None
+        result = self._values['allowed_slots']
+        result.sort()
+        return result
+
+
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    pass
+
 
 class Changes(Parameters):
+    pass
+
+
+class UsableChanges(Parameters):
+    pass
+
+
+class ReportableChanges(Parameters):
     pass
 
 
@@ -401,12 +437,21 @@ class Difference(object):
         if self.want.mgmt_address != self.have.mgmt_address:
             return self.want.mgmt_address
 
+    @property
+    def allowed_slots(self):
+        if self.want.allowed_slots is None:
+            return None
+        if self.have.allowed_slots is None:
+            return self.want.allowed_slots
+        if set(self.want.allowed_slots) != set(self.have.allowed_slots):
+            return self.want.allowed_slots
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-        self.want = Parameters(client=self.client, params=self.module.params)
+        self.want = ModuleParameters(client=self.client, params=self.module.params)
         self.changes = Changes()
 
     def _set_changed_options(self):
@@ -415,7 +460,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -428,7 +473,7 @@ class ModuleManager(object):
             else:
                 changed[k] = change
         if changed:
-            self.changes = Parameters(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -483,6 +528,9 @@ class ModuleManager(object):
             return False
         if self.module.check_mode:
             return True
+        if self.changes.cores_per_slot:
+            if not self.is_configured():
+                self.configure()
         self.update_on_device()
         if self.want.state == 'provisioned':
             self.provision()
@@ -552,7 +600,7 @@ class ModuleManager(object):
             name=self.want.name
         )
         result = resource.attrs
-        return Parameters(params=result)
+        return ApiParameters(params=result)
 
     def remove_virtual_disk(self):
         if self.virtual_disk_exists():

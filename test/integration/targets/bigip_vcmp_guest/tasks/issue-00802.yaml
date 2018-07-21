@@ -1,0 +1,69 @@
+---
+
+- name: Issue 00802 - Provision vCMP
+  bigip_provision:
+    module: vcmp
+    level: dedicated
+  tags:
+    - module-provisioning
+
+#- name: Issue 00802 - Upload initial image to be used
+#  bigip_software_image:
+#    image: "{{ initial_image }}"
+
+- name: Issue 00802 - Create a deployed vCMP guest
+  bigip_vcmp_guest:
+    name: guest1
+    mgmt_network: bridged
+    mgmt_address: 10.10.10.10/24
+    initial_image: "{{ initial_image|basename }}"
+    cores_per_slot: 2
+    number_of_slots: 2
+    min_number_of_slots: 1
+    allowed_slots:
+      - 1
+      - 2
+      - 3
+  register: result
+
+- name: Issue 00802 - Assert Create a deployed vCMP guest
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00802 - Create a deployed vCMP guest - Idempotent check
+  bigip_vcmp_guest:
+    name: guest1
+    mgmt_network: bridged
+    mgmt_address: 10.10.10.10/24
+    initial_image: "{{ initial_image|basename }}"
+    cores_per_slot: 2
+    number_of_slots: 2
+    min_number_of_slots: 1
+    allowed_slots:
+      - 1
+      - 2
+      - 3
+  register: result
+
+- name: Issue 00802 - Assert Create a deployed vCMP guest - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00802 - Remove deployed vCMP guest
+  bigip_vcmp_guest:
+    name: guest1
+    state: absent
+    delete_virtual_disk: yes
+  register: result
+
+- name: Issue 00802 - Deprovision vCMP
+  bigip_provision:
+    module: vcmp
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
