@@ -135,6 +135,8 @@ options:
   description:
     description:
       - Specifies descriptive text that identifies the node.
+      - You can remove a description by either specifying an empty string, or by
+        specifying the special value C(none).
   connection_limit:
     description:
       - Node connection limit. Setting this to 0 disables the limit.
@@ -515,6 +517,14 @@ class ModuleParameters(Parameters):
             result['autopopulate'] = 'disabled'
         return result
 
+    @property
+    def description(self):
+        if self._values['description'] is None:
+            return None
+        elif self._values['description'] in ['none', '']:
+            return ''
+        return self._values['description']
+
 
 class ApiParameters(Parameters):
     @property
@@ -574,6 +584,12 @@ class ApiParameters(Parameters):
             return None
         if 'autopopulate' in self._values['fqdn']:
             return str(self._values['fqdn']['autopopulate'])
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
 
 
 class Difference(object):
@@ -690,6 +706,15 @@ class Difference(object):
     @property
     def fqdn(self):
         return None
+
+    @property
+    def description(self):
+        if self.want.description is None:
+            return None
+        if self.have.description is None and self.want.description == '':
+            return None
+        if self.want.description != self.have.description:
+            return self.want.description
 
 
 class ModuleManager(object):
