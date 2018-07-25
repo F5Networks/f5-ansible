@@ -617,7 +617,7 @@ class ModuleParameters(Parameters):
             data = records.read(4096)
             if not data:
                 break
-            result.update(data)
+            result.update(data.encode('utf-8'))
         result = result.hexdigest()
         self._values['checksum'] = result
         return result
@@ -628,7 +628,7 @@ class ModuleParameters(Parameters):
             name = self.name
         else:
             name = self._values['external_file_name']
-        if re.search(r'[^a-z0-9-_.]', name):
+        if re.search(r'[^a-zA-Z0-9-_.]', name):
             raise F5ModuleError(
                 "'external_file_name' may only contain letters, numbers, underscores, dashes, or a period."
             )

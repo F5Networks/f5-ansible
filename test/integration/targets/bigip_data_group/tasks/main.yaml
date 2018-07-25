@@ -2,7 +2,11 @@
 
 - import_tasks: setup.yaml
 - import_tasks: internal.yaml
+- import_tasks: external.yaml
 - import_tasks: teardown.yaml
 
 - import_tasks: issue-00652.yaml
   tags: issue-00652
+
+- import_tasks: issue-00815.yaml
+  tags: issue-00815
