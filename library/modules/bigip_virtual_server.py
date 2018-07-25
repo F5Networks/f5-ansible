@@ -331,6 +331,35 @@ options:
       - The C(Log all requests) and C(Log illegal requests) are mutually exclusive and
         therefore, this module will raise an error if the two are specified together.
     version_added: 2.6
+  security_nat_policy:
+    description:
+      - Specify the Firewall NAT policies for the virtual server.
+      - You can specify one or more NAT policies to use.
+      - The most specific policy is used. For example, if you specify that the
+        virtual server use the device policy and the route domain policy, the route
+        domain policy overrides the device policy.
+    version_added: 2.7
+    suboptions:
+      policy:
+        description:
+          - Policy to apply a NAT policy directly to the virtual server.
+          - The virtual server NAT policy is the most specific, and overrides a
+            route domain and device policy, if specified.
+          - To remove the policy, specify an empty string value. 
+      use_device_policy:
+        description:
+          - Specify that the virtual server uses the device NAT policy, as specified
+            in the Firewall Options.
+          - The device policy is used if no route domain or virtual server NAT
+            setting is specified.
+        type: bool
+      use_route_domain_policy:
+        description:
+          - Specify that the virtual server uses the route domain policy, as
+            specified in the Route Domain Security settings.
+          - When specified, the route domain policy overrides the device policy, and
+            is overridden by a virtual server policy.
+        type: bool
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -653,7 +682,8 @@ class Parameters(AnsibleF5Parameters):
         'ipProtocol': 'ip_protocol',
         'fwEnforcedPolicy': 'firewall_enforced_policy',
         'fwStagedPolicy': 'firewall_staged_policy',
-        'securityLogProfiles': 'security_log_profiles'
+        'securityLogProfiles': 'security_log_profiles',
+        'securityNatPolicy': 'security_nat_policy',
     }
 
     api_attributes = [
@@ -685,6 +715,7 @@ class Parameters(AnsibleF5Parameters):
         'fwEnforcedPolicy',
         'fwStagedPolicy',
         'securityLogProfiles',
+        'securityNatPolicy',
     ]
 
     updatables = [
@@ -710,6 +741,7 @@ class Parameters(AnsibleF5Parameters):
         'firewall_enforced_policy',
         'firewall_staged_policy',
         'security_log_profiles',
+        'security_nat_policy',
     ]
 
     returnables = [
@@ -739,11 +771,23 @@ class Parameters(AnsibleF5Parameters):
         'firewall_enforced_policy',
         'firewall_staged_policy',
         'security_log_profiles',
+        'security_nat_policy',
     ]
 
     profiles_mutex = [
-        'sip', 'sipsession', 'iiop', 'rtsp', 'http', 'diameter',
-        'diametersession', 'radius', 'ftp', 'tftp', 'dns', 'pptp', 'fix'
+        'sip',
+        'sipsession',
+        'iiop',
+        'rtsp',
+        'http',
+        'diameter',
+        'diametersession',
+        'radius',
+        'ftp',
+        'tftp',
+        'dns',
+        'pptp',
+        'fix',
     ]
 
     ip_protocols_map = [
@@ -1137,8 +1181,7 @@ class ApiParameters(Parameters):
     def enabled(self):
         if 'enabled' in self._values:
             return True
-        else:
-            return False
+        return False
 
     @property
     def disabled(self):
@@ -1173,6 +1216,34 @@ class ApiParameters(Parameters):
         result = list(set([x.strip('"') for x in self._values['security_log_profiles']]))
         result.sort()
         return result
+
+    @property
+    def sec_nat_use_device_policy(self):
+        if self._values['security_nat_policy'] is None:
+            return None
+        if 'useDevicePolicy' not in self._values['security_nat_policy']:
+            return None
+        if self._values['security_nat_policy']['useDevicePolicy'] == "no":
+            return False
+        return True
+
+    @property
+    def sec_nat_use_rd_policy(self):
+        if self._values['security_nat_policy'] is None:
+            return None
+        if 'useRouteDomainPolicy' not in self._values['security_nat_policy']:
+            return None
+        if self._values['security_nat_policy']['useRouteDomainPolicy'] == "no":
+            return False
+        return True
+
+    @property
+    def sec_nat_policy(self):
+        if self._values['security_nat_policy'] is None:
+            return None
+        if 'policy' not in self._values['security_nat_policy']:
+            return None
+        return self._values['security_nat_policy']['policy']
 
 
 class ModuleParameters(Parameters):
@@ -1522,6 +1593,45 @@ class ModuleParameters(Parameters):
         result.sort()
         return result
 
+    @property
+    def sec_nat_use_device_policy(self):
+        if self._values['security_nat_policy'] is None:
+            return None
+        if 'use_device_policy' not in self._values['security_nat_policy']:
+            return None
+        return self._values['security_nat_policy']['use_device_policy']
+
+    @property
+    def sec_nat_use_rd_policy(self):
+        if self._values['security_nat_policy'] is None:
+            return None
+        if 'use_route_domain_policy' not in self._values['security_nat_policy']:
+            return None
+        return self._values['security_nat_policy']['use_route_domain_policy']
+
+    @property
+    def sec_nat_policy(self):
+        if self._values['security_nat_policy'] is None:
+            return None
+        if 'policy' not in self._values['security_nat_policy']:
+            return None
+        if self._values['security_nat_policy']['policy'] == '':
+            return ''
+        return fq_name(self.partition, self._values['security_nat_policy']['policy'])
+
+    @property
+    def security_nat_policy(self):
+        result = dict()
+        if self.sec_nat_policy:
+            result['policy'] = self.sec_nat_policy
+        if self.sec_nat_use_device_policy is not None:
+            result['use_device_policy'] = self.sec_nat_use_device_policy
+        if self.sec_nat_use_rd_policy is not None:
+            result['use_route_domain_policy'] = self.sec_nat_use_rd_policy
+        if result:
+            return result
+        return None
+
 
 class Changes(Parameters):
     pass
@@ -1626,6 +1736,22 @@ class UsableChanges(Changes):
                 "The 'Log all requests' and 'Log illegal requests' are mutually exclusive."
             )
         return self._values['security_log_profiles']
+
+    @property
+    def security_nat_policy(self):
+        if self._values['security_nat_policy'] is None:
+            return None
+        result = dict()
+        sec = self._values['security_nat_policy']
+        if 'policy' in sec:
+            result['policy'] = sec['policy']
+        if 'use_device_policy' in sec:
+            result['useDevicePolicy'] = 'yes' if sec['use_device_policy'] else 'no'
+        if 'use_route_domain_policy' in sec:
+            result['useRouteDomainPolicy'] = 'yes' if sec['use_route_domain_policy'] else 'no'
+        if result:
+            return result
+        return None
 
 
 class ReportableChanges(Changes):
@@ -2465,6 +2591,23 @@ class Difference(object):
         if set(self.want.security_log_profiles) != set(self.have.security_log_profiles):
             return self.want.security_log_profiles
 
+    @property
+    def security_nat_policy(self):
+        result = dict()
+        if self.want.sec_nat_use_device_policy is not None:
+            if self.want.sec_nat_use_device_policy != self.have.sec_nat_use_device_policy:
+                result['use_device_policy'] = self.want.sec_nat_use_device_policy
+        if self.want.sec_nat_use_rd_policy is not None:
+            if self.want.sec_nat_use_rd_policy != self.have.sec_nat_use_rd_policy:
+                result['use_route_domain_policy'] = self.want.sec_nat_use_rd_policy
+        if self.want.sec_nat_policy is not None:
+            if self.want.sec_nat_policy == '' and self.have.sec_nat_policy is None:
+                pass
+            elif self.want.sec_nat_policy != self.have.sec_nat_policy:
+                result['policy'] = self.want.sec_nat_policy
+        if result:
+            return dict(security_nat_policy=result)
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
@@ -2684,7 +2827,15 @@ class ArgumentSpec(object):
             ),
             firewall_staged_policy=dict(),
             firewall_enforced_policy=dict(),
-            security_log_profiles=dict(type='list')
+            security_log_profiles=dict(type='list'),
+            security_nat_policy=dict(
+                type='dict',
+                options=dict(
+                    policy=dict(),
+                    use_device_policy=dict(type='bool'),
+                    use_route_domain_policy=dict(type='bool')
+                )
+            )
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

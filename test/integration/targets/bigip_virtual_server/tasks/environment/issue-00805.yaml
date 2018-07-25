@@ -1,0 +1,210 @@
+---
+
+- name: Issue 00805 - Create a security NAT policy
+  bigip_command:
+    commands:
+      - create security nat policy foo
+      - create security nat policy bar
+
+- name: Issue 00805 - Create Virtual
+  bigip_virtual_server:
+     name: issue-00805
+     destination: 3.3.2.4
+     port: 1234
+     security_nat_policy:
+       policy: foo
+       use_device_policy: no
+       use_route_domain_policy: no
+  register: result
+
+- name: Issue 00805 - Assert Create Virtual
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00805 - Create Virtual - Idempotent check
+  bigip_virtual_server:
+     name: issue-00805
+     destination: 3.3.2.4
+     port: 1234
+     security_nat_policy:
+       policy: foo
+       use_device_policy: no
+       use_route_domain_policy: no
+  register: result
+
+- name: Issue 00805 - Assert Create Virtual - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00805 - Change policy
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       policy: bar
+  register: result
+
+- name: Issue 00805 - Assert Change policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00805 - Change policy - Idempotent check
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       policy: bar
+  register: result
+
+- name: Issue 00805 - Assert Change policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00805 - Remove policy
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       policy: ''
+  register: result
+
+- name: Assert Remove policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00805 - Remove policy - Idempotent check
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       policy: ''
+  register: result
+
+- name: Issue 00805 - Assert Remove policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00805 - Change use_device_policy - yes
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       use_device_policy: yes
+  register: result
+
+- name: Issue 00805 - Assert Change use_device_policy - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00805 - Change use_device_policy - yes - Idempotent check
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       use_device_policy: yes
+  register: result
+
+- name: Issue 00805 - Assert Change use_device_policy - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00805 - Change use_device_policy - no
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       use_device_policy: no
+  register: result
+
+- name: Issue 00805 - Assert Change use_device_policy - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00805 - Change use_device_policy - no - Idempotent check
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       use_device_policy: no
+  register: result
+
+- name: Issue 00805 - Assert Change use_device_policy - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00805 - Change use_route_domain_policy - yes
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       use_route_domain_policy: yes
+  register: result
+
+- name: Issue 00805 - Assert Change use_route_domain_policy - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00805 - Change use_route_domain_policy - yes - Idempotent check
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       use_route_domain_policy: yes
+  register: result
+
+- name: Issue 00805 - Assert Change use_route_domain_policy - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00805 - Change use_route_domain_policy - no
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       use_route_domain_policy: no
+  register: result
+
+- name: Issue 00805 - Assert Change use_route_domain_policy - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00805 - Change use_route_domain_policy - no - Idempotent check
+  bigip_virtual_server:
+     name: issue-00805
+     security_nat_policy:
+       use_route_domain_policy: no
+  register: result
+
+- name: Issue 00805 - Assert Change use_route_domain_policy - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00805 - Remove virtual
+  bigip_virtual_server:
+     name: issue-00805
+     state: absent
+  register: result
+
+
+- name: Issue 00805 - Remove security NAT policy
+  bigip_command:
+    commands:
+      - delete security nat policy foo
+      - delete security nat policy bar
