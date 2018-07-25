@@ -1,0 +1,119 @@
+---
+
+- name: Issue 00810 - Create a node with description
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: my desc
+  register: result
+
+- name: Issue 00810 - Assert Create a node with description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00810 - Create a node with description - Idempotent check
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: my desc
+  register: result
+
+- name: Issue 00810 - Assert Create a node with description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00810 - Set description to none
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: none
+  register: result
+
+- name: Issue 00810 - Assert Set description to none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00810 - Set description to none - Idempotent check
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: none
+  register: result
+
+- name: Issue 00810 - Assert Set description to none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00810 - Set description to empty - Idempotent check
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: ''
+  register: result
+
+- name: Issue 00810 - Assert Set description to empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00810 - dest description again
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: another desc
+  register: result
+
+- name: Issue 00810 - Set description to empty again
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: ''
+  register: result
+
+- name: Issue 00810 - Assert Set description to empty again
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00810 - Set description to empty again - Idempotent check
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: ''
+  register: result
+
+- name: Issue 00810 - Assert Set description to empty again - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+- name: Issue 00810 - Set description to none again - Idempotent check
+  bigip_node:
+    name: issue-00810
+    address: 2.3.4.5
+    description: none
+  register: result
+
+- name: Issue 00810 - Assert Set description to none again - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00810 - Remove node
+  bigip_node:
+    name: issue-00810
+    state: absent
+  register: result
