@@ -1,0 +1,192 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Issue 00774 - Create GTM server
+  bigip_gtm_server:
+    name: issue-00774
+    devices:
+      - name: foo
+        address: 1.1.1.1
+        translation: 2.2.2.2
+    datacenter: "{{ dc_name1 }}"
+    iquery_options:
+      allow_path: yes
+      allow_service_check: yes
+      allow_snmp: yes
+  register: result
+
+- name: Issue 00774 - Assert Create GTM server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00774 - Create GTM server - Idempotent check
+  bigip_gtm_server:
+    name: issue-00774
+    devices:
+      - name: foo
+        address: 1.1.1.1
+        translation: 2.2.2.2
+    datacenter: "{{ dc_name1 }}"
+    iquery_options:
+      allow_path: yes
+      allow_service_check: yes
+      allow_snmp: yes
+  register: result
+
+- name: Issue 00774 - Assert Create GTM server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00774 - Change allow_path - no
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_path: no
+  register: result
+
+- name: Issue 00774 - Assert Change allow_path - no
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00774 - Change allow_path - no - Idempotent check
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_path: no
+  register: result
+
+- name: Issue 00774 - Assert Change allow_path - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00774 - Change allow_path - yes
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_path: yes
+  register: result
+
+- name: Issue 00774 - Assert Change allow_path - yes
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00774 - Change allow_path - yes - Idempotent check
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_path: yes
+  register: result
+
+- name: Issue 00774 - Assert Change allow_path - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00774 - Change allow_service_check - no
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_service_check: no
+  register: result
+
+- name: Issue 00774 - Assert Change allow_service_check - no
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00774 - Change allow_service_check - no - Idempotent check
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_service_check: no
+  register: result
+
+- name: Issue 00774 - Assert Change allow_service_check - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00774 - Change allow_service_check - yes
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_service_check: yes
+  register: result
+
+- name: Issue 00774 - Assert Change allow_service_check - yes
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00774 - Change allow_service_check - yes - Idempotent check
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_service_check: yes
+  register: result
+
+- name: Issue 00774 - Assert Change allow_service_check - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00774 - Change allow_snmp - no
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_snmp: no
+  register: result
+
+- name: Issue 00774 - Assert Change allow_snmp - no
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00774 - Change allow_snmp - no - Idempotent check
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_snmp: no
+  register: result
+
+- name: Issue 00774 - Assert Change allow_snmp - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00774 - Change allow_snmp - yes
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_snmp: yes
+  register: result
+
+- name: Issue 00774 - Assert Change allow_snmp - yes
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00774 - Change allow_snmp - yes - Idempotent check
+  bigip_gtm_server:
+    name: issue-00774
+    iquery_options:
+      allow_snmp: yes
+  register: result
+
+- name: Issue 00774 - Assert Change allow_snmp - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00774 - Remove server
+  bigip_gtm_server:
+    name: issue-00774
+    state: absent
+
+- import_tasks: teardown.yaml
