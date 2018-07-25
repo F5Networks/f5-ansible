@@ -2,8 +2,8 @@
 
 - import_tasks: setup.yaml
 
-- name: Set sys auth to TACACS+
-  bigip_sys_auth:
+- name: Set sys auth to TACACS+ - Provider
+  bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
     protocol_name: ip
@@ -14,16 +14,17 @@
     service_name: ppp
     use_for_auth: yes
     update_secret: on_create
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Set sys auth to TACACS+
+- name: Assert Set sys auth to TACACS+ - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Set sys auth to TACACS+ - Idempotent check
-  bigip_sys_auth:
+- name: Set sys auth to TACACS+ - Provider - Idempotent check
+  bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
     protocol_name: ip
@@ -34,16 +35,17 @@
     service_name: ppp
     use_for_auth: yes
     update_secret: on_create
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Set sys auth to TACACS+ - Idempotent check
+- name: Assert Set sys auth to TACACS+ - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Set sys auth to TACACS+ - update_secret always
-  bigip_sys_auth:
+- name: Set sys auth to TACACS+ - update_secret always - Provider
+  bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
     protocol_name: ip
@@ -54,16 +56,17 @@
     service_name: ppp
     use_for_auth: yes
     update_secret: always
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Set sys auth to TACACS+ - update_secret always
+- name: Assert Set sys auth to TACACS+ - update_secret always - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Set sys auth to TACACS+ - default update_secret always
-  bigip_sys_auth:
+- name: Set sys auth to TACACS+ - default update_secret always - Provider
+  bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
     protocol_name: ip
@@ -73,19 +76,52 @@
       - 10.10.10.11
     service_name: ppp
     use_for_auth: yes
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Set sys auth to TACACS+ - default update_secret always
+- name: Assert Set sys auth to TACACS+ - default update_secret always - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change servers
-  bigip_sys_auth:
+- name: Change servers - Provider
+  bigip_device_auth:
     type: tacacs
     servers:
       - 11.11.11.11
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change servers - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change servers - Provider - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    servers:
+      - 11.11.11.11
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change servers - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change servers, specific port, same data structure - Provider
+  bigip_device_auth:
+    type: tacacs
+    servers:
+      - address: 11.11.11.11
+        port: 8080
+      - address: 12.12.12.12
+        port: 1234
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change servers
@@ -94,208 +130,193 @@
       - result is changed
       - result is success
 
-- name: Change servers - Idempotent check
-  bigip_sys_auth:
-    type: tacacs
-    servers:
-      - 11.11.11.11
-  register: result
-
-- name: Assert Change servers - Idempotent check
-  assert:
-    that:
-      - result is not changed
-      - result is success
-
-- name: Change servers, specific port, same data structure
-  bigip_sys_auth:
+- name: Change servers, specific port, same data structure - Provider - Idempotent check
+  bigip_device_auth:
     type: tacacs
     servers:
       - address: 11.11.11.11
         port: 8080
       - address: 12.12.12.12
         port: 1234
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change servers
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change servers, specific port, same data structure - Idempotent check
-  bigip_sys_auth:
-    type: tacacs
-    servers:
-      - address: 11.11.11.11
-        port: 8080
-      - address: 12.12.12.12
-        port: 1234
-  register: result
-
-- name: Assert Change servers, specific port, same data structure - Idempotent check
+- name: Assert Change servers, specific port, same data structure - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change servers, specific port, different data structure
-  bigip_sys_auth:
+- name: Change servers, specific port, different data structure - Provider
+  bigip_device_auth:
     type: tacacs
     servers:
       - 13.13.13.13
       - address: 14.14.14.14
         port: 1234
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change servers, specific port, different data structure
+- name: Assert Change servers, specific port, different data structure - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change servers, specific port, different data structure - Idempotent check
-  bigip_sys_auth:
+- name: Change servers, specific port, different data structure - Provider - Idempotent check
+  bigip_device_auth:
     type: tacacs
     servers:
       - 13.13.13.13
       - address: 14.14.14.14
         port: 1234
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change servers, specific port, different data structure - Idempotent check
+- name: Assert Change servers, specific port, different data structure - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change service
-  bigip_sys_auth:
+- name: Change service - Provider
+  bigip_device_auth:
     type: tacacs
     service_name: shell
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change service
+- name: Assert Change service - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change service - Idempotent check
-  bigip_sys_auth:
+- name: Change service - Provider - Idempotent check
+  bigip_device_auth:
     type: tacacs
     service_name: shell
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change service - Idempotent check
+- name: Assert Change service - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change protocol
-  bigip_sys_auth:
+- name: Change protocol - Provider
+  bigip_device_auth:
     type: tacacs
     protocol_name: ftp
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change protocol
+- name: Assert Change protocol - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change protocol - Idempotent check
-  bigip_sys_auth:
+- name: Change protocol - Provider - Idempotent check
+  bigip_device_auth:
     type: tacacs
     protocol_name: ftp
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change protocol - Idempotent check
+- name: Assert Change protocol - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change authentication, use-first-server
-  bigip_sys_auth:
+- name: Change authentication, use-first-server - Provider
+  bigip_device_auth:
     type: tacacs
     authentication: use-first-server
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change authentication, use-first-server
+- name: Assert Change authentication, use-first-server - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change authentication, use-first-server - Idempotent check
-  bigip_sys_auth:
+- name: Change authentication, use-first-server - Provider - Idempotent check
+  bigip_device_auth:
     type: tacacs
     authentication: use-first-server
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change authentication, use-first-server - Idempotent check
+- name: Assert Change authentication, use-first-server - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change authentication, use-all-servers
-  bigip_sys_auth:
+- name: Change authentication, use-all-servers - Provider
+  bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change authentication, use-all-servers
+- name: Assert Change authentication, use-all-servers - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change authentication, use-all-servers - Idempotent check
-  bigip_sys_auth:
+- name: Change authentication, use-all-servers - Provider - Idempotent check
+  bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Change authentication, use-all-servers - Idempotent check
+- name: Assert Change authentication, use-all-servers - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Remove auth, resetting to local
-  bigip_sys_auth:
+- name: Remove auth, resetting to local - Provider
+  bigip_device_auth:
     type: tacacs
     state: absent
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Remove auth, resetting to local
+- name: Assert Remove auth, resetting to local - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove auth, resetting to local - Idempotent check
-  bigip_sys_auth:
+- name: Remove auth, resetting to local - Provider - Idempotent check
+  bigip_device_auth:
     type: tacacs
     state: absent
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Remove auth, resetting to local - Idempotent check
+- name: Assert Remove auth, resetting to local - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Check if local is set
-  bigip_sys_auth:
+- name: Check if local is set - Provider
+  bigip_device_auth:
     type: local
     use_for_auth: yes
+    provider: "{{ provider }}"
   register: result
 
-- name: Assert Check if local is set
+- name: Assert Check if local is set - Provider
   assert:
     that:
       - result is not changed
