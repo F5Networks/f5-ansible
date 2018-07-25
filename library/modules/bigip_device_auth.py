@@ -145,12 +145,12 @@ EXAMPLES = r'''
   bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
-    protocol: ip
+    protocol_name: ip
     secret: secret
     servers:
       - 10.10.10.10
       - 10.10.10.11
-    service: ppp
+    service_name: ppp
     state: present
     use_for_auth: yes
     provider: 
@@ -163,13 +163,13 @@ EXAMPLES = r'''
   bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
-    protocol: ip
+    protocol_name: ip
     secret: secret
     servers:
       - address: 10.10.10.10
         port: 1234
       - 10.10.10.11
-    service: ppp
+    service_name: ppp
     use_for_auth: yes
     state: present
     provider: 
@@ -180,16 +180,27 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
+        'protocol_name'
+servers:
+  description: List of servers used in TACACS authentication.
   returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+  type: list
+  sample: ['1.2.2.1', '4.5.5.4']
+authentication:
+  description: Process the system uses to serve authentication requests when using TACACS.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: use-all-servers
+service_name:
+  description: Name of the service the user is requesting to be authorized to use.
+  returned: changed
+  type: string
+  sample: ppp
+protocol_name:
+  description: Name of the protocol associated with C(service_name) used for client authentication.
+  returned: changed
+  type: string
+  sample: ip
 '''
 
 from ansible.module_utils.basic import AnsibleModule
