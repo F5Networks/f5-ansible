@@ -18,22 +18,34 @@
 #    ansible-playbook -i notahost, test/integration/bigip_device_auth.yaml
 #
 
-- name: Test the bigip_device_auth module
-  hosts: "f5-test[0]"
+- name: Metadata of bigip_device_auth
+  hosts: localhost
   connection: local
   any_errors_fatal: true
 
   vars:
-    limit_to: '*'
     __metadata__:
-      version: 1.1
+      upstream: yes
+      version: 1.2
       tested_versions:
-        - NA
+        - 11.5.4-hf1
+        - 11.6.0
+        - 12.0.0
+        - 12.1.0
+        - 12.1.0-hf1
+        - 12.1.0-hf2
+        - 12.1.1
+        - 12.1.1-hf1
+        - 12.1.1-hf2
+        - 12.1.2
+        - 12.1.2-hf1
+        - 13.0.0
+        - 13.0.0-hf1
       tested_platforms:
-        - NA
+        - ve
+        - viprion 4200
       supported_harnesses:
-        - NA
-      coding_standards: v3
+        - TwoArmed-bigip-12.1.1
       callgraph_exclude:
         - pycallgraph.*
 
@@ -44,6 +56,14 @@
         - ansible.module_utils._text.*
         - ansible.module_utils.six.*
 
+- name: Test the bigip_device_auth module - Environment
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+
   environment:
     F5_SERVER: "{{ ansible_host }}"
     F5_USER: "{{ bigip_username }}"
@@ -51,5 +71,33 @@
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
-  roles:
-    - bigip_device_auth
+  tasks:
+    - name: Include role - Environment
+      import_role:
+        name: bigip_device_auth
+        tasks_from: environment.yaml
+      tags:
+        - environment
+
+- name: Test the bigip_device_auth module - Provider
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+    provider:
+      transport: rest
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+
+  tasks:
+    - name: Include role - Provider
+      import_role:
+        name: bigip_device_auth
+        tasks_from: provider.yaml
+      tags:
+        - provider

@@ -1,0 +1,7 @@
+---
+
+- name: Set sys auth back to local - Provider
+  bigip_device_auth:
+    type: local
+    use_for_auth: yes
+    provider: "{{ provider }}"

@@ -1,0 +1,6 @@
+---
+
+- name: Set sys auth back to local - Environment
+  bigip_device_auth:
+    type: local
+    use_for_auth: yes

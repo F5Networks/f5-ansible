@@ -1,0 +1,304 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Set sys auth to TACACS+ - Environment
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-all-servers
+    protocol_name: ip
+    secret: $XXXXXXXXXXXXXXXXXXXX==
+    servers:
+      - 10.10.10.10
+      - 10.10.10.11
+    service_name: ppp
+    use_for_auth: yes
+    update_secret: on_create
+  register: result
+
+- name: Assert Set sys auth to TACACS+ - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set sys auth to TACACS+ - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-all-servers
+    protocol_name: ip
+    secret: $XXXXXXXXXXXXXXXXXXXX==
+    servers:
+      - 10.10.10.10
+      - 10.10.10.11
+    service_name: ppp
+    use_for_auth: yes
+    update_secret: on_create
+  register: result
+
+- name: Assert Set sys auth to TACACS+ - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set sys auth to TACACS+ - Environment - update_secret always
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-all-servers
+    protocol_name: ip
+    secret: $XXXXXXXXXXXXXXXXXXXX==
+    servers:
+      - 10.10.10.10
+      - 10.10.10.11
+    service_name: ppp
+    use_for_auth: yes
+    update_secret: always
+  register: result
+
+- name: Assert Set sys auth to TACACS+ - Environment - update_secret always
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set sys auth to TACACS+ - Environment - default update_secret always
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-all-servers
+    protocol_name: ip
+    secret: $XXXXXXXXXXXXXXXXXXXX==
+    servers:
+      - 10.10.10.10
+      - 10.10.10.11
+    service_name: ppp
+    use_for_auth: yes
+  register: result
+
+- name: Assert Set sys auth to TACACS+ - Environment - default update_secret always
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change servers - Environment
+  bigip_device_auth:
+    type: tacacs
+    servers:
+      - 11.11.11.11
+  register: result
+
+- name: Assert Change servers - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change servers - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    servers:
+      - 11.11.11.11
+  register: result
+
+- name: Assert Change servers - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change servers, specific port, same data structure - Environment
+  bigip_device_auth:
+    type: tacacs
+    servers:
+      - address: 11.11.11.11
+        port: 8080
+      - address: 12.12.12.12
+        port: 1234
+  register: result
+
+- name: Assert Change servers - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change servers, specific port, same data structure - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    servers:
+      - address: 11.11.11.11
+        port: 8080
+      - address: 12.12.12.12
+        port: 1234
+  register: result
+
+- name: Assert Change servers, specific port, same data structure - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change servers, specific port, different data structure - Environment
+  bigip_device_auth:
+    type: tacacs
+    servers:
+      - 13.13.13.13
+      - address: 14.14.14.14
+        port: 1234
+  register: result
+
+- name: Assert Change servers, specific port, different data structure - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change servers, specific port, different data structure - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    servers:
+      - 13.13.13.13
+      - address: 14.14.14.14
+        port: 1234
+  register: result
+
+- name: Assert Change servers, specific port, different data structure - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change service - Environment
+  bigip_device_auth:
+    type: tacacs
+    service_name: shell
+  register: result
+
+- name: Assert Change service - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change service - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    service_name: shell
+  register: result
+
+- name: Assert Change service - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change protocol - Environment
+  bigip_device_auth:
+    type: tacacs
+    protocol_name: ftp
+  register: result
+
+- name: Assert Change protocol - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change protocol - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    protocol_name: ftp
+  register: result
+
+- name: Assert Change protocol - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change authentication, use-first-server - Environment
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-first-server
+  register: result
+
+- name: Assert Change authentication, use-first-server - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change authentication, use-first-server - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-first-server
+  register: result
+
+- name: Assert Change authentication, use-first-server - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change authentication, use-all-servers - Environment
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-all-servers
+  register: result
+
+- name: Assert Change authentication, use-all-servers - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change authentication, use-all-servers - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-all-servers
+  register: result
+
+- name: Assert Change authentication, use-all-servers - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove auth, resetting to local - Environment
+  bigip_device_auth:
+    type: tacacs
+    state: absent
+  register: result
+
+- name: Assert Remove auth, resetting to local - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove auth, resetting to local - Environment - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    state: absent
+  register: result
+
+- name: Assert Remove auth, resetting to local - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Check if local is set - Environment
+  bigip_device_auth:
+    type: local
+    use_for_auth: yes
+  register: result
+
+- name: Assert Check if local is set - Environment
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml

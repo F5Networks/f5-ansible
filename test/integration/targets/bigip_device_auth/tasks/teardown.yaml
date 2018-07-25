@@ -1,6 +1,0 @@
----
-
-- name: Set sys auth back to local
-  bigip_sys_auth:
-    type: local
-    use_for_auth: yes
