@@ -1,0 +1,35 @@
+---
+
+- name: Issue 00815 - Create an upper case Data Group
+  bigip_data_group:
+    external_file_name: clients_data_group_Upper_case
+    name: clients_data_group_Upper_case
+    records_src: "{{ role_path }}/files/string1.txt"
+    type: string
+  register: result
+
+- name: Issue 00815 - Assert Create an upper case Data Group
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00815 - Create an upper case Data Group - Idempotent check
+  bigip_data_group:
+    external_file_name: clients_data_group_Upper_case
+    name: clients_data_group_Upper_case
+    records_src: "{{ role_path }}/files/string1.txt"
+    type: string
+  register: result
+
+- name: Issue 00815 - Assert Create an upper case Data Group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00815 - Remove external data group list
+  bigip_data_group:
+    name: clients_data_group_Upper_case
+    state: absent
+    delete_data_group_file: yes
