@@ -157,7 +157,7 @@ class ModuleParameters(Parameters):
         if self._values['network'] == 'default':
             return 'default'
         try:
-            addr = ip_network(self._values['network'])
+            addr = ip_network(u"{0}".format(str(self._values['network'])))
             return str(addr)
         except ValueError:
             raise F5ModuleError(
