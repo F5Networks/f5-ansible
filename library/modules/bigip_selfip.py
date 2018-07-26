@@ -328,7 +328,7 @@ class ModuleParameters(Parameters):
                 pass
         except ValueError:
             if is_valid_ip(self._values['netmask']):
-                addr = ip_address(self._values['netmask'])
+                addr = ip_address(u'%s'.format(str(self._values['netmask'])))
                 if addr.version == 4:
                     ip = ip_network(u'0.0.0.0/%s' % str(self._values['netmask']))
                     result = ip.prefixlen
