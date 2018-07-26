@@ -242,7 +242,6 @@ import re
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.network.common.utils import validate_ip_v6_address
 
 try:
     from library.module_utils.network.f5.bigip import HAS_F5SDK
@@ -254,6 +253,7 @@ try:
     from library.module_utils.network.f5.common import compare_dictionary
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.sdk_exception import LazyAttributesRequired
@@ -269,6 +269,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import compare_dictionary
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from f5.sdk_exception import LazyAttributesRequired
