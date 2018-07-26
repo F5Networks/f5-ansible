@@ -352,11 +352,11 @@ class RecordsEncoder(object):
 
     def encode_address_from_dict(self, record):
         if is_valid_ip_network(record['key']):
-            key = ip_network(record['key'])
+            key = ip_network(u"{0}".format(str(record['key'])))
         elif is_valid_ip(record['key']):
-            key = ip_address(record['key'])
+            key = ip_address(u"{0}".format(str(record['key'])))
         elif is_valid_ip_interface(record['key']):
-            key = ip_interface(record['key'])
+            key = ip_interface(u"{0}".format(str(record['key'])))
         else:
             raise F5ModuleError(
                 "When specifying an 'address' type, the value to the left of the separator must be an IP."
@@ -420,11 +420,11 @@ class RecordsEncoder(object):
             # 2402:9400:1000:0::/64 := "Network4",
                 parts = record.split(self._separator)
                 if is_valid_ip_network(parts[0]):
-                    key = ip_network(parts[0])
+                    key = ip_network(u"{0}".format(str(parts[0])))
                 elif is_valid_ip(parts[0]):
-                    key = ip_address(parts[0])
+                    key = ip_address(u"{0}".format(str(parts[0])))
                 elif is_valid_ip_interface(parts[0]):
-                    key = ip_interface(parts[0])
+                    key = ip_interface(u"{0}".format(str(parts[0])))
                 elif parts[0] == '':
                     pass
                 else:
@@ -500,7 +500,7 @@ class RecordsDecoder(object):
         if matches:
             # network 192.168.0.0 prefixlen 16 := "Network3",
             # network 2402:9400:1000:0:: prefixlen 64 := "Network4",
-            key = "{0}/{1}".format(matches.group('addr'), matches.group('prefix'))
+            key = u"{0}/{1}".format(matches.group('addr'), matches.group('prefix'))
             addr = ip_network(key)
             value = record.split(self._separator)[1].strip().strip('"')
             result = dict(name=str(addr), data=value)
@@ -510,7 +510,7 @@ class RecordsDecoder(object):
             # host 172.16.1.1/32 := "Host3"
             # host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4"
             key = matches.group('addr')
-            addr = ip_interface(key)
+            addr = ip_interface(u"{0}".format(str(key)))
             value = record.split(self._separator)[1].strip().strip('"')
             result = dict(name=str(addr), data=value)
             return result
