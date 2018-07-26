@@ -7,7 +7,23 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from ansible.module_utils.network.common.utils import validate_ip_address
-from ansible.module_utils.network.common.utils import validate_ip_v6_address
+
+try:
+    # Ansible 2.6 and later
+    from ansible.module_utils.network.common.utils import validate_ip_v6_address
+except ImportError:
+    import socket
+
+    # Ansible 2.5 and earlier
+    #
+    # This method is simply backported from the 2.6 source code.
+    def validate_ip_v6_address(address):
+        try:
+            socket.inet_pton(socket.AF_INET6, address)
+        except socket.error:
+            return False
+        return True
+
 
 try:
     from library.module_utils.compat.ipaddress import ip_interface
