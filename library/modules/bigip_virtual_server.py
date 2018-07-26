@@ -633,7 +633,6 @@ import re
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.network.common.utils import validate_ip_v6_address
 from ansible.module_utils.six import iteritems
 from collections import namedtuple
 
@@ -647,6 +646,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.ipaddress import ip_interface
+    from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -661,6 +661,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.network.f5.ipaddress import ip_interface
+    from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
