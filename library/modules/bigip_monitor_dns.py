@@ -347,8 +347,6 @@ transparent:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.network.common.utils import validate_ip_v6_address
-from ansible.module_utils.network.common.utils import validate_ip_address
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -362,6 +360,8 @@ try:
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
+    from library.module_utils.network.f5.ipaddress import validate_ip_address
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -374,6 +374,8 @@ except ImportError:
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
+    from ansible.module_utils.network.f5.ipaddress import validate_ip_address
 
 
 class Parameters(AnsibleF5Parameters):
