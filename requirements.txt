@@ -1,5 +1,4 @@
 ansible>=2.5.0
-bigsuds
 f5-sdk
 netaddr
 isoparser
