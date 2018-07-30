@@ -92,7 +92,7 @@
       - irule3
   register: result
 
-- name: Issue 00665 - Assert Remove and iRule
+- name: Issue 00665 - Assert Remove an iRule
   assert:
     that:
       - result is changed
