@@ -1,0 +1,138 @@
+---
+
+- name: Issue 00821 - Include issue variables
+  include_vars:
+    file: issue-00821.yaml
+
+- name: Issue 00821 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 00821 - Add wide ip
+  bigip_gtm_wide_ip:
+    lb_method: "{{ valid_lb_method1 }}"
+    type: a
+    name: "{{ wide_ip_1 }}"
+    aliases:
+      - alias1.foo.com
+      - alias2.foo.com
+  register: result
+
+- name: Issue 00821 - Assert Add wide ip
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00821 - Add wide ip - Idempotent check
+  bigip_gtm_wide_ip:
+    lb_method: "{{ valid_lb_method1 }}"
+    type: a
+    name: "{{ wide_ip_1 }}"
+    aliases:
+      - alias1.foo.com
+      - alias2.foo.com
+  register: result
+
+- name: Issue 00821 - Assert Add wide ip - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00821 - Add an alias
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    aliases:
+      - alias1.foo.com
+      - alias2.foo.com
+      - alias3.foo.com
+  register: result
+
+- name: Issue 00821 - Assert Add an alias
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00821 - Add an alias - Idempotent check
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    aliases:
+      - alias1.foo.com
+      - alias2.foo.com
+      - alias3.foo.com
+  register: result
+
+- name: Issue 00821 - Assert Add an alias - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00821 - Remove an alias
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    aliases:
+      - alias2.foo.com
+      - alias3.foo.com
+  register: result
+
+- name: Issue 00821 - Assert Remove an alias
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00821 - Remove an alias - Idempotent check
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    aliases:
+      - alias2.foo.com
+      - alias3.foo.com
+  register: result
+
+- name: Issue 00821 - Assert Remove an alias - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00821 - Remove all aliases
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    aliases: ""
+  register: result
+
+- name: Issue 00821 - Assert Remove all aliases
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00821 - Remove all aliases - Idempotent check
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    aliases: ""
+  register: result
+
+- name: Issue 00821 - Assert Remove all aliases - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00821 - Remove wide ip
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    state: absent
+  register: result
+
+- name: Issue 00821 - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
