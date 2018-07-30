@@ -63,7 +63,7 @@
       - irule3
   register: result
 
-- name: Issue 00665 - Assert Add and iRule
+- name: Issue 00665 - Assert Add an iRule
   assert:
     that:
       - result is changed
