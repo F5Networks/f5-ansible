@@ -341,8 +341,11 @@ class ModuleParameters(Parameters):
     @property
     def full_name(self):
         delimiter = ':'
-        if validate_ip_v6_address(self.full_name_dict['name']):
-            delimiter = '.'
+        try:
+            if validate_ip_v6_address(self.full_name_dict['name']):
+                delimiter = '.'
+        except TypeError:
+            pass
         return '{0}{1}{2}'.format(self.full_name_dict['name'], delimiter, self.port)
 
     @property
@@ -646,7 +649,7 @@ class ModuleManager(object):
                 name=self.want.pool,
                 partition=self.want.partition
             )
-        except Exception:
+        except Exception as ex:
             raise F5ModuleError('The specified pool does not exist')
         result = pool.members_s.members.exists(
             name=self.want.full_name,
