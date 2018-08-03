@@ -1,9 +1,0 @@
----
-
-- import_tasks: test-interface-soap.yaml
-  tags:
-    - soap
-
-- import_tasks: test-interface-rest.yaml
-  tags:
-    - rest
