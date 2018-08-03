@@ -445,3 +445,6 @@
     - issue-00799
     - vcmp-no-slots
     - vcmp-slots
+
+- import_tasks: issue-00819.yaml
+  tags: issue-00819

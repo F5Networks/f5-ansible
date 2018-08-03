@@ -1,0 +1,24 @@
+---
+
+- name: Issue 00819 - Create iAppLX package
+  bigip_iapplx_package:
+    package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
+  register: result
+
+- name: Issue 00819 - Select iapplx-packages facts
+  bigip_device_facts:
+    include:
+      - iapplx-packages
+  register: result
+
+- name: Issue 00819 - Assert Select iapplx-packages facts
+  assert:
+    that:
+      - result is success
+      - result.iapplx_packages | selectattr("name", "match", "MyApp") | map(attribute='arch') | first == "noarch"
+      - result.iapplx_packages | json_query("[?name=='MyApp'].arch") | first == "noarch"
+
+- name: Issue 00819 - Delete iAppLX package
+  bigip_iapplx_package:
+    package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
+    state: absent
