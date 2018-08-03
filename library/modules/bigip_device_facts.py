@@ -29,6 +29,8 @@ options:
         should not be collected.
     required: True
     choices:
+      - all
+      - profiles
       - asm-policy-stats
       - client-ssl-profiles
       - devices
@@ -57,6 +59,36 @@ options:
       - virtual-addresses
       - virtual-servers
       - vlans
+      - !all
+      - !profiles
+      - !asm-policy-stats
+      - !client-ssl-profiles
+      - !devices
+      - !device-groups
+      - !fasthttp-profiles
+      - !fastl4-profiles
+      - !iapp-services
+      - !interfaces
+      - !internal-data-groups
+      - !irules
+      - !ltm-pools
+      - !nodes
+      - !partitions
+      - !provision-info
+      - !self-ips
+      - !software-volumes
+      - !software-images
+      - !software-hotfixes
+      - !ssl-certs
+      - !ssl-keys
+      - !system-db
+      - !system-info
+      - !traffic-groups
+      - !trunks
+      - !vcmp-guests
+      - !virtual-addresses
+      - !virtual-servers
+      - !vlans
     aliases: ['include']
 extends_documentation_fragment: f5
 author:
@@ -66,31 +98,34 @@ author:
 EXAMPLES = r'''
 - name: Collect BIG-IP facts
   bigip_facts:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     gather_subset:
       - interface
       - vlans
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Collect all BIG-IP facts
   bigip_facts:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     gather_subset:
       - all
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Collect all BIG-IP facts except trunks
   bigip_facts:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     gather_subset:
       - all
       - "!trunks"
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 '''
 
@@ -7776,7 +7811,76 @@ class ArgumentSpec(object):
             gather_subset=dict(
                 type='list',
                 required=True,
-                aliases=['include']
+                aliases=['include'],
+                choices=[
+                    # Meta choices
+                    'all',
+                    'profiles',
+
+                    # Non-meta choices
+                    'asm-policy-stats',
+                    'client-ssl-profiles',
+                    'devices',
+                    'device-groups',
+                    'fasthttp-profiles',
+                    'fastl4-profiles',
+                    'iapp-services',
+                    'interfaces',
+                    'internal-data-groups',
+                    'irules',
+                    'ltm-pools',
+                    'nodes',
+                    'partitions',
+                    'provision-info',
+                    'self-ips',
+                    'software-volumes',
+                    'software-images',
+                    'software-hotfixes',
+                    'ssl-certs',
+                    'ssl-keys',
+                    'system-db',
+                    'system-info',
+                    'traffic-groups',
+                    'trunks',
+                    'vcmp-guests',
+                    'virtual-addresses',
+                    'virtual-servers',
+                    'vlans',
+
+                    # Negations of meta choices
+                    '!all',
+                    '!profiles',
+
+                    # Negations of non-meta-choices
+                    '!asm-policy-stats',
+                    '!client-ssl-profiles',
+                    '!devices',
+                    '!device-groups',
+                    '!fasthttp-profiles',
+                    '!fastl4-profiles',
+                    '!iapp-services',
+                    '!interfaces',
+                    '!internal-data-groups',
+                    '!irules',
+                    '!ltm-pools',
+                    '!nodes',
+                    '!partitions',
+                    '!provision-info',
+                    '!self-ips',
+                    '!software-volumes',
+                    '!software-images',
+                    '!software-hotfixes',
+                    '!ssl-certs',
+                    '!ssl-keys',
+                    '!system-db',
+                    '!system-info',
+                    '!traffic-groups',
+                    '!trunks',
+                    '!vcmp-guests',
+                    '!virtual-addresses',
+                    '!virtual-servers',
+                    '!vlans',
+                ]
             ),
         )
         self.argument_spec = {}
