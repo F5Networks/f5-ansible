@@ -75,7 +75,9 @@ EXAMPLES = r'''
     server: lb.mydomain.com
     user: admin
     password: secret
-    include: interface,vlan
+    include:
+      - interface
+      - vlan
   delegate_to: localhost
 '''
 
