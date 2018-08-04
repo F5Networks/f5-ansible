@@ -1,0 +1,8 @@
+---
+
+pool_name: issue-00716
+pool_lb_method: round-robin
+dc_name: foo
+server_name: server1
+virtual_server_name_1: /mickey/mouse
+virtual_server_address_1: 3.3.3.3
