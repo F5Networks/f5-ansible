@@ -1,0 +1,88 @@
+---
+
+- name: Issue 00716 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 00716 - Include issue variables
+  include_vars:
+    file: issue-00716.yaml
+
+- name: Issue 00716 - Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name }}"
+
+- name: Issue 00716 - Create GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    devices:
+      - name: foo
+        address: 1.1.1.1
+    datacenter: "{{ dc_name }}"
+
+- name: Issue 00716 - Create a GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    address: "{{ virtual_server_address_1 }}"
+    port: 80
+
+- name: Issue 00716 - Create pool, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+
+- name: Issue 00716 - Create BIG-IP DNS pool member
+  bigip_gtm_pool_member:
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    pool: "{{ pool_name }}"
+  register: result
+
+- name: Issue 00716 - Assert Create BIG-IP DNS pool member
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00716 - Remove BIG-IP DNS pool member
+  bigip_gtm_pool_member:
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    pool: "{{ pool_name }}"
+    state: absent
+
+- name: Issue 00716 - Remove pool, type 'a'
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    state: absent
+
+- name: Issue 00716 - Remove GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    state: absent
+
+- name: Issue 00716 - Remove GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    state: absent
+
+- name: Issue 00716 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name }}"
+    state: absent
+
+- name: Issue 00716 - De-provision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
