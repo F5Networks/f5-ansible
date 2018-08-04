@@ -69,6 +69,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies descriptive text that identifies the node.</div>
+                                                    <div>You can remove a description by either specifying an empty string, or by specifying the special value <code>none</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>

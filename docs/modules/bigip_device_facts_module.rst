@@ -46,13 +46,16 @@ Parameters
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>asm-policy-stats</li>
+                                                                                                                                                                <li>all</li>
+                                                                                                                                                                                                <li>profiles</li>
+                                                                                                                                                                                                <li>asm-policy-stats</li>
                                                                                                                                                                                                 <li>client-ssl-profiles</li>
                                                                                                                                                                                                 <li>devices</li>
                                                                                                                                                                                                 <li>device-groups</li>
                                                                                                                                                                                                 <li>fasthttp-profiles</li>
                                                                                                                                                                                                 <li>fastl4-profiles</li>
                                                                                                                                                                                                 <li>iapp-services</li>
+                                                                                                                                                                                                <li>iapplx-packages</li>
                                                                                                                                                                                                 <li>interfaces</li>
                                                                                                                                                                                                 <li>internal-data-groups</li>
                                                                                                                                                                                                 <li>irules</li>
@@ -70,9 +73,41 @@ Parameters
                                                                                                                                                                                                 <li>system-info</li>
                                                                                                                                                                                                 <li>traffic-groups</li>
                                                                                                                                                                                                 <li>trunks</li>
+                                                                                                                                                                                                <li>vcmp-guests</li>
                                                                                                                                                                                                 <li>virtual-addresses</li>
                                                                                                                                                                                                 <li>virtual-servers</li>
                                                                                                                                                                                                 <li>vlans</li>
+                                                                                                                                                                                                <li>!all</li>
+                                                                                                                                                                                                <li>!profiles</li>
+                                                                                                                                                                                                <li>!asm-policy-stats</li>
+                                                                                                                                                                                                <li>!client-ssl-profiles</li>
+                                                                                                                                                                                                <li>!devices</li>
+                                                                                                                                                                                                <li>!device-groups</li>
+                                                                                                                                                                                                <li>!fasthttp-profiles</li>
+                                                                                                                                                                                                <li>!fastl4-profiles</li>
+                                                                                                                                                                                                <li>!iapp-services</li>
+                                                                                                                                                                                                <li>!iapplx-packages</li>
+                                                                                                                                                                                                <li>!interfaces</li>
+                                                                                                                                                                                                <li>!internal-data-groups</li>
+                                                                                                                                                                                                <li>!irules</li>
+                                                                                                                                                                                                <li>!ltm-pools</li>
+                                                                                                                                                                                                <li>!nodes</li>
+                                                                                                                                                                                                <li>!partitions</li>
+                                                                                                                                                                                                <li>!provision-info</li>
+                                                                                                                                                                                                <li>!self-ips</li>
+                                                                                                                                                                                                <li>!software-volumes</li>
+                                                                                                                                                                                                <li>!software-images</li>
+                                                                                                                                                                                                <li>!software-hotfixes</li>
+                                                                                                                                                                                                <li>!ssl-certs</li>
+                                                                                                                                                                                                <li>!ssl-keys</li>
+                                                                                                                                                                                                <li>!system-db</li>
+                                                                                                                                                                                                <li>!system-info</li>
+                                                                                                                                                                                                <li>!traffic-groups</li>
+                                                                                                                                                                                                <li>!trunks</li>
+                                                                                                                                                                                                <li>!vcmp-guests</li>
+                                                                                                                                                                                                <li>!virtual-addresses</li>
+                                                                                                                                                                                                <li>!virtual-servers</li>
+                                                                                                                                                                                                <li>!vlans</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -281,31 +316,34 @@ Examples
     
     - name: Collect BIG-IP facts
       bigip_facts:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         gather_subset:
           - interface
           - vlans
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Collect all BIG-IP facts
       bigip_facts:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         gather_subset:
           - all
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Collect all BIG-IP facts except trunks
       bigip_facts:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         gather_subset:
           - all
           - "!trunks"
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
 
@@ -325,6 +363,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                 
@@ -347,6 +386,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                                     
@@ -2623,6 +2663,449 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fallback</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
+                    <b>http_profiles</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>http-profiles</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>HTTP profile related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/http</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">http</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">http</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My profile</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>accept_xff</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables trusting the client IP address, and statistics from the client IP address, based on the request&#x27;s X-Forwarded-For (XFF) headers, if they exist.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>allow_truncated_redirects</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the pass-through behavior when a redirect lacking the trailing carriage-return and line feed pair at the end of the headers is parsed.</div>
+                                                    <div>When <code>no</code>, will silently drop the invalid HTTP.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>excess_client_headers</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the pass-through behavior when <code>max_header_count</code> value is exceeded by the client.</div>
+                                                    <div>When <code>reject</code>, rejects the connection.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">reject</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>excess_server_headers</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the pass-through behavior when <code>max_header_count</code> value is exceeded by the server.</div>
+                                                    <div>When <code>reject</code>, rejects the connection.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">reject</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>known_methods</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Optimizes the behavior of a known HTTP method in the list.</div>
+                                                    <div>The default methods include the following HTTP/1.1 methods. CONNECT, DELETE, GET, HEAD, LOCK, OPTIONS, POST, PROPFIND, PUT, TRACE, UNLOCK.</div>
+                                                    <div>If a known method is deleted from the <code>known_methods</code> list, the BIG-IP system applies the <code>unknown_method</code> setting to manage that traffic.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;CONNECT&#x27;, &#x27;DELETE&#x27;, &#x27;...&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>max_header_count</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum number of headers the system supports.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">64</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>max_header_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum size in bytes the system allows for all HTTP request headers combined, including the request line.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">32768</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>max_requests</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the number of requests that the system accepts on a per-connection basis.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>oversize_client_headers</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the pass-through behavior when the <code>max_header_size</code> value is exceeded by the client.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">reject</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>oversize_server_headers</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the pass-through behavior when the <code>max_header_size</code> value is exceeded by the server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">reject</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>pipeline_action</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Enables or disables HTTP/1.1 pipelining.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">allow</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>unknown_method</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the behavior (allow, reject, or pass through) when an unknown HTTP method is parsed.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">allow</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>default_connect_handling</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the behavior of the proxy service when handling outbound requests.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">deny</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>hsts_include_subdomains</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>When <code>yes</code>, applies the HSTS policy to the HSTS host and its subdomains.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>hsts_enabled</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>When <code>yes</code>, enables the HTTP Strict Transport Security settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>insert_x_forwarded_for</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>When <code>yes</code>, specifies that the system inserts an X-Forwarded-For header in an HTTP request with the client IP address, to use with connection pooling.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>lws_max_columns</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the maximum column width for any given line, when inserting an HTTP header in an HTTP request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">80</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>onconnect_transformations</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>When <code>yes</code>, specifies, that the system performs HTTP header transformations for the purpose of keeping connections open.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>proxy_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the proxy mode for this profile. Either reverse, explicit, or transparent.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">reverse</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>redirect_rewrite</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether the system rewrites the URIs that are part of HTTP redirect (3XX) responses</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">none</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>request_chunking</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies how the system handles HTTP content that is chunked by a client.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preserve</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>response_chunking</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies how the system handles HTTP content that is chunked by a server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">selective</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>server_agent_name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the string used as the server name in traffic generated by LTM.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BigIP</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>sflow_poll_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The maximum interval in seconds between two pollings.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>sflow_sampling_rate</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the ratio of packets observed to the samples generated.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>via_request</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether to Remove, Preserve, or Append Via headers included in a client request to an origin web server.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preserve</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>via_response</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies whether to Remove, Preserve, or Append Via headers included in an origin web server response to a client.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preserve</div>
                                     </td>
             </tr>
                     
@@ -4996,6 +5479,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                                             <div>SSL certificate related facts.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
                                                             <tr>
@@ -5314,6 +5799,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                                             <div>System DB related facts.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
                                                             <tr>
@@ -5408,6 +5895,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                                             <div>Traffic group related facts.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
                                                             <tr>
@@ -5857,6 +6346,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                                             <div>Traffic group related facts.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
                                                             <tr>
@@ -5993,6 +6484,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                                             <div>Trunk related facts.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
                                                             <tr>
@@ -6195,6 +6688,261 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     
                                                 <tr>
                                 <td colspan="4">
+                    <b>vcmp_guests</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>vcmp-guests</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>vCMP related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">guest1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">guest1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>allowed_slots</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>List of slots that the guest is allowed to be assigned to.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[0, 1, 3]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>assigned_slots</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Slots that the guest is assigned to.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[0]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>boot_priority</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies boot priority of the guest. Lower number means earlier to boot.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">65535</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>cores_per_slot</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Number of cores that the system allocates to the guest.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>hostname</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>FQDN assigned to the guest.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">guest1.localdomain</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>hotfix_image</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>hotfix image to install onto any of this guest&#x27;s newly created virtual disks.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Hotfix-BIGIP-12.1.3.4-0.0.2-hf1.iso</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>initial_image</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Software image to install onto any of this guest&#x27;s newly created virtual disks.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">BIGIP-12.1.3.4-0.0.2.iso</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>mgmt_route</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Management gateway IP address for the guest.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.2.2.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>mgmt_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Management IP address configuration for the guest.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.2.3</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>mgmt_network</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Accessibility of this vCMP guest&#x27;s management network.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bridged</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>min_number_of_slots</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the minimum number of slots that the guest must be assigned to.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>number_of_slots</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the number of slots the guest should be assigned to.</div>
+                                                    <div>This number is always greater than, or equal to, <code>min_number_of_slots</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ssl_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The SSL hardware allocation mode for the guest.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">shared</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>state</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Specifies the state of the guest.</div>
+                                                    <div>May be one of <code>configured</code>, <code>provisioned</code>, or <code>deployed</code>.</div>
+                                                    <div>Each state implies the actions of all states before it.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">provisioned</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>virtual_disk</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>The filename of the virtual disk to use for this guest.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">guest1.img</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
                     <b>virtual_addresses</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -6202,6 +6950,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                                             <div>Virtual address related facts.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
                                                             <tr>

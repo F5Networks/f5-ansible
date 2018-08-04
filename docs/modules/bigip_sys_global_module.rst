@@ -357,7 +357,7 @@ Examples
     
     - name: Disable the setup utility
       bigip_sys_global:
-        gui_setup: disabled
+        gui_setup: no
         password: secret
         server: lb.mydomain.com
         user: admin
@@ -415,7 +415,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                             <div>The new setting for the Setup utility.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -428,7 +428,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                             <div>The new setting for displaying the system menu on the LCD.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -441,7 +441,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                             <div>The new setting for whether the mgmt interface should DHCP or not.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -454,7 +454,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                             <div>The new setting for whether the system should boot to an ISO on the network or not.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -467,7 +467,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                         <div>The new setting for whether the system should suppress information to the console during boot or not.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -480,7 +480,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                         <div>The new setting for whether the system should display an advisory message on the login screen or not.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                         </table>

@@ -5,10 +5,10 @@
 .. _bigip_software_image_module:
 
 
-bigip_software_image - __SHORT_DESCRIPTION__
-++++++++++++++++++++++++++++++++++++++++++++
+bigip_software_image - Manage software images on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_software_image - __SHORT_DESCRIPTION__
 
 Synopsis
 --------
-- __LONG DESCRIPTION__.
+- Manages software images on a BIG-IP. These images may include both base images and hotfix images.
 
 
 
@@ -52,7 +52,9 @@ Parameters
                                                                                     <b>Default:</b><br/><div style="color: blue">no</div>
                                     </td>
                                                                 <td>
-                                                                        <div>If <code>yes</code> will upload the file every time and replace the file on the device. If <code>no</code>, the file will only be uploaded if it does not already exist. Generally should be <code>yes</code> only in cases where you have reason to believe that the image was corrupted during upload.</div>
+                                                                        <div>When <code>yes</code>, will upload the file every time and replace the file on the device.</div>
+                                                    <div>When <code>no</code>, the file will only be uploaded if it does not already exist.</div>
+                                                    <div>Generally should be <code>yes</code> only in cases where you have reason to believe that the image was corrupted during upload.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -64,7 +66,7 @@ Parameters
                                                                 <td>
                                                                         <div>The image to put on the remote device.</div>
                                                     <div>This may be an absolute or relative location on the Ansible controller.</div>
-                                                    <div>You may also supply a URL to have the image downloaded directly to the BIG-IP. To take advantage of this, your BIG-IP will need to be able to reach the service hosting your image.</div>
+                                                    <div>Image names, whether they are base ISOs or hotfix ISOs, <b>must</b> be unique.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -280,13 +282,31 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Upload relative image to the BIG-IP
       bigip_software_image:
-        name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        image: BIGIP-13.0.0.0.0.1645.iso
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Upload absolute image to the BIG-IP
+      bigip_software_image:
+        image: /path/to/images/BIGIP-13.0.0.0.0.1645.iso
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Upload image in a role to the BIG-IP
+      bigip_software_image:
+        image: "{{ role_path }}/files/BIGIP-13.0.0.0.0.1645.iso"
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -299,35 +319,74 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
+                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>param1</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new param1 value of the resource.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>param2</b>
+                    <b>build</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param2 value of the resource.</div>
+                                            <div>Build version of the software contained in the image.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.0.3</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>checksum</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>MD5 checksum of the ISO.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8cdbd094195fab4b2b47ff4285577b70</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>file_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Size of the uploaded image in MB.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1948</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>image_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Whether the image is a release or hotfix image</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">release</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>version</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Version of the software contained in the image.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13.1.0.8</div>
                                     </td>
             </tr>
                         </table>

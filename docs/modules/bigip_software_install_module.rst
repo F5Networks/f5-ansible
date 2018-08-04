@@ -35,7 +35,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -47,7 +47,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Image to install on the remote device.</div>
+                                                                        <div>Images to install on the remote device.</div>
+                                                    <div>To install a base image <b>and</b> a hotfix in one task, use a loop. Note that the order of the items in the loop is important; as is the c(state). Refer to the examples for correct usage.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -186,7 +187,10 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Automatically chooses the first inactive volume in alphanumeric order. If there is no inactive volume, new volume with incremented volume name will be created. For example, if HD1.1 is currently active and no other volume exists, then the module will create HD1.2 and install the software. If volume name does not end with numeric character, then add <code>.1</code> to the current active volume name. When <code>volume</code> is specified, this option will be ignored.</div>
+                                                                        <div>Automatically chooses the first inactive volume in alphanumeric order. If there is no inactive volume, new volume with incremented volume name will be created.</div>
+                                                    <div>For example, if HD1.1 is currently active and no other volume exists, then the module will create HD1.2 and install the software.</div>
+                                                    <div>If volume name does not end with numeric character, then add <code>.1</code> to the current active volume name.</div>
+                                                    <div>When <code>volume</code> is specified, this option will be ignored.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -210,6 +214,23 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP server port.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>state</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>activated</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>installed</li>
+                                                                                                                                                                                                <li>present</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>present</code>, ensures that the software is uploaded/downloaded.</div>
+                                                    <div>When <code>installed</code>, ensures that the software is uploaded/downloaded and installed on the system. The device is <b>not</b> rebooted into the new software.</div>
+                                                    <div>When <code>activated</code>, ensures that the software is uploaded/downloaded, installed, and the system is rebooted to the new software.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -245,7 +266,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The volume to install the software and, optionally, the hotfix to. This parameter is only required when the <code>state</code> is <code>activated</code> or <code>installed</code>.</div>
+                                                                        <div>The volume to install the image to. This parameter is only required when the <code>state</code> is <code>activated</code> or <code>installed</code>.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -267,13 +288,22 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Install base image, hotfix, and boot into hotfix
       bigip_software_install:
-        name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        image: "{{ item.image }}"
+        state: "{{ item.state }}"
+        volume: "{{ item.volume }}"
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      loop:
+        - image: BIGIP-13.0.0.0.0.1645.iso
+          volume: HD1.2
+          state: present
+        - image: Hotfix-BIGIP-13.0.0.1.0.1668-HF1.iso
+          volume: HD1.3
+          state: activated
       delegate_to: localhost
 
 

@@ -34,13 +34,26 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>allowed_slots</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Contains those slots that the guest is allowed to be assigned to.</div>
+                                                    <div>When the host determines which slots this guest should be assigned to, only slots in this list will be considered.</div>
+                                                    <div>This is a good way to force guests to be assigned only to particular slots, or, by configuring disjoint <code>allowed_slots</code> on two guests, that those guests are never assigned to the same slot.</div>
+                                                    <div>By default this list includes every available slot in the cluster. This means, by default, the guest may be assigned to any slot.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>cores_per_slot</b>
                                                         </td>
@@ -122,12 +135,38 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>min_number_of_slots</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the minimum number of slots that the guest must be assigned to in order to deploy.</div>
+                                                    <div>This field dictates the number of slots that the guest must be assigned to.</div>
+                                                    <div>If at the end of any allocation attempt the guest is not assigned to at least this many slots, the attempt fails and the change that initiated it is reverted.</div>
+                                                    <div>A guest&#x27;s <code>min_number_of_slots</code> value cannot be greater than its <code>number_of_slots</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>The name of the vCMP guest to manage.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>number_of_slots</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the number of slots for the system to use for creating the guest.</div>
+                                                    <div>This value dictates how many cores a guest is allocated from each slot that it is assigned to.</div>
+                                                    <div>Possible values are dependent on the type of blades being used in this cluster.</div>
+                                                    <div>The default value depends on the type of blades being used in this cluster.</div>
                                                                                 </td>
             </tr>
                                 <tr>

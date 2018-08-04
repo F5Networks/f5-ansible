@@ -1,14 +1,14 @@
-:source: modules/bigip_device_connectivity.py
+:source: modules/bigip_profile_http_compression.py
 
 :orphan:
 
-.. _bigip_device_connectivity_module:
+.. _bigip_profile_http_compression_module:
 
 
-bigip_device_connectivity - Manages device IP configuration settings for HA on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_http_compression - Manage HTTP compression profiles on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_device_connectivity - Manages device IP configuration settings for HA on a
 
 Synopsis
 --------
-- Manages device IP configuration settings for HA on a BIG-IP. Each BIG-IP device has synchronization and failover connectivity information (IP addresses) that you define as part of HA pairing or clustering. This module allows you to configure that information.
+- Manage HTTP compression profiles on a BIG-IP.
 
 
 
@@ -34,99 +34,116 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>cluster_mirroring</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                    <b>buffer_size</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Maximum number of compressed bytes that the system buffers before inserting a Content-Length header (which specifies the compressed size) into the response.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>description</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Description of the HTTP compression profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>gzip_level</b>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>between-clusters</li>
-                                                                                                                                                                                                <li>within-cluster</li>
+                                                                                                                                                                <li>1</li>
+                                                                                                                                                                                                <li>2</li>
+                                                                                                                                                                                                <li>3</li>
+                                                                                                                                                                                                <li>4</li>
+                                                                                                                                                                                                <li>5</li>
+                                                                                                                                                                                                <li>6</li>
+                                                                                                                                                                                                <li>7</li>
+                                                                                                                                                                                                <li>8</li>
+                                                                                                                                                                                                <li>9</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies whether mirroring occurs within the same cluster or between different clusters on a multi-bladed system.</div>
-                                                    <div>This parameter is only supported on platforms that have multiple blades, such as Viprion hardware. It is not supported on VE.</div>
+                                                                        <div>Specifies the degree to which the system compresses the content.</div>
+                                                    <div>Higher compression levels cause the compression process to be slower.</div>
+                                                    <div>Valid values are between 1 (least compression and fastest) to 9 (most compression and slowest).</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>config_sync_ip</b>
+                    <b>gzip_memory_level</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Local IP address that the system uses for ConfigSync operations.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>failover_multicast</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>1</li>
+                                                                                                                                                                                                <li>2</li>
+                                                                                                                                                                                                <li>4</li>
+                                                                                                                                                                                                <li>8</li>
+                                                                                                                                                                                                <li>16</li>
+                                                                                                                                                                                                <li>32</li>
+                                                                                                                                                                                                <li>64</li>
+                                                                                                                                                                                                <li>128</li>
+                                                                                                                                                                                                <li>256</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>yes</code>, ensures that the Failover Multicast configuration is enabled and if no further multicast configuration is provided, ensures that <code>multicast_interface</code>, <code>multicast_address</code> and <code>multicast_port</code> are the defaults specified in each option&#x27;s description. When <code>no</code>, ensures that Failover Multicast configuration is disabled.</div>
+                                                                        <div>Number of kilobytes of memory that the system uses for internal compression buffers when compressing a server response.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>mirror_primary_address</b>
+                    <b>gzip_window_size</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>1</li>
+                                                                                                                                                                                                <li>2</li>
+                                                                                                                                                                                                <li>4</li>
+                                                                                                                                                                                                <li>8</li>
+                                                                                                                                                                                                <li>16</li>
+                                                                                                                                                                                                <li>32</li>
+                                                                                                                                                                                                <li>64</li>
+                                                                                                                                                                                                <li>128</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the primary IP address for the system to use to mirror connections.</div>
+                                                                        <div>Number of kilobytes in the window size that the system uses when compressing a server response.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>mirror_secondary_address</b>
-                                                        </td>
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the secondary IP address for the system to use to mirror connections.</div>
+                                                                        <div>Specifies the name of the compression profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>multicast_address</b>
+                    <b>parent</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>IP address for the system to send multicast messages associated with failover. When <code>failover_multicast</code> is <code>yes</code> and this option is not provided, a default of <code>224.0.0.245</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>multicast_interface</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Interface over which the system sends multicast messages associated with failover. When <code>failover_multicast</code> is <code>yes</code> and this option is not provided, a default of <code>eth0</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>multicast_port</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Port for the system to send multicast messages associated with failover. When <code>failover_multicast</code> is <code>yes</code> and this option is not provided, a default of <code>62960</code> will be used. This value must be between 0 and 65535.</div>
+                                                                        <div>Specifies the profile from which this profile inherits settings.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>httpcompression</code> profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -283,16 +300,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>unicast_failover</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Desired addresses to use for failover operations. Options <code>address</code> and <code>port</code> are supported with dictionary structure where <code>address</code> is the local IP address that the system uses for failover operations. Port specifies the port that the system uses for failover operations. If <code>port</code> is not specified, the default value <code>1026</code> will be used.  If you are specifying the (recommended) management IP address, use &#x27;management-ip&#x27; in the address field.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -325,8 +332,6 @@ Notes
 -----
 
 .. note::
-    - This module is primarily used as a component of configuring HA pairs of BIG-IP devices.
-    - Requires BIG-IP >= 12.0.0
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
@@ -338,16 +343,18 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Configure device connectivity for standard HA pair
-      bigip_device_connectivity:
-        config_sync_ip: 10.1.30.1
-        mirror_primary_address: 10.1.30.1
-        unicast_failover:
-          - address: management-ip
-          - address: 10.1.30.1
-        server: lb.mydomain.com
-        user: admin
-        password: secret
+    - name: Create an HTTP compression profile
+      bigip_profile_http_compression:
+        name: profile1
+        description: Custom HTTP Compression Profile
+        buffer_size: 131072
+        gzip_level: 6
+        gzip_memory_level: 16k
+        gzip_window_size: 64k
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -360,135 +367,74 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>changed</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>buffer_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>always</td>
+                <td>changed</td>
                 <td>
-                                            <div>Denotes if the F5 configuration was updated.</div>
+                                            <div>The new buffer size of the profile.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">4096</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>cluster_mirroring</b>
+                    <b>description</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The current cluster-mirroring setting.</div>
+                                            <div>The new description of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">between-clusters</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My custom profile</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>config_sync_ip</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>gzip_level</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new value of the <code>config_sync_ip</code> setting.</div>
+                                            <div>The new GZIP level of the profile. Smaller is less compression.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.1.1.1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>failover_multicast</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>gzip_memory_level</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Whether a failover multicast attribute has been changed or not.</div>
+                                            <div>The new GZIP memory level, in KB, of the profile.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">16</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>mirror_primary_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>gzip_window_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new value of the <code>mirror_primary_address</code> setting.</div>
+                                            <div>The new GZIP window size, in KB, of the profile.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.1.1.2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>mirror_secondary_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new value of the <code>mirror_secondary_address</code> setting.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.1.1.3</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>multicast_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new value of the <code>multicast_address</code> setting.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">224.0.0.245</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>multicast_interface</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new value of the <code>multicast_interface</code> setting.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">eth0</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>multicast_port</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new value of the <code>multicast_port</code> setting.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1026</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>unicast_failover</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new value of the <code>unicast_failover</code> setting.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;address&#x27;: &#x27;10.1.1.2&#x27;, &#x27;port&#x27;: 1026}]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">64</div>
                                     </td>
             </tr>
                         </table>
@@ -500,7 +446,7 @@ Status
 
 
 
-This module is **stableinterface** which means that the maintainers for this module guarantee that no backward incompatible interface changes will be made.
+This module is **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
 
 

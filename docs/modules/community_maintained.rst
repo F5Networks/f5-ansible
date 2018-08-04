@@ -25,7 +25,6 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_dns_nameserver_module`
   * :ref:`bigip_dns_record_module`
   * :ref:`bigip_dns_zone_module`
-  * :ref:`bigip_drop_connection_module`
   * :ref:`bigip_facts_module`
   * :ref:`bigip_gtm_datacenter_module`
   * :ref:`bigip_gtm_facts_module`
@@ -67,6 +66,7 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_pool_member_module`
   * :ref:`bigip_profile_client_ssl_module`
   * :ref:`bigip_profile_dns_module`
+  * :ref:`bigip_profile_http_compression_module`
   * :ref:`bigip_profile_oneconnect_module`
   * :ref:`bigip_profile_persistence_src_addr_module`
   * :ref:`bigip_profile_tcp_module`
@@ -78,8 +78,10 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_remote_syslog_module`
   * :ref:`bigip_routedomain_module`
   * :ref:`bigip_security_address_list_module`
+  * :ref:`bigip_security_dos_profile_module`
   * :ref:`bigip_security_log_profile_module`
   * :ref:`bigip_security_policy_module`
+  * :ref:`bigip_security_policy_rule_module`
   * :ref:`bigip_security_port_list_module`
   * :ref:`bigip_security_rule_list_module`
   * :ref:`bigip_selfip_module`
@@ -106,7 +108,6 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_ucs_fetch_module`
   * :ref:`bigip_user_module`
   * :ref:`bigip_vcmp_guest_module`
-  * :ref:`bigip_view_module`
   * :ref:`bigip_virtual_address_module`
   * :ref:`bigip_virtual_server_module`
   * :ref:`bigip_vlan_module`

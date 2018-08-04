@@ -26,7 +26,6 @@ Requirements
 The below requirements are needed on the host that executes this module.
 
 - f5-sdk >= 3.0.16
-- netaddr
 
 
 Parameters
@@ -37,7 +36,8 @@ Parameters
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
                                                                                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -497,6 +497,64 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>security_nat_policy</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specify the Firewall NAT policies for the virtual server.</div>
+                                                    <div>You can specify one or more NAT policies to use.</div>
+                                                    <div>The most specific policy is used. For example, if you specify that the virtual server use the device policy and the route domain policy, the route domain policy overrides the device policy.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Policy to apply a NAT policy directly to the virtual server.</div>
+                                                    <div>The virtual server NAT policy is the most specific, and overrides a route domain and device policy, if specified.</div>
+                                                    <div>To remove the policy, specify an empty string value.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>use_device_policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specify that the virtual server uses the device NAT policy, as specified in the Firewall Options.</div>
+                                                    <div>The device policy is used if no route domain or virtual server NAT setting is specified.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>use_route_domain_policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specify that the virtual server uses the route domain policy, as specified in the Route Domain Security settings.</div>
+                                                    <div>When specified, the route domain policy overrides the device policy, and is overridden by a virtual server policy.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -632,7 +690,6 @@ Notes
 -----
 
 .. note::
-    - Requires the netaddr Python package on the host. This is as easy as ``pip install netaddr``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
