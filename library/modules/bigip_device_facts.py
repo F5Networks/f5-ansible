@@ -1233,6 +1233,222 @@ fastl4_profiles:
       type: string
       sample: fallback
   sample: hash/dictionary of values
+http_profiles:
+  description: HTTP profile related facts.
+  returned: When C(http-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/http
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: http
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: http
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My profile
+    accept_xff:
+      description:
+        - Enables or disables trusting the client IP address, and statistics
+          from the client IP address, based on the request's X-Forwarded-For
+          (XFF) headers, if they exist.
+      returned: changed
+      type: bool
+      sample: yes
+    allow_truncated_redirects:
+      description:
+        - Specifies the pass-through behavior when a redirect lacking the
+          trailing carriage-return and line feed pair at the end of the headers
+          is parsed.
+        - When C(no), will silently drop the invalid HTTP.
+      returned: changed
+      type: bool
+      sample: no
+    excess_client_headers:
+      description:
+        - Specifies the pass-through behavior when C(max_header_count) value is
+          exceeded by the client.
+        - When C(reject), rejects the connection.
+      returned: changed
+      type: string
+      sample: reject
+    excess_server_headers:
+      description:
+        - Specifies the pass-through behavior when C(max_header_count) value is
+          exceeded by the server.
+        - When C(reject), rejects the connection.
+      returned: changed
+      type: string
+      sample: reject
+    known_methods:
+      description:
+        - Optimizes the behavior of a known HTTP method in the list.
+        - The default methods include the following HTTP/1.1 methods. CONNECT,
+          DELETE, GET, HEAD, LOCK, OPTIONS, POST, PROPFIND, PUT, TRACE, UNLOCK.
+        - If a known method is deleted from the C(known_methods) list, the
+          BIG-IP system applies the C(unknown_method) setting to manage that traffic.
+      returned: changed
+      type: list
+      sample: ['CONNECT', 'DELETE', ...]
+    max_header_count:
+      description:
+        - Specifies the maximum number of headers the system supports.
+      returned: changed
+      type: int
+      sample: 64
+    max_header_size:
+      description:
+        - Specifies the maximum size in bytes the system allows for all HTTP
+          request headers combined, including the request line.
+      returned: changed
+      type: int
+      sample: 32768
+    max_requests:
+      description:
+        - Specifies the number of requests that the system accepts on a per-connection
+          basis.
+      returned: changed
+      type: int
+      sample: 0
+    oversize_client_headers:
+      description:
+        - Specifies the pass-through behavior when the C(max_header_size) value
+          is exceeded by the client.
+      returned: changed
+      type: string
+      sample: reject
+    oversize_server_headers:
+      description:
+        - Specifies the pass-through behavior when the C(max_header_size) value
+          is exceeded by the server.
+      returned: changed
+      type: string
+      sample: reject
+    pipeline_action:
+      description:
+        - Enables or disables HTTP/1.1 pipelining.
+      returned: changed
+      type: string
+      sample: allow
+    unknown_method:
+      description:
+        - Specifies the behavior (allow, reject, or pass through) when an unknown
+          HTTP method is parsed. 
+      returned: changed
+      type: string
+      sample: allow
+    default_connect_handling:
+      description:
+        - Specifies the behavior of the proxy service when handling outbound requests.
+      returned: changed
+      type: string
+      sample: deny
+    hsts_include_subdomains:
+      description:
+        - When C(yes), applies the HSTS policy to the HSTS host and its subdomains.
+      returned: changed
+      type: bool
+      sample: yes
+    hsts_enabled:
+      description:
+        - When C(yes), enables the HTTP Strict Transport Security settings.
+      returned: changed
+      type: bool
+      sample: yes
+    insert_x_forwarded_for:
+      description:
+        - When C(yes), specifies that the system inserts an X-Forwarded-For header in
+          an HTTP request with the client IP address, to use with connection pooling.
+      returned: changed
+      type: bool
+      sample: no
+    lws_max_columns:
+      description:
+        - Specifies the maximum column width for any given line, when inserting an HTTP
+          header in an HTTP request.
+      returned: changed
+      type: int
+      sample: 80
+    onconnect_transformations:
+      description:
+        - When C(yes), specifies, that the system performs HTTP header transformations
+          for the purpose of keeping connections open.
+      returned: changed
+      type: bool
+      sample: yes
+    proxy_mode:
+      description:
+        - Specifies the proxy mode for this profile. Either reverse, explicit, or transparent.
+      returned: changed
+      type: string
+      sample: reverse
+    redirect_rewrite:
+      description:
+        - Specifies whether the system rewrites the URIs that are part of HTTP
+          redirect (3XX) responses
+      returned: changed
+      type: string
+      sample: none
+    request_chunking:
+      description:
+        - Specifies how the system handles HTTP content that is chunked by a client.
+      returned: changed
+      type: string
+      sample: preserve
+    response_chunking:
+      description:
+        - Specifies how the system handles HTTP content that is chunked by a server.
+      returned: changed
+      type: string
+      sample: selective
+    server_agent_name:
+      description:
+        - Specifies the string used as the server name in traffic generated by LTM.
+      returned: changed
+      type: string
+      sample: BigIP
+    sflow_poll_interval:
+      description:
+        - The maximum interval in seconds between two pollings. 
+      returned: changed
+      type: int
+      sample: 0
+    sflow_sampling_rate:
+      description:
+        - Specifies the ratio of packets observed to the samples generated.
+      returned: changed
+      type: int
+      sample: 0
+    via_request:
+      description:
+        - Specifies whether to Remove, Preserve, or Append Via headers included in
+          a client request to an origin web server.
+      returned: changed
+      type: string
+      sample: preserve
+    via_response:
+      description:
+        - Specifies whether to Remove, Preserve, or Append Via headers included in
+          an origin web server response to a client.
+      returned: changed
+      type: string
+      sample: preserve
+  sample: hash/dictionary of values
 iapp_services:
   description: iApp v1 service related facts.
   returned: When C(iapp-services) is specified in C(gather_subset).
@@ -4691,6 +4907,7 @@ class HttpProfilesParameters(BaseParameters):
         'serverAgentName': 'server_agent_name',
         'viaRequest': 'via_request',
         'viaResponse': 'via_response',
+        'pipeline': 'pipeline_action',
     }
 
     returnables = [
@@ -4708,7 +4925,7 @@ class HttpProfilesParameters(BaseParameters):
         'max_requests',
         'oversize_client_headers',
         'oversize_server_headers',
-        'pipeline',
+        'pipeline_action',
         'unknown_method',
         'default_connect_handling',
         'hsts_include_subdomains',
@@ -4807,7 +5024,7 @@ class HttpProfilesParameters(BaseParameters):
             return None
         if self._values['enforcement']['truncatedRedirects'] is None:
             return None
-        return self._values['enforcement']['truncatedRedirects']
+        return flatten_boolean(self._values['enforcement']['truncatedRedirects'])
 
     @property
     def unknown_method(self):
