@@ -408,7 +408,7 @@ class ModuleManager(object):
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.syslog.load()
         attrs = resource.attrs
-        result = Parameters(attrs)
+        result = Parameters(params=attrs)
         return result
 
     def absent(self):
