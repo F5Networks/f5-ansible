@@ -423,12 +423,12 @@ Examples
       bigip_device_auth:
         type: tacacs
         authentication: use-all-servers
-        protocol: ip
+        protocol_name: ip
         secret: secret
         servers:
           - 10.10.10.10
           - 10.10.10.11
-        service: ppp
+        service_name: ppp
         state: present
         use_for_auth: yes
         provider: 
@@ -441,13 +441,13 @@ Examples
       bigip_device_auth:
         type: tacacs
         authentication: use-all-servers
-        protocol: ip
+        protocol_name: ip
         secret: secret
         servers:
           - address: 10.10.10.10
             port: 1234
           - 10.10.10.11
-        service: ppp
+        service_name: ppp
         use_for_auth: yes
         state: present
         provider: 
@@ -458,47 +458,6 @@ Examples
 
 
 
-
-Return Values
--------------
-Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
-            <th colspan="1">Key</th>
-            <th>Returned</th>
-            <th width="100%">Description</th>
-        </tr>
-                    <tr>
-                                <td colspan="1">
-                    <b>param1</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new param1 value of the resource.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>param2</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new param2 value of the resource.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
-                                    </td>
-            </tr>
-                        </table>
-    <br/><br/>
 
 
 Status

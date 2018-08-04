@@ -296,7 +296,11 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 16.</div>
+                                                                        <div>The number of seconds in which the node or service must respond to the monitor request.</div>
+                                                    <div>If the target responds within the set time period, it is considered up.</div>
+                                                    <div>If the target does not respond within the set time period, it is considered down.</div>
+                                                    <div>You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second.</div>
+                                                    <div>If this parameter is not provided when creating a new monitor, then the default value will be <code>16</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>

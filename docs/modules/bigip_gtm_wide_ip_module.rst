@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
@@ -42,6 +42,17 @@ Parameters
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>aliases</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies alternate domain names for the web site content you are load balancing.</div>
+                                                    <div>You can use the same wildcard characters for aliases as you can for actual wide IP names.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>irules</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
@@ -427,12 +438,25 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                        <tr>
+                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
+                                <td colspan="1">
+                    <b>aliases</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Aliases set on the Wide IP.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;alias1.foo.com&#x27;, &#x27;*.wildcard.domain&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
                                 <td colspan="1">
                     <b>irules</b>
                     <br/><div style="font-size: small; color: red">list</div>

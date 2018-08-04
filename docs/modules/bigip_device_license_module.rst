@@ -297,18 +297,20 @@ Examples
     
     - name: License BIG-IP using a key
       bigip_device_license:
-        server: "lb.mydomain.com"
-        user: "admin"
-        password: "secret"
         license_key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
+        provider:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
       delegate_to: localhost
 
     - name: Remove the license from the system
       bigip_device_license:
-        server: "lb.mydomain.com"
-        user: "admin"
-        password: "secret"
         state: "absent"
+        provider:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
       delegate_to: localhost
 
 

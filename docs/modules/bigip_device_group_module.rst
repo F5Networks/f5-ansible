@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -51,7 +51,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Indicates whether configuration synchronization occurs manually or automatically. When creating a new device group, this option will default to <code>false</code>.</div>
+                                                                        <div>Indicates whether configuration synchronization occurs manually or automatically.</div>
+                                                    <div>When creating a new device group, this option will default to <code>no</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -75,7 +76,11 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies whether the system synchronizes the entire configuration during synchronization operations. When <code>false</code>, the system performs incremental synchronization operations, based on the cache size specified in <code>max_incremental_sync_size</code>. Incremental configuration synchronization is a mechanism for synchronizing a device-group&#x27;s configuration among its members, without requiring a full configuration load for each configuration change. In order for this to work, all devices in the device-group must initially agree on the configuration. Typically this requires at least one full configuration load to each device. When creating a new device group, this option will default to <code>false</code>.</div>
+                                                                        <div>Specifies whether the system synchronizes the entire configuration during synchronization operations.</div>
+                                                    <div>When <code>no</code>, the system performs incremental synchronization operations, based on the cache size specified in <code>max_incremental_sync_size</code>.</div>
+                                                    <div>Incremental configuration synchronization is a mechanism for synchronizing a device-group&#x27;s configuration among its members, without requiring a full configuration load for each configuration change.</div>
+                                                    <div>In order for this to work, all devices in the device-group must initially agree on the configuration. Typically this requires at least one full configuration load to each device.</div>
+                                                    <div>When creating a new device group, this option will default to <code>no</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -85,7 +90,10 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the size of the changes cache for incremental sync. For example, using the default, if you make more than 1024 KB worth of incremental changes, the system performs a full synchronization operation. Using incremental synchronization operations can reduce the per-device sync/load time for configuration changes. This setting is relevant only when <code>full_sync</code> is <code>false</code>.</div>
+                                                                        <div>Specifies the size of the changes cache for incremental sync.</div>
+                                                    <div>For example, using the default, if you make more than 1024 KB worth of incremental changes, the system performs a full synchronization operation.</div>
+                                                    <div>Using incremental synchronization operations can reduce the per-device sync/load time for configuration changes.</div>
+                                                    <div>This setting is relevant only when <code>full_sync</code> is <code>no</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -96,6 +104,21 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the name of the device group.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>network_failover</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Indicates whether failover occurs over the network or is hard-wired.</div>
+                                                    <div>This parameter is only valid for <code>type</code>&#x27;s that are <code>sync-failover</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -238,7 +261,9 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When performing an auto-sync, specifies whether the configuration will be saved or not. If <code>false</code>, only the running configuration will be changed on the device(s) being synced to. When creating a new device group, this option will default to <code>false</code>.</div>
+                                                                        <div>When performing an auto-sync, specifies whether the configuration will be saved or not.</div>
+                                                    <div>When <code>no</code>, only the running configuration will be changed on the device(s) being synced to.</div>
+                                                    <div>When creating a new device group, this option will default to <code>no</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -286,11 +311,14 @@ Parameters
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li>sync-failover</li>
-                                                                                                                                                                                                <li>sync-only</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>sync-only</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies that the type of group. A <code>sync-failover</code> device group contains devices that synchronize their configuration data and fail over to one another when a device becomes unavailable. A <code>sync-only</code> device group has no such failover. When creating a new device group, this option will default to <code>sync-only</code>. This setting cannot be changed once it has been set.</div>
+                                                                        <div>Specifies that the type of group.</div>
+                                                    <div>A <code>sync-failover</code> device group contains devices that synchronize their configuration data and fail over to one another when a device becomes unavailable.</div>
+                                                    <div>A <code>sync-only</code> device group has no such failover. When creating a new device group, this option will default to <code>sync-only</code>.</div>
+                                                    <div>This setting cannot be changed once it has been set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -369,7 +397,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -422,6 +450,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>network_failover</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Whether or not network failover is enabled.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
