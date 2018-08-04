@@ -6,68 +6,11 @@ PYLINT := pylint --additional-builtins=_ --init-hook=$(PYHOOK)
 
 MODULE_TARGET = $(shell echo $@ | sed s/cov-// | tr '-' '_')
 
-.PHONY: docs style
-
-all: clean-coverage
-	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=on" -vvvv
-	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/bigip.yaml -vvvv
-	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" -vvvv
-	pycodestyle library/*.py
-
-sanity:
-	bash test/ansible/sanity/correct-defaultdict-import.sh
-	bash test/ansible/sanity/correct-iteritems-import.sh
-	bash test/ansible/sanity/incorrect-comparisons.sh
-	bash test/ansible/sanity/integration-test-idempotent-names.sh
-	bash test/ansible/sanity/q-debugging-exists.sh
-	python test/ansible/sanity/f5-sdk-install-missing-code-highlighting.py
-	python test/ansible/sanity/short-description-ends-with-period.py
-
-docs: module-docs docs-build
-
-module-docs:
-	rm docs/modules/* || true
-	python devtools/bin/plugin_formatter.py --module-dir library/ --template-dir devtools/templates/ --output-dir docs/modules/ -v --limit-to $(shell python ./devtools/bin/limit_module_docs.py)
-
-docs-build:
-	cd docs && rm -rf _build && make html
-
-style:
-	pycodestyle .
-
 export ANSIBLE_KEEP_REMOTE_FILES=1
 export ANSIBLE_CONFIG=./test/integration/ansible.cfg
 
-bigip_%:
-	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
-
-bigiq_%:
-	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
-
-iworkflow_%:
-	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
-
-unit:
-	pytest -s test/
-
-upgrade-ansible:
-	pip install --upgrade git+https://github.com/ansible/ansible.git
-
-clean-images:
-	docker rmi --force $$(docker images -a -q)
-
-clean-containers:
-	docker rm $$(docker ps -a -q)
-
-jenkins:
-	openstack stack create -t heat/jenkins-secondary.yaml -e heat/jenkins-secondary-params.yaml jenkins-secondary-01 --wait
-
 generate-certs:
 	cd test/integration && ansible-playbook -i inventory/hosts bigip_ssl_certificate.yaml --tags generate_certs
-
-# Install project requirements
-requirements:
-	pip install --user -r requirements.test.txt
 
 # Build and test docs in a Docker container
 docker-test:
@@ -94,33 +37,3 @@ find-ignores:
 
 pyclean:
 	find . | grep -E "(__pycache__|\.pyc|\.pyo$$)" | xargs rm -rf
-
-py2.7-run:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py2.7
-
-py3.5-run:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.5
-
-py3.6-run:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6
-
-py3.7-run:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.7
-
-bare-py2.7:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py2.7-bare
-
-bare-py3.5:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.5-bare
-
-bare-py3.6:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6-bare
-
-bare-py3.7:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.7-bare
-
-ip-alias:
-	sudo ifconfig lo0 alias 1.2.3.4
-
-container-update:
-	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml pull
