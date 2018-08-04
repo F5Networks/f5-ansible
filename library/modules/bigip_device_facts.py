@@ -4675,6 +4675,257 @@ class FastL4ProfilesFactManager(BaseManager):
         return result
 
 
+class HttpProfilesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'defaultsFrom': 'parent',
+        'acceptXff': 'accept_xff',
+        'explicitProxy': 'explicit_proxy',
+        'insertXforwardedFor': 'insert_x_forwarded_for',
+        'lwsWidth': 'lws_max_columns',
+        'oneconnectTransformations': 'onconnect_transformations',
+        'proxyType': 'proxy_mode',
+        'redirectRewrite': 'redirect_rewrite',
+        'requestChunking': 'request_chunking',
+        'responseChunking': 'response_chunking',
+        'serverAgentName': 'server_agent_name',
+        'viaRequest': 'via_request',
+        'viaResponse': 'via_response',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'accept_xff',
+        'allow_truncated_redirects',
+        'excess_client_headers',
+        'excess_server_headers',
+        'known_methods',
+        'max_header_count',
+        'max_header_size',
+        'max_requests',
+        'oversize_client_headers',
+        'oversize_server_headers',
+        'pipeline',
+        'unknown_method',
+        'default_connect_handling',
+        'hsts_include_subdomains',
+        'hsts_enabled',
+        'insert_x_forwarded_for',
+        'lws_max_columns',
+        'onconnect_transformations',
+        'proxy_mode',
+        'redirect_rewrite',
+        'request_chunking',
+        'response_chunking',
+        'server_agent_name',
+        'sflow_poll_interval',
+        'sflow_sampling_rate',
+        'via_request',
+        'via_response',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def accept_xff(self):
+        return flatten_boolean(self._values['accept_xff'])
+
+    @property
+    def excess_client_headers(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['excessClientHeaders'] is None:
+            return None
+        return self._values['enforcement']['excessClientHeaders']
+
+    @property
+    def excess_server_headers(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['excessServerHeaders'] is None:
+            return None
+        return self._values['enforcement']['excessServerHeaders']
+
+    @property
+    def known_methods(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['knownMethods'] is None:
+            return None
+        return self._values['enforcement']['knownMethods']
+
+    @property
+    def max_header_count(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['maxHeaderCount'] is None:
+            return None
+        return self._values['enforcement']['maxHeaderCount']
+
+    @property
+    def max_header_size(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['maxHeaderSize'] is None:
+            return None
+        return self._values['enforcement']['maxHeaderSize']
+
+    @property
+    def max_requests(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['maxRequests'] is None:
+            return None
+        return self._values['enforcement']['maxRequests']
+
+    @property
+    def oversize_client_headers(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['oversizeClientHeaders'] is None:
+            return None
+        return self._values['enforcement']['oversizeClientHeaders']
+
+    @property
+    def oversize_server_headers(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['oversizeServerHeaders'] is None:
+            return None
+        return self._values['enforcement']['oversizeServerHeaders']
+
+    @property
+    def allow_truncated_redirects(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['truncatedRedirects'] is None:
+            return None
+        return self._values['enforcement']['truncatedRedirects']
+
+    @property
+    def unknown_method(self):
+        if self._values['enforcement'] is None:
+            return None
+        if self._values['enforcement']['unknownMethod'] is None:
+            return None
+        return self._values['enforcement']['unknownMethod']
+
+    @property
+    def default_connect_handling(self):
+        if self._values['explicit_proxy'] is None:
+            return None
+        if self._values['explicit_proxy']['defaultConnectHandling'] is None:
+            return None
+        return self._values['explicit_proxy']['defaultConnectHandling']
+
+    @property
+    def hsts_include_subdomains(self):
+        if self._values['hsts'] is None:
+            return None
+        if self._values['hsts']['includeSubdomains'] is None:
+            return None
+        return flatten_boolean(self._values['hsts']['includeSubdomains'])
+
+    @property
+    def hsts_enabled(self):
+        if self._values['hsts'] is None:
+            return None
+        if self._values['hsts']['mode'] is None:
+            return None
+        return flatten_boolean(self._values['hsts']['mode'])
+
+    @property
+    def hsts_max_age(self):
+        if self._values['hsts'] is None:
+            return None
+        if self._values['hsts']['mode'] is None:
+            return None
+        return self._values['hsts']['maximumAge']
+
+    @property
+    def insert_x_forwarded_for(self):
+        if self._values['insert_x_forwarded_for'] is None:
+            return None
+        return flatten_boolean(self._values['insert_x_forwarded_for'])
+
+    @property
+    def onconnect_transformations(self):
+        if self._values['onconnect_transformations'] is None:
+            return None
+        return flatten_boolean(self._values['onconnect_transformations'])
+
+    @property
+    def sflow_poll_interval(self):
+        if self._values['sflow'] is None:
+            return None
+        if self._values['sflow']['pollInterval'] is None:
+            return None
+        return self._values['sflow']['pollInterval']
+
+    @property
+    def sflow_sampling_rate(self):
+        if self._values['sflow'] is None:
+            return None
+        if self._values['sflow']['samplingRate'] is None:
+            return None
+        return self._values['sflow']['samplingRate']
+
+
+class HttpProfilesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(HttpProfilesFactManager, self).__init__(**kwargs)
+        self.want = HttpProfilesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(http_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = HttpProfilesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/http".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class IappServicesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -7736,6 +7987,10 @@ class ModuleManager(object):
                 manager=FastL4ProfilesFactManager,
                 client=F5RestClient
             ),
+            'http-profiles': dict(
+                manager=HttpProfilesFactManager,
+                client=F5RestClient
+            ),
             'iapp-services': dict(
                 manager=IappServicesFactManager,
                 client=F5RestClient
@@ -7938,6 +8193,7 @@ class ArgumentSpec(object):
                     'device-groups',
                     'fasthttp-profiles',
                     'fastl4-profiles',
+                    'http-profiles',
                     'iapp-services',
                     'iapplx-packages',
                     'interfaces',
@@ -7973,6 +8229,7 @@ class ArgumentSpec(object):
                     '!device-groups',
                     '!fasthttp-profiles',
                     '!fastl4-profiles',
+                    '!http-profiles',
                     '!iapp-services',
                     '!iapplx-packages',
                     '!interfaces',
