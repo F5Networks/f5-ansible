@@ -37,25 +37,12 @@ RUN git clone https://github.com/awslabs/git-secrets.git /tmp/git-secrets && \
     cd /tmp/git-secrets && \
     make install
 
-# Install docker
-RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | apt-key add -
-RUN add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-    $(lsb_release -cs) \
-    stable"
-RUN apt-get update && \
-    apt-get install -y docker-ce
-
-# Install docker compose
-RUN curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && \
-    chmod +x /usr/local/bin/docker-compose
-
 # The dependencies of the f5-ansible repository are installed here.
 #
 # Note that the entire codebase is **NOT** installed because it is instead
 # provided as a bind-mount when using docker-compose.
-COPY requirements.bare.txt /tmp/__src__/requirements.bare.txt
-RUN pip install -r /tmp/__src__/requirements.bare.txt
+COPY requirements.test.txt /tmp/__src__/requirements.test.txt
+RUN pip install -r /tmp/__src__/requirements.test.txt
 
 # Clears any cache that may have been saved when running the package installation
 # steps earlier.
