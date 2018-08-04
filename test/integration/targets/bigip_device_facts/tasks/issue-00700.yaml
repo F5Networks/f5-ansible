@@ -1,5 +1,18 @@
 ---
 
+- name: Issue 00700 - Select http-profile facts
+  bigip_device_facts:
+    include:
+      - http-profiles
+  register: result
+
+- name: Issue 00700 - Assert Select http-profile facts
+  assert:
+    that:
+      - result is success
+      - result.http_profiles | selectattr("name", "match", "http") | map(attribute='proxy_mode') | first == "reverse"
+      - result.http_profiles | json_query("[?name=='http'].proxy_mode") | first == "reverse"
+
 - name: Issue 00700 - Select fasthttp-profile facts
   bigip_device_facts:
     include:
