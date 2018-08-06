@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Create a simple address list
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo1
     addresses:
       - 1.1.1.1
@@ -16,7 +16,7 @@
       - result is changed
 
 - name: Create a simple address list - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo1
     addresses:
       - 1.1.1.1
@@ -29,7 +29,7 @@
       - result is not changed
 
 - name: Override the above list of addresses with a new list
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo1
     addresses:
       - 3.3.3.3
@@ -43,7 +43,7 @@
       - result is changed
 
 - name: Override the above list of addresses with a new list - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo1
     addresses:
       - 3.3.3.3
@@ -57,7 +57,7 @@
       - result is not changed
 
 - name: Create address list with series of ranges
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo2
     address_ranges:
       - 6.6.6.6-7.7.7.7
@@ -71,7 +71,7 @@
       - result is changed
 
 - name: Create address list with series of ranges - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo2
     address_ranges:
       - 6.6.6.6-7.7.7.7
@@ -85,7 +85,7 @@
       - result is not changed
 
 - name: Use multiple types of address arguments
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo3
     address_ranges:
       - 6.6.6.6-7.7.7.7
@@ -102,7 +102,7 @@
       - result is changed
 
 - name: Use multiple types of address arguments - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo3
     address_ranges:
       - 6.6.6.6-7.7.7.7
@@ -119,7 +119,7 @@
       - result is not changed
 
 - name: Order address ranges incorrectly
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo3
     address_ranges:
       - 10.10.10.10-2.2.2.2
@@ -132,7 +132,7 @@
       - "'2.2.2.2-10.10.10.10' in result['address_ranges']"
 
 - name: Order address ranges incorrectly - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo3
     address_ranges:
       - 10.10.10.10-2.2.2.2
@@ -144,7 +144,7 @@
       - result is not changed
 
 - name: Create address list with FQDNs
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo4
     fqdns:
       - google.com
@@ -157,7 +157,7 @@
       - result is changed
 
 - name: Create address list with FQDNs - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo4
     fqdns:
       - google.com
@@ -170,7 +170,7 @@
       - result is not changed
 
 - name: Change address list with FQDNs
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo4
     fqdns:
       - yahoo.com
@@ -182,7 +182,7 @@
       - result is changed
 
 - name: Change address list with FQDNs - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo4
     fqdns:
       - yahoo.com
@@ -194,7 +194,7 @@
       - result is not changed
 
 - name: Create address list with geo locations
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo5
     geo_locations:
       - country: CN
@@ -210,7 +210,7 @@
       - result is changed
 
 - name: Create address list with geo locations - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo5
     geo_locations:
       - country: CN
@@ -226,7 +226,7 @@
       - result is not changed
 
 - name: Change address list with geo locations
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo5
     geo_locations:
       - country: CA
@@ -239,7 +239,7 @@
       - result is changed
 
 - name: Change address list with geo locations - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo5
     geo_locations:
       - country: CA
@@ -252,7 +252,7 @@
       - result is not changed
 
 - name: Remove address lists
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: "{{ item }}"
     state: absent
   loop:
@@ -269,7 +269,7 @@
       - result is changed
 
 - name: Remove address list - Idempotent check
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: "{{ item }}"
     state: absent
   loop:
