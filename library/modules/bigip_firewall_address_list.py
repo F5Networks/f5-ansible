@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_security_address_list
+module: bigip_firewall_address_list
 short_description: Manage address lists on BIG-IP AFM
 description:
   - Manages the AFM address lists on a BIG-IP. This module can be used to add
@@ -92,7 +92,7 @@ author:
 
 EXAMPLES = r'''
 - name: Create an address list
-  bigip_security_address_list:
+  bigip_firewall_address_list:
     name: foo
     addresses:
       - 3.3.3.3
@@ -194,17 +194,29 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'addressLists', 'addresses', 'description', 'fqdns', 'geo'
+        'addressLists',
+        'addresses',
+        'description',
+        'fqdns',
+        'geo',
     ]
 
     returnables = [
-        'addresses', 'address_ranges', 'address_lists', 'description',
-        'fqdns', 'geo_locations'
+        'addresses',
+        'address_ranges',
+        'address_lists',
+        'description',
+        'fqdns',
+        'geo_locations',
     ]
 
     updatables = [
-        'addresses', 'address_ranges', 'address_lists', 'description',
-        'fqdns', 'geo_locations'
+        'addresses',
+        'address_ranges',
+        'address_lists',
+        'description',
+        'fqdns',
+        'geo_locations',
     ]
 
     def to_return(self):
