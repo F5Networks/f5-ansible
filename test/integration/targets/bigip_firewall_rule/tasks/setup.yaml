@@ -1,0 +1,27 @@
+---
+
+- name: Provision necessary modules
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Create a basic policy
+  bigip_firewall_policy:
+    name: foo1
+
+- name: Create a schedule
+  bigip_command:
+    commands:
+      - tmsh create security firewall schedule sched1
+
+- name: Create a VLAN
+  bigip_vlan:
+    name: vlan1
+
+- name: Create a simple port list
+  bigip_firewall_port_list:
+    name: portlist1
+    ports:
+      - 80
+      - 443

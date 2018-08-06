@@ -1,0 +1,29 @@
+---
+
+- name: Remove basic policy
+  bigip_firewall_policy:
+    name: foo1
+    state: absent
+
+- name: Remove schedule
+  bigip_command:
+    commands:
+      - tmsh delete security firewall schedule sched1
+
+- name: De-provision modules
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
+
+- name: Remove VLAN
+  bigip_vlan:
+    name: vlan1
+    state: absent
+
+- name: Remove simple port list
+  bigip_firewall_port_list:
+    name: portlist1
+    state: absent

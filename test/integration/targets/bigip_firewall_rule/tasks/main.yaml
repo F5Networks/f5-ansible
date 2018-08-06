@@ -1,0 +1,916 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Add rule to policy - no params
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+  register: result
+
+- name: Assert Add rule to policy - no params
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Add rule to policy - no params - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+  register: result
+
+- name: Assert Add rule to policy - no params - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change status - disabled
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    status: disabled
+  register: result
+
+- name: Assert Change status - disabled
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change status - disabled - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    status: disabled
+  register: result
+
+- name: Assert Change status - disabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change status - enabled
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    status: enabled
+  register: result
+
+- name: Assert Change status - enabled
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change status - enabled - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    status: enabled
+  register: result
+
+- name: Assert Change status - enabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change status - scheduled w/out schedule - Expected failure
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    status: scheduled
+  register: result
+  failed_when: result is success
+
+- name: Assert Change status - scheduled w/out schedule - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change status - scheduled
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    status: scheduled
+    schedule: sched1
+  register: result
+
+- name: Assert Change status - scheduled
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change status - scheduled - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    status: scheduled
+    schedule: sched1
+  register: result
+
+- name: Assert Change status - scheduled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change iRule
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    irule: _sys_auth_radius
+  register: result
+
+- name: Assert Change iRule
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change iRule - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    irule: _sys_auth_radius
+  register: result
+
+- name: Assert Change iRule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove iRule
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    irule: ""
+  register: result
+
+- name: Assert Remove iRule
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove iRule - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    irule: ""
+  register: result
+
+- name: Assert Remove iRule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove rule
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    state: absent
+  register: result
+
+- name: Assert Remove rule
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove rule - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    state: absent
+  register: result
+
+- name: Assert Remove rule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change action - drop
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    action: drop
+  register: result
+
+- name: Assert Change action - drop
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change action - drop - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    action: drop
+  register: result
+
+- name: Assert Change action - drop - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change action - accept
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    action: accept
+  register: result
+
+- name: Assert Change action - accept
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change action - accept - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    action: accept
+  register: result
+
+- name: Assert Change action - accept - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change action - reject
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    action: reject
+  register: result
+
+- name: Assert Change action - reject
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change action - reject - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    action: reject
+  register: result
+
+- name: Assert Change action - reject - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change action - accept-decisively
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    action: accept-decisively
+  register: result
+
+- name: Assert Change action - accept-decisively
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change action - accept-decisively - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    action: accept-decisively
+  register: result
+
+- name: Assert Change action - accept-decisively - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change logging - yes
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    logging: yes
+  register: result
+
+- name: Assert Change logging - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change logging - yes - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    logging: yes
+  register: result
+
+- name: Assert Change logging - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change logging - no
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    logging: no
+  register: result
+
+- name: Assert Change logging - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change logging - no - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    logging: no
+  register: result
+
+- name: Assert Change logging - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    description: my description
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    description: my description
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove description
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    description: ""
+  register: result
+
+- name: Assert Remove description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove description - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    description: ""
+  register: result
+
+- name: Assert Remove description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change protocol - tcp
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: tcp
+  register: result
+
+- name: Assert Change protocol - tcp
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change protocol - tcp - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: tcp
+  register: result
+
+- name: Assert Change protocol - tcp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change protocol - any
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: any
+  register: result
+
+- name: Assert Change protocol - any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change protocol - any - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: any
+  register: result
+
+- name: Assert Change protocol - any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Attempt mutual exclusive setting - Expected failure
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    rule_list: foo
+    protocol: tcp
+  register: result
+  failed_when: result is success
+
+- name: Assert Attempt mutual exclusive setting - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Attempt source mutual exclusive setting - Expected failure
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - address: 1.1.1.1
+        country: US
+  register: result
+  failed_when: result is success
+
+- name: Assert Attempt source mutual exclusive setting - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+      - "'parameters are mutually exclusive' in result.msg"
+
+- name: Attempt destination mutual exclusive setting - Expected failure
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - address: 1.1.1.1
+        country: US
+  register: result
+  failed_when: result is success
+
+- name: Assert Attempt destination mutual exclusive setting - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+      - "'parameters are mutually exclusive' in result.msg"
+
+- name: Change source - address
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - address: 1.1.1.1
+  register: result
+
+- name: Assert Change source - address
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change source - address - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - address: 1.1.1.1
+  register: result
+
+- name: Assert Change source - address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change source - address_range
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - address_range: 1.1.1.1-2.2.2.2
+  register: result
+
+- name: Assert Change source - address_range
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change source - address_range - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - address_range: 1.1.1.1-2.2.2.2
+  register: result
+
+- name: Assert Change source - address_range - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change source - country
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - country: US
+  register: result
+
+- name: Assert Change source - country
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change source - country - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - country: US
+  register: result
+
+- name: Assert Change source - country - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change source - vlan
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - vlan: vlan1
+  register: result
+
+- name: Assert Change source - vlan
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change source - vlan - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - vlan: vlan1
+  register: result
+
+- name: Assert Change source - vlan - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change source - port on non-port-based protocol - Expected failure
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - port: 80
+  register: result
+  failed_when: result is success
+
+- name: Assert Change source - port on non-port-based protocol - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+      - "'No source or destination port argument allowed' in result.msg"
+
+- name: Change protocol to port based
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: tcp
+
+- name: Change source - port
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - port: 80
+  register: result
+
+- name: Assert Change source - port
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change source - port - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - port: 80
+  register: result
+
+- name: Assert Change source - port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change source - port_list
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - port_list: portlist1
+  register: result
+
+- name: Assert Change source - port_list
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change source - port_list - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - port_list: portlist1
+  register: result
+
+- name: Assert Change source - port_list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change source - one of each source
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - address: 1.1.1.1
+      - address_range: 2.2.2.2-3.3.3.3
+      - vlan: vlan1
+      - port: 100
+      - port_list: portlist1
+  register: result
+
+- name: Assert Change source - one of each source
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change source - one of each source - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    source:
+      - address: 1.1.1.1
+      - address_range: 2.2.2.2-3.3.3.3
+      - vlan: vlan1
+      - port: 100
+      - port_list: portlist1
+  register: result
+
+- name: Assert Change source - one of each source - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change destination - address
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - address: 1.1.1.1
+  register: result
+
+- name: Assert Change destination - address
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change destination - address - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - address: 1.1.1.1
+  register: result
+
+- name: Assert Change destination - address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change destination - address_range
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - address_range: 1.1.1.1-2.2.2.2
+  register: result
+
+- name: Assert Change destination - address_range
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change destination - address_range - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - address_range: 1.1.1.1-2.2.2.2
+  register: result
+
+- name: Assert Change destination - address_range - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change destination - country
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - country: US
+  register: result
+
+- name: Assert Change destination - country
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change destination - country - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - country: US
+  register: result
+
+- name: Assert Change destination - country - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change protocol to port based
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: tcp
+
+- name: Change destination - port
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - port: 80
+  register: result
+
+- name: Assert Change destination - port
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change destination - port - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - port: 80
+  register: result
+
+- name: Assert Change destination - port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change destination - port_list
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - port_list: portlist1
+  register: result
+
+- name: Assert Change destination - port_list
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change destination - port_list - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - port_list: portlist1
+  register: result
+
+- name: Assert Change destination - port_list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change destination - one of each destination
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - address: 1.1.1.1
+      - address_range: 2.2.2.2-3.3.3.3
+      - port: 100
+      - port_list: portlist1
+  register: result
+
+- name: Assert Change destination - one of each destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change destination - one of each destination - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    destination:
+      - address: 1.1.1.1
+      - address_range: 2.2.2.2-3.3.3.3
+      - port: 100
+      - port_list: portlist1
+  register: result
+
+- name: Assert Change destination - one of each destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
