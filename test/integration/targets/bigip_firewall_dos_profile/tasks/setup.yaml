@@ -1,0 +1,14 @@
+---
+
+- name: Provision AFM
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Create a whitelist
+  bigip_firewall_address_list:
+    name: whitelist1
+    addresses:
+      - 1.1.1.1
+      - 2.2.2.2
