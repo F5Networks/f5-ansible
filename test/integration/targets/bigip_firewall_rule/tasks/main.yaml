@@ -913,10 +913,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
 - name: Try to set icmp_message on TCP protocol - Expected failure
   bigip_firewall_rule:
     parent_policy: foo1
@@ -933,8 +929,6 @@
       - result is not changed
       - result is success
 
-
-
 - name: Set icmp_message
   bigip_firewall_rule:
     parent_policy: foo1
@@ -966,12 +960,6 @@
     that:
       - result is success
       - result is not changed
-
-
-
-
-
-
 
 - name: Add icmp_message
   bigip_firewall_rule:
@@ -1008,15 +996,6 @@
     that:
       - result is success
       - result is not changed
-
-
-
-
-
-
-
-
-
 
 - name: Remove icmp_message
   bigip_firewall_rule:
