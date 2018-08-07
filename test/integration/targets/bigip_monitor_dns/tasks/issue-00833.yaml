@@ -1,0 +1,66 @@
+---
+- name: Issue 00833 - Include issue variables
+  include_vars:
+    file: issue-00833.yaml
+
+
+- name: Issue 00833 - Create DNS Monitor with Description
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00833 - Assert Create DNS Monitor with Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Issue 00833 - Create DNS Monitor with Description - Idempotent check
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00833 - Assert Create DNS Monitor with Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00833 - Modify DNS Monitor Description
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name }}"
+    description: "{{ description_2 }}"
+    state: present
+  register: result
+
+- name: Issue 00833 - Assert Modify DNS Monitor Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description_2
+
+
+- name: Issue 00833 - Modify DNS Monitor Description - Idempotent check
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name }}"
+    description: "{{ description_2 }}"
+    state: present
+  register: result
+
+- name: Issue 00833 - Assert Modify DNS Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00833 - Remove DNS Monitor
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result

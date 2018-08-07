@@ -211,6 +211,7 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -277,6 +278,11 @@ allowed_divergence_value:
   returned: changed
   type: int
   sample: 25
+description:
+    description: The description of the monitor.
+    returned: changed
+    type: str
+    sample: Important Monitor
 adaptive_limit:
   description: Absolute number of milliseconds that may not be exceeded by a monitor probe.
   returned: changed
@@ -424,6 +430,7 @@ class Parameters(AnsibleF5Parameters):
         'accept_rcode',
         'allowed_divergence_type',
         'allowed_divergence_value',
+        'description',
         'adaptive_limit',
         'sampling_timespan',
         'answer_section_contains',
@@ -450,6 +457,7 @@ class Parameters(AnsibleF5Parameters):
         'adaptive_limit',
         'sampling_timespan',
         'answer_section_contains',
+        'description',
         'manual_resume',
         'time_until_up',
         'up_interval',
