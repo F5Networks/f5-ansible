@@ -1,8 +1,8 @@
 ---
+
 - name: Issue 00833 - Include issue variables
   include_vars:
     file: issue-00833.yaml
-
 
 - name: Issue 00833 - Create DNS Monitor with Description
   bigip_monitor_dns:
@@ -44,7 +44,6 @@
     that:
       - result is changed
       - result.description == description_2
-
 
 - name: Issue 00833 - Modify DNS Monitor Description - Idempotent check
   bigip_monitor_dns:
