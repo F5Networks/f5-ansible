@@ -1,0 +1,137 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create address lists
+  bigip_firewall_address_list:
+    name: "{{ item.name }}"
+    addresses: "{{ item.addresses }}"
+  loop:
+    - name: DIAMETER-NODES-PARTNERNETWORK-BILLING-DRA
+      addresses:
+        - 1.1.1.1
+        - 2.2.2.2
+    - name: DIAMETER-NODES-PARTNERNETWORK-BILLING-UDR
+      addresses:
+        - 3.3.3.3
+        - 4.4.4.4
+    - name: DIAMETER-NODES-FOREIGNNET
+      addresses:
+        - 5.5.5.5
+        - 6.6.6.6
+
+- name: Create port list
+  bigip_firewall_port_list:
+    name: "{{ item }}"
+    ports:
+      - 80
+      - 443
+  loop:
+    - SFTP-TCP
+
+- name: Create rule lists
+  bigip_firewall_rule_list:
+    name: "{{ item.name }}"
+    rules: "{{ item.rules }}"
+    description: "{{ item.description|default(omit) }}"
+  loop:
+    - name: DIAMETER-NODES-RL-IPV4
+      rules:
+        - ALLOW-FOREIGNNET-ICMP
+        - DEFAULT-DROP
+    - name: PARTNERNETWORK-RL-IPV4
+      rules:
+        - ALLOW-PARTNERNETWORK-ICMP
+        - DEFAULT-DROP
+    - name: DIAMETER-NODES-RL-UDR-IPV4
+      description: Rule List for DIAMETER-NODES UDR IPv4 Flows
+      rules:
+        - ALLOW-UDR-TCP
+        - DEFAULT-DROP
+
+- name: Set rule ALLOW-FOREIGNNET-ICMP properties
+  bigip_firewall_rule:
+    name: ALLOW-FOREIGNNET-ICMP
+    parent_rule_list: DIAMETER-NODES-RL-IPV4
+    action: accept
+    description: Allow DIAMETER-NODES FOREIGNNET to Originate ICMP PING/TRACEROUTE
+    protocol: icmp
+    icmp_message:
+      - type: 0
+      - type: 8
+      - type: 30
+    logging: yes
+    destination:
+      - address_list: DIAMETER-NODES-PARTNERNETWORK-BILLING-DRA
+    source:
+      - address_list: DIAMETER-NODES-FOREIGNNET
+
+- name: Set rule ALLOW-PARTNERNETWORK-ICMP properties
+  bigip_firewall_rule:
+    name: ALLOW-PARTNERNETWORK-ICMP
+    parent_rule_list: PARTNERNETWORK-RL-IPV4
+    action: accept
+    description: Allow PARTNERNETWORK BILLING DRA to Originate ICMP PING/TRACEROUTE
+    protocol: icmp
+    icmp_message:
+      - type: 0
+      - type: 8
+      - type: 30
+    logging: yes
+    destination:
+      - address_list: DIAMETER-NODES-FOREIGNNET
+    source:
+      - address_list: DIAMETER-NODES-PARTNERNETWORK-BILLING-DRA
+
+- name: Set rule ALLOW-PARTNERNETWORK-ICMP properties
+  bigip_firewall_rule:
+    name: ALLOW-UDR-TCP
+    parent_rule_list: DIAMETER-NODES-RL-UDR-IPV4
+    action: accept
+    description: Allow DIAMETER-NODES Originate TCP SSH UDR
+    protocol: tcp
+    logging: yes
+    destination:
+      - address_list: DIAMETER-NODES-PARTNERNETWORK-BILLING-UDR
+      - port_list: SFTP-TCP
+    source:
+      - address_list: DIAMETER-NODES-FOREIGNNET
+
+- name: Set default drop rule
+  bigip_firewall_rule:
+    name: DEFAULT-DROP
+    parent_rule_list: "{{ item }}"
+    action: drop
+    description: Drop Policy with Logging
+    logging: yes
+  loop:
+    - DIAMETER-NODES-RL-IPV4
+    - PARTNERNETWORK-RL-IPV4
+    - DIAMETER-NODES-RL-UDR-IPV4
+
+- name: Remove rule lists
+  bigip_firewall_rule_list:
+    name: "{{ item.name }}"
+    state: absent
+  loop:
+    - DIAMETER-NODES-RL-IPV4
+    - PARTNERNETWORK-RL-IPV4
+    - DIAMETER-NODES-RL-UDR-IPV4
+
+- name: Remove address lists
+  bigip_firewall_address_list:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - DIAMETER-NODES-PARTNERNETWORK-BILLING-DRA
+    - DIAMETER-NODES-PARTNERNETWORK-BILLING-UDR
+    - DIAMETER-NODES-FOREIGNNET
+
+- name: Remove port list
+  bigip_firewall_port_list:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - SFTP-TCP
+
+- import_tasks: teardown.yaml

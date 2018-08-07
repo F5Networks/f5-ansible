@@ -8,6 +8,7 @@
 [Y]+-[Y]+-[Y]+-[Y]+-[Y]+
 [Z]+-[Z]+-[Z]+-[Z]+-[Z]+
 [1]+-[2]+-[3]+-[4]+-[5]+
+DIAMETER-
 BIG-IP-WITH-ADMIN-SSH
 !SSLv3:!SSLv2:
 sslCiphersuite

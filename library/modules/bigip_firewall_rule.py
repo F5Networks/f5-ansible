@@ -507,11 +507,12 @@ class ModuleParameters(Parameters):
             return None
         result = []
         for x in self._values['icmp_message']:
-            type = str(x.get('type', '255'))
-            code = str(x.get('code', '255'))
-            if type == 'any':
+            type = x.get('type', '255')
+            code = x.get('code', '255')
+
+            if type is None or type == 'any':
                 type = '255'
-            if code == 'any':
+            if code is None or code == 'any':
                 code = '255'
 
             if type == '255' and code == '255':
@@ -574,7 +575,6 @@ class UsableChanges(Changes):
                 result['ports'].append({'name': str(x[1])})
             elif x[0] == 'port_list':
                 result['portLists'].append(x[1])
-        import q; q.q(result)
         return result
 
     @property
@@ -921,7 +921,6 @@ class ModuleManager(object):
             self.changes.update({'destination': {}})
 
         params = self.changes.api_params()
-        import q; q.q(params)
         resp = self.client.api.patch(uri, json=params)
         try:
             response = resp.json()
@@ -1069,7 +1068,12 @@ class ArgumentSpec(object):
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.mutually_exclusive = [
-            ['rule_list', 'action', 'source', 'destination', 'irule', 'protocol', 'logging'],
+            ['rule_list', 'action'],
+            ['rule_list', 'source'],
+            ['rule_list', 'destination'],
+            ['rule_list', 'irule'],
+            ['rule_list', 'protocol'],
+            ['rule_list', 'logging'],
             ['parent_policy', 'parent_rule_list']
         ]
         self.required_one_of = [
