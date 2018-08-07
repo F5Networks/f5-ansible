@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_security_policy
+module: bigip_firewall_policy
 short_description: Manage AFM security firewall policies on a BIG-IP
 description:
   - Manages AFM security firewall policies on a BIG-IP.
@@ -46,7 +46,7 @@ options:
       - Rules specified here, if they do not exist, will be created with "default deny"
         behavior. It is expected that you follow-up this module with the actual
         configuration for these rules.
-      - The C(bigip_security_policy_rule) module can be used to also create, as well as
+      - The C(bigip_firewall_policy_rule) module can be used to also create, as well as
         edit, existing and new rules.
   partition:
     description:
@@ -59,7 +59,7 @@ author:
 
 EXAMPLES = r'''
 - name: Create a ...
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo
     password: secret
     server: lb.mydomain.com
