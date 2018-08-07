@@ -4,25 +4,25 @@
   include_vars:
     file: issue-00289.yaml
 
-- name: Provision ASM
+- name: Issue 00289 - Provision ASM
   bigip_provision:
     name: asm
   tags:
     - module-provisioning
 
-- name: Create ASM policies
+- name: Issue 00289 - Create ASM policies
   bigip_asm_policy:
     name: "asm-policy{{ item }}"
     file: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
   with_sequence: start=1 end=3
 
-- name: Create published policy, w/asm, attached to virtual
+- name: Issue 00289 - Create published policy, w/asm, attached to virtual
   bigip_policy:
     name: "{{ policy_name }}1"
     state: present
   register: result
 
-- name: Create published rule, w/asm, attached to virtual
+- name: Issue 00289 - Create published rule, w/asm, attached to virtual
   bigip_policy_rule:
     policy: "{{ policy_name }}1"
     name: rule1
@@ -30,13 +30,13 @@
       - type: enable
         asm_policy: "asm-policy1"
 
-- name: Create published policy, w/asm
+- name: Issue 00289 - Create published policy, w/asm
   bigip_policy:
     name: "{{ policy_name }}2"
     state: present
   register: result
 
-- name: Create published rule, w/asm
+- name: Issue 00289 - Create published rule, w/asm
   bigip_policy_rule:
     policy: "{{ policy_name }}2"
     name: rule1
@@ -44,7 +44,7 @@
       - type: enable
         asm_policy: "asm-policy2"
 
-- name: Create a virtual server
+- name: Issue 00289 - Create a virtual server
   bigip_virtual_server:
     name: foo1
     address: 1.1.1.1
@@ -55,36 +55,36 @@
     policies:
       - "{{ policy_name }}1"
 
-- name: Select ASM policy stat facts
+- name: Issue 00289 - Select ASM policy stat facts
   bigip_device_facts:
     include:
       - asm-policy-stats
   register: result
 
-- name: Assert Select ASM policy stat facts
+- name: Issue 00289 - Assert Select ASM policy stat facts
   assert:
     that:
       - result is success
       - result.asm_policy_stats.policies == 3
 
-- name: Remove virtual server
+- name: Issue 00289 - Remove virtual server
   bigip_virtual_server:
     name: foo1
     state: absent
 
-- name: Remove policies
+- name: Issue 00289 - Remove policies
   bigip_policy:
     name: "{{ policy_name }}{{ item }}"
     state: absent
   with_sequence: start=1 end=3
 
-- name: Remove ASM policies
+- name: Issue 00289 - Remove ASM policies
   bigip_asm_policy:
     name: "asm-policy{{ item }}"
     state: absent
   with_sequence: start=1 end=3
 
-- name: De-provision ASM
+- name: Issue 00289 - De-provision ASM
   bigip_provision:
     name: asm
     state: absent

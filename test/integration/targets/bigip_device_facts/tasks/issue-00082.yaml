@@ -6,7 +6,7 @@
       - system-info
   register: result
 
-- name: Assert Issue 00082 - Select interface facts
+- name: Issue 00082 - Assert Select interface facts
   assert:
     that:
       - result is success
