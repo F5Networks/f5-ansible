@@ -1,12 +1,12 @@
 ---
 
-- name: Provision AFM
+- name: Issue 00623 - Provision AFM
   bigip_provision:
     name: afm
   tags:
     - module-provisioning
 
-- name: Create a simple address list
+- name: Issue 00623 - Create a simple address list
   bigip_firewall_address_list:
     name: foo1
     addresses:
@@ -14,12 +14,12 @@
       - 2.2.2.2
   register: result
 
-- name: Assert Create a simple address list
+- name: Issue 00623 - Assert Create a simple address list
   assert:
     that:
       - result is changed
 
-- name: Create a simple address list - Idempotent check
+- name: Issue 00623 - Create a simple address list - Idempotent check
   bigip_firewall_address_list:
     name: foo1
     addresses:
@@ -27,7 +27,7 @@
       - 2.2.2.2
   register: result
 
-- name: Create a simple address list with CIDRs
+- name: Issue 00623 - Create a simple address list with CIDRs
   bigip_firewall_address_list:
     name: foo2
     addresses:
@@ -36,12 +36,12 @@
       - 204.15.5.0/27
   register: result
 
-- name: Assert Create a simple address list with CIDRs
+- name: Issue 00623 - Assert Create a simple address list with CIDRs
   assert:
     that:
       - result is changed
 
-- name: Create a simple address list with CIDRs - Idempotent check
+- name: Issue 00623 - Create a simple address list with CIDRs - Idempotent check
   bigip_firewall_address_list:
     name: foo2
     addresses:
@@ -50,12 +50,12 @@
       - 204.15.5.0/27
   register: result
 
-- name: Assert Create a simple address list with CIDRs - Idempotent check
+- name: Issue 00623 - Assert Create a simple address list with CIDRs - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Remove address lists
+- name: Issue 00623 - Remove address lists
   bigip_firewall_address_list:
     name: "{{ item }}"
     state: absent
@@ -63,7 +63,7 @@
     - foo1
     - foo2
 
-- name: Deprovision AFM
+- name: Issue 00623 - Deprovision AFM
   bigip_provision:
     name: afm
     state: absent
