@@ -2,6 +2,251 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create a basic rule list
+  bigip_firewall_rule_list:
+    name: foo1
+  register: result
+
+- name: Assert Create a basic rule list
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a basic rule list - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+  register: result
+
+- name: Assert Create a basic rule list - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change description
+  bigip_firewall_rule_list:
+    name: foo1
+    description: description foo
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change description - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+    description: description foo
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add default rules
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule1
+      - rule2
+      - rule3
+  register: result
+
+- name: Assert Add default rules
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add default rules - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule1
+      - rule2
+      - rule3
+  register: result
+
+- name: Assert Add default rules - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove last rule
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule1
+      - rule2
+  register: result
+
+- name: Assert Remove last rule
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove last rule - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule1
+      - rule2
+  register: result
+
+- name: Assert Remove last rule - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add rule to beginning of list
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule4
+      - rule1
+      - rule2
+  register: result
+
+- name: Assert Add rule to beginning of list
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add rule to beginning of list - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule4
+      - rule1
+      - rule2
+  register: result
+
+- name: Assert Add rule to beginning of list - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove all rules
+  bigip_firewall_rule_list:
+    name: foo1
+    rules: []
+  register: result
+
+- name: Assert Remove all rules
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove all rules - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+    rules: []
+  register: result
+
+- name: Assert Remove all rules - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove policy
+  bigip_firewall_rule_list:
+    name: foo1
+    state: absent
+  register: result
+
+- name: Assert Remove policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove policy - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+    state: absent
+  register: result
+
+- name: Assert Remove policy - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create policy with rules
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule5
+      - rule6
+      - rule7
+  register: result
+
+- name: Assert Create policy with rules
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create policy with rules - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule5
+      - rule6
+      - rule7
+  register: result
+
+- name: Assert Create policy with rules - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove policy with rules
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule5
+      - rule6
+      - rule7
+    state: absent
+  register: result
+
+- name: Assert Remove policy with rules
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove policy with rules - Idempotent check
+  bigip_firewall_rule_list:
+    name: foo1
+    rules:
+      - rule5
+      - rule6
+      - rule7
+    state: absent
+  register: result
+
+- name: Assert Remove policy with rules - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-00489.yaml
+  tags: issue-00489
