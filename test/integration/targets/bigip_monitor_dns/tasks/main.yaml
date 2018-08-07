@@ -791,7 +791,6 @@
       - result is success
       - result is not changed
 
-
 - name: Create receive with wrong query type - aaaa
   bigip_monitor_dns:
     name: "{{ monitor_name }}"
@@ -822,7 +821,6 @@
       - result is success
       - result is not changed
 
-
 - name: Create no query name
   bigip_monitor_dns:
     name: "{{ monitor_name }}"
@@ -835,6 +833,10 @@
       - result is success
       - result is not changed
 
+- name: Remove monitor
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    state: absent
 
 - import_tasks: issue-00833.yaml
   tags: issue-00833
