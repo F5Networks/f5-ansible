@@ -413,19 +413,25 @@ class ModuleParameters(Parameters):
 
     @property
     def iquery_allow_path(self):
-        if 'iquery_options' not in self._values or self._values['iquery_options']['allow_path'] is None:
+        if self._values['iquery_options'] is None:
+            return None
+        elif self._values['iquery_options']['allow_path'] is None:
             return None
         return self._values['iquery_options']['allow_path']
 
     @property
     def iquery_allow_service_check(self):
-        if 'iquery_options' not in self._values or self._values['iquery_options']['allow_service_check'] is None:
+        if self._values['iquery_options'] is None:
+            return None
+        elif self._values['iquery_options']['allow_service_check'] is None:
             return None
         return self._values['iquery_options']['allow_service_check']
 
     @property
     def iquery_allow_snmp(self):
-        if 'iquery_options' not in self._values or self._values['iquery_options']['allow_snmp'] is None:
+        if self._values['iquery_options'] is None:
+            return None
+        elif self._values['iquery_options']['allow_snmp'] is None:
             return None
         return self._values['iquery_options']['allow_snmp']
 
