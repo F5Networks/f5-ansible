@@ -123,3 +123,31 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
+
+    def test_create_with_description(self, *args):
+        set_module_args(dict(
+            name='foo',
+            parent='/Common/dns',
+            query_name='foo',
+            interval=20,
+            timeout=30,
+            time_until_up=60,
+            description='Important Description',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True

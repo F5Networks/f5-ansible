@@ -211,6 +211,7 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -277,6 +278,11 @@ allowed_divergence_value:
   returned: changed
   type: int
   sample: 25
+description:
+    description: The description of the monitor.
+    returned: changed
+    type: str
+    sample: Important Monitor
 adaptive_limit:
   description: Absolute number of milliseconds that may not be exceeded by a monitor probe.
   returned: changed
@@ -424,6 +430,7 @@ class Parameters(AnsibleF5Parameters):
         'accept_rcode',
         'allowed_divergence_type',
         'allowed_divergence_value',
+        'description',
         'adaptive_limit',
         'sampling_timespan',
         'answer_section_contains',
@@ -450,6 +457,7 @@ class Parameters(AnsibleF5Parameters):
         'adaptive_limit',
         'sampling_timespan',
         'answer_section_contains',
+        'description',
         'manual_resume',
         'time_until_up',
         'up_interval',
@@ -924,14 +932,14 @@ class ModuleManager(object):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+        if response.status == 200:
             return True
         if 'code' in response and response['code'] == 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
-                raise F5ModuleError(resp.content)
+                raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/dns/{2}".format(

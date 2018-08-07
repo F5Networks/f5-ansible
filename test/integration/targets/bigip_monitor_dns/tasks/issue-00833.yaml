@@ -1,0 +1,57 @@
+---
+- include_vars: ../defaults/main.yaml
+
+- name: Create DNS Monitor with Description
+  bigip_monitor_dns:
+    name: "{{ monitor_name_2 }}"
+    query_name: "{{ query_name1 }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Assert Create DNS Monitor
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Create DNS Monitor - Idempotent check
+  bigip_monitor_dns:
+    name: "{{ monitor_name_2 }}"
+    query_name: "{{ query_name1 }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Assert Create DNS Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Modify DNS Monitor Description
+  bigip_monitor_dns:
+    name: "{{ monitor_name_2 }}"
+    query_name: "{{ query_name1 }}"
+    description: "{{ description_2 }}"
+    state: present
+  register: result
+
+- name: Assert Modify DNS Monitor Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description_2
+
+
+- name: Modify DNS Monitor Description - Idempotent check
+  bigip_monitor_dns:
+    name: "{{ monitor_name_2 }}"
+    query_name: "{{ query_name1 }}"
+    description: "{{ description_2 }}"
+    state: present
+  register: result
+
+- name: Assert Modify DNS Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed

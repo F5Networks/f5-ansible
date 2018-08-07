@@ -1,5 +1,8 @@
 ---
 
 monitor_name: my_dns_monitor
+monitor_name_2: my_dns_monitor_2
+description: This_is_a_test
+description_2: This_is_changed
 query_name1: foo
 query_name2: bar

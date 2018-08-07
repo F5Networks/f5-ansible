@@ -1,0 +1,11 @@
+- name: Remove DNS Monitor
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Remove DNS Monitor
+  bigip_monitor_dns:
+    name: "{{ monitor_name_2 }}"
+    state: absent
+  register: result
