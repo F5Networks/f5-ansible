@@ -60,37 +60,37 @@ options:
       - virtual-addresses
       - virtual-servers
       - vlans
-      - !all
-      - !profiles
-      - !asm-policy-stats
-      - !client-ssl-profiles
-      - !devices
-      - !device-groups
-      - !fasthttp-profiles
-      - !fastl4-profiles
-      - !iapp-services
-      - !iapplx-packages
-      - !interfaces
-      - !internal-data-groups
-      - !irules
-      - !ltm-pools
-      - !nodes
-      - !partitions
-      - !provision-info
-      - !self-ips
-      - !software-volumes
-      - !software-images
-      - !software-hotfixes
-      - !ssl-certs
-      - !ssl-keys
-      - !system-db
-      - !system-info
-      - !traffic-groups
-      - !trunks
-      - !vcmp-guests
-      - !virtual-addresses
-      - !virtual-servers
-      - !vlans
+      - "!all"
+      - "!profiles"
+      - "!asm-policy-stats"
+      - "!client-ssl-profiles"
+      - "!devices"
+      - "!device-groups"
+      - "!fasthttp-profiles"
+      - "!fastl4-profiles"
+      - "!iapp-services"
+      - "!iapplx-packages"
+      - "!interfaces"
+      - "!internal-data-groups"
+      - "!irules"
+      - "!ltm-pools"
+      - "!nodes"
+      - "!partitions"
+      - "!provision-info"
+      - "!self-ips"
+      - "!software-volumes"
+      - "!software-images"
+      - "!software-hotfixes"
+      - "!ssl-certs"
+      - "!ssl-keys"
+      - "!system-db"
+      - "!system-info"
+      - "!traffic-groups"
+      - "!trunks"
+      - "!vcmp-guests"
+      - "!virtual-addresses"
+      - "!virtual-servers"
+      - "!vlans"
     aliases: ['include']
 extends_documentation_fragment: f5
 author:
