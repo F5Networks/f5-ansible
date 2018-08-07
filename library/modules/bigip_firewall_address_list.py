@@ -162,6 +162,7 @@ try:
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.compat.ipaddress import ip_address
+    from library.module_utils.compat.ipaddress import ip_interface
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.ipaddress import is_valid_ip_interface
     from library.module_utils.network.f5.ipaddress import is_valid_ip_network
@@ -178,6 +179,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.compat.ipaddress import ip_address
+    from ansible.module_utils.compat.ipaddress import ip_interface
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip_interface
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip_network
@@ -538,14 +540,16 @@ class ModuleParameters(Parameters):
     def addresses(self):
         if self._values['addresses'] is None:
             return None
+        result = []
         for x in self._values['addresses']:
-            if is_valid_ip(x) or is_valid_ip_network(x) or is_valid_ip_interface(x):
-                continue
+            if is_valid_ip(x):
+                result.append(str(ip_address(x)))
+            elif is_valid_ip_interface(x):
+                result.append(str(ip_interface(x)))
             else:
                 raise F5ModuleError(
                     "Address {0} must be either an IPv4 or IPv6 address or network.".format(x)
                 )
-        result = [str(x) for x in self._values['addresses']]
         result = sorted(result)
         return result
 
