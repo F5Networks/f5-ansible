@@ -1,34 +1,34 @@
 ---
 
-- name: Create iApp template
+- name: Issue 00327 - Create iApp template
   bigip_iapp_template:
     content: "{{ lookup('file', 'f5.http.v1.2.0rc4.tmpl') }}"
 
-- name: Create iApp service
+- name: Issue 00327 - Create iApp service
   bigip_iapp_service:
     name: service1
     template: f5.http.v1.2.0rc4
     parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
 
-- name: Select iApp service facts
+- name: Issue 00327 - Select iApp service facts
   bigip_device_facts:
     include:
       - iapp-services
   register: result
 
-- name: Assert Select iApp service facts
+- name: Issue 00327 - Assert Select iApp service facts
   assert:
     that:
       - result is success
       - result.iapp_services | selectattr("name", "match", "service1") | map(attribute='strict_updates') | first == "yes"
       - result.iapp_services | json_query("[?name=='service1'].strict_updates") | first == "yes"
 
-- name: Remove iApp service
+- name: Issue 00327 - Remove iApp service
   bigip_iapp_service:
     name: service1
     state: absent
 
-- name: Remove iApp template
+- name: Issue 00327 - Remove iApp template
   bigip_iapp_template:
     content: "{{ lookup('file', 'f5.http.v1.2.0rc4.tmpl') }}"
     state: absent
