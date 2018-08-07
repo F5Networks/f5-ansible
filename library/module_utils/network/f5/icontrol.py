@@ -177,6 +177,18 @@ class Response(object):
     def json(self):
         return _json.loads(self._content)
 
+    @property
+    def ok(self):
+        if self.status is not None and int(self.status) > 400:
+            return False
+        try:
+            response = self.json()
+            if 'code' in response and response['code'] > 400:
+                return False
+        except ValueError:
+            pass
+        return True
+
 
 class iControlRestSession(object):
     """Represents a session that communicates with a BigIP.
