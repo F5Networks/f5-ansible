@@ -1,0 +1,14 @@
+---
+
+- name: Remove whitelist
+  bigip_firewall_address_list:
+    name: whitelist1
+    state: absent
+
+- name: Deprovision AFM
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
