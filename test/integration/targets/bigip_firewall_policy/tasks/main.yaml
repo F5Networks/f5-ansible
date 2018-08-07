@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Create a basic policy
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
   register: result
 
@@ -14,7 +14,7 @@
       - result is changed
 
 - name: Create a basic policy - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
   register: result
 
@@ -25,7 +25,7 @@
       - result is not changed
 
 - name: Change description
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     description: description foo
   register: result
@@ -37,7 +37,7 @@
       - result is changed
 
 - name: Change description - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     description: description foo
   register: result
@@ -49,7 +49,7 @@
       - result is not changed
 
 - name: Add default rules
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule1
@@ -64,7 +64,7 @@
       - result is changed
 
 - name: Add default rules - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule1
@@ -79,7 +79,7 @@
       - result is not changed
 
 - name: Remove last rule
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule1
@@ -93,7 +93,7 @@
       - result is changed
 
 - name: Remove last rule - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule1
@@ -107,7 +107,7 @@
       - result is not changed
 
 - name: Add rule to beginning of list
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule4
@@ -122,7 +122,7 @@
       - result is changed
 
 - name: Add rule to beginning of list - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule4
@@ -137,7 +137,7 @@
       - result is not changed
 
 - name: Remove all rules
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules: []
   register: result
@@ -149,7 +149,7 @@
       - result is changed
 
 - name: Remove all rules - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules: []
   register: result
@@ -161,7 +161,7 @@
       - result is not changed
 
 - name: Remove policy
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     state: absent
   register: result
@@ -173,7 +173,7 @@
       - result is changed
 
 - name: Remove policy - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     state: absent
   register: result
@@ -185,7 +185,7 @@
       - result is not changed
 
 - name: Create policy with rules
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule5
@@ -200,7 +200,7 @@
       - result is changed
 
 - name: Create policy with rules - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule5
@@ -215,7 +215,7 @@
       - result is not changed
 
 - name: Remove policy with rules
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule5
@@ -231,7 +231,7 @@
       - result is changed
 
 - name: Remove policy with rules - Idempotent check
-  bigip_security_policy:
+  bigip_firewall_policy:
     name: foo1
     rules:
       - rule5
