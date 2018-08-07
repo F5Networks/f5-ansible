@@ -913,4 +913,141 @@
       - result is not changed
       - result is success
 
+
+
+
+
+- name: Try to set icmp_message on TCP protocol - Expected failure
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    icmp_message:
+      - type: 3
+        code: 3
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to set icmp_message on TCP protocol - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+- name: Set icmp_message
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: icmp
+    icmp_message:
+      - type: 3
+        code: 3
+  register: result
+
+- name: Set icmp_message
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Set icmp_message - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: icmp
+    icmp_message:
+      - type: 3
+        code: 3
+  register: result
+
+- name: Set icmp_message - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
+
+
+- name: Add icmp_message
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: icmp
+    icmp_message:
+      - type: 3
+        code: 3
+      - type: 4
+        code: 0
+  register: result
+
+- name: Add icmp_message
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add icmp_message - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: icmp
+    icmp_message:
+      - type: 3
+        code: 3
+      - type: 4
+        code: 0
+  register: result
+
+- name: Add icmp_message - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+- name: Remove icmp_message
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: icmp
+    icmp_message:
+      - type: 4
+        code: 0
+  register: result
+
+- name: Remove icmp_message
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove icmp_message - Idempotent check
+  bigip_firewall_rule:
+    parent_policy: foo1
+    name: rule1
+    protocol: icmp
+    icmp_message:
+      - type: 4
+        code: 0
+  register: result
+
+- name: Remove icmp_message - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
 - import_tasks: teardown.yaml
