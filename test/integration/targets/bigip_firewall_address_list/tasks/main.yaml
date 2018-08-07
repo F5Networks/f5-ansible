@@ -251,6 +251,60 @@
     that:
       - result is not changed
 
+- name: Create a simple IPv6 address list
+  bigip_firewall_address_list:
+    name: foo6
+    addresses:
+      - ::1
+      - 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+  register: result
+
+- name: Assert Create a simple IPv6 address list
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a simple IPv6 address list - Idempotent check
+  bigip_firewall_address_list:
+    name: foo6
+    addresses:
+      - ::1
+      - 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+  register: result
+
+- name: Assert Create a simple IPv6 address list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a simple IPv6 address list with CIDR
+  bigip_firewall_address_list:
+    name: foo7
+    addresses:
+      - 2600::/64
+  register: result
+
+- name: Assert Create a simple IPv6 address list with CIDR
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a simple IPv6 address list with CIDR - Idempotent check
+  bigip_firewall_address_list:
+    name: foo7
+    addresses:
+      - 2600::/64
+  register: result
+
+- name: Assert Create a simple IPv6 address list with CIDR - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
 - name: Remove address lists
   bigip_firewall_address_list:
     name: "{{ item }}"
@@ -261,6 +315,8 @@
     - foo3
     - foo4
     - foo5
+    - foo6
+    - foo7
   register: result
 
 - name: Assert Remove address lists
@@ -278,6 +334,8 @@
     - foo3
     - foo4
     - foo5
+    - foo6
+    - foo7
   register: result
 
 - name: Assert Remove address lists - Idempotent check
