@@ -29,6 +29,9 @@ options:
         been set, it cannot be changed. By default, this value is the C(http)
         parent on the C(Common) partition.
     default: "/Common/http"
+  description:
+    description:
+      - The description of the monitor.
   send:
     description:
       - The send string for the monitor call. When creating a new monitor, if
@@ -100,6 +103,7 @@ notes:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -140,6 +144,11 @@ parent:
   returned: changed
   type: string
   sample: http
+description:
+  description: The description of the monitor.
+  returned: changed
+  type: str
+  sample: Important_Monitor
 ip:
   description: The new IP of IP/port definition.
   returned: changed
@@ -203,17 +212,17 @@ class Parameters(AnsibleF5Parameters):
 
     api_attributes = [
         'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'recv', 'send',
-        'destination', 'username', 'password', 'recvDisable'
+        'destination', 'username', 'password', 'recvDisable', 'description'
     ]
 
     returnables = [
         'parent', 'send', 'receive', 'ip', 'port', 'interval', 'timeout',
-        'time_until_up', 'receive_disable'
+        'time_until_up', 'receive_disable', 'description'
     ]
 
     updatables = [
         'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up',
-        'target_username', 'target_password', 'receive_disable'
+        'target_username', 'target_password', 'receive_disable', 'description'
     ]
 
     def to_return(self):
@@ -540,6 +549,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             parent=dict(default='/Common/http'),
+            description=dict(),
             send=dict(),
             receive=dict(),
             receive_disable=dict(required=False),

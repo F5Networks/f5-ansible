@@ -1,0 +1,62 @@
+---
+
+- name: Issue 00834 - Include issue variables
+  include_vars:
+    file: issue-00834.yaml
+
+- name: Issue 00834 - Create HTTP Monitor with description
+  bigip_monitor_http:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00834 - Assert Create HTTP Monitor with description
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Issue 00834 - Create HTTP Monitor with description - Idempotent check
+  bigip_monitor_http:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+
+- name: Issue 00834 - Assert Create HTTP Monitor with description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00834 - Modify HTTP Monitor description
+  bigip_monitor_http:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+    state: present
+  register: result
+
+- name: Issue 00834 - Assert Modify HTTP Monitor description
+  assert:
+    that:
+      - result is changed
+      - result.description == description2
+
+- name: Issue 00834 - Modify HTTP Monitor description - Idempotent check
+  bigip_monitor_http:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+    state: present
+  register: result
+
+- name: Issue 00834 - Assert Modify HTTP Monitor description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00834 - Remove HTTP Monitor
+  bigip_monitor_http:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
