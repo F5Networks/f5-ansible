@@ -26,6 +26,7 @@ options:
       - Name of the node to create, or re-use, when creating a new pool member.
       - This parameter is optional and, if not specified, a node name will be
         created automatically from either the specified C(address) or C(fqdn).
+      - The C(enabled) state is an alias of C(present).
     version_added: 2.6
   state:
     description:
@@ -113,11 +114,11 @@ options:
       - Specifies whether the system automatically creates ephemeral nodes using
         the IP addresses returned by the resolution of a DNS query for a node
         defined by an FQDN.
-      - When C(enabled), the system generates an ephemeral node for each IP address
+      - When C(yes), the system generates an ephemeral node for each IP address
         returned in response to a DNS query for the FQDN of the node. Additionally,
         when a DNS response indicates the IP address of an ephemeral node no longer
         exists, the system deletes the ephemeral node.
-      - When C(disabled), the system resolves a DNS query for the FQDN of the node
+      - When C(no), the system resolves a DNS query for the FQDN of the node
         with the single IP address associated with the FQDN.
       - When creating a new pool member, the default for this parameter is C(yes).
       - This parameter is ignored when C(reuse_nodes) is C(yes).
@@ -129,24 +130,6 @@ options:
     default: yes
     type: bool
     version_added: 2.6
-  session_state:
-    description:
-      - Set new session availability status for pool member.
-      - This parameter is deprecated and will be removed in Ansible 2.7. Use C(state)
-        C(enabled) or C(disabled).
-    version_added: 2.0
-    choices:
-      - enabled
-      - disabled
-  monitor_state:
-    description:
-      - Set monitor availability status for pool member.
-      - This parameter is deprecated and will be removed in Ansible 2.7. Use C(state)
-        C(enabled) or C(disabled).
-    version_added: 2.0
-    choices:
-      - enabled
-      - disabled
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -396,36 +379,6 @@ class ModuleParameters(Parameters):
         return int(self._values['port'])
 
     @property
-    def state(self):
-        # TODO(Remove all of this state craziness in 2.7)
-        if self.session_state is not None or self.monitor_state is not None:
-            if self._values['state'] in ['enabled', 'disabled', 'forced_offline']:
-                self._values['__warnings'].append([{
-                    'msg': "'session_state' is deprecated and will be ignored in favor of 'state'.",
-                    'version': '2.7'
-                }])
-                return self._values['state']
-            else:
-                if self.session_state is not None:
-                    self._values['__warnings'].append([{
-                        'msg': "'session_state' is deprecated and will be removed in the future. Use 'state'.",
-                        'version': '2.7'
-                    }])
-                elif self.monitor_state is not None:
-                    self._values['__warnings'].append([{
-                        'msg': "'monitor_state' is deprecated and will be removed in the future. Use 'state'.",
-                        'version': '2.7'
-                    }])
-
-                if self.session_state == 'enabled' and self.monitor_state == 'enabled':
-                    return 'enabled'
-                elif self.session_state == 'disabled' and self.monitor_state == 'enabled':
-                    return 'disabled'
-                else:
-                    return 'forced_offline'
-        return self._values['state']
-
-    @property
     def address(self):
         if self._values['address'] is None:
             return None
@@ -436,6 +389,12 @@ class ModuleParameters(Parameters):
         raise F5ModuleError(
             "The specified 'address' value is not a valid IP address."
         )
+
+    @property
+    def state(self):
+        if self._values['state'] == 'enabled':
+            return 'present'
+        return self._values['state']
 
 
 class ApiParameters(Parameters):
@@ -704,28 +663,16 @@ class ModuleManager(object):
             self.want.update({
                 'state': 'user-down',
                 'session': 'user-disabled',
-
-                # TODO(Remove in 2.7)
-                'session_state': None,
-                'monitor_state': None
             })
         elif self.want.state == 'disabled':
             self.want.update({
                 'state': 'user-up',
                 'session': 'user-disabled',
-
-                # TODO(Remove in 2.7)
-                'session_state': None,
-                'monitor_state': None
             })
         elif self.want.state in ['present', 'enabled']:
             self.want.update({
                 'state': 'user-up',
                 'session': 'user-enabled',
-
-                # TODO(Remove in 2.7)
-                'session_state': None,
-                'monitor_state': None
             })
 
     def _update_address_with_existing_nodes(self):
@@ -859,17 +806,6 @@ class ArgumentSpec(object):
             ),
             fqdn_auto_populate=dict(type='bool'),
             reuse_nodes=dict(type='bool', default=True),
-
-            # Deprecated params
-            # TODO(Remove in 2.7)
-            session_state=dict(
-                choices=['enabled', 'disabled'],
-                removed_in_version=2.7,
-            ),
-            monitor_state=dict(
-                choices=['enabled', 'disabled'],
-                removed_in_version=2.7,
-            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

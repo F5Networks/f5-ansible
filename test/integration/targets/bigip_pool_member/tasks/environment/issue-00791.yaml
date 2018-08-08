@@ -1,0 +1,64 @@
+---
+
+- name: Issue 00791 - Create a pool
+  bigip_pool:
+    name: pl_test.example.com_443
+
+- name: Issue 00791 - Add/Delete members to pool pl_test.example.com_443
+  bigip_pool_member:
+    pool: pl_test.example.com_443
+    port: 443
+    description: Internal ADFSIN
+    host: "{{ item }}"
+    connection_limit: 0
+    rate_limit: 0
+    ratio: 1
+    preserve_node: no
+    priority_group: 0
+    state: enabled
+  register: result
+  loop:
+    - 10.10.10.10
+    - 11.11.11.11
+
+- name: Issue 00791 - Assert Add/Delete members to pool pl_test.example.com_443
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00791 - Add/Delete members to pool pl_test.example.com_443 - Idempotent check
+  bigip_pool_member:
+    pool: pl_test.example.com_443
+    port: 443
+    description: Internal ADFSIN
+    host: "{{ item }}"
+    connection_limit: 0
+    rate_limit: 0
+    ratio: 1
+    preserve_node: no
+    priority_group: 0
+    state: enabled
+  register: result
+  loop:
+    - 10.10.10.10
+    - 11.11.11.11
+
+- name: Issue 00791 - Assert Add/Delete members to pool pl_test.example.com_443 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00791 - Remove pool
+  bigip_pool:
+    name: pl_test.example.com_443
+    state: absent
+
+- name: Issue 00791 - Remove nodes
+  bigip_node:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - 10.10.10.10
+    - 11.11.11.11
