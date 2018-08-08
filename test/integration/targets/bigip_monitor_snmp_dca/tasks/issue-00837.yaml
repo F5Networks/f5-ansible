@@ -1,0 +1,61 @@
+---
+
+- name: Issue 00837 - Include issue variables
+  include_vars:
+    file: issue-00837.yaml
+
+- name: Issue 00837 - Create SNMP DCA Monitor with Description
+  bigip_monitor_snmp_dca:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00837 - Assert Create SNMP DCA Monitor with Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Issue 00837 - Create SNMP DCA Monitor with Description - Idempotent check
+  bigip_monitor_snmp_dca:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00837 - Create SNMP DCA Monitor with Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00837 - Modify SNMP DCA Monitor Description
+  bigip_monitor_snmp_dca:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+    state: present
+  register: result
+
+- name: Issue 00837 - Assert Modify SNMP DCA Monitor Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description2
+
+- name: Issue 00837 - Modify SNMP DCA Monitor Description - Idempotent check
+  bigip_monitor_snmp_dca:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+    state: present
+  register: result
+
+- name: Issue 00837 - Assert Modify SNMP DCA Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00837 - Remove Monitor
+  bigip_monitor_snmp_dca:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
