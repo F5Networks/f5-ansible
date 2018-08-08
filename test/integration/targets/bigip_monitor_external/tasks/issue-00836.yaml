@@ -1,0 +1,61 @@
+---
+
+- name: Issue 00836 - Include issue variables
+  include_vars:
+    file: issue-00836.yaml
+
+- name: Issue 00836 - Create External Monitor with Description
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00836 - Assert Create External Monitor with Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Issue 00836 - Create External Monitor with Description- Idempotent check
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00836 - Assert Create External Monitor with Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00836 - Modify External Monitor Description
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+    state: present
+  register: result
+
+- name: Issue 00836 - Assert Modify External Monitor Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description2
+
+- name: Issue 00836 - Modify External Monitor Description - Idempotent check
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+    state: present
+  register: result
+
+- name: Issue 00836 - Assert Modify External Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00836 - Remove External Monitor
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
