@@ -1,0 +1,60 @@
+---
+- name: Issue 00835 - Include issue variables
+  include_vars:
+    file: issue-00835.yaml
+
+- name: Issue 00835 - Create HTTPS Monitor with Description
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00835 - Assert Create HTTPS Monitor with Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Issue 00835 - Create HTTPS Monitor with Description - Idempotent check
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00835 - Assert Create HTTPS Monitor with Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00835 - Modify HTTPS Monitor Description
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+    state: present
+  register: result
+
+- name: Issue 00835 - Assert Modify HTTPS Monitor Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description2
+
+- name: Issue 00835 - Modify HTTPS Monitor Description - Idempotent check
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+    state: present
+  register: result
+
+- name: Issue 00835 - Assert Modify HTTPS Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00835 - Remove HTTPS Monitor
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
