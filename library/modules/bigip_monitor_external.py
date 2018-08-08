@@ -24,6 +24,9 @@ options:
     description:
       - Specifies the name of the monitor.
     required: True
+  description:
+    description:
+      - The description of the monitor.
   parent:
     description:
       - The parent template of this monitor template. Once this value has
@@ -86,6 +89,7 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -132,6 +136,11 @@ parent:
   returned: changed
   type: string
   sample: external
+description:
+  description: The description of the monitor.
+  returned: changed
+  type: str
+  sample: Important Monitor
 ip:
   description: The new IP of IP/port definition.
   returned: changed
@@ -195,17 +204,17 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'defaultsFrom', 'interval', 'timeout', 'destination', 'run', 'args'
+        'defaultsFrom', 'interval', 'timeout', 'destination', 'run', 'args', 'description'
     ]
 
     returnables = [
         'parent', 'ip', 'port', 'interval', 'timeout', 'variables', 'external_program',
-        'arguments'
+        'arguments', 'description'
     ]
 
     updatables = [
         'destination', 'interval', 'timeout', 'variables', 'external_program',
-        'arguments'
+        'arguments', 'description'
     ]
 
     def to_return(self):
@@ -606,6 +615,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             parent=dict(default='/Common/external'),
+            description=dict(),
             arguments=dict(),
             ip=dict(),
             port=dict(type='int'),
