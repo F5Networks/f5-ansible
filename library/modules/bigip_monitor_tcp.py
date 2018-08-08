@@ -29,6 +29,9 @@ options:
         been set, it cannot be changed. By default, this value is the C(tcp)
         parent on the C(Common) partition.
     default: /Common/tcp
+  description:
+    description:
+      - The description of the monitor.
   send:
     description:
       - The send string for the monitor call.
@@ -90,6 +93,7 @@ notes:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -126,6 +130,11 @@ send:
   returned: changed
   type: string
   sample: tcp string to send
+description:
+  description: The description of the monitor.
+  returned: changed
+  type: str
+  sample: Important Monitor
 receive:
   description: The new receive string for this monitor.
   returned: changed
@@ -198,16 +207,17 @@ class Parameters(AnsibleF5Parameters):
 
     api_attributes = [
         'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'recv', 'send',
-        'destination'
+        'destination', 'description'
     ]
 
     returnables = [
         'parent', 'send', 'receive', 'ip', 'port', 'interval', 'timeout',
-        'time_until_up'
+        'time_until_up', 'description'
     ]
 
     updatables = [
-        'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up'
+        'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up',
+        'description'
     ]
 
     def to_return(self):
@@ -531,6 +541,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             parent=dict(default='/Common/tcp'),
+            description=dict(),
             send=dict(),
             receive=dict(),
             ip=dict(),
