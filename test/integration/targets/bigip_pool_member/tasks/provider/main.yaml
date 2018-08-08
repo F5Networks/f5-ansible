@@ -5,3 +5,6 @@
 
 - import_tasks: issue-00743.yaml
   tags: issue-00743
+
+- import_tasks: issue-00823.yaml
+  tags: issue-00823
