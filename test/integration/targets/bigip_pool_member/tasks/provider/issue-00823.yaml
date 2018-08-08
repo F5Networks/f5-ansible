@@ -1,0 +1,78 @@
+---
+
+- name: Issue 00823 - Create a partition - Provider
+  bigip_partition:
+    name: ABC_TST_HS
+    provider: "{{ provider }}"
+
+- name: Issue 00823 - Add new node - Provider
+  bigip_node:
+    provider: "{{ provider }}"
+    state: present
+    partition: "ABC_TST_HS"
+    host: 8.8.8.8
+    name: "NODE_8.8.8.8"
+
+- name: Issue 00823 - Create new BIG IP POOL - Provider
+  bigip_pool:
+    provider: "{{ provider }}"
+    state: present
+    name: "POOL_TEST_80"
+    partition: "ABC_TST_HS"
+    lb_method: least-connections-member
+
+- name: Issue 00823 - Add pool members to BIGIP POOL - Provider
+  bigip_pool_member:
+    provider: "{{ provider }}"
+    state: present
+    partition: "ABC_TST_HS"
+    pool: "POOL_TEST_80"
+    reuse_nodes: yes
+    host: "8.8.8.8"
+    name: "NODE_8.8.8.8"
+    port: 80
+  register: result
+
+- name: Issue 00823 - Add pool members to BIGIP POOL - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00823 - Add pool members to BIGIP POOL - Idempotent check - Provider
+  bigip_pool_member:
+    provider: "{{ provider }}"
+    state: present
+    partition: "ABC_TST_HS"
+    pool: "POOL_TEST_80"
+    reuse_nodes: yes
+    host: "8.8.8.8"
+    name: "NODE_8.8.8.8"
+    port: 80
+  register: result
+
+- name: Issue 00823 - Add pool members to BIGIP POOL - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00823 - Remove BIG IP POOL - Provider
+  bigip_pool:
+    provider: "{{ provider }}"
+    state: absent
+    name: "POOL_TEST_80"
+    partition: "ABC_TST_HS"
+
+- name: Issue 00823 - Remove node - Provider
+  bigip_node:
+    provider: "{{ provider }}"
+    state: absent
+    partition: "ABC_TST_HS"
+    name: "NODE_8.8.8.8"
+
+- name: Issue 00823 - Remove partition - Provider
+  bigip_partition:
+    name: ABC_TST_HS
+    provider: "{{ provider }}"
+    state: absent
