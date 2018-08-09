@@ -56,6 +56,7 @@ options:
       - system-info
       - traffic-groups
       - trunks
+      - udp-profiles
       - vcmp-guests
       - virtual-addresses
       - virtual-servers
@@ -87,6 +88,7 @@ options:
       - "!system-info"
       - "!traffic-groups"
       - "!trunks"
+      - "!udp-profiles"
       - "!vcmp-guests"
       - "!virtual-addresses"
       - "!virtual-servers"
@@ -3029,6 +3031,138 @@ trunks:
       type: int
       sample: 1
   sample: hash/dictionary of values
+udp_profiles:
+  description: UDP profile related facts.
+  returned: When C(udp-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: udp
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/udp
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: udp
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My profile
+    allow_no_payload:
+      description:
+        - Allow the passage of datagrams that contain header information, but no essential data.
+      returned: changed
+      type: bool
+      sample: yes 
+    buffer_max_bytes:
+      description:
+        - Ingress buffer byte limit. Maximum allowed value is 16777215.
+      returned: changed
+      type: int
+      sample: 655350
+    buffer_max_packets:
+      description:
+        - Ingress buffer packet limit. Maximum allowed value is 255.
+      returned: changed
+      type: int
+      sample: 0
+    datagram_load_balancing:
+      description:
+        - Load balance UDP datagram by datagram
+      returned: changed
+      type: bool
+      sample: yes
+    idle_timeout:
+      description:
+        - Number of seconds that a connection is idle before
+          the connection is eligible for deletion.
+        - In addition to a number, may be one of the values C(indefinite), or
+          C(immediate).
+      returned: changed
+      type: bool
+      sample: 200
+    ip_df_mode:
+      description:
+        - Describes the Don't Fragment (DF) bit setting in the outgoing UDP
+          packet.
+        - May be one of C(pmtu), C(preserve), C(set), or C(clear).
+        - When C(pmtu), sets the outgoing UDP packet DF big based on the ip
+          pmtu setting.
+        - When C(preserve), preserves the incoming UDP packet Don't Fragment bit.
+        - When C(set), sets the outgoing UDP packet DF bit.
+        - When C(clear), clears the outgoing UDP packet DF bit.
+      returned: changed
+      type: string
+      sample: pmtu
+    ip_tos_to_client:
+      description:
+        - The Type of Service level that the traffic management
+          system assigns to UDP packets when sending them to clients.
+        - May be numeric, or the values C(pass-through) or C(mimic).
+      returned: changed
+      type: string
+      sample: mimic
+    ip_ttl_mode:
+      description:
+        - The outgoing UDP packet's TTL mode.
+        - Valid modes are C(proxy), C(preserve), C(decrement), and C(set).
+        - When C(proxy), set the IP TTL of ipv4 to the default value of 255 and
+          ipv6 to the default value of 64.
+        - When C(preserve), set the IP TTL to the original packet TTL value.
+        - When C(decrement), set the IP TTL to the original packet TTL value minus 1.
+        - When C(set), set the IP TTL with the specified values in C(ip_ttl_v4) and
+          C(ip_ttl_v6) values in the same profile.
+      returned: changed
+      type: string
+      sample: proxy
+    ip_ttl_v4:
+      description:
+        - IPv4 TTL.
+      returned: changed
+      type: int
+      sample: 10
+    ip_ttl_v6:
+      description:
+        - IPv6 TTL.
+      returned: changed
+      type: int
+      sample: 100
+    link_qos_to_client:
+      description:
+        - The Quality of Service level that the system assigns to
+          UDP packets when sending them to clients.
+        - May be either numberic, or the value C(pass-through).
+      returned: changed
+      type: string
+      sample: pass-through
+    no_checksum:
+      description:
+        - Whether the checksum processing is enabled or disabled.
+        - Note that if the datagram is IPv6, the system always performs
+          checksum processing.
+      returned: changed
+      type: bool
+      sample: yes
+    proxy_mss:
+      description:
+        - When C(yes), specifies that the system advertises the same mss
+          to the server as was negotiated with the client.
+      returned: changed
+      type: bool
+      sample: yes
+  sample: hash/dictionary of values
 vcmp_guests:
   description: vCMP related facts.
   returned: When C(vcmp-guests) is specified in C(gather_subset).
@@ -5302,7 +5436,7 @@ class IapplxPackagesFactManager(BaseManager):
             else:
                 raise F5ModuleError(resp.content)
 
-        status = self.wait_for_task(response['id'])        
+        status = self.wait_for_task(response['id'])
         if status == 'FINISHED':
             uri = "https://{0}:{1}/mgmt/shared/iapp/package-management-tasks/{2}".format(
                 self.client.provider['server'],
@@ -7390,6 +7524,116 @@ class TrunksFactManager(BaseManager):
         return result
 
 
+class UdpProfilesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'allowNoPayload': 'allow_no_payload',
+        'bufferMaxBytes': 'buffer_max_bytes',
+        'bufferMaxPackets': 'buffer_max_packets',
+        'datagramLoadBalancing': 'datagram_load_balancing',
+        'defaultsFrom': 'parent',
+        'idleTimeout': 'idle_timeout',
+        'ipDfMode': 'ip_df_mode',
+        'ipTosToClient': 'ip_tos_to_client',
+        'ipTtlMode': 'ip_ttl_mode',
+        'ipTtlV4': 'ip_ttl_v4',
+        'ipTtlV6': 'ip_ttl_v6',
+        'linkQosToClient': 'link_qos_to_client',
+        'noChecksum': 'no_checksum',
+        'proxyMss': 'proxy_mss',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'allow_no_payload',
+        'buffer_max_bytes',
+        'buffer_max_packets',
+        'datagram_load_balancing',
+        'idle_timeout',
+        'ip_df_mode',
+        'ip_tos_to_client',
+        'ip_ttl_mode',
+        'ip_ttl_v4',
+        'ip_ttl_v6',
+        'link_qos_to_client',
+        'no_checksum',
+        'proxy_mss',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def allow_no_payload(self):
+        return flatten_boolean(self._values['allow_no_payload'])
+
+    @property
+    def datagram_load_balancing(self):
+        return flatten_boolean(self._values['datagram_load_balancing'])
+
+    @property
+    def proxy_mss(self):
+        return flatten_boolean(self._values['proxy_mss'])
+
+    @property
+    def no_checksum(self):
+        return flatten_boolean(self._values['no_checksum'])
+
+
+class UdpProfilesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(UdpProfilesFactManager, self).__init__(**kwargs)
+        self.want = UdpProfilesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(udp_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = UdpProfilesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/udp".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class VcmpGuestsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -8280,6 +8524,10 @@ class ModuleManager(object):
             'trunks': dict(
                 manager=TrunksFactManager
             ),
+            'udp-profiles': dict(
+                manager=UdpProfilesFactManager,
+                client=F5RestClient
+            ),
             'vcmp-guests': dict(
                 manager=VcmpGuestsFactManager,
                 client=F5RestClient
@@ -8418,6 +8666,7 @@ class ArgumentSpec(object):
                     'irules',
                     'ltm-pools',
                     'nodes',
+                    'oneconnect-profiles',
                     'partitions',
                     'provision-info',
                     'self-ips',
@@ -8430,6 +8679,7 @@ class ArgumentSpec(object):
                     'system-info',
                     'traffic-groups',
                     'trunks',
+                    'udp-profiles',
                     'vcmp-guests',
                     'virtual-addresses',
                     'virtual-servers',
@@ -8454,6 +8704,7 @@ class ArgumentSpec(object):
                     '!irules',
                     '!ltm-pools',
                     '!nodes',
+                    '!oneconnect-profiles',
                     '!partitions',
                     '!provision-info',
                     '!self-ips',
@@ -8466,6 +8717,7 @@ class ArgumentSpec(object):
                     '!system-info',
                     '!traffic-groups',
                     '!trunks',
+                    '!udp-profiles',
                     '!vcmp-guests',
                     '!virtual-addresses',
                     '!virtual-servers',
