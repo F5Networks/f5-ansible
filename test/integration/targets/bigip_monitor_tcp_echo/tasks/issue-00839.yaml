@@ -1,0 +1,59 @@
+---
+
+- name: Issue 00839 - Include issue variables
+  include_vars:
+    file: issue-00839.yaml
+
+- name: Issue 00839 - Create TCP Monitor with description - Echo
+  bigip_monitor_tcp_echo:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00839 - Assert Create TCP Monitor with description - Echo
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Issue 00839 - Assert Create TCP Monitor with description - Echo - Idempotent check
+  bigip_monitor_tcp_echo:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00839 - Assert Create TCP Monitor with description - Echo - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00839 - Change Description TCP Monitor - Echo
+  bigip_monitor_tcp_echo:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+  register: result
+
+- name: Issue 00839 - Assert Change Description TCP Monitor - Echo
+  assert:
+    that:
+      - result is changed
+      - result.description == description2
+
+- name: Issue 00839 - Change Description TCP Monitor - Echo - Idempotent check
+  bigip_monitor_tcp_echo:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+  register: result
+
+- name: Issue 00839 - Assert Change Description TCP Monitor - Echo - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00839 - Remove TCP Monitor - Echo
+  bigip_monitor_tcp_echo:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
