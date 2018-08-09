@@ -1,5 +1,18 @@
 ---
 
+- name: Issue 00700 - Select udp-profile facts
+  bigip_device_facts:
+    include:
+      - udp-profiles
+  register: result
+
+- name: Issue 00700 - Assert Select udp-profile facts
+  assert:
+    that:
+      - result is success
+      - result.udp_profiles | selectattr("name", "match", "udp") | map(attribute='proxy_mss') | first == "no"
+      - result.udp_profiles | json_query("[?name=='udp'].proxy_mss") | first == "no"
+
 - name: Issue 00700 - Select http-profile facts
   bigip_device_facts:
     include:
