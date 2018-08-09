@@ -1,0 +1,5 @@
+---
+bigip_username: foo
+bigip_port: 443
+bigip_password: bar
+validate_certs: true

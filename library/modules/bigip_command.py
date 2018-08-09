@@ -632,6 +632,8 @@ class V2Manager(BaseManager):
                 )
                 if hasattr(output, 'commandResult'):
                     responses.append(str(output.commandResult).strip())
+            except F5ModuleError:
+                raise
             except Exception as ex:
                 pass
         return responses
@@ -706,9 +708,9 @@ def main():
     )
     if is_cli(module) and not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required to use the REST api")
+    client = F5Client(**module.params)
 
     try:
-        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         if not is_cli(module):
