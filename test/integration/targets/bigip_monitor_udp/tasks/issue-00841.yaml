@@ -1,0 +1,59 @@
+---
+
+- name: Issue 00841 - Include issue variables
+  include_vars:
+    file: issue-00841.yaml
+
+- name: Issue 00841 - Create UDP Monitor with description
+  bigip_monitor_udp:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00841 - Assert Create UDP Monitor with description
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Issue 00841 - Create UDP Monitor with description - Idempotent check
+  bigip_monitor_udp:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00841 - Assert Create UDP Monitor with description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00841 - Change UDP Monitor description
+  bigip_monitor_udp:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+  register: result
+
+- name: Issue 00841 - Assert Change UDP Monitor description
+  assert:
+    that:
+      - result is changed
+      - result.description == description2
+
+- name: Issue 00841 - Change UDP Monitor description - Idempotent check
+  bigip_monitor_udp:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+  register: result
+
+- name: Issue 00841 - Assert Change UDP Monitor description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00841 - Remove UDP Monitor
+  bigip_monitor_udp:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
