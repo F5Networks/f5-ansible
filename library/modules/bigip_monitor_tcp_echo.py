@@ -29,6 +29,9 @@ options:
         been set, it cannot be changed. By default, this value is the C(tcp_echo)
         parent on the C(Common) partition.
     default: /Common/tcp_echo
+  description:
+    description:
+      - The description of the monitor.
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
@@ -77,6 +80,7 @@ notes:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -111,6 +115,11 @@ ip:
   returned: changed
   type: string
   sample: 10.12.13.14
+description:
+  description: The description of the monitor.
+  returned: changed
+  type: str
+  sample: Important Monitor
 interval:
   description: The new interval in which to run the monitor check.
   returned: changed
@@ -166,15 +175,16 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'destination'
+        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'destination',
+        'description'
     ]
 
     returnables = [
-        'parent', 'ip', 'interval', 'timeout', 'time_until_up'
+        'parent', 'ip', 'interval', 'timeout', 'time_until_up', 'description'
     ]
 
     updatables = [
-        'ip', 'interval', 'timeout', 'time_until_up'
+        'ip', 'interval', 'timeout', 'time_until_up', 'description'
     ]
 
     def to_return(self):
@@ -464,6 +474,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             parent=dict(default='/Common/tcp_echo'),
+            description=dict(),
             ip=dict(),
             interval=dict(type='int'),
             timeout=dict(type='int'),
