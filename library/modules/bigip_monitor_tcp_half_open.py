@@ -29,6 +29,9 @@ options:
         been set, it cannot be changed. By default, this value is the C(tcp_half_open)
         parent on the C(Common) partition.
     default: "/Common/tcp_half_open"
+  description:
+    description:
+      - The description of the monitor.
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
@@ -84,6 +87,7 @@ notes:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -122,6 +126,11 @@ parent:
   returned: changed
   type: string
   sample: tcp
+description:
+  description: The description of the monitor.
+  returned: changed
+  type: str
+  sample: Important Monitor
 ip:
   description: The new IP of IP/port definition.
   returned: changed
@@ -183,15 +192,17 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'destination'
+        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'destination',
+        'description'
     ]
 
     returnables = [
-        'parent', 'ip', 'port', 'interval', 'timeout', 'time_until_up'
+        'parent', 'ip', 'port', 'interval', 'timeout', 'time_until_up',
+        'description'
     ]
 
     updatables = [
-        'destination', 'interval', 'timeout', 'time_until_up'
+        'destination', 'interval', 'timeout', 'time_until_up', 'description'
     ]
 
     def to_return(self):
@@ -508,6 +519,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             parent=dict(default='/Common/tcp_half_open'),
+            description=dict(),
             ip=dict(),
             port=dict(type='int'),
             interval=dict(type='int'),

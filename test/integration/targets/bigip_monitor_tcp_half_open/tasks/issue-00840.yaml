@@ -1,0 +1,59 @@
+---
+
+- name: Issue 00840 - Include issue variables
+  include_vars:
+    file: issue-00840.yaml
+
+- name: Issue 00840 - Create TCP Monitor with description - Half Open
+  bigip_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00840 - Assert Create TCP Monitor with description - Half Open
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Issue 00840 - Create TCP Monitor with description - Half Open - Idempotent check
+  bigip_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Issue 00840 - Assert Create TCP Monitor with description - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00840 - Change TCP Monitor description - Half Open
+  bigip_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+  register: result
+
+- name: Issue 00840 - Assert Change TCP Monitor description - Half Open
+  assert:
+    that:
+      - result is changed
+      - result.description == description2
+
+- name: Issue 00840 - Change TCP Monitor description - Half Open - Idempotent check
+  bigip_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    description: "{{ description2 }}"
+  register: result
+
+- name: Issue 00840 - Assert Change TCP Monitor description - Half Open - Idempotent check
+  assert:
+    that:
+        - result is not changed
+
+- name: Issue 00840 - Remove TCP Monitor - Half Open
+  bigip_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
