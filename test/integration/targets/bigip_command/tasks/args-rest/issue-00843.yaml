@@ -1,0 +1,26 @@
+---
+
+- name: Issue 00843 - Include issue variables - args-rest
+  include_vars:
+    file: issue-00843.yaml
+
+- name: Issue 00843 - No server provided - args-rest - expect to fail
+  bigip_command:
+    commands: sys standby failover
+    user: "{{ bigip_username }}"
+    server_port: "{{ bigip_port }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: Issue 00843 - Bogus server provided - args-rest - expect to fail
+  bigip_command:
+    commands: sys standby failover
+    user: "{{ bigip_username }}"
+    server: foobar
+    server_port: "{{ bigip_port }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
