@@ -1,0 +1,6 @@
+---
+
+- name: Remove DNS resolver
+  bigip_command:
+    commands:
+      - tmsh delete net dns-resolver foo
