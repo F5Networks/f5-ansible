@@ -79,7 +79,7 @@ def ipv6_netmask_to_cidr(mask):
 
 def is_valid_ip_network(address):
     try:
-        ip_network(address)
+        ip_network(u'{0}'.format(address))
         return True
     except ValueError:
         return False
@@ -87,7 +87,7 @@ def is_valid_ip_network(address):
 
 def is_valid_ip_interface(address):
     try:
-        ip_interface(address)
+        ip_interface(u'{0}'.format(address))
         return True
     except ValueError:
         return False
