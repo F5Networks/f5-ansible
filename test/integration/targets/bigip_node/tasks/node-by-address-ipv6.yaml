@@ -1,47 +1,47 @@
 ---
 
-- name: Create node
+- name: Create node - IPv6
   bigip_node:
     host: "{{ node_host_ipv6 }}"
     name: "{{ node_name }}"
     state: present
   register: result
 
-- name: Assert Create node
+- name: Assert Create node - IPv6
   assert:
     that:
       - result is changed
 
-- name: Create node - Idempotent check
+- name: Create node - IPv6 - Idempotent check
   bigip_node:
     host: "{{ node_host_ipv6 }}"
     name: "{{ node_name }}"
     state: present
   register: result
 
-- name: Assert Create node - Idempotent check
+- name: Assert Create node - IPv6 - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Delete node
+- name: Delete node - IPv6
   bigip_node:
     name: "{{ node_name }}"
     state: absent
   register: result
 
-- name: Assert delete node
+- name: Assert Delete node - IPv6
   assert:
     that:
       - result is changed
 
-- name: Delete node - Idempotent check
+- name: Delete node - IPv6 - Idempotent check
   bigip_node:
     name: "{{ node_name }}"
     state: absent
   register: result
 
-- name: Assert delete node - Idempotent check
+- name: Assert Delete node - IPv6 - Idempotent check
   assert:
     that:
       - result is not changed
