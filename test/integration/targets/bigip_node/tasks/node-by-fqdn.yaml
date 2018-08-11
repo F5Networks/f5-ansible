@@ -1,69 +1,69 @@
 ---
 
-- name: Create node
+- name: Create node - FQDN
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
     state: present
   register: result
 
-- name: Assert Create node
+- name: Assert Create node - FQDN
   assert:
     that:
       - result is changed
 
-- name: Create node - Idempotent check
+- name: Create node - FQDN - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
     state: present
   register: result
 
-- name: Assert Create node - Idempotent check
+- name: Assert Create node - FQDN - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Change node description
+- name: Change node description - FQDN
   bigip_node:
     description: "new {{ node_description }}"
     name: "{{ node_name }}"
   register: result
 
-- name: Assert change node description
+- name: Assert change node description - FQDN
   assert:
     that:
       - result is changed
 
-- name: Change node description - Idempotent check
+- name: Change node description - FQDN - Idempotent check
   bigip_node:
     description: "new {{ node_description }}"
     name: "{{ node_name }}"
   register: result
 
-- name: Assert change node description - Idempotent check
+- name: Assert change node description - FQDN - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Delete node
+- name: Delete node - FQDN
   bigip_node:
     name: "{{ node_name }}"
     state: absent
   register: result
 
-- name: Assert delete node
+- name: Assert Delete node - FQDN
   assert:
     that:
       - result is changed
 
-- name: Delete node - Idempotent check
+- name: Delete node - FQDN - Idempotent check
   bigip_node:
     name: "{{ node_name }}"
     state: absent
   register: result
 
-- name: Assert delete node - Idempotent check
+- name: Assert Delete node - FQDN - Idempotent check
   assert:
     that:
       - result is not changed
