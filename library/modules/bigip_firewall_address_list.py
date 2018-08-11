@@ -543,9 +543,9 @@ class ModuleParameters(Parameters):
         result = []
         for x in self._values['addresses']:
             if is_valid_ip(x):
-                result.append(str(ip_address(x)))
+                result.append(str(ip_address(u'{0}'.format(x))))
             elif is_valid_ip_interface(x):
-                result.append(str(ip_interface(x)))
+                result.append(str(ip_interface(u'{0}'.format(x))))
             else:
                 raise F5ModuleError(
                     "Address {0} must be either an IPv4 or IPv6 address or network.".format(x)
@@ -563,13 +563,13 @@ class ModuleParameters(Parameters):
             start = start.strip()
             stop = stop.strip()
 
-            start = ip_address(start)
-            stop = ip_address(stop)
+            start = ip_address(u'{0}'.format(start))
+            stop = ip_address(u'{0}'.format(stop))
             if start.version != stop.version:
                 raise F5ModuleError(
                     "When specifying a range, IP addresses must be of the same type; IPv4 or IPv6."
                 )
-            if start > stop:
+            if int(start) > int(stop):
                 stop, start = start, stop
             item = '{0}-{1}'.format(str(start), str(stop))
             result.append(item)
@@ -649,13 +649,13 @@ class ReportableChanges(Changes):
             start = start.strip()
             stop = stop.strip()
 
-            start = ip_address(start)
-            stop = ip_address(stop)
+            start = ip_address(u'{0}'.format(start))
+            stop = ip_address(u'{0}'.format(stop))
             if start.version != stop.version:
                 raise F5ModuleError(
                     "When specifying a range, IP addresses must be of the same type; IPv4 or IPv6."
                 )
-            if start > stop:
+            if int(start) > int(stop):
                 stop, start = start, stop
             item = '{0}-{1}'.format(str(start), str(stop))
             result.append(item)
