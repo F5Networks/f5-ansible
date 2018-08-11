@@ -989,7 +989,7 @@ class ApiParameters(Parameters):
         if self._values['source'] is None:
             return None
         try:
-            addr = ip_interface(self._values['source'])
+            addr = ip_interface(u'{0}'.format(self._values['source']))
             result = '{0}/{1}'.format(str(addr.ip), addr.network.prefixlen)
             return result
         except ValueError:
@@ -1320,7 +1320,7 @@ class ModuleParameters(Parameters):
         if self._values['source'] is None:
             return None
         try:
-            addr = ip_interface(self._values['source'])
+            addr = ip_interface(u'{0}'.format(self._values['source']))
             result = '{0}/{1}'.format(str(addr.ip), addr.network.prefixlen)
             return result
         except ValueError:
@@ -1972,8 +1972,8 @@ class VirtualServerValidator(object):
             F5ModuleError: Raised when the IP versions of source and destination differ.
         """
         if self.want.source and self.want.destination:
-            want = ip_interface(self.want.source)
-            have = ip_interface(self.want.destination_tuple.ip)
+            want = ip_interface(u'{0}'.format(self.want.source))
+            have = ip_interface(u'{0}'.format(self.want.destination_tuple.ip))
             if want.version != have.version:
                 raise F5ModuleError(
                     "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
@@ -2360,8 +2360,8 @@ class Difference(object):
     def source(self):
         if self.want.source is None:
             return None
-        want = ip_interface(self.want.source)
-        have = ip_interface(self.have.destination_tuple.ip)
+        want = ip_interface(u'{0}'.format(self.want.source))
+        have = ip_interface(u'{0}'.format(self.have.destination_tuple.ip))
         if want.version != have.version:
             raise F5ModuleError(
                 "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
