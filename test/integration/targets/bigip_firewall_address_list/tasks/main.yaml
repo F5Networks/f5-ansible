@@ -305,18 +305,37 @@
       - result is not changed
       - result is success
 
+- name: IPv6 network interface
+  bigip_firewall_address_list:
+    name: foo8
+    addresses:
+      - 2606:ae00:2e10:104::4/128
+  register: result
+
+- name: Assert IPv6 network interface
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: IPv6 network interface - Idempotent check
+  bigip_firewall_address_list:
+    name: foo8
+    addresses:
+      - 2606:ae00:2e10:104::4/128
+  register: result
+
+- name: Assert IPv6 network interface - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
 - name: Remove address lists
   bigip_firewall_address_list:
-    name: "{{ item }}"
+    name: "foo{{ item }}"
     state: absent
-  loop:
-    - foo1
-    - foo2
-    - foo3
-    - foo4
-    - foo5
-    - foo6
-    - foo7
+  with_sequence: start=1 end=8
   register: result
 
 - name: Assert Remove address lists
@@ -326,16 +345,9 @@
 
 - name: Remove address list - Idempotent check
   bigip_firewall_address_list:
-    name: "{{ item }}"
+    name: "foo{{ item }}"
     state: absent
-  loop:
-    - foo1
-    - foo2
-    - foo3
-    - foo4
-    - foo5
-    - foo6
-    - foo7
+  with_sequence: start=1 end=8
   register: result
 
 - name: Assert Remove address lists - Idempotent check
