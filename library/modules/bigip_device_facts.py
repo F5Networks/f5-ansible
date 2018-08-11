@@ -44,9 +44,11 @@ options:
       - irules
       - ltm-pools
       - nodes
+      - oneconnect-profiles
       - partitions
       - provision-info
       - self-ips
+      - server-ssl-profiles
       - software-volumes
       - software-images
       - software-hotfixes
@@ -76,9 +78,11 @@ options:
       - "!irules"
       - "!ltm-pools"
       - "!nodes"
+      - "!oneconnect-profiles"
       - "!partitions"
       - "!provision-info"
       - "!self-ips"
+      - "!server-ssl-profiles"
       - "!software-volumes"
       - "!software-images"
       - "!software-hotfixes"
@@ -101,7 +105,7 @@ author:
 
 EXAMPLES = r'''
 - name: Collect BIG-IP facts
-  bigip_facts:
+  bigip_device_facts:
     gather_subset:
       - interface
       - vlans
@@ -112,7 +116,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Collect all BIG-IP facts
-  bigip_facts:
+  bigip_device_facts:
     gather_subset:
       - all
     provider:
@@ -122,7 +126,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Collect all BIG-IP facts except trunks
-  bigip_facts:
+  bigip_device_facts:
     gather_subset:
       - all
       - "!trunks"
@@ -2318,6 +2322,315 @@ self_ips:
       type: bool
       sample: no
   sample: hash/dictionary of values
+server_ssl_profiles:
+  description: Server SSL related facts.
+  returned: When C(server-ssl-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: serverssl
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: serverssl
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My profile
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: serverssl
+    alert_timeout:
+      description:
+        - Maximum time period in seconds to keep the SSL
+          session active after alert message is sent, or indefinite.
+      returned: changed
+      type: string
+      sample: 100
+    allow_expired_crl:
+      description:
+        - Use the specified CRL file even if it has expired.
+      returned: changed
+      type: bool
+      sample: yes
+    authentication_frequency:
+      description:
+        - Specifies the frequency of authentication.
+      returned: changed
+      type: string
+      sample: once
+    authenticate_depth:
+      description:
+        - The client certificate chain maximum traversal depth
+      returned: changed
+      type: int
+      sample: 9
+    authenticate_name:
+      description:
+        - Common Name (CN) that is embedded in a server certificate.
+        - The system authenticates a server based on the specified CN.
+      returned: changed
+      type: string
+      sample: foo
+    bypass_on_client_cert_fail:
+      description:
+        - Enables or disables SSL forward proxy bypass on failing to get
+          client certificate that server asks for.
+      type: bool
+      sample: yes
+    bypass_on_handshake_alert:
+      description:
+        - Enables or disables SSL forward proxy bypass on receiving
+          handshake_failure, protocol_version or unsupported_extension alert
+          message during the serverside SSL handshake.
+      type: bool
+      sample: no
+    c3d_ca_cert:
+      description:
+        - Name of the certificate file that is used as the
+          certification authority certificate when SSL client certificate
+          constrained delegation is enabled.
+      type: string
+      sample: /Common/cacert.crt
+    c3d_ca_key:
+      description:
+        - Name of the key file that is used as the
+          certification authority key when SSL client certificate
+          constrained delegation is enabled.
+      type: string
+      sample: /Common/default.key
+    c3d_cert_extension_includes:
+      description:
+        - Extensions of the client certificates to be included
+          in the generated certificates using SSL client certificate
+          constrained delegation.
+      type: list
+      sample: [ "basic-constraints", "extended-key-usage", ... ]
+    c3d_cert_lifespan:
+      description:
+        - Lifespan of the certificate generated using the SSL
+          client certificate constrained delegation.
+      type: int
+      sample: 24
+    ca_file:
+      description:
+        - Certificate authority file name.
+      type: string
+      sample: default.crt
+    cache_size:
+      description:
+        - The SSL session cache size.
+      type: int
+      sample: 262144
+    cache_timeout:
+      description:
+        - The SSL session cache timeout value, which is the usable
+          lifetime seconds of negotiated SSL session IDs.
+      type: int
+      sample: 86400
+    cert:
+      description:
+        - The name of the certificate installed on the traffic
+          management system for the purpose of terminating or initiating an
+          SSL connection.
+      type: string
+      sample: /Common/default.crt
+    chain:
+      description:
+        - Specifies or builds a certificate chain file that a client can use
+          to authenticate the profile.
+      type: string
+      sample: /Common/default.crt
+    cipher_group:
+      description:
+        - Specifies a cipher group.
+      type: string
+    ciphers:
+      description:
+        - Specifies a cipher name
+      type: string
+      sample: DEFAULT
+    crl_file:
+      description:
+        - Specifies the certificate revocation list file name.
+      type: string
+    expire_cert_response_control:
+      description:
+        - Specifies the BIGIP action when the server certificate has
+          expired.
+      type: string
+      sample: drop
+    handshake_timeout:
+      description:
+        - Specifies the handshake timeout in seconds.
+      type: string
+      sample: 10
+    key:
+      description:
+        - Specifies the key file name. Specifies the name of the key
+          installed on the traffic management system for the purpose of
+          terminating or initiating an SSL connection.
+      type: string
+      sample: /Common/default.key
+    max_active_handshakes:
+      description:
+        - Specifies the maximum number allowed SSL active handshakes.
+      type: string
+      sample: 100
+    mod_ssl_methods:
+      description:
+        - Enables or disables ModSSL methods.
+      type: bool
+      sample: yes
+    mode:
+      description:
+        - Enables or disables SSL processing.
+      type: bool
+      sample: no
+    ocsp:
+      description:
+        - Specifies the name of ocsp profile for purpose of validating
+          status of server certificate.
+      type: string
+    options:
+      description:
+        - Enables options, including some industry-related workarounds.
+      type: list
+      sample: [ "netscape-reuse-cipher-change-bug", "dont-insert-empty-fragments" ]
+    peer_cert_mode:
+      description:
+        - Specifies the peer certificate mode.
+      type: string
+      sample: ignore
+    proxy_ssl:
+      description:
+        - Allows further modification of application traffic within
+          an SSL tunnel while still allowing the server to perform necessary
+          authorization, authentication, auditing steps.
+      type: bool
+      sample: yes
+    proxy_ssl_passthrough:
+      description:
+        - Allows Proxy SSL to passthrough the traffic when ciphersuite negotiated
+          between the client and server is not supported.
+      type: bool
+      sample: yes
+    renegotiate_period:
+      description:
+        - Number of seconds from the initial connect time
+          after which the system renegotiates an SSL session.
+      type: string
+      sample: indefinite
+    renegotiate_size:
+      description:
+        - Specifies a throughput size, in megabytes, of SSL renegotiation.
+      type: string
+      sample indefinite
+    renegotiation:
+      description:
+        - Whether renegotiations are enabled.
+      type: bool
+      sample: yes
+    retain_certificate:
+      description:
+        - APM module requires storing certificate in SSL session. When C(no),
+          certificate will not be stored in SSL session.
+      type: bool
+      sample: no
+    generic_alert:
+      description:
+        - Enables or disables generic-alert.
+      type: bool
+      sample: yes
+    secure_renegotiation:
+      description:
+        - Specifies the secure renegotiation mode.
+      type: string
+      sample: require
+    server_name:
+      description:
+        - Server name to be included in SNI (server name
+          indication) extension during SSL handshake in ClientHello.
+      type: string
+    session_mirroring:
+      description:
+        - Enables or disables the mirroring of sessions to high availability
+          peer.
+      type: bool
+      sample: yes
+    session_ticket:
+      description:
+        - Enables or disables session-ticket.
+      type: bool
+      sample: no
+    sni_default:
+      description:
+        - When C(yes), this profile is the default SSL profile when the server
+          name in a client connection does not match any configured server
+          names, or a client connection does not specify any server name at
+          all.
+      type: bool
+      sample: yes
+    sni_require:
+      description:
+        - When C(yes), connections to a server that does not support SNI
+          extension will be rejected.
+      type: bool
+      sample: no
+    ssl_c3d:
+      description:
+        - Enables or disables SSL Client certificate constrained delegation.
+      type: bool
+      sample: yes
+    ssl_forward_proxy_enabled:
+      description:
+        - Enables or disables ssl-forward-proxy feature.
+      type: bool
+      sample: no
+    ssl_sign_hash:
+      description:
+        - Specifies SSL sign hash algorithm which is used to sign and verify
+          SSL Server Key Exchange and Certificate Verify messages for the
+          specified SSL profiles.
+      type: string
+      sample: sha1
+    ssl_forward_proxy_bypass:
+      description:
+        - Enables or disables ssl-forward-proxy-bypass feature.
+      type: bool
+      sample: yes
+    strict_resume:
+      description:
+        - Enables or disables the resumption of SSL sessions after an
+          unclean shutdown.
+      type: bool
+      sample: no
+    unclean_shutdown:
+      description:
+        - Specifies, when C(yes), that the SSL profile performs unclean
+          shutdowns of all SSL connections, which means that underlying TCP
+          connections are closed without exchanging the required SSL
+          shutdown alerts.
+      type: bool
+      sample: yes
+    untrusted_cert_response_control:
+      description:
+        - Specifies the BIGIP action when the server certificate has
+          untrusted CA.
+      type: string
+      sample: drop
+  sample: hash/dictionary of values
 software_hotfixes:
   description: List of software hotfixes.
   returned: When C(software-hotfixes) is specified in C(gather_subset).
@@ -2821,6 +3134,11 @@ system_info:
         - Build version of the release version.
       type: string
       sample: 0.0.1
+    product_version:
+      description:
+        - Major product version of the running software.
+      type: string
+      sample: 13.1.0.7
     product_built:
       description:
         - Unix timestamp of when the product was built.
@@ -6434,6 +6752,310 @@ class SelfIpsFactManager(BaseManager):
         return result
 
 
+class ServerSslProfilesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'alertTimeout': 'alert_timeout',
+        'allowExpiredCrl': 'allow_expired_crl',
+        'authenticate': 'authentication_frequency',
+        'authenticateDepth': 'authenticate_depth',
+        'authenticateName': 'authenticate_name',
+        'bypassOnClientCertFail': 'bypass_on_client_cert_fail',
+        'bypassOnHandshakeAlert': 'bypass_on_handshake_alert',
+        'c3dCaCert': 'c3d_ca_cert',
+        'c3dCaKey': 'c3d_ca_key',
+        'c3dCertExtensionIncludes': 'c3d_cert_extension_includes',
+        'c3dCertLifespan': 'c3d_cert_lifespan',
+        'caFile': 'ca_file',
+        'cacheSize': 'cache_size',
+        'cacheTimeout': 'cache_timeout',
+        'cipherGroup': 'cipher_group',
+        'crlFile': 'crl_file',
+        'expireCertResponseControl': 'expire_cert_response_control',
+        'genericAlert': 'generic_alert',
+        'handshakeTimeout': 'handshake_timeout',
+        'maxActiveHandshakes': 'max_active_handshakes',
+        'modSslMethods': 'mod_ssl_methods',
+        'tmOptions': 'options',
+        'peerCertMode': 'peer_cert_mode',
+        'proxySsl': 'proxy_ssl',
+        'proxySslPassthrough': 'proxy_ssl_passthrough',
+        'renegotiatePeriod': 'renegotiate_period',
+        'renegotiateSize': 'renegotiate_size',
+        'retainCertificate': 'retain_certificate',
+        'secureRenegotiation': 'secure_renegotiation',
+        'serverName': 'server_name',
+        'sessionMirroring': 'session_mirroring',
+        'sessionTicket': 'session_ticket',
+        'sniDefault': 'sni_default',
+        'sniRequire': 'sni_require',
+        'sslC3d': 'ssl_c3d',
+        'sslForwardProxy': 'ssl_forward_proxy_enabled',
+        'sslForwardProxyBypass': 'ssl_forward_proxy_bypass',
+        'sslSignHash': 'ssl_sign_hash',
+        'strictResume': 'strict_resume',
+        'uncleanShutdown': 'unclean_shutdown',
+        'untrustedCertResponseControl': 'untrusted_cert_response_control'
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'unclean_shutdown',
+        'strict_resume',
+        'ssl_forward_proxy_enabled',
+        'ssl_forward_proxy_bypass',
+        'sni_default',
+        'sni_require',
+        'ssl_c3d',
+        'session_mirroring',
+        'session_ticket',
+        'mod_ssl_methods',
+        'allow_expired_crl',
+        'retain_certificate',
+        'mode',
+        'bypass_on_client_cert_fail',
+        'bypass_on_handshake_alert',
+        'generic_alert',
+        'renegotiation',
+        'proxy_ssl',
+        'proxy_ssl_passthrough',
+        'peer_cert_mode',
+        'untrusted_cert_response_control',
+        'ssl_sign_hash',
+        'server_name',
+        'secure_renegotiation',
+        'renegotiate_size',
+        'renegotiate_period',
+        'options',
+        'ocsp',
+        'max_active_handshakes',
+        'key',
+        'handshake_timeout',
+        'expire_cert_response_control',
+        'cert',
+        'chain',
+        'authentication_frequency',
+        'ciphers',
+        'cipher_group',
+        'crl_file',
+        'cache_timeout',
+        'cache_size',
+        'ca_file',
+        'c3d_cert_lifespan',
+        'alert_timeout',
+        'c3d_ca_key',
+        'authenticate_depth',
+        'authenticate_name',
+        'c3d_ca_cert',
+        'c3d_cert_extension_includes',
+    ]
+
+    @property
+    def c3d_cert_extension_includes(self):
+        if self._values['c3d_cert_extension_includes'] is None:
+            return None
+        if len(self._values['c3d_cert_extension_includes']) == 0:
+            return None
+        self._values['c3d_cert_extension_includes'].sort()
+        return self._values['c3d_cert_extension_includes']
+
+    @property
+    def options(self):
+        if self._values['options'] is None:
+            return None
+        if len(self._values['options']) == 0:
+            return None
+        self._values['options'].sort()
+        return self._values['options']
+
+    @property
+    def c3d_ca_cert(self):
+        if self._values['c3d_ca_cert'] in [None, 'none']:
+            return None
+        return self._values['c3d_ca_cert']
+
+    @property
+    def ocsp(self):
+        if self._values['ocsp'] in [None, 'none']:
+            return None
+        return self._values['ocsp']
+
+    @property
+    def server_name(self):
+        if self._values['server_name'] in [None, 'none']:
+            return None
+        return self._values['server_name']
+
+    @property
+    def cipher_group(self):
+        if self._values['cipher_group'] in [None, 'none']:
+            return None
+        return self._values['cipher_group']
+
+    @property
+    def authenticate_name(self):
+        if self._values['authenticate_name'] in [None, 'none']:
+            return None
+        return self._values['authenticate_name']
+
+    @property
+    def c3d_ca_key(self):
+        if self._values['c3d_ca_key'] in [None, 'none']:
+            return None
+        return self._values['c3d_ca_key']
+
+    @property
+    def ca_file(self):
+        if self._values['ca_file'] in [None, 'none']:
+            return None
+        return self._values['ca_file']
+
+    @property
+    def crl_file(self):
+        if self._values['crl_file'] in [None, 'none']:
+            return None
+        return self._values['crl_file']
+
+    @property
+    def authentication_frequency(self):
+        if self._values['authentication_frequency'] in [None, 'none']:
+            return None
+        return self._values['authentication_frequency']
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def proxy_ssl_passthrough(self):
+        return flatten_boolean(self._values['proxy_ssl_passthrough'])
+
+    @property
+    def proxy_ssl(self):
+        return flatten_boolean(self._values['proxy_ssl'])
+
+    @property
+    def generic_alert(self):
+        return flatten_boolean(self._values['generic_alert'])
+
+    @property
+    def renegotiation(self):
+        return flatten_boolean(self._values['renegotiation'])
+
+    @property
+    def bypass_on_handshake_alert(self):
+        return flatten_boolean(self._values['bypass_on_handshake_alert'])
+
+    @property
+    def bypass_on_client_cert_fail(self):
+        return flatten_boolean(self._values['bypass_on_client_cert_fail'])
+
+    @property
+    def mode(self):
+        return flatten_boolean(self._values['mode'])
+
+    @property
+    def retain_certificate(self):
+        return flatten_boolean(self._values['retain_certificate'])
+
+    @property
+    def allow_expired_crl(self):
+        return flatten_boolean(self._values['allow_expired_crl'])
+
+    @property
+    def mod_ssl_methods(self):
+        return flatten_boolean(self._values['mod_ssl_methods'])
+
+    @property
+    def session_ticket(self):
+        return flatten_boolean(self._values['session_ticket'])
+
+    @property
+    def session_mirroring(self):
+        return flatten_boolean(self._values['session_mirroring'])
+
+    @property
+    def unclean_shutdown(self):
+        return flatten_boolean(self._values['unclean_shutdown'])
+
+    @property
+    def strict_resume(self):
+        return flatten_boolean(self._values['strict_resume'])
+
+    @property
+    def ssl_forward_proxy_enabled(self):
+        return flatten_boolean(self._values['ssl_forward_proxy_enabled'])
+
+    @property
+    def ssl_forward_proxy_bypass(self):
+        return flatten_boolean(self._values['ssl_forward_proxy_bypass'])
+
+    @property
+    def sni_default(self):
+        return flatten_boolean(self._values['sni_default'])
+
+    @property
+    def sni_require(self):
+        return flatten_boolean(self._values['sni_require'])
+
+    @property
+    def ssl_c3d(self):
+        return flatten_boolean(self._values['ssl_c3d'])
+
+
+class ServerSslProfilesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ServerSslProfilesFactManager, self).__init__(**kwargs)
+        self.want = ServerSslProfilesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(server_ssl_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ServerSslProfilesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/server-ssl".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class SoftwareVolumesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -6917,6 +7539,7 @@ class SystemInfoParameters(BaseParameters):
         'product_build_date',
         'product_changelist',
         'product_jobid',
+        'product_version',
         'uptime',
         'chassis_serial',
         'host_board_part_revision',
@@ -8493,6 +9116,10 @@ class ModuleManager(object):
             'self-ips': dict(
                 manager=SelfIpsFactManager
             ),
+            'server-ssl-profiles': dict(
+                manager=ServerSslProfilesFactManager,
+                client=F5RestClient
+            ),
             'software-volumes': dict(
                 manager=SoftwareVolumesFactManager
             ),
@@ -8670,6 +9297,7 @@ class ArgumentSpec(object):
                     'partitions',
                     'provision-info',
                     'self-ips',
+                    'server-ssl-profiles',
                     'software-volumes',
                     'software-images',
                     'software-hotfixes',
@@ -8708,6 +9336,7 @@ class ArgumentSpec(object):
                     '!partitions',
                     '!provision-info',
                     '!self-ips',
+                    '!server-ssl-profiles',
                     '!software-volumes',
                     '!software-images',
                     '!software-hotfixes',

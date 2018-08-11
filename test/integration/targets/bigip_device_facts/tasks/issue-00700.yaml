@@ -1,5 +1,18 @@
 ---
 
+- name: Issue 00700 - Select server-ssl-profile facts
+  bigip_device_facts:
+    include:
+      - server-ssl-profiles
+  register: result
+
+- name: Issue 00700 - Assert Select server-ssl-profile facts
+  assert:
+    that:
+      - result is success
+      - result.server_ssl_profiles | selectattr("name", "match", "serverssl") | map(attribute='mode') | first == "yes"
+      - result.server_ssl_profiles | json_query("[?name=='serverssl'].mode") | first == "yes"
+
 - name: Issue 00700 - Select udp-profile facts
   bigip_device_facts:
     include:
