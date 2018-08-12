@@ -7,9 +7,9 @@
     - module-provisioning
 
 - name: Collect BIG-IP facts
-  bigip_facts:
-    include: system_info
-  register: result
+  bigip_device_facts:
+    include: system-info
+  register: f
 
 - name: Create a pool for testing forwarding to pools
   bigip_pool:
@@ -25,7 +25,7 @@
     file: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
     active: yes
   register: result
-  when: system_info.product_information.product_version >= "13.0.0"
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Create ASM policy, compact XML file - legacy
   bigip_asm_policy:
@@ -33,7 +33,7 @@
     file: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
     active: yes
   register: result
-  when: system_info.product_information.product_version < "13.0.0"
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Create published policy
   bigip_policy:
