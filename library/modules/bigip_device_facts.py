@@ -56,6 +56,7 @@ options:
       - ssl-keys
       - system-db
       - system-info
+      - tcp-profiles
       - traffic-groups
       - trunks
       - udp-profiles
@@ -90,6 +91,7 @@ options:
       - "!ssl-keys"
       - "!system-db"
       - "!system-info"
+      - "!tcp-profiles"
       - "!traffic-groups"
       - "!trunks"
       - "!udp-profiles"
@@ -3190,6 +3192,505 @@ system_info:
         - Time, in seconds, since the system booted.
       type: int
       sample: 603202
+  sample: hash/dictionary of values
+tcp_profiles:
+  description: TCP profile related facts.
+  returned: When C(tcp-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: tcp
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/tcp
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: tcp
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My profile
+    abc:
+      description:
+        - Appropriate Byte Counting (RFC 3465)
+        - When C(yes), increases the congestion window by basing the increase
+          amount on the number of previously unacknowledged bytes that each ACK covers.
+      type: bool
+      sample: yes
+    ack_on_push:
+      description:
+        - Specifies, when C(yes), significantly improved performance to Microsoft
+          Windows and MacOS peers who are writing out on a very small send buffer.
+      type: bool
+      sample: no
+    auto_proxy_buffer:
+      description:
+        - Specifies, C(yes), that the system uses the network measurements to set
+          the optimal proxy buffer size.
+      type: bool
+      sample: yes
+    auto_receive_window:
+      description:
+        - Specifies, when C(yes), that the system uses the network measurements to
+          set the optimal receive window size.
+      type: bool
+      sample: no
+    auto_send_buffer:
+      description:
+        - Specifies, when C(yes), that the system uses the network measurements to
+          set the optimal send buffer size.
+      type: bool
+      sample: yes
+    close_wait:
+      description:
+        - Specifies the length of time that a TCP connection remains in the LAST-ACK
+          state before quitting.
+        - In addition to a numeric value, the value of this fact may also be one of
+          C(immediate) or C(indefinite).
+        - When C(immediate), specifies that the TCP connection closes immediately
+          after entering the LAST-ACK state.
+        - When C(indefinite), specifies that TCP connections in the LAST-ACK state
+          do not close until they meet the maximum retransmissions timeout.
+      type: string
+      sample: indefinite
+    congestion_metrics_cache:
+      description:
+        - Specifies, when C(yes), that the system uses a cache for storing congestion
+          metrics.
+        - Subsequently, because these metrics are already known and cached, the initial
+          slow-start ramp for previously-encountered peers improves.
+      type: bool
+      sample: yes
+    congestion_metrics_cache_timeout:
+      description:
+        - Specifies the number of seconds for which entries in the congestion metrics
+          cache are valid.
+      type: int
+      sample: 0
+    congestion_control:
+      description:
+        - Specifies the algorithm to use to share network resources among competing
+          users to reduce congestion.
+        - Return values may include, C(high-speed), C(cdg), C(chd), C(none), C(cubic),
+          C(illinois), C(new-reno), C(reno), C(scalable), C(vegas), C(westwood), and
+          C(woodside).
+      type: string
+      sample: high-speed
+    deferred_accept:
+      description:
+        - Specifies, when C(yes), that the system defers allocation of the connection
+          chain context until the system has received the payload from the client.
+        - Enabling this setting is useful in dealing with 3-way handshake denial-of-service
+          attacks.
+      type: bool
+      sample: yes
+    delay_window_control:
+      description:
+        - Specifies that the system uses an estimate of queuing delay as a measure of
+          congestion to control, in addition to the normal loss-based control, the amount
+          of data sent.
+      type: bool
+      sample: yes
+    delayed_acks:
+      description:
+        - Specifies, when checked (enabled), that the system can send fewer than one ACK
+          (acknowledgment) segment per data segment received.
+      type: bool
+      sample: yes
+    dsack:
+      description:
+        - D-SACK (RFC 2883)
+        - Specifies, when C(yes), the use of the selective ACK (SACK) option to acknowledge
+          duplicate segments.
+      type: bool
+      sample: yes
+    early_retransmit:
+      description:
+        - Specifies, when C(yes), that the system uses early retransmit (as specified in
+          RFC 5827) to reduce the recovery time for connections that are receive- buffer
+          or user-data limited.
+      type: bool
+      sample: yes 
+    explicit_congestion_notification:
+      description:
+        - Specifies, when C(yes), that the system uses the TCP flags CWR (congestion window
+          reduction) and ECE (ECN-Echo) to notify its peer of congestion and congestion
+          counter-measures.
+      type: bool
+      sample: yes
+    enhanced_loss_recovery:
+      description:
+        - Specifies whether the system uses enhanced loss recovery to recover from random
+          packet losses more effectively.
+      type: bool
+      sample: yes
+    fast_open:
+      description:
+        - Specifies, when C(yes), that the system supports TCP Fast Open, which reduces
+          latency by allowing a client to include the first packet of data with the SYN
+      type: bool
+      sample: yes
+    fast_open_cookie_expiration:
+      description:
+        - Specifies the number of seconds that a Fast Open Cookie delivered to a client
+          is valid for SYN packets from that client.
+      type: int
+      sample: 1000
+    fin_wait_1:
+      description:
+        - Specifies the length of time that a TCP connection is in the FIN-WAIT-1 or
+          CLOSING state before quitting.
+      type: string
+      sample: indefinite
+    fin_wait_2:
+      description:
+        - Specifies the length of time that a TCP connection is in the FIN-WAIT-2 state
+          before quitting.
+      type: string
+      sample: 100
+    idle_timeout:
+      description:
+        - Specifies the length of time that a connection is idle (has no traffic) before
+          the connection is eligible for deletion.
+      type: string
+      sample: 300
+    initial_congestion_window_size:
+      description:
+        - Specifies the initial congestion window size for connections to this destination.
+      type: int
+      sample: 3
+    initial_receive_window_size:
+      description:
+        - Specifies the initial receive window size for connections to this destination.
+      type: int
+      sample: 5
+    dont_fragment_flag:
+      description:
+        - Specifies the Don't Fragment (DF) bit setting in the IP Header of the outgoing
+          TCP packet.
+      type: string
+      sample: pmtu
+    ip_tos:
+      description:
+        - Specifies the L3 Type of Service (ToS) level that the system inserts in TCP
+          packets destined for clients.
+      type: string
+      sample: mimic
+    time_to_live:
+      description:
+        - Specifies the outgoing TCP packet's IP Header TTL mode.
+      type: string
+      sample: proxy
+    time_to_live_v4:
+      description:
+        - Specifies the outgoing packet's IP Header TTL value for IPv4 traffic.
+      type: int
+      sample: 255
+    time_to_live_v6:
+      description:
+        - Specifies the outgoing packet's IP Header TTL value for IPv6 traffic.
+      type: int
+      sample: 64
+    keep_alive_interval:
+      description:
+        - Specifies how frequently the system sends data over an idle TCP
+          connection, to determine whether the connection is still valid.
+      type: string
+      sample: 50
+    limited_transmit_recovery:
+      description:
+        - Specifies, when C(yes), that the system uses limited transmit recovery
+          revisions for fast retransmits (as specified in RFC 3042) to reduce
+          the recovery time for connections on a lossy network.
+      type: bool
+      sample: yes
+    link_qos:
+      description:
+        - Specifies the L2 Quality of Service (QoS) level that the system inserts
+          in TCP packets destined for clients.
+      type: string
+      sample: 200
+    max_segment_retrans:
+      description:
+        - Specifies the maximum number of times that the system resends data segments.
+      type: int
+      sample: 8
+    max_syn_retrans:
+      description:
+        - Specifies the maximum number of times that the system resends a SYN
+          packet when it does not receive a corresponding SYN-ACK.
+      type: int
+      sample: 3
+    max_segment_size:
+      description:
+        - Specifies the largest amount of data that the system can receive in a
+          single TCP segment, not including the TCP and IP headers.
+      type: int
+      sample: 1460
+    md5_signature:
+      description:
+        - Specifies, when C(yes), to use RFC2385 TCP-MD5 signatures to protect
+          TCP traffic against intermediate tampering.
+      type: bool
+      sample: yes
+    minimum_rto:
+      description:
+        - Specifies the minimum length of time the system waits for
+          acknowledgements of data sent before resending the data.
+      type: int
+      sample: 1000
+    multipath_tcp:
+      description:
+        - Specifies, when C(yes), that the system accepts Multipath TCP (MPTCP)
+          connections, which allow multiple client-side flows to connect to a
+          single server-side flow.
+      type: bool
+      sample: yes
+    mptcp_checksum:
+      description:
+        - Specifies, when C(yes), that the system calculates the checksum for
+          MPTCP connections.
+      type: bool
+      sample: no
+    mptcp_checksum_verify:
+      description:
+        - Specifies, when C(yes), that the system verifies the checksum for
+          MPTCP connections.
+      type: bool
+      sample: no
+    mptcp_fallback:
+      description:
+        - Specifies an action on fallback, that is, when MPTCP transitions
+          to regular TCP, because something prevents MPTCP from working correctly.
+      type: string
+      sample: reset
+    mptcp_fast_join:
+      description:
+        - Specifies, when C(yes), a FAST join, allowing data to be sent on the
+          MP_JOIN_SYN, which can allow a server response to occur in parallel
+          with the JOIN.
+      type: bool
+      sample: no
+    mptcp_idle_timeout:
+      description:
+        - Specifies the number of seconds that an MPTCP connection is idle
+          before the connection is eligible for deletion.
+      type: int
+      sample: 300
+    mptcp_join_max:
+      description:
+        - Specifies the highest number of MPTCP connections that can join to
+          a given connection.
+      type: int
+      sample: 5
+    mptcp_make_after_break:
+      description:
+        - Specifies that make-after-break functionality is supported, allowing
+          for long-lived MPTCP sessions.
+      type: bool
+      sample: no
+    mptcp_no_join_dss_ack:
+      description:
+        - Specifies, when checked (enabled), that no DSS option is sent on the
+          JOIN ACK.
+      type: bool
+      sample: no
+    mptcp_rto_max:
+      decription:
+        - Specifies the number of RTOs (retransmission timeouts) before declaring
+          the subflow dead.
+      type: int
+      sample: 5
+    mptcp_retransmit_min:
+      description:
+        - Specifies the minimum value (in msec) of the retransmission timer for
+          these MPTCP flows.
+      type: int
+      sample: 1000
+    mptcp_subflow_max:
+      description:
+        - Specifies the maximum number of MPTCP subflows for a single flow.
+      type: int
+      sample: 6
+    mptcp_timeout:
+      description:
+        - Specifies, in seconds, the timeout value to discard long-lived sessions
+          that do not have an active flow.
+      type: int
+      sample: 3600
+    nagle_algorithm:
+      description:
+        - Specifies whether the system applies Nagle's algorithm to reduce the
+          number of short segments on the network.
+      type: bool
+      sample: no
+    pkt_loss_ignore_burst:
+      description:
+        - Specifies the probability of performing congestion control when
+          multiple packets are lost, even if the Packet Loss Ignore Rate was
+          not exceeded.
+      type: int
+      sample: 0
+    pkt_loss_ignore_rate:
+      description:
+        - Specifies the threshold of packets lost per million at which the
+          system performs congestion control.
+      type: int
+      sample: 0
+    proxy_buffer_high:
+      description:
+        - Specifies the proxy buffer level, in bytes, at which the receive window
+          is closed.
+      type: int
+      sample: 49152
+    proxy_buffer_low:
+      description:
+        - Specifies the proxy buffer level, in bytes, at which the receive window
+          is opened.
+      type: int
+      sample: 32768
+    proxy_max_segment:
+      description:
+        - Specifies, when C(yes), that the system attempts to advertise the same
+          maximum segment size (MSS) to the server-side connection as that of the
+          client-side connection.
+      type: bool
+      sample: yes
+    proxy_options:
+      description:
+        - Specifies, when C(yes), that the system advertises an option (such as
+          time stamps) to the server only when the option is negotiated with the
+          client.
+      type: bool
+      sample: no
+    push_flag:
+      description:
+        - Specifies how the BIG-IP system receives ACKs.
+      type: string
+      sample: default
+    rate_pace:
+      description:
+        - Specifies, when C(yes), that the system paces the egress packets to
+          avoid dropping packets, allowing for optimum goodput.
+      type: bool
+      sample: yes
+    rate_pace_max_rate:
+      description:
+        - Specifies the maximum rate in bytes per second to which the system
+          paces TCP data transmission.
+      type: int
+      sample: 0
+    receive_window:
+      description:
+        - Specifies the maximum advertised RECEIVE window size.
+      type: int
+      sample: 65535
+    reset_on_timeout:
+      description:
+        - Specifies, when C(yes), that the system sends a reset packet (RST)
+          in addition to deleting the connection, when a connection exceeds
+          the idle timeout value.
+      type: bool
+      sample: yes
+    retransmit_threshold:
+      description:
+        - Specifies the number of duplicate ACKs (retransmit threshold) to start
+          fast recovery.
+      type: int
+      sample: 3
+    selective_acks:
+      description:
+        - Specifies, when C(yes), that the system processes data using
+          selective ACKs (SACKs) whenever possible, to improve system performance.
+      type: bool
+      sample: yes
+    selective_nack:
+      description:
+        - Specifies, when C(yes), that the system processes data using a selective
+          negative acknowledgment (SNACK) whenever possible, to improve system
+          performance.
+      type: bool
+      sample: yes
+    send_buffer:
+      description:
+        - Specifies the SEND window size.
+      type: int
+      sample: 65535
+    slow_start:
+      description:
+        - Specifies, when C(yes), that the system uses Slow-Start Congestion
+          Avoidance as described in RFC3390 in order to ramp up traffic without
+          causing excessive congestion on the link.
+      type: bool
+      sample: yes
+    syn_cookie_enable:
+      description:
+        - Specifies the default (if no DoS profile is associated) number of
+          embryonic connections that are allowed on any virtual server,
+          before SYN Cookie challenges are enabled for that virtual server.
+      type: bool
+      sample: yes
+    syn_cookie_white_list:
+      description:
+        - Specifies whether or not to use a SYN Cookie WhiteList when doing
+          software SYN Cookies.
+      type: bool
+      sample: no
+    syn_retrans_to_base:
+      description:
+        - Specifies the initial RTO (Retransmission TimeOut) base multiplier
+          for SYN retransmissions.
+      type: int
+      sample: 3000
+    tail_loss_probe:
+      description:
+        - Specifies, when C(yes), that the system uses Tail Loss Probe to
+          reduce the number of retransmission timeouts.
+      type: bool
+      sample: yes
+    time_wait_recycle:
+      description:
+        - Specifies, when C(yes), that connections in a TIME-WAIT state are
+          reused when the system receives a SYN packet, indicating a request
+          for a new connection.
+      type: bool
+      sample: yes
+    time_wait:
+      description:
+        - Specifies the length of time that a TCP connection remains in the
+          TIME-WAIT state before entering the CLOSED state.
+      type: string
+      sample: 2000
+    timestamps:
+      description:
+        - Specifies, when C(yes), that the system uses the timestamps extension
+          for TCP (as specified in RFC 1323) to enhance high-speed network performance.
+      type: bool
+      sample: yes
+    verified_accept:
+      description:
+        - Specifies, when C(yes), that the system can actually communicate with
+          the server before establishing a client connection.
+      type: bool
+      sample: yes
+    zero_window_timeout:
+      description:
+        - Specifies the timeout in milliseconds for terminating a connection
+          with an effective zero length TCP transmit window.
+      type: string
+      sample: 2000
   sample: hash/dictionary of values
 traffic_groups:
   description: Traffic group related facts.
@@ -7967,6 +8468,429 @@ class SystemInfoFactManager(BaseManager):
         return result[0]
 
 
+class TcpProfilesParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'defaultsFrom': 'parent',
+        'ackOnPush': 'ack_on_push',
+        'autoProxyBufferSize': 'auto_proxy_buffer',
+        'autoReceiveWindowSize': 'auto_receive_window',
+        'autoSendBufferSize': 'auto_send_buffer',
+        'closeWaitTimeout': 'close_wait',
+        'cmetricsCache': 'congestion_metrics_cache',
+        'cmetricsCacheTimeout': 'congestion_metrics_cache_timeout',
+        'congestionControl': 'congestion_control',
+        'deferredAccept': 'deferred_accept',
+        'delayWindowControl': 'delay_window_control',
+        'delayedAcks': 'delayed_acks',
+        'earlyRetransmit': 'early_retransmit',
+        'ecn': 'explicit_congestion_notification',
+        'enhancedLossRecovery': 'enhanced_loss_recovery',
+        'fastOpen': 'fast_open',
+        'fastOpenCookieExpiration': 'fast_open_cookie_expiration',
+        'finWaitTimeout': 'fin_wait_1',
+        'finWait_2Timeout': 'fin_wait_2',
+        'idleTimeout': 'idle_timeout',
+        'initCwnd': 'initial_congestion_window_size',
+        'initRwnd': 'initial_receive_window_size',
+        'ipDfMode': 'dont_fragment_flag',
+        'ipTosToClient': 'ip_tos',
+        'ipTtlMode': 'time_to_live',
+        'ipTtlV4': 'time_to_live_v4',
+        'ipTtlV6': 'time_to_live_v6',
+        'keepAliveInterval': 'keep_alive_interval',
+        'limitedTransmit': 'limited_transmit_recovery',
+        'linkQosToClient': 'link_qos',
+        'maxRetrans': 'max_segment_retrans',
+        'synMaxRetrans': 'max_syn_retrans',
+        'rexmtThresh': 'retransmit_threshold',
+        'maxSegmentSize': 'max_segment_size',
+        'md5Signature': 'md5_signature',
+        'minimumRto': 'minimum_rto',
+        'mptcp': 'multipath_tcp',
+        'mptcpCsum': 'mptcp_checksum',
+        'mptcpCsumVerify': 'mptcp_checksum_verify',
+        'mptcpFallback': 'mptcp_fallback',
+        'mptcpFastjoin': 'mptcp_fast_join',
+        'mptcpIdleTimeout': 'mptcp_idle_timeout',
+        'mptcpJoinMax': 'mptcp_join_max',
+        'mptcpMakeafterbreak': 'mptcp_make_after_break',
+        'mptcpNojoindssack': 'mptcp_no_join_dss_ack',
+        'mptcpRtomax': 'mptcp_rto_max',
+        'mptcpRxmitmin': 'mptcp_retransmit_min',
+        'mptcpSubflowmax': 'mptcp_subflow_max',
+        'mptcpTimeout': 'mptcp_timeout',
+        'nagle': 'nagle_algorithm',
+        'pktLossIgnoreBurst': 'pkt_loss_ignore_burst',
+        'pktLossIgnoreRate': 'pkt_loss_ignore_rate',
+        'proxyBufferHigh': 'proxy_buffer_high',
+        'proxyBufferLow': 'proxy_buffer_low',
+        'proxyMss': 'proxy_max_segment',
+        'proxyOptions': 'proxy_options',
+        'pushFlag': 'push_flag',
+        'ratePace': 'rate_pace',
+        'ratePaceMaxRate': 'rate_pace_max_rate',
+        'receiveWindowSize': 'receive_window',
+        'resetOnTimeout': 'reset_on_timeout',
+        'selectiveAcks': 'selective_acks',
+        'selectiveNack': 'selective_nack',
+        'sendBufferSize': 'send_buffer',
+        'slowStart': 'slow_start',
+        'synCookieEnable': 'syn_cookie_enable',
+        'synCookieWhitelist': 'syn_cookie_white_list',
+        'synRtoBase': 'syn_retrans_to_base',
+        'tailLossProbe': 'tail_loss_probe',
+        'timeWaitRecycle': 'time_wait_recycle',
+        'timeWaitTimeout': 'time_wait',
+        'verifiedAccept': 'verified_accept',
+        'zeroWindowTimeout': 'zero_window_timeout',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'abc',
+        'ack_on_push',
+        'auto_proxy_buffer',
+        'auto_receive_window',
+        'auto_send_buffer',
+        'close_wait',
+        'congestion_metrics_cache',
+        'congestion_metrics_cache_timeout',
+        'congestion_control',
+        'deferred_accept',
+        'delay_window_control',
+        'delayed_acks',
+        'dsack',
+        'early_retransmit',
+        'explicit_congestion_notification',
+        'enhanced_loss_recovery',
+        'fast_open',
+        'fast_open_cookie_expiration',
+        'fin_wait_1',
+        'fin_wait_2',
+        'idle_timeout',
+        'initial_congestion_window_size',
+        'initial_receive_window_size',
+        'dont_fragment_flag',
+        'ip_tos',
+        'time_to_live',
+        'time_to_live_v4',
+        'time_to_live_v6',
+        'keep_alive_interval',
+        'limited_transmit_recovery',
+        'link_qos',
+        'max_segment_retrans',
+        'max_syn_retrans',
+        'max_segment_size',
+        'md5_signature',
+        'minimum_rto',
+        'multipath_tcp',
+        'mptcp_checksum',
+        'mptcp_checksum_verify',
+        'mptcp_fallback',
+        'mptcp_fast_join',
+        'mptcp_idle_timeout',
+        'mptcp_join_max',
+        'mptcp_make_after_break',
+        'mptcp_no_join_dss_ack',
+        'mptcp_rto_max',
+        'mptcp_retransmit_min',
+        'mptcp_subflow_max',
+        'mptcp_timeout',
+        'nagle_algorithm',
+        'pkt_loss_ignore_burst',
+        'pkt_loss_ignore_rate',
+        'proxy_buffer_high',
+        'proxy_buffer_low',
+        'proxy_max_segment',
+        'proxy_options',
+        'push_flag',
+        'rate_pace',
+        'rate_pace_max_rate',
+        'receive_window',
+        'reset_on_timeout',
+        'retransmit_threshold',
+        'selective_acks',
+        'selective_nack',
+        'send_buffer',
+        'slow_start',
+        'syn_cookie_enable',
+        'syn_cookie_white_list',
+        'syn_retrans_to_base',
+        'tail_loss_probe',
+        'time_wait_recycle',
+        'time_wait',
+        'timestamps',
+        'verified_accept',
+        'zero_window_timeout',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def time_wait(self):
+        if self._values['time_wait'] is None:
+            return None
+        if self._values['time_wait'] == 0:
+            return "immediate"
+        if self._values['time_wait'] == 4294967295:
+            return 'indefinite'
+        return self._values['time_wait']
+
+    @property
+    def close_wait(self):
+        if self._values['close_wait'] is None:
+            return None
+        if self._values['close_wait'] == 0:
+            return "immediate"
+        if self._values['close_wait'] == 4294967295:
+            return 'indefinite'
+        return self._values['close_wait']
+
+    @property
+    def fin_wait_1(self):
+        if self._values['fin_wait_1'] is None:
+            return None
+        if self._values['fin_wait_1'] == 0:
+            return "immediate"
+        if self._values['fin_wait_1'] == 4294967295:
+            return 'indefinite'
+        return self._values['fin_wait_1']
+
+    @property
+    def fin_wait_2(self):
+        if self._values['fin_wait_2'] is None:
+            return None
+        if self._values['fin_wait_2'] == 0:
+            return "immediate"
+        if self._values['fin_wait_2'] == 4294967295:
+            return 'indefinite'
+        return self._values['fin_wait_2']
+
+    @property
+    def zero_window_timeout(self):
+        if self._values['zero_window_timeout'] is None:
+            return None
+        if self._values['zero_window_timeout'] == 4294967295:
+            return 'indefinite'
+        return self._values['zero_window_timeout']
+
+    @property
+    def idle_timeout(self):
+        if self._values['idle_timeout'] is None:
+            return None
+        if self._values['idle_timeout'] == 4294967295:
+            return 'indefinite'
+        return self._values['idle_timeout']
+
+    @property
+    def keep_alive_interval(self):
+        if self._values['keep_alive_interval'] is None:
+            return None
+        if self._values['keep_alive_interval'] == 4294967295:
+            return 'indefinite'
+        return self._values['keep_alive_interval']
+
+    @property
+    def verified_accept(self):
+        return flatten_boolean(self._values['verified_accept'])
+
+    @property
+    def timestamps(self):
+        return flatten_boolean(self._values['timestamps'])
+
+    @property
+    def time_wait_recycle(self):
+        return flatten_boolean(self._values['time_wait_recycle'])
+
+    @property
+    def tail_loss_probe(self):
+        return flatten_boolean(self._values['tail_loss_probe'])
+
+    @property
+    def syn_cookie_white_list(self):
+        return flatten_boolean(self._values['syn_cookie_white_list'])
+
+    @property
+    def syn_cookie_enable(self):
+        return flatten_boolean(self._values['syn_cookie_enable'])
+
+    @property
+    def slow_start(self):
+        return flatten_boolean(self._values['slow_start'])
+
+    @property
+    def selective_nack(self):
+        return flatten_boolean(self._values['selective_nack'])
+
+    @property
+    def selective_acks(self):
+        return flatten_boolean(self._values['selective_acks'])
+
+    @property
+    def reset_on_timeout(self):
+        return flatten_boolean(self._values['reset_on_timeout'])
+
+    @property
+    def rate_pace(self):
+        return flatten_boolean(self._values['rate_pace'])
+
+    @property
+    def proxy_options(self):
+        return flatten_boolean(self._values['proxy_options'])
+
+    @property
+    def proxy_max_segment(self):
+        return flatten_boolean(self._values['proxy_max_segment'])
+
+    @property
+    def nagle_algorithm(self):
+        return flatten_boolean(self._values['nagle_algorithm'])
+
+    @property
+    def mptcp_no_join_dss_ack(self):
+        return flatten_boolean(self._values['mptcp_no_join_dss_ack'])
+
+    @property
+    def mptcp_make_after_break(self):
+        return flatten_boolean(self._values['mptcp_make_after_break'])
+
+    @property
+    def mptcp_fast_join(self):
+        return flatten_boolean(self._values['mptcp_fast_join'])
+
+    @property
+    def mptcp_checksum_verify(self):
+        return flatten_boolean(self._values['mptcp_checksum_verify'])
+
+    @property
+    def mptcp_checksum(self):
+        return flatten_boolean(self._values['mptcp_checksum'])
+
+    @property
+    def multipath_tcp(self):
+        return flatten_boolean(self._values['multipath_tcp'])
+
+    @property
+    def md5_signature(self):
+        return flatten_boolean(self._values['md5_signature'])
+
+    @property
+    def limited_transmit_recovery(self):
+        return flatten_boolean(self._values['limited_transmit_recovery'])
+
+    @property
+    def fast_open(self):
+        return flatten_boolean(self._values['fast_open'])
+
+    @property
+    def enhanced_loss_recovery(self):
+        return flatten_boolean(self._values['enhanced_loss_recovery'])
+
+    @property
+    def explicit_congestion_notification(self):
+        return flatten_boolean(self._values['explicit_congestion_notification'])
+
+    @property
+    def early_retransmit(self):
+        return flatten_boolean(self._values['early_retransmit'])
+
+    @property
+    def dsack(self):
+        return flatten_boolean(self._values['dsack'])
+
+    @property
+    def delayed_acks(self):
+        return flatten_boolean(self._values['delayed_acks'])
+
+    @property
+    def delay_window_control(self):
+        return flatten_boolean(self._values['delay_window_control'])
+
+    @property
+    def deferred_accept(self):
+        return flatten_boolean(self._values['deferred_accept'])
+
+    @property
+    def congestion_metrics_cache(self):
+        return flatten_boolean(self._values['congestion_metrics_cache'])
+
+    @property
+    def auto_send_buffer(self):
+        return flatten_boolean(self._values['auto_send_buffer'])
+
+    @property
+    def auto_receive_window(self):
+        return flatten_boolean(self._values['auto_receive_window'])
+
+    @property
+    def auto_proxy_buffer(self):
+        return flatten_boolean(self._values['auto_proxy_buffer'])
+
+    @property
+    def abc(self):
+        return flatten_boolean(self._values['abc'])
+
+    @property
+    def ack_on_push(self):
+        return flatten_boolean(self._values['ack_on_push'])
+
+
+class TcpProfilesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(TcpProfilesFactManager, self).__init__(**kwargs)
+        self.want = TcpProfilesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(tcp_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = TcpProfilesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/tcp".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class TrafficGroupsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -9145,6 +10069,10 @@ class ModuleManager(object):
                 manager=SystemInfoFactManager,
                 client=F5RestClient
             ),
+            'tcp-profiles': dict(
+                manager=TcpProfilesFactManager,
+                client=F5RestClient
+            ),
             'traffic-groups': dict(
                 manager=TrafficGroupsFactManager
             ),
@@ -9305,6 +10233,7 @@ class ArgumentSpec(object):
                     'ssl-keys',
                     'system-db',
                     'system-info',
+                    'tcp-profiles',
                     'traffic-groups',
                     'trunks',
                     'udp-profiles',
@@ -9344,6 +10273,7 @@ class ArgumentSpec(object):
                     '!ssl-keys',
                     '!system-db',
                     '!system-info',
+                    '!tcp-profiles',
                     '!traffic-groups',
                     '!trunks',
                     '!udp-profiles',
