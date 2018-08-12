@@ -1,5 +1,18 @@
 ---
 
+- name: Issue 00700 - Select tcp-profile facts
+  bigip_device_facts:
+    include:
+      - tcp-profiles
+  register: result
+
+- name: Issue 00700 - Assert Select tcp-profile facts
+  assert:
+    that:
+      - result is success
+      - result.tcp_profiles | selectattr("name", "match", "tcp") | map(attribute='fast_open') | first == "no"
+      - result.tcp_profiles | json_query("[?name=='tcp'].fast_open") | first == "no"
+
 - name: Issue 00700 - Select server-ssl-profile facts
   bigip_device_facts:
     include:
