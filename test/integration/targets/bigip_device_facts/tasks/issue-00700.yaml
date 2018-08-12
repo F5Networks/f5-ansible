@@ -1,5 +1,18 @@
 ---
 
+- name: Issue 00700 - Select http-monitor facts
+  bigip_device_facts:
+    include:
+      - http-monitors
+  register: result
+
+- name: Issue 00700 - Assert Select http-monitor facts
+  assert:
+    that:
+      - result is success
+      - result.http_monitors | selectattr("name", "match", "http") | map(attribute='manual_resume') | first == "no"
+      - result.http_monitors | json_query("[?name=='http'].manual_resume") | first == "no"
+
 - name: Issue 00700 - Select tcp-profile facts
   bigip_device_facts:
     include:
