@@ -43,6 +43,7 @@ options:
       - http-profiles
       - iapp-services
       - iapplx-packages
+      - icmp-monitors
       - interfaces
       - internal-data-groups
       - irules
@@ -82,6 +83,7 @@ options:
       - "!http-profiles"
       - "!iapp-services"
       - "!iapplx-packages"
+      - "!icmp-monitors"
       - "!interfaces"
       - "!internal-data-groups"
       - "!irules"
@@ -6761,6 +6763,105 @@ class IapplxPackagesFactManager(BaseManager):
         return response['status']
 
 
+class IcmpMonitorsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'defaultsFrom': 'parent',
+        'adaptiveDivergenceType': 'adaptive_divergence_type',
+        'adaptiveDivergenceValue': 'adaptive_divergence_value',
+        'adaptiveLimit': 'adaptive_limit',
+        'adaptiveSamplingTimespan': 'adaptive_sampling_timespan',
+        'manualResume': 'manual_resume',
+        'timeUntilUp': 'time_until_up',
+        'upInterval': 'up_interval',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'adaptive',
+        'adaptive_divergence_type',
+        'adaptive_divergence_value',
+        'adaptive_limit',
+        'adaptive_sampling_timespan',
+        'destination',
+        'interval',
+        'manual_resume',
+        'time_until_up',
+        'timeout',
+        'transparent',
+        'up_interval',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def transparent(self):
+        return flatten_boolean(self._values['transparent'])
+
+    @property
+    def manual_resume(self):
+        return flatten_boolean(self._values['manual_resume'])
+
+    @property
+    def adaptive(self):
+        return flatten_boolean(self._values['adaptive'])
+
+
+class IcmpMonitorsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(IcmpMonitorsFactManager, self).__init__(**kwargs)
+        self.want = IcmpMonitorsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(icmp_monitors=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = IcmpMonitorsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/icmp".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class InterfacesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -10474,6 +10575,10 @@ class ModuleManager(object):
                 manager=IapplxPackagesFactManager,
                 client=F5RestClient
             ),
+            'icmp-monitors': dict(
+                manager=IcmpMonitorsFactManager,
+                client=F5RestClient
+            ),
             'interfaces': dict(
                 manager=InterfacesFactManager
             ),
@@ -10694,6 +10799,7 @@ class ArgumentSpec(object):
                     'http-monitors',
                     'iapp-services',
                     'iapplx-packages',
+                    'icmp-monitors',
                     'interfaces',
                     'internal-data-groups',
                     'irules',
@@ -10737,6 +10843,7 @@ class ArgumentSpec(object):
                     '!http-monitors',
                     '!iapp-services',
                     '!iapplx-packages',
+                    '!icmp-monitors',
                     '!interfaces',
                     '!internal-data-groups',
                     '!irules',

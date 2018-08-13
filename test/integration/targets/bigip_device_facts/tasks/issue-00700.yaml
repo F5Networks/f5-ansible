@@ -1,5 +1,18 @@
 ---
 
+- name: Issue 00700 - Select icmp-monitor facts
+  bigip_device_facts:
+    include:
+      - icmp-monitors
+  register: result
+
+- name: Issue 00700 - Assert Select icmp-monitor facts
+  assert:
+    that:
+      - result is success
+      - result.icmp_monitors | selectattr("name", "match", "icmp") | map(attribute='manual_resume') | first == "no"
+      - result.icmp_monitors | json_query("[?name=='icmp'].manual_resume") | first == "no"
+
 - name: Issue 00700 - Select gateway-icmp-monitor facts
   bigip_device_facts:
     include:
