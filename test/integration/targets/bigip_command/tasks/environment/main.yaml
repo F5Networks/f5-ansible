@@ -1,5 +1,7 @@
 ---
 
+- import_tasks: setup.yaml
+
 - name: Run single command
   bigip_command:
     commands:
@@ -84,6 +86,20 @@
       - tmsh modify sys db setup.run value false
       - tmsh show sys clock
   register: result
+
+- name: Fetch cert with umlaute in it
+  bigip_command:
+    commands:
+      - list sys crypto cert mycert1.crt
+  register: result
+
+- name: Assert Fetch cert with umlaute in it
+  assert:
+    that:
+      - "'sys crypto cert mycert1.crt' in result.stdout[0]"
+      - "'organization Lutundtütli GmbH' in result.stdout[0]"
+
+- import_tasks: teardown.yaml
 
 - import_tasks: issue-00381.yaml
   tags: issue-00381

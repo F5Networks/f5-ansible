@@ -1,0 +1,6 @@
+---
+
+- name: Import a certificate
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'www.example.com.cert') }}"
+    name: mycert1
