@@ -1,0 +1,6 @@
+---
+
+- name: Remove certificate
+  bigip_ssl_certificate:
+    name: mycert1
+    state: absent

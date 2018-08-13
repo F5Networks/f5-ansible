@@ -427,7 +427,7 @@ class BaseManager(object):
         lines = list()
         for item in stdout:
             if isinstance(item, string_types):
-                item = str(item).split('\n')
+                item = item.split('\n')
             lines.append(item)
         return lines
 
@@ -631,11 +631,10 @@ class V2Manager(BaseManager):
                     utilCmdArgs=command
                 )
                 if hasattr(output, 'commandResult'):
-                    responses.append(str(output.commandResult).strip())
+                    output = u'{0}'.format(output.commandResult)
+                    responses.append(output.strip())
             except F5ModuleError:
                 raise
-            except Exception as ex:
-                pass
         return responses
 
 
