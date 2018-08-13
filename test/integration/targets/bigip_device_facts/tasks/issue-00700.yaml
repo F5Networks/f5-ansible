@@ -1,12 +1,25 @@
 ---
 
+- name: Issue 00700 - Select external-monitor facts
+  bigip_device_facts:
+    include:
+      - external-monitors
+  register: result
+
+- name: Issue 00700 - Assert Select external-monitor facts
+  assert:
+    that:
+      - result is success
+      - result.external_monitors | selectattr("name", "match", "external") | map(attribute='manual_resume') | first == "no"
+      - result.external_monitors | json_query("[?name=='external'].manual_resume") | first == "no"
+
 - name: Issue 00700 - Select https-monitor facts
   bigip_device_facts:
     include:
       - https-monitors
   register: result
 
-- name: Issue 00700 - Assert Select https-open-monitor facts
+- name: Issue 00700 - Assert Select https-monitor facts
   assert:
     that:
       - result is success
