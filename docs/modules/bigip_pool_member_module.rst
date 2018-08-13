@@ -1,4 +1,4 @@
-:source: modules/bigip_pool_member.py
+:source: bigip_pool_member.py
 
 :orphan:
 
@@ -34,8 +34,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -97,25 +97,10 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether the system automatically creates ephemeral nodes using the IP addresses returned by the resolution of a DNS query for a node defined by an FQDN.</div>
-                                                    <div>When <code>enabled</code>, the system generates an ephemeral node for each IP address returned in response to a DNS query for the FQDN of the node. Additionally, when a DNS response indicates the IP address of an ephemeral node no longer exists, the system deletes the ephemeral node.</div>
-                                                    <div>When <code>disabled</code>, the system resolves a DNS query for the FQDN of the node with the single IP address associated with the FQDN.</div>
+                                                    <div>When <code>yes</code>, the system generates an ephemeral node for each IP address returned in response to a DNS query for the FQDN of the node. Additionally, when a DNS response indicates the IP address of an ephemeral node no longer exists, the system deletes the ephemeral node.</div>
+                                                    <div>When <code>no</code>, the system resolves a DNS query for the FQDN of the node with the single IP address associated with the FQDN.</div>
                                                     <div>When creating a new pool member, the default for this parameter is <code>yes</code>.</div>
                                                     <div>This parameter is ignored when <code>reuse_nodes</code> is <code>yes</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>monitor_state</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>enabled</li>
-                                                                                                                                                                                                <li>disabled</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Set monitor availability status for pool member.</div>
-                                                    <div>This parameter is deprecated and will be removed in Ansible 2.7. Use <code>state</code> <code>enabled</code> or <code>disabled</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -127,6 +112,7 @@ Parameters
                                                                 <td>
                                                                         <div>Name of the node to create, or re-use, when creating a new pool member.</div>
                                                     <div>This parameter is optional and, if not specified, a node name will be created automatically from either the specified <code>address</code> or <code>fqdn</code>.</div>
+                                                    <div>The <code>enabled</code> state is an alias of <code>present</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -216,15 +202,26 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>ssh_keyfile</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
                                     </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -236,6 +233,18 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -254,14 +263,15 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>user</b>
+                    <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -277,30 +287,6 @@ Parameters
                                                                 <td>
                                                                         <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>ssh_keyfile</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -374,21 +360,6 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP server port.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>session_state</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>enabled</li>
-                                                                                                                                                                                                <li>disabled</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Set new session availability status for pool member.</div>
-                                                    <div>This parameter is deprecated and will be removed in Ansible 2.7. Use <code>state</code> <code>enabled</code> or <code>disabled</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>

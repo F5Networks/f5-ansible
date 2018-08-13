@@ -1,12 +1,12 @@
-:source: modules/bigip_security_dos_profile.py
+:source: bigip_firewall_dos_vector.py
 
 :orphan:
 
-.. _bigip_security_dos_profile_module:
+.. _bigip_firewall_dos_vector_module:
 
 
-bigip_security_dos_profile - Manage AFM DoS profiles on a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_firewall_dos_vector - Manage attack vector configuration in an AFM DoS profile
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.7
 
@@ -17,7 +17,7 @@ bigip_security_dos_profile - Manage AFM DoS profiles on a BIG-IP
 
 Synopsis
 --------
-- Manages AFM Denial of Service (DoS) profiles on a BIG-IP.
+- Manage attack vector configuration in an AFM DoS profile. In addition to the normal AFM DoS profile vectors, this module can manage the device-configuration vectors. See the module documentation for details about this method.
 
 
 
@@ -25,6 +25,7 @@ Requirements
 ~~~~~~~~~~~~
 The below requirements are needed on the host that executes this module.
 
+- BIG-IP >= v13.0.0
 - f5-sdk >= 3.0.16
 
 
@@ -34,9 +35,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                
-                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -44,11 +44,12 @@ Parameters
                     <tr>
                                                                 <td colspan="2">
                     <b>name</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the profile.</div>
+                                                                        <div>Specifies the name of the vector to modify.</div>
+                                                    <div>Vectors that ship with the device are &quot;hard-coded&quot; so-to-speak in that the list of vectors is known to the system and users cannot add new vectors. Users only manipulate the existing vectors; all of which are disabled by default.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -62,6 +63,17 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>profile</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the profile to manage vectors in.</div>
+                                                    <div>The reserved name <code>device-config</code> represents the vec</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -77,15 +89,26 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>ssh_keyfile</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
                                     </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -97,6 +120,18 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -115,14 +150,15 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>user</b>
+                    <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -138,30 +174,6 @@ Parameters
                                                                 <td>
                                                                         <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>ssh_keyfile</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -229,36 +241,7 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>vectors</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>A list of vectors that you want configured in the profile.</div>
-                                                    <div>This list is considered &quot;all or nothing&quot;. Therefore, to add or remove vectors from the profile, you must specify all the vectors you want in the profile.</div>
-                                                    <div>Adding or removing even a single vector requires that the entire vector list be specified.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>type</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>network-security</li>
-                                                                                                                                                                                                <li>protocol-dns</li>
-                                                                                                                                                                                                <li>protocol-sip</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>The vector type.</div>
-                                                                                </td>
-            </tr>
-                    
-                                        </table>
+                        </table>
     <br/>
 
 
@@ -278,7 +261,7 @@ Examples
 
     
     - name: Create a ...
-      bigip_security_dos_profile:
+      bigip_firewall_dos_vector:
         name: foo
         password: secret
         server: lb.mydomain.com

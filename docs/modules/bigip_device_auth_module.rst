@@ -1,4 +1,4 @@
-:source: modules/bigip_device_auth.py
+:source: bigip_device_auth.py
 
 :orphan:
 
@@ -114,15 +114,26 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>ssh_keyfile</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
                                     </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -134,6 +145,18 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -152,14 +175,15 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>user</b>
+                    <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -175,30 +199,6 @@ Parameters
                                                                 <td>
                                                                         <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>ssh_keyfile</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -225,7 +225,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Secret key used to encrypt and decrypt packets sent or received from the server.</div>
-                                                    <div><b>Do not</b> use the pound sign ( <code>#</code> ) in the secret for TACACS+ servers.</div>
+                                                    <div><b>Do not</b> use the pound/hash sign in the secret for TACACS+ servers.</div>
                                                     <div>When configuring TACACS+ auth for the first time, this value is required.</div>
                                                                                 </td>
             </tr>
@@ -268,18 +268,6 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>address</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The IP address of the server.</div>
-                                                    <div>This field is required, unless you are specifying a simple list of servers. In that case, the simple list can specify server IPs. See examples for more clarification.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
                     <b>port</b>
                                                         </td>
                                 <td>
@@ -287,6 +275,18 @@ Parameters
                                     </td>
                                                                 <td>
                                                                         <div>The port of the server.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>address</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The IP address of the server.</div>
+                                                    <div>This field is required, unless you are specifying a simple list of servers. In that case, the simple list can specify server IPs. See examples for more clarification.</div>
                                                                                 </td>
             </tr>
                     
@@ -458,6 +458,73 @@ Examples
 
 
 
+
+Return Values
+-------------
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=0 cellpadding=0 class="documentation-table">
+                                                                                                                                                        <tr>
+            <th colspan="1">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
+        </tr>
+                    <tr>
+                                <td colspan="1">
+                    <b>authentication</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Process the system uses to serve authentication requests when using TACACS.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">use-all-servers</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>protocol_name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Name of the protocol associated with <code>service_name</code> used for client authentication.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ip</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>servers</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>List of servers used in TACACS authentication.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;1.2.2.1&#x27;, &#x27;4.5.5.4&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>service_name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Name of the service the user is requesting to be authorized to use.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ppp</div>
+                                    </td>
+            </tr>
+                        </table>
+    <br/><br/>
 
 
 Status

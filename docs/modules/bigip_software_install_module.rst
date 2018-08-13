@@ -1,14 +1,14 @@
-:source: modules/bigip_software_install.py
+:source: bigip_software_install.py
 
 :orphan:
 
 .. _bigip_software_install_module:
 
 
-bigip_software_install - __SHORT_DESCRIPTION__
-++++++++++++++++++++++++++++++++++++++++++++++
+bigip_software_install - Install software images on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_software_install - __SHORT_DESCRIPTION__
 
 Synopsis
 --------
-- __LONG DESCRIPTION__.
+- Manages the software installations on a BIG-IP. Software may be uploaded to the device using the ``bigip_software_image`` module, and installed on the device using this module.
 
 
 
@@ -47,8 +47,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Images to install on the remote device.</div>
-                                                    <div>To install a base image <b>and</b> a hotfix in one task, use a loop. Note that the order of the items in the loop is important; as is the c(state). Refer to the examples for correct usage.</div>
+                                                                        <div>Image to install on the remote device.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -77,15 +76,26 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>ssh_keyfile</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
                                     </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -97,6 +107,18 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -115,14 +137,15 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>user</b>
+                    <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -138,30 +161,6 @@ Parameters
                                                                 <td>
                                                                         <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>ssh_keyfile</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -185,11 +184,14 @@ Parameters
                     <b>reuse_inactive_volume</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
                                                                         <div>Automatically chooses the first inactive volume in alphanumeric order. If there is no inactive volume, new volume with incremented volume name will be created.</div>
                                                     <div>For example, if HD1.1 is currently active and no other volume exists, then the module will create HD1.2 and install the software.</div>
-                                                    <div>If volume name does not end with numeric character, then add <code>.1</code> to the current active volume name.</div>
                                                     <div>When <code>volume</code> is specified, this option will be ignored.</div>
                                                                                 </td>
             </tr>
@@ -224,13 +226,11 @@ Parameters
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li><div style="color: blue"><b>activated</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                 <li>installed</li>
-                                                                                                                                                                                                <li>present</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the software is uploaded/downloaded.</div>
-                                                    <div>When <code>installed</code>, ensures that the software is uploaded/downloaded and installed on the system. The device is <b>not</b> rebooted into the new software.</div>
-                                                    <div>When <code>activated</code>, ensures that the software is uploaded/downloaded, installed, and the system is rebooted to the new software.</div>
+                                                                        <div>When <code>installed</code>, ensures that the software is installed on the system. The device is <b>not</b> rebooted into the new software.</div>
+                                                    <div>When <code>activated</code>, ensures that the software is installed, and the system is rebooted to the new software.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -266,7 +266,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The volume to install the image to. This parameter is only required when the <code>state</code> is <code>activated</code> or <code>installed</code>.</div>
+                                                                        <div>The volume to install the image to.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -288,22 +288,26 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Install base image, hotfix, and boot into hotfix
+    - name: Install base image
       bigip_software_install:
-        image: "{{ item.image }}"
-        state: "{{ item.state }}"
-        volume: "{{ item.volume }}"
+        image: BIGIP-13.0.0.0.0.1645.iso
+        state: installed
+        volume: HD1.2
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
-      loop:
-        - image: BIGIP-13.0.0.0.0.1645.iso
-          volume: HD1.2
-          state: present
-        - image: Hotfix-BIGIP-13.0.0.1.0.1668-HF1.iso
-          volume: HD1.3
-          state: activated
+      delegate_to: localhost
+
+    - name: Install hotfix and boot into hotfix
+      bigip_software_install:
+        image: Hotfix-BIGIP-13.0.0.1.0.1668-HF1.iso
+        state: activated
+        volume: HD1.2
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 

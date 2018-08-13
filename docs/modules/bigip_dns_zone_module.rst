@@ -1,4 +1,4 @@
-:source: modules/bigip_dns_zone.py
+:source: bigip_dns_zone.py
 
 :orphan:
 
