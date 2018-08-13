@@ -61,6 +61,7 @@ options:
       - ssl-keys
       - system-db
       - system-info
+      - tcp-monitors
       - tcp-profiles
       - traffic-groups
       - trunks
@@ -101,6 +102,7 @@ options:
       - "!ssl-keys"
       - "!system-db"
       - "!system-info"
+      - "!tcp-monitors"
       - "!tcp-profiles"
       - "!traffic-groups"
       - "!trunks"
@@ -1489,7 +1491,7 @@ http_monitors:
           authentication.
       type: string
       sample: user1
-  sample: hash/dictionary of values  
+  sample: hash/dictionary of values
 http_profiles:
   description: HTTP profile related facts.
   returned: When C(http-profiles) is specified in C(gather_subset).
@@ -3441,6 +3443,119 @@ system_info:
         - Time, in seconds, since the system booted.
       type: int
       sample: 603202
+  sample: hash/dictionary of values
+tcp_monitors:
+  description: TCP monitor related facts.
+  returned: When C(tcp-monitors) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/tcp
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: tcp
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: tcp
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My monitor
+    adaptive:
+      description:
+        - Whether adaptive response time monitoring is enabled for this monitor.
+      type: bool
+      sample: no
+    adaptive_divergence_type:
+      description:
+        - Specifies whether the adaptive-divergence-value is C(relative) or
+          C(absolute).
+      type: string
+      sample: relative
+    adaptive_divergence_value:
+      description:
+        - Specifies how far from mean latency each monitor probe is allowed
+          to be.
+      type: int
+      sample: 25
+    adaptive_limit:
+      description:
+        - Specifies the hard limit, in milliseconds, which the probe is not
+          allowed to exceed, regardless of the divergence value.
+      type: int
+      sample: 200
+    adaptive_sampling_timespan:
+      description:
+        - Specifies the size of the sliding window, in seconds, which
+          records probe history.
+      type: int
+      sample: 300
+    destination:
+      description:
+        - Specifies the IP address and service port of the resource that is
+          the destination of this monitor.
+      type: string
+      sample: "*:*"
+    interval:
+      description:
+        - Specifies, in seconds, the frequency at which the system issues
+          the monitor check when either the resource is down or the status
+          of the resource is unknown.
+      type: int
+      sample: 5
+    ip_dscp:
+      description:
+        - Specifies the differentiated services code point (DSCP).
+      type: int
+      sample: 0
+    manual_resume:
+      description:
+        - Specifies whether the system automatically changes the status of a
+          resource to up at the next successful monitor check.
+      type: bool
+      sample: yes
+    reverse:
+      description:
+        - Specifies whether the monitor operates in reverse mode. When the
+          monitor is in reverse mode, a successful check marks the monitored
+          object down instead of up.
+      type: bool
+      sample: no
+    time_until_up:
+      description:
+        - Specifies the amount of time, in seconds, after the first
+          successful response before a node is marked up.
+      type: int
+      sample: 0
+    timeout:
+      description:
+        - Specifies the number of seconds the target has in which to respond
+          to the monitor request.
+      type: int
+      sample: 16
+    transparent:
+      description:
+        - Specifies whether the monitor operates in transparent mode.
+      type: bool
+      sample: no
+    up_interval:
+      description:
+        - Specifies, in seconds, the frequency at which the system issues
+          the monitor check when the resource is up.
+      type: int
+      sample: 0
   sample: hash/dictionary of values
 tcp_profiles:
   description: TCP profile related facts.
@@ -9028,6 +9143,112 @@ class SystemInfoFactManager(BaseManager):
         return result[0]
 
 
+class TcpMonitorsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'defaultsFrom': 'parent',
+        'adaptiveDivergenceType': 'adaptive_divergence_type',
+        'adaptiveDivergenceValue': 'adaptive_divergence_value',
+        'adaptiveLimit': 'adaptive_limit',
+        'adaptiveSamplingTimespan': 'adaptive_sampling_timespan',
+        'ipDscp': 'ip_dscp',
+        'manualResume': 'manual_resume',
+        'timeUntilUp': 'time_until_up',
+        'upInterval': 'up_interval',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'adaptive',
+        'adaptive_divergence_type',
+        'adaptive_divergence_value',
+        'adaptive_limit',
+        'adaptive_sampling_timespan',
+        'destination',
+        'interval',
+        'ip_dscp',
+        'manual_resume',
+        'reverse',
+        'time_until_up',
+        'timeout',
+        'transparent',
+        'up_interval',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def transparent(self):
+        return flatten_boolean(self._values['transparent'])
+
+    @property
+    def manual_resume(self):
+        return flatten_boolean(self._values['manual_resume'])
+
+    @property
+    def adaptive(self):
+        return flatten_boolean(self._values['adaptive'])
+
+    @property
+    def reverse(self):
+        return flatten_boolean(self._values['reverse'])
+
+
+class TcpMonitorsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(TcpMonitorsFactManager, self).__init__(**kwargs)
+        self.want = TcpMonitorsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(tcp_monitors=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = TcpMonitorsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/tcp".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class TcpProfilesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -10641,6 +10862,10 @@ class ModuleManager(object):
                 manager=SystemInfoFactManager,
                 client=F5RestClient
             ),
+            'tcp-monitors': dict(
+                manager=TcpMonitorsFactManager,
+                client=F5RestClient
+            ),
             'tcp-profiles': dict(
                 manager=TcpProfilesFactManager,
                 client=F5RestClient
@@ -10817,6 +11042,7 @@ class ArgumentSpec(object):
                     'ssl-keys',
                     'system-db',
                     'system-info',
+                    'tcp-monitors',
                     'tcp-profiles',
                     'traffic-groups',
                     'trunks',
@@ -10861,6 +11087,7 @@ class ArgumentSpec(object):
                     '!ssl-keys',
                     '!system-db',
                     '!system-info',
+                    '!tcp-monitors',
                     '!tcp-profiles',
                     '!traffic-groups',
                     '!trunks',
