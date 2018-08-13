@@ -18,12 +18,14 @@
         provider: "{{ provider }}"
         name: vip-1
         state: absent
+      delegate_to: localhost
 
     - name: Destroy a pool
       bigip_pool:
         provider: "{{ provider }}"
         name: web
         state: absent
+      delegate_to: localhost
 
     - name: Delete nodes
       bigip_node:
@@ -33,3 +35,4 @@
       loop:
         - web01
         - web02
+      delegate_to: localhost
