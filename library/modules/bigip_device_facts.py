@@ -62,6 +62,7 @@ options:
       - system-db
       - system-info
       - tcp-monitors
+      - tcp-half-open-monitors
       - tcp-profiles
       - traffic-groups
       - trunks
@@ -103,6 +104,7 @@ options:
       - "!system-db"
       - "!system-info"
       - "!tcp-monitors"
+      - "!tcp-half-open-monitors"
       - "!tcp-profiles"
       - "!traffic-groups"
       - "!trunks"
@@ -3533,6 +3535,78 @@ tcp_monitors:
           object down instead of up.
       type: bool
       sample: no
+    time_until_up:
+      description:
+        - Specifies the amount of time, in seconds, after the first
+          successful response before a node is marked up.
+      type: int
+      sample: 0
+    timeout:
+      description:
+        - Specifies the number of seconds the target has in which to respond
+          to the monitor request.
+      type: int
+      sample: 16
+    transparent:
+      description:
+        - Specifies whether the monitor operates in transparent mode.
+      type: bool
+      sample: no
+    up_interval:
+      description:
+        - Specifies, in seconds, the frequency at which the system issues
+          the monitor check when the resource is up.
+      type: int
+      sample: 0
+  sample: hash/dictionary of values
+tcp_half_open_monitors:
+  description: TCP Half-open monitor related facts.
+  returned: When C(tcp-half-open-monitors) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/tcp
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: tcp
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: tcp
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My monitor
+    destination:
+      description:
+        - Specifies the IP address and service port of the resource that is
+          the destination of this monitor.
+      type: string
+      sample: "*:*"
+    interval:
+      description:
+        - Specifies, in seconds, the frequency at which the system issues
+          the monitor check when either the resource is down or the status
+          of the resource is unknown.
+      type: int
+      sample: 5
+    manual_resume:
+      description:
+        - Specifies whether the system automatically changes the status of a
+          resource to up at the next successful monitor check.
+      type: bool
+      sample: yes
     time_until_up:
       description:
         - Specifies the amount of time, in seconds, after the first
@@ -9249,6 +9323,92 @@ class TcpMonitorsFactManager(BaseManager):
         return result
 
 
+class TcpHalfOpenMonitorsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'defaultsFrom': 'parent',
+        'manualResume': 'manual_resume',
+        'timeUntilUp': 'time_until_up',
+        'upInterval': 'up_interval',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'destination',
+        'interval',
+        'manual_resume',
+        'time_until_up',
+        'timeout',
+        'transparent',
+        'up_interval',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def transparent(self):
+        return flatten_boolean(self._values['transparent'])
+
+    @property
+    def manual_resume(self):
+        return flatten_boolean(self._values['manual_resume'])
+
+
+class TcpHalfOpenMonitorsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(TcpHalfOpenMonitorsFactManager, self).__init__(**kwargs)
+        self.want = TcpHalfOpenMonitorsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(tcp_half_open_monitors=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = TcpHalfOpenMonitorsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/tcp-half-open".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
 class TcpProfilesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -10866,6 +11026,10 @@ class ModuleManager(object):
                 manager=TcpMonitorsFactManager,
                 client=F5RestClient
             ),
+            'tcp-half-open-monitors': dict(
+                manager=TcpHalfOpenMonitorsFactManager,
+                client=F5RestClient
+            ),
             'tcp-profiles': dict(
                 manager=TcpProfilesFactManager,
                 client=F5RestClient
@@ -11043,6 +11207,7 @@ class ArgumentSpec(object):
                     'system-db',
                     'system-info',
                     'tcp-monitors',
+                    'tcp-half-open-monitors',
                     'tcp-profiles',
                     'traffic-groups',
                     'trunks',
@@ -11088,6 +11253,7 @@ class ArgumentSpec(object):
                     '!system-db',
                     '!system-info',
                     '!tcp-monitors',
+                    '!tcp-half-open-monitors',
                     '!tcp-profiles',
                     '!traffic-groups',
                     '!trunks',

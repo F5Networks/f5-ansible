@@ -1,5 +1,18 @@
 ---
 
+- name: Issue 00700 - Select tcp-half-open-monitor facts
+  bigip_device_facts:
+    include:
+      - tcp-half-open-monitors
+  register: result
+
+- name: Issue 00700 - Assert Select tcp-half-open-monitor facts
+  assert:
+    that:
+      - result is success
+      - result.tcp_half_open_monitors | selectattr("name", "match", "tcp_half_open") | map(attribute='manual_resume') | first == "no"
+      - result.tcp_half_open_monitors | json_query("[?name=='tcp_half_open'].manual_resume") | first == "no"
+
 - name: Issue 00700 - Select tcp-monitor facts
   bigip_device_facts:
     include:
