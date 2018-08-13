@@ -345,7 +345,7 @@ options:
           - Policy to apply a NAT policy directly to the virtual server.
           - The virtual server NAT policy is the most specific, and overrides a
             route domain and device policy, if specified.
-          - To remove the policy, specify an empty string value. 
+          - To remove the policy, specify an empty string value.
       use_device_policy:
         description:
           - Specify that the virtual server uses the device NAT policy, as specified
