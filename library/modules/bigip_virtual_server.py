@@ -693,7 +693,7 @@ class Parameters(AnsibleF5Parameters):
         'disabled',
         'enabled',
         'fallbackPersistence',
-        # 'ipProtocol',
+        'ipProtocol',
         'metadata',
         'persist',
         'policies',
@@ -728,7 +728,7 @@ class Parameters(AnsibleF5Parameters):
         'enabled',
         'enabled_vlans',
         'fallback_persistence_profile',
-        # 'ip_protocol',
+        'ip_protocol',
         'irules',
         'metadata',
         'pool',
@@ -755,7 +755,7 @@ class Parameters(AnsibleF5Parameters):
         'enabled',
         'enabled_vlans',
         'fallback_persistence_profile',
-        # 'ip_protocol',
+        'ip_protocol',
         'irules',
         'metadata',
         'pool',
@@ -1818,6 +1818,20 @@ class ReportableChanges(Changes):
         if self._values['port_translation'] == 'enabled':
             return True
         return False
+
+    @property
+    def ip_protocol(self):
+        if self._values['ip_protocol'] is None:
+            return None
+        try:
+            int(self._values['ip_protocol'])
+        except ValueError:
+            return self._values['ip_protocol']
+
+        protocol = next((x[0] for x in self.ip_protocols_map if x[1] == self._values['ip_protocol']), None)
+        if protocol:
+            return protocol
+        return self._values['ip_protocol']
 
 
 class VirtualServerValidator(object):
