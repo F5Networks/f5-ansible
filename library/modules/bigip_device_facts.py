@@ -2682,7 +2682,7 @@ server_ssl_profiles:
       description:
         - Specifies a throughput size, in megabytes, of SSL renegotiation.
       type: string
-      sample indefinite
+      sample: indefinite
     renegotiation:
       description:
         - Whether renegotiations are enabled.

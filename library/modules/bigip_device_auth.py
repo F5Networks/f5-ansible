@@ -55,7 +55,7 @@ options:
     description:
       - Secret key used to encrypt and decrypt packets sent or received from the
         server.
-      - B(Do not) use the pound sign ( C(#) ) in the secret for TACACS+ servers.
+      - B(Do not) use the pound/hash sign in the secret for TACACS+ servers.
       - When configuring TACACS+ auth for the first time, this value is required.
   service_name:
     description:
@@ -180,7 +180,6 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-        'protocol_name'
 servers:
   description: List of servers used in TACACS authentication.
   returned: changed
