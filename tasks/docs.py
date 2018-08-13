@@ -10,18 +10,19 @@ __metaclass__ = type
 from invoke import task
 from .lib.common import init
 
+from .lib.common import BASE_DIR
+
 
 @task(name='module')
 def module_(c):
-    init()
-    result = c.run('python ./devtools/bin/limit_module_docs.py')
-    c.run('rm docs/modules/* || true')
+    result = c.run('python {0}/devtools/bin/limit_module_docs.py'.format(BASE_DIR))
+    c.run('rm {0}/docs/modules/* || true'.format(BASE_DIR))
 
     cmd = [
-        'python', 'devtools/bin/plugin_formatter.py',
-        '--module-dir', 'library/',
-        '--template-dir', 'devtools/templates/',
-        '--output-dir', 'docs/modules/',
+        'python', '{0}/devtools/bin/plugin_formatter.py'.format(BASE_DIR),
+        '--module-dir', '{0}/library/modules/'.format(BASE_DIR),
+        '--template-dir', '{0}/devtools/templates/'.format(BASE_DIR),
+        '--output-dir', '{0}/docs/modules/'.format(BASE_DIR),
         '-v',
         '--limit-to', result.stdout
     ]
@@ -36,5 +37,5 @@ def build(c):
 
 
 @task(module_, build)
-def docs(c):
+def make(c):
     print("done")
