@@ -1,4 +1,4 @@
-:source: modules/bigip_dns_record.py
+:source: bigip_dns_record.py
 
 :orphan:
 

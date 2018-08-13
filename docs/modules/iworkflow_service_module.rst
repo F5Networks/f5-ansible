@@ -1,4 +1,4 @@
-:source: modules/iworkflow_service.py
+:source: iworkflow_service.py
 
 :orphan:
 

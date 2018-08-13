@@ -1,14 +1,14 @@
-:source: bigiq_application_https_waf.py
+:source: bigip_firewall_rule.py
 
 :orphan:
 
-.. _bigiq_application_https_waf_module:
+.. _bigip_firewall_rule_module:
 
 
-bigiq_application_https_waf - Manages BIG-IQ HTTPS WAF applications
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_firewall_rule - Manage AFM Firewall rules
++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigiq_application_https_waf - Manages BIG-IQ HTTPS WAF applications
 
 Synopsis
 --------
-- Manages BIG-IQ applications used for load balancing an HTTPS application on port 443 with a Web Application Firewall (WAF) using an ASM Rapid Deployment policy.
+- Manages firewall rules in an AFM firewall policy. New rules will always be added to the end of the policy. Rules can be re-ordered using the ``bigip_security_policy`` module. Rules can also be pre-ordered using the ``bigip_security_policy`` module and then later updated using the ``bigip_firewall_rule`` module.
 
 
 
@@ -34,205 +34,240 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                
-                                    
-                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                
-                                                                                                                                                                                                                                
-                                                                                                                                                                                                                    <tr>
-            <th colspan="3">Parameter</th>
+                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                    <tr>
+            <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
-                                                                <td colspan="3">
-                    <b>add_analytics</b>
+                                                                <td colspan="2">
+                    <b>action</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>yes</li>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>accept</li>
+                                                                                                                                                                                                <li>drop</li>
+                                                                                                                                                                                                <li>reject</li>
+                                                                                                                                                                                                <li>accept-decisively</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Collects statistics of the BIG-IP that the application is deployed to.</div>
-                                                    <div>This parameter is only relevant when specifying a <code>service_environment</code> which is a BIG-IP; not an SSG.</div>
+                                                                        <div>Specifies the action for the firewall rule.</div>
+                                                    <div>When <code>accept</code>, allows packets with the specified source, destination, and protocol to pass through the firewall. Packets that match the rule, and are accepted, traverse the system as if the firewall is not present.</div>
+                                                    <div>When <code>drop</code>, drops packets with the specified source, destination, and protocol. Dropping a packet is a silent action with no notification to the source or destination systems. Dropping the packet causes the connection to be retried until the retry threshold is reached.</div>
+                                                    <div>When <code>reject</code>, rejects packets with the specified source, destination, and protocol. When a packet is rejected the firewall sends a destination unreachable message to the sender.</div>
+                                                    <div>When <code>accept-decisively</code>, allows packets with the specified source, destination, and protocol to pass through the firewall, and does not require any further processing by any of the further firewalls. Packets that match the rule, and are accepted, traverse the system as if the firewall is not present. If the Rule List is applied to a virtual server, management IP, or self IP firewall rule, then Accept Decisively is equivalent to Accept.</div>
+                                                    <div>When creating a new rule, if this parameter is not provided, the default is <code>reject</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
-                    <b>client_ssl_profile</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SSL profile for managing client-side SSL traffic.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>name</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The name of the client SSL profile to created and used.</div>
-                                                    <div>When creating a new application, if this value is not specified, the default value of <code>clientssl</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>cert_key_chain</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>One or more certificates and keys to associate with the SSL profile.</div>
-                                                    <div>This option is always a list. The keys in the list dictate the details of the client/key/chain/passphrase combination.</div>
-                                                    <div>Note that BIG-IPs can only have one of each type of each certificate/key type. This means that you can only have one RSA, one DSA, and one ECDSA per profile.</div>
-                                                    <div>If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo, the device will reject this.</div>
-                                                    <div>This list is a complex list that specifies a number of keys.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default value of <code>inherit</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>key</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a key name.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>cert</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a cert name for use.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>chain</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a certificate chain that is relevant to the certificate and key mentioned earlier.</div>
-                                                    <div>This key is optional.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>passphrase</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Contains the passphrase of the key file, should it require one.</div>
-                                                    <div>Passphrases are encrypted on the remote BIG-IP device.</div>
-                                                                                </td>
-            </tr>
-                    
-                                    
-                                                <tr>
-                                                                <td colspan="3">
+                                                                <td colspan="2">
                     <b>description</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Description of the application.</div>
+                                                                        <div>The rule description.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
-                    <b>domain_names</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies host names that are used to access the web application that this security policy protects.</div>
-                                                    <div>When creating a new application, this parameter is required.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="3">
-                    <b>inbound_virtual</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Settings to configure the virtual which will receive the inbound connection.</div>
-                                                    <div>This virtual will be used to host the HTTPS endpoint of the application.</div>
-                                                    <div>Traffic destined to the <code>redirect_virtual</code> will be offloaded to this parameter to ensure that proper redirection from insecure, to secure, occurs.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>netmask</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the netmask to associate with the given <code>destination</code>.</div>
-                                                    <div>This parameter is required when creating a new application.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                                <td colspan="2">
                     <b>destination</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
-                                                    <div>This parameter is required when creating a new application.</div>
+                                                                        <div>Specifies packet destinations to which the rule applies.</div>
+                                                    <div>Leaving this field blank applies the rule to all addresses and all ports.</div>
+                                                    <div>You can specify the following destination items. An IPv4 or IPv6 address, an IPv4 or IPv6 address range, geographic location, VLAN, address list, port, port range, port list or address list.</div>
+                                                    <div>You can specify a mix of different types of items for the source address.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>port_range</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a range of ports, which is two port values separated by a hyphen. The port to the left of the hyphen should be less than the port to the right.</div>
+                                                    <div>This option is only valid when <code>protocol</code> is <code>tcp</code>(6) or <code>udp</code>(17).</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
+                    <b>address_range</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies an address range.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>port_list</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifes an existing port list.</div>
+                                                    <div>This option is only valid when <code>protocol</code> is <code>tcp</code>(6) or <code>udp</code>(17).</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>address</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a specific IP address.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>country</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a country code.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
                     <b>port</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>The port that the virtual listens for connections on.</div>
-                                                    <div>When creating a new application, if this parameter is not specified, the default value of <code>443</code> will be used.</div>
+                                                                        <div>Specifies a single numeric port.</div>
+                                                    <div>This option is only valid when <code>protocol</code> is <code>tcp</code>(6) or <code>udp</code>(17).</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>address_list</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies an existing address list.</div>
                                                                                 </td>
             </tr>
                     
                                                 <tr>
-                                                                <td colspan="3">
+                                                                <td colspan="2">
+                    <b>icmp_message</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the Internet Control Message Protocol (ICMP) or ICMPv6 message <code>type</code> and <code>code</code> that the rule uses.</div>
+                                                    <div>This parameter is only relevant when <code>protocol</code> is either <code>icmp</code>(1) or <code>icmpv6</code>(58).</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>code</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the code returned in response to the specified ICMP message type.</div>
+                                                    <div>You can specify codes, each set appropriate to the associated type, such as No Code (0) (associated with Echo Reply (0)) and Host Unreachable (1) (associated with Destination Unreachable (3)), or you can specify <code>any</code> to indicate that the system applies the rule for all codes in response to that specific ICMP message.</div>
+                                                    <div>You can also specify an arbitrary code.</div>
+                                                    <div>The ICMP protocol contains definitions for the existing message code and number pairs.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>type</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the type of ICMP message.</div>
+                                                    <div>You can specify control messages, such as Echo Reply (0) and Destination Unreachable (3), or you can specify <code>any</code> to indicate that the system applies the rule for all ICMP messages.</div>
+                                                    <div>You can also specify an arbitrary ICMP message.</div>
+                                                    <div>The ICMP protocol contains definitions for the existing message type and number pairs.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>irule</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies an iRule that is applied to the rule.</div>
+                                                    <div>An iRule can be started when the firewall rule matches traffic.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>logging</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether logging is enabled or disabled for the firewall rule.</div>
+                                                    <div>When creating a new rule, if this parameter is not specified, the default if <code>no</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Name of the new application.</div>
+                                                                        <div>Specifies the name of the rule.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
+                                                                <td colspan="2">
+                    <b>parent_policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The policy which contains the rule to be managed.</div>
+                                                    <div>One of either <code>parent_policy</code> or <code>parent_rule_list</code> is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>parent_rule_list</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The rule list which contains the rule to be managed.</div>
+                                                    <div>One of either <code>parent_policy</code> or <code>parent_rule_list</code> is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -244,7 +279,19 @@ Parameters
                                     </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
+                                                                <td colspan="2">
+                    <b>protocol</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the protocol to which the rule applies.</div>
+                                                    <div>Protocols may be specified by either their name or numeric value.</div>
+                                                    <div>A special protocol value <code>any</code> can be specified to match any protocol. The numeric equivalent of this protocol is <code>255</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
@@ -256,7 +303,7 @@ Parameters
             </tr>
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                     <b>ssh_keyfile</b>
                                                         </td>
                                 <td>
@@ -268,7 +315,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                     <b>timeout</b>
                                                         </td>
                                 <td>
@@ -280,7 +327,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -292,7 +339,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                     <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -304,7 +351,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                     <b>server_port</b>
                                                         </td>
                                 <td>
@@ -317,7 +364,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                     <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -330,7 +377,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                     <b>validate_certs</b>
                                                         </td>
                                 <td>
@@ -346,7 +393,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                     <b>transport</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -361,57 +408,29 @@ Parameters
             </tr>
                     
                                                 <tr>
-                                                                <td colspan="3">
-                    <b>redirect_virtual</b>
+                                                                <td colspan="2">
+                    <b>rule_list</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Settings to configure the virtual which will receive the connection to be redirected.</div>
-                                                    <div>This virtual will be used to host the HTTP endpoint of the application.</div>
-                                                    <div>Traffic destined to this parameter will be offloaded to the <code>inbound_virtual</code> parameter to ensure that proper redirection from insecure, to secure, occurs.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>netmask</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the netmask to associate with the given <code>destination</code>.</div>
-                                                    <div>This parameter is required when creating a new application.</div>
+                                                                        <div>Specifies an existing rule list to use in the rule.</div>
+                                                    <div>This parameter is mutually exclusive with many of the other individual-rule specific settings. This includes <code>logging</code>, <code>action</code>, <code>source</code>, <code>destination</code>, <code>irule&#x27;</code>, <code>protocol</code> and <code>logging</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>destination</b>
+                                                                <td colspan="2">
+                    <b>schedule</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
-                                                    <div>This parameter is required when creating a new application.</div>
+                                                                        <div>Specifies a schedule for the firewall rule.</div>
+                                                    <div>You configure schedules to define days and times when the firewall rule is made active.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>port</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">80</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The port that the virtual listens for connections on.</div>
-                                                    <div>When creating a new application, if this parameter is not specified, the default value of <code>80</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
-                                                                <td colspan="3">
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -422,7 +441,7 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
+                                                                <td colspan="2">
                     <b>server_port</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
                                 <td>
@@ -434,70 +453,120 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
-                    <b>servers</b>
+                                                                <td colspan="2">
+                    <b>source</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>A list of servers that the application is hosted on.</div>
-                                                    <div>If you are familiar with other BIG-IP setting, you might also refer to this list as the list of pool members.</div>
-                                                    <div>When creating a new application, at least one server is required.</div>
+                                                                        <div>Specifies packet sources to which the rule applies.</div>
+                                                    <div>Leaving this field blank applies the rule to all addresses and all ports.</div>
+                                                    <div>You can specify the following source items. An IPv4 or IPv6 address, an IPv4 or IPv6 address range, geographic location, VLAN, address list, port, port range, port list or address list.</div>
+                                                    <div>You can specify a mix of different types of items for the source address.</div>
                                                                                 </td>
             </tr>
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>port</b>
+                                                <td colspan="1">
+                    <b>port_range</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">80</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>The port of the server.</div>
+                                                                        <div>Specifies a range of ports, which is two port values separated by a hyphen. The port to the left of the hyphen should be less than the port to the right.</div>
+                                                    <div>This option is only valid when <code>protocol</code> is <code>tcp</code>(6) or <code>udp</code>(17).</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
+                                                <td colspan="1">
+                    <b>address_range</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies an address range.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>port_list</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifes an existing port list.</div>
+                                                    <div>This option is only valid when <code>protocol</code> is <code>tcp</code>(6) or <code>udp</code>(17).</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
                     <b>address</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The IP address of the server.</div>
+                                                                        <div>Specifies a specific IP address.</div>
                                                                                 </td>
             </tr>
-                    
-                                                <tr>
-                                                                <td colspan="3">
-                    <b>service_environment</b>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>country</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of service environment that the application will be deployed to.</div>
-                                                    <div>When creating a new application, this parameter is required.</div>
+                                                                        <div>Specifies a country code.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
-                    <b>state</b>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>port</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a single numeric port.</div>
+                                                    <div>This option is only valid when <code>protocol</code> is <code>tcp</code>(6) or <code>udp</code>(17).</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>address_list</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies an existing address list.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>status</b>
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>absent</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                <li>enabled</li>
+                                                                                                                                                                                                <li>disabled</li>
+                                                                                                                                                                                                <li>scheduled</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>The state of the resource on the system.</div>
-                                                    <div>When <code>present</code>, guarantees that the resource exists with the provided attributes.</div>
-                                                    <div>When <code>absent</code>, removes the resource from the system.</div>
+                                                                        <div>Indicates the activity state of the rule or rule list.</div>
+                                                    <div>When <code>disabled</code>, specifies that the rule or rule list does not apply at all.</div>
+                                                    <div>When <code>enabled</code>, specifies that the system applies the firewall rule or rule list to the given context and addresses.</div>
+                                                    <div>When <code>scheduled</code>, specifies that the system applies the rule or rule list according to the specified schedule.</div>
+                                                    <div>When creating a new rule, if this parameter is not provided, the default is <code>enabled</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
+                                                                <td colspan="2">
                     <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -508,7 +577,7 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="3">
+                                                                <td colspan="2">
                     <b>validate_certs</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
                                 <td>
@@ -520,20 +589,6 @@ Parameters
                                                                 <td>
                                                                         <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="3">
-                    <b>wait</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>If the module should wait for the application to be created, deleted or updated.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -555,29 +610,63 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Load balance an HTTPS application on port 443 with a WAF using ASM
-      bigiq_application_https_waf:
-        name: my-app
-        description: Redirect HTTP to HTTPS via WAF
-        service_environment: my-ssg
-        servers:
+    - name: Create a new rule in the foo firewall policy
+      bigip_firewall_rule:
+        name: foo
+        parent_policy: policy1
+        protocol: tcp
+        source:
           - address: 1.2.3.4
-            port: 8080
-          - address: 5.6.7.8
-            port: 8080
-        inbound_virtual:
-          destination: 2.2.2.2
-          netmask: 255.255.255.255
-          port: 443
-        redirect_virtual:
-          destination: 2.2.2.2
-          netmask: 255.255.255.255
-          port: 80
+          - address: "::1"
+          - address_list: foo-list1
+          - address_range: 1.1.1.1-2.2.2.2
+          - vlan: vlan1
+          - country: US
+          - port: 22
+          - port_list: port-list1
+          - port_range: 80-443
+        destination:
+          - address: 1.2.3.4
+          - address: "::1"
+          - address_list: foo-list1
+          - address_range: 1.1.1.1-2.2.2.2
+          - country: US
+          - port: 22
+          - port_list: port-list1
+          - port_range: 80-443
+        irule: irule1
+        action: accept
+        logging: yes
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
-        state: present
+      delegate_to: localhost
+
+    - name: Create an ICMP specific rule
+      bigip_firewall_rule:
+        name: foo
+        protocol: icmp
+        icmp_message:
+          type: 0
+        source:
+          - country: US
+        action: drop
+        logging: yes
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Add a new rule that is uses an existing rule list
+      bigip_firewall_rule:
+        name: foo
+        rule_list: rule-list1
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -590,117 +679,35 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                            
-                                                                            <tr>
-            <th colspan="2">Key</th>
+                                                                                        <tr>
+            <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
-                                <td colspan="2">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new description of the application of the resource.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My application</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="2">
-                    <b>inbound_virtual_destination</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The destination of the virtual that was created.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">6.7.8.9</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="2">
-                    <b>inbound_virtual_netmask</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The network mask of the provided inbound destination.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">255.255.255.0</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="2">
-                    <b>inbound_virtual_port</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The port the inbound virtual address listens on.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">80</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="2">
-                    <b>servers</b>
-                    <br/><div style="font-size: small; color: red">complex</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>List of servers, and their ports, that make up the application.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
-                                    </td>
-            </tr>
-                                                            <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>port</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>param1</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The port that the server listens on.</div>
+                                            <div>The new param1 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8080</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>address</b>
+                    <b>param2</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The IP address of the server.</div>
+                                            <div>The new param2 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
-                                    </td>
-            </tr>
-                    
-                                                <tr>
-                                <td colspan="2">
-                    <b>service_environment</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The environment which the service was deployed to.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">my-ssg1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
                                     </td>
             </tr>
                         </table>

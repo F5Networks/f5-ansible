@@ -1,14 +1,14 @@
-:source: bigip_gtm_facts.py
+:source: bigip_imish_config.py
 
 :orphan:
 
-.. _bigip_gtm_facts_module:
+.. _bigip_imish_config_module:
 
 
-bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_imish_config - __SHORT_DESCRIPTION__
+++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices
 
 Synopsis
 --------
-- Collect facts from F5 BIG-IP GTM devices.
+- __LONG DESCRIPTION__.
 
 
 
@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -42,27 +42,12 @@ Parameters
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>filter</b>
-                                                        </td>
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Perform regex filter of response. Filtering is done on the name of the resource. Valid filters are anything that can be provided to Python&#x27;s <code>re</code> module.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>include</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>pool</li>
-                                                                                                                                                                                                <li>wide_ip</li>
-                                                                                                                                                                                                <li>server</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Fact category to collect.</div>
+                                                                        <div>Specifies the name of the ... .</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -262,13 +247,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Get pool facts
-      bigip_gtm_facts:
-        server: lb.mydomain.com
-        user: admin
+    - name: Create a ...
+      bigip_imish_config:
+        name: foo
         password: secret
-        include: pool
-        filter: my_pool
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
 
 
@@ -281,48 +266,35 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>pool</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>param1</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Contains the pool object status and enabled status.</div>
+                                            <div>The new param1 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;pool&#x27;: [{&#x27;verify_member_availability&#x27;: &#x27;disabled&#x27;, &#x27;partition&#x27;: &#x27;Common&#x27;, &#x27;qos_packet_rate&#x27;: 1, &#x27;qos_hit_ratio&#x27;: 5, &#x27;alternate_mode&#x27;: &#x27;round-robin&#x27;, &#x27;members&#x27;: [{&#x27;ratio&#x27;: 1, &#x27;name&#x27;: &#x27;ok3.com&#x27;, &#x27;service&#x27;: 80, &#x27;member_order&#x27;: 0, &#x27;disabled&#x27;: True, &#x27;flags&#x27;: &#x27;a&#x27;, &#x27;preference&#x27;: 10, &#x27;order&#x27;: 10, &#x27;full_path&#x27;: &#x27;ok3.com&#x27;}], &#x27;ttl&#x27;: 30, &#x27;enabled_state&#x27;: &#x27;disabled&#x27;, &#x27;qos_vs_score&#x27;: 0, &#x27;qos_topology&#x27;: 0, &#x27;load_balancing_mode&#x27;: &#x27;round-robin&#x27;, &#x27;max_answers_returned&#x27;: 1, &#x27;fallback_mode&#x27;: &#x27;return-to-dns&#x27;, &#x27;qos_rtt&#x27;: 50, &#x27;name&#x27;: &#x27;d3qw&#x27;, &#x27;qos_hops&#x27;: 0, &#x27;qos_kilobytes_second&#x27;: 3, &#x27;qos_lcs&#x27;: 30, &#x27;enabled&#x27;: True, &#x27;qos_vs_capacity&#x27;: 0, &#x27;availability_state&#x27;: &#x27;offline&#x27;, &#x27;manual_resume&#x27;: &#x27;disabled&#x27;, &#x27;full_path&#x27;: &#x27;/Common/d3qw&#x27;, &#x27;type&#x27;: &#x27;naptr&#x27;, &#x27;dynamic_ratio&#x27;: &#x27;disabled&#x27;}]}</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>server</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>param2</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Contains the virtual server enabled and availability status, and address.</div>
+                                            <div>The new param2 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;server&#x27;: [{&#x27;product&#x27;: &#x27;single-bigip&#x27;, &#x27;virtual_servers&#x27;: [{&#x27;limit_max_pps_status&#x27;: &#x27;disabled&#x27;, &#x27;name&#x27;: &#x27;jsdfhsd&#x27;, &#x27;destination&#x27;: &#x27;10.10.10.10:0&#x27;, &#x27;enabled&#x27;: True, &#x27;translation_address&#x27;: &#x27;none&#x27;, &#x27;limit_max_pps&#x27;: 0, &#x27;limit_max_bps&#x27;: 0, &#x27;limit_max_bps_status&#x27;: &#x27;disabled&#x27;, &#x27;limit_max_connections&#x27;: 0, &#x27;limit_max_connections_status&#x27;: &#x27;disabled&#x27;, &#x27;full_path&#x27;: &#x27;jsdfhsd&#x27;, &#x27;translation_port&#x27;: 0}], &#x27;addresses&#x27;: [{&#x27;translation&#x27;: &#x27;none&#x27;, &#x27;name&#x27;: &#x27;10.10.10.10&#x27;, &#x27;device_name&#x27;: &#x27;/Common/qweqwe&#x27;}], &#x27;datacenter&#x27;: &#x27;/Common/xfxgh&#x27;, &#x27;limit_cpu_usage&#x27;: 0, &#x27;expose_route_domains&#x27;: False, &#x27;virtual_server_discovery&#x27;: &#x27;disabled&#x27;, &#x27;iq_allow_snmp&#x27;: True, &#x27;iq_allow_service_check&#x27;: True, &#x27;limit_max_bps_status&#x27;: &#x27;disabled&#x27;, &#x27;limit_max_connections&#x27;: 0, &#x27;limit_cpu_usage_status&#x27;: &#x27;disabled&#x27;, &#x27;limit_max_pps_status&#x27;: &#x27;disabled&#x27;, &#x27;link_discovery&#x27;: &#x27;disabled&#x27;, &#x27;iq_allow_path&#x27;: True, &#x27;monitor&#x27;: &#x27;/Common/bigip&#x27;, &#x27;limit_mem_avail_status&#x27;: &#x27;disabled&#x27;, &#x27;limit_mem_avail&#x27;: 0, &#x27;partition&#x27;: &#x27;Common&#x27;, &#x27;enabled&#x27;: True, &#x27;name&#x27;: &#x27;qweqwe&#x27;, &#x27;limit_max_pps&#x27;: 0, &#x27;limit_max_bps&#x27;: 0, &#x27;limit_max_connections_status&#x27;: &#x27;disabled&#x27;, &#x27;full_path&#x27;: &#x27;/Common/qweqwe&#x27;}]}</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>wide_ip</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Contains the lb method for the wide ip and the pools that are within the wide ip.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;wide_ip&#x27;: [{&#x27;pool_lb_mode&#x27;: &#x27;round-robin&#x27;, &#x27;last_resort_pool&#x27;: &#x27;&#x27;, &#x27;persist_cidr_ipv4&#x27;: 32, &#x27;persist_cidr_ipv6&#x27;: 128, &#x27;name&#x27;: &#x27;foo.ok.com&#x27;, &#x27;failure_rcode_response&#x27;: &#x27;disabled&#x27;, &#x27;failure_rcode&#x27;: &#x27;noerror&#x27;, &#x27;partition&#x27;: &#x27;Common&#x27;, &#x27;enabled&#x27;: True, &#x27;failure_rcode_ttl&#x27;: 0, &#x27;ttl_persistence&#x27;: 3600, &#x27;full_path&#x27;: &#x27;/Common/foo.ok.com&#x27;, &#x27;pools&#x27;: [{&#x27;partition&#x27;: &#x27;Common&#x27;, &#x27;ratio&#x27;: 1, &#x27;name&#x27;: &#x27;d3qw&#x27;, &#x27;order&#x27;: 0}], &#x27;minimal_response&#x27;: &#x27;enabled&#x27;, &#x27;type&#x27;: &#x27;naptr&#x27;, &#x27;persistence&#x27;: &#x27;disabled&#x27;}]}</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
                                     </td>
             </tr>
                         </table>

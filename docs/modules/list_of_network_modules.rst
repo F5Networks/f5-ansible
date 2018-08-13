@@ -34,6 +34,13 @@ F5
   * :ref:`bigip_dns_record_module`
   * :ref:`bigip_dns_zone_module`
   * :ref:`bigip_facts_module`
+  * :ref:`bigip_firewall_address_list_module`
+  * :ref:`bigip_firewall_dos_profile_module`
+  * :ref:`bigip_firewall_dos_vector_module`
+  * :ref:`bigip_firewall_policy_module`
+  * :ref:`bigip_firewall_port_list_module`
+  * :ref:`bigip_firewall_rule_module`
+  * :ref:`bigip_firewall_rule_list_module`
   * :ref:`bigip_gtm_datacenter_module`
   * :ref:`bigip_gtm_facts_module`
   * :ref:`bigip_gtm_global_module`
@@ -53,6 +60,7 @@ F5
   * :ref:`bigip_iapp_service_module`
   * :ref:`bigip_iapp_template_module`
   * :ref:`bigip_iapplx_package_module`
+  * :ref:`bigip_imish_config_module`
   * :ref:`bigip_irule_module`
   * :ref:`bigip_log_destination_module`
   * :ref:`bigip_log_publisher_module`
@@ -85,13 +93,7 @@ F5
   * :ref:`bigip_remote_role_module`
   * :ref:`bigip_remote_syslog_module`
   * :ref:`bigip_routedomain_module`
-  * :ref:`bigip_security_address_list_module`
-  * :ref:`bigip_security_dos_profile_module`
   * :ref:`bigip_security_log_profile_module`
-  * :ref:`bigip_security_policy_module`
-  * :ref:`bigip_security_policy_rule_module`
-  * :ref:`bigip_security_port_list_module`
-  * :ref:`bigip_security_rule_list_module`
   * :ref:`bigip_selfip_module`
   * :ref:`bigip_service_policy_module`
   * :ref:`bigip_smtp_module`

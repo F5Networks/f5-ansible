@@ -1,14 +1,14 @@
-:source: modules/bigip_security_port_list.py
+:source: bigip_firewall_rule_list.py
 
 :orphan:
 
-.. _bigip_security_port_list_module:
+.. _bigip_firewall_rule_list_module:
 
 
-bigip_security_port_list - Manage port lists on BIG-IP AFM
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_firewall_rule_list - Manage AFM security firewall policies on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_security_port_list - Manage port lists on BIG-IP AFM
 
 Synopsis
 --------
-- Manages the AFM port lists on a BIG-IP. This module can be used to add and remove port list entries.
+- Manages AFM security firewall policies on a BIG-IP.
 
 
 
@@ -34,8 +34,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -47,7 +47,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Description of the port list</div>
+                                                                        <div>The description to attach to the policy.</div>
+                                                    <div>This parameter is only supported on versions of BIG-IP &gt;= 12.1.0. On earlier versions it will simply be ignored.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -57,7 +58,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the port list.</div>
+                                                                        <div>The name of the policy to create.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -85,37 +86,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>port_lists</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Simple list of existing port lists to add to this list. Port lists can be specified in either their fully qualified name (/Common/foo) or their short name (foo). If a short name is used, the <code>partition</code> argument will automatically be prepended to the short name.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>port_ranges</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>A list of port ranges where the range starts with a port number, is followed by a dash (-) and then a second number.</div>
-                                                    <div>If the first number is greater than the second number, the numbers will be reversed so-as to be properly formatted. ie, 90-78 would become 78-90.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>ports</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Simple list of port values to add to the list</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
@@ -128,15 +98,26 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>ssh_keyfile</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
                                     </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -148,6 +129,18 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -166,14 +159,15 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>user</b>
+                    <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -194,30 +188,6 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>ssh_keyfile</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
                     <b>transport</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -232,6 +202,18 @@ Parameters
             </tr>
                     
                                                 <tr>
+                                                                <td colspan="2">
+                    <b>rules</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a list of rules that you want associated with this policy. The order of this list is the order they will be evaluated by BIG-IP. If the specified rules do not exist (for example when creating a new policy) then they will be created.</div>
+                                                    <div>Rules specified here, if they do not exist, will be created with &quot;default deny&quot; behavior. It is expected that you follow-up this module with the actual configuration for these rules.</div>
+                                                    <div>The <code>bigip_firewall_rule</code> module can be used to also create, as well as edit, existing and new rules.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
@@ -265,8 +247,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the address list and entries exists.</div>
-                                                    <div>When <code>absent</code>, ensures the address list is removed.</div>
+                                                                        <div>When <code>state</code> is <code>present</code>, ensures that the policy exists.</div>
+                                                    <div>When <code>state</code> is <code>absent</code>, ensures that the policy is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -314,77 +296,17 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a simple port list
-      bigip_security_port_list:
+    - name: Create a basic policy with some rule stubs
+      bigip_firewall_rule_list:
         name: foo
-        ports:
-          - 80
-          - 443
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
-      delegate_to: localhost
-
-    - name: Override the above list of ports with a new list
-      bigip_security_port_list:
-        name: foo
-        ports:
-          - 3389
-          - 8080
-          - 25
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
-      delegate_to: localhost
-
-    - name: Create port list with series of ranges
-      bigip_security_port_list:
-        name: foo
-        port_ranges:
-          - 25-30
-          - 80-500
-          - 50-78
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
-      delegate_to: localhost
-
-    - name: Use multiple types of port arguments
-      bigip_security_port_list:
-        name: foo
-        port_ranges:
-          - 25-30
-          - 80-500
-          - 50-78
-        ports:
-          - 8080
-          - 443
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
-      delegate_to: localhost
-
-    - name: Remove port list
-      bigip_security_port_list:
-        name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-      delegate_to: localhost
-
-    - name: Create port list from a file with one port per line
-      bigip_security_port_list:
-        name: lot-of-ports
-        ports: "{{ lookup('file', 'my-large-port-list.txt').split('\n') }}"
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        rules:
+          - rule1
+          - rule2
+          - rule3
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -397,7 +319,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -409,49 +331,23 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new description of the port list.</div>
+                                            <div>The new description of the policy.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My port list</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My firewall policy</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>port_lists</b>
+                    <b>rules</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new list of port list names applied to the port list.</div>
+                                            <div>The list of rules, in the order that they are evaluated, on the device.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/list1&#x27;, &#x27;/Common/list2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>port_ranges</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new list of port ranges applied to the port list.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;80-100&#x27;, &#x27;200-8080&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ports</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new list of ports applied to the port list.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[80, 443]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;rule1&#x27;, &#x27;rule2&#x27;, &#x27;rule3&#x27;]</div>
                                     </td>
             </tr>
                         </table>
