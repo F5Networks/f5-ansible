@@ -253,6 +253,8 @@
   assert:
     that:
       - result is changed
+      - result is success
+      - result.ip_protocol == 'udp'
 
 - name: Issue 00554 - Add virtual server, ip_protocol no profiles - Idempotent check
   bigip_virtual_server:
@@ -281,6 +283,8 @@
   assert:
     that:
       - result is changed
+      - result is success
+      - result.ip_protocol == 'sctp'
 
 - name: Issue 00554 - Change ip_protocol to string - Idempotent check
   bigip_virtual_server:
