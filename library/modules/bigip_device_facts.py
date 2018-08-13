@@ -36,6 +36,7 @@ options:
       - client-ssl-profiles
       - devices
       - device-groups
+      - external-monitors
       - fasthttp-profiles
       - fastl4-profiles
       - gateway-icmp-monitors
@@ -79,6 +80,7 @@ options:
       - "!client-ssl-profiles"
       - "!devices"
       - "!device-groups"
+      - "!external-monitors"
       - "!fasthttp-profiles"
       - "!fastl4-profiles"
       - "!gateway-icmp-monitors"
@@ -707,6 +709,88 @@ device_groups:
       returned: changed
       type: bool
       sample: yes
+  sample: hash/dictionary of values
+external_monitors:
+  description: External monitor related facts.
+  returned: When C(external-monitors) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/external
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: external
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: external
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My monitor
+    destination:
+      description:
+        - Specifies the IP address and service port of the resource that is
+          the destination of this monitor.
+      type: string
+      sample: "*:*"
+    args:
+      description:
+        - Specifies any command-line arguments that the script requires.
+      type: string
+      sample: arg1 arg2 arg3
+    external_program:
+      description:
+        - Specifies the name of the file for the monitor to use.
+      type: string
+      sample: /Common/arg_example
+    variables:
+      description:
+        - Specifies any variables that the script requires.
+      type: complex
+      sample: { "key1": "val", "key_2": "val 2" }
+    interval:
+      description:
+        - Specifies, in seconds, the frequency at which the system issues
+          the monitor check when either the resource is down or the status
+          of the resource is unknown.
+      type: int
+      sample: 5
+    manual_resume:
+      description:
+        - Specifies whether the system automatically changes the status of a
+          resource to up at the next successful monitor check.
+      type: bool
+      sample: yes
+    time_until_up:
+      description:
+        - Specifies the amount of time, in seconds, after the first
+          successful response before a node is marked up.
+      type: int
+      sample: 0
+    timeout:
+      description:
+        - Specifies the number of seconds the target has in which to respond
+          to the monitor request.
+      type: int
+      sample: 16
+    up_interval:
+      description:
+        - Specifies, in seconds, the frequency at which the system issues
+          the monitor check when the resource is up.
+      type: int
+      sample: 0
   sample: hash/dictionary of values
 fasthttp_profiles:
   description: FastHTTP profile related facts.
@@ -1939,6 +2023,107 @@ iapp_services:
       returned: changed
       type: string
       sample: My service
+  sample: hash/dictionary of values
+icmp_monitors:
+  description: ICMP monitor related facts.
+  returned: When C(icmp-monitors) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/icmp
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: icmp
+    parent:
+      description:
+        - Profile from which this profile inherits settings.
+      returned: changed
+      type: string
+      sample: icmp
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: My monitor
+    adaptive:
+      description:
+        - Whether adaptive response time monitoring is enabled for this monitor.
+      type: bool
+      sample: no
+    adaptive_divergence_type:
+      description:
+        - Specifies whether the adaptive-divergence-value is C(relative) or
+          C(absolute).
+      type: string
+      sample: relative
+    adaptive_divergence_value:
+      description:
+        - Specifies how far from mean latency each monitor probe is allowed
+          to be.
+      type: int
+      sample: 25
+    adaptive_limit:
+      description:
+        - Specifies the hard limit, in milliseconds, which the probe is not
+          allowed to exceed, regardless of the divergence value.
+      type: int
+      sample: 200
+    adaptive_sampling_timespan:
+      description:
+        - Specifies the size of the sliding window, in seconds, which
+          records probe history.
+      type: int
+      sample: 300
+    destination:
+      description:
+        - Specifies the IP address and service port of the resource that is
+          the destination of this monitor.
+      type: string
+      sample: "*:*"
+    interval:
+      description:
+        - Specifies, in seconds, the frequency at which the system issues
+          the monitor check when either the resource is down or the status
+          of the resource is unknown.
+      type: int
+      sample: 5
+    manual_resume:
+      description:
+        - Specifies whether the system automatically changes the status of a
+          resource to up at the next successful monitor check.
+      type: bool
+      sample: yes
+    time_until_up:
+      description:
+        - Specifies the amount of time, in seconds, after the first
+          successful response before a node is marked up.
+      type: int
+      sample: 0
+    timeout:
+      description:
+        - Specifies the number of seconds the target has in which to respond
+          to the monitor request.
+      type: int
+      sample: 16
+    transparent:
+      description:
+        - Specifies whether the monitor operates in transparent mode.
+      type: bool
+      sample: no
+    up_interval:
+      description:
+        - Specifies, in seconds, the frequency at which the system issues
+          the monitor check when the resource is up.
+      type: int
+      sample: 0
   sample: hash/dictionary of values
 interfaces:
   description: Interface related facts.
@@ -5964,6 +6149,106 @@ class DevicesFactManager(BaseManager):
 
     def read_collection_from_device(self):
         result = self.client.api.tm.cm.devices.get_collection()
+        return result
+
+
+class ExternalMonitorsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'defaultsFrom': 'parent',
+        'adaptiveDivergenceType': 'adaptive_divergence_type',
+        'adaptiveDivergenceValue': 'adaptive_divergence_value',
+        'adaptiveLimit': 'adaptive_limit',
+        'adaptiveSamplingTimespan': 'adaptive_sampling_timespan',
+        'manualResume': 'manual_resume',
+        'timeUntilUp': 'time_until_up',
+        'upInterval': 'up_interval',
+        'run': 'external_program',
+        'apiRawValues': 'variables',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'parent',
+        'description',
+        'args',
+        'destination',
+        'external_program',
+        'interval',
+        'manual_resume',
+        'time_until_up',
+        'timeout',
+        'up_interval',
+        'variables',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def manual_resume(self):
+        return flatten_boolean(self._values['manual_resume'])
+
+    @property
+    def variables(self):
+        if self._values['variables'] is None:
+            return None
+        result = {}
+        for k, v in iteritems(self._values['variables']):
+            k = k.replace('userDefined ', '').strip()
+            result[k] = v
+        return result
+
+
+class ExternalMonitorsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ExternalMonitorsFactManager, self).__init__(**kwargs)
+        self.want = ExternalMonitorsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(external_monitors=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ExternalMonitorsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/external".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -11189,6 +11474,10 @@ class ModuleManager(object):
             'device-groups': dict(
                 manager=DeviceGroupsFactManager
             ),
+            'external-monitors': dict(
+                manager=ExternalMonitorsFactManager,
+                client=F5RestClient
+            ),
             'fasthttp-profiles': dict(
                 manager=FastHttpProfilesFactManager
             ),
@@ -11445,6 +11734,7 @@ class ArgumentSpec(object):
                     'client-ssl-profiles',
                     'devices',
                     'device-groups',
+                    'external-monitors',
                     'fasthttp-profiles',
                     'fastl4-profiles',
                     'gateway-icmp-monitors',
@@ -11492,6 +11782,7 @@ class ArgumentSpec(object):
                     '!client-ssl-profiles',
                     '!devices',
                     '!device-groups',
+                    '!external-monitors',
                     '!fasthttp-profiles',
                     '!fastl4-profiles',
                     '!gateway-icmp-monitors',
