@@ -19,17 +19,6 @@ try:
 except ImportError:
     HAS_JINJA = False
 
-
-UPSTREAM_FIXTURE_FILE = '{0}/test/units/modules/network/f5/fixtures/{1}'
-UPSTREAM_UNIT_TEST = '{0}/test/units/modules/network/f5/test_{1}.py'
-UPSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{1}'
-UPSTREAM_MODULE = '{0}/lib/ansible/modules/network/f5/{1}.py'
-DOWNSTREAM_FIXTURE_FILE = '{0}/test/unit/fixtures/{1}'
-DOWNSTREAM_UNIT_TEST = '{0}/test/unit/test_{1}.py'
-DOWNSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{1}'
-DOWNSTREAM_MODULE = '{0}/library/modules/{1}.py'
-
-
 if HAS_JINJA:
     JINJA_ENV = Environment(
         loader=FileSystemLoader(BASE_DIR + '/devtools/stubs')
@@ -47,11 +36,6 @@ def module_file_present(module):
 def module_file_absent(module):
     result = module_file_present(module)
     return not result
-
-
-def module_name(module):
-    filename, extension = os.path.splitext(module)
-    return filename
 
 
 def stub_roles_dirs(module):
