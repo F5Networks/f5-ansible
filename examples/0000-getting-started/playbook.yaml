@@ -19,6 +19,7 @@
         lb_method: ratio-member
         name: web
         slow_ramp_time: 120
+      delegate_to: localhost
 
     - name: Add members to pool
       bigip_pool_member:
@@ -33,6 +34,7 @@
           name: web01
         - host: 10.10.10.20
           name: web02
+      delegate_to: localhost
 
     - name: Create a VIP
       bigip_virtual_server:
@@ -46,3 +48,4 @@
         profiles:
           - http
           - clientssl
+      delegate_to: localhost
