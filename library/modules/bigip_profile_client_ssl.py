@@ -7,7 +7,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
@@ -68,6 +67,55 @@ options:
       - Device partition to manage resources on.
     default: Common
     version_added: 2.5
+  options:
+    description:
+      - Options that the system uses for SSL processing in the form of a list. When 
+        creating a new profile, the list is provided by the parent profile.
+      - When an empty list is provided all options for SSL processing are disabled.
+    choices:
+      - netscape-reuse-cipher-change-bug
+      - microsoft-big-sslv3-buffer
+      - msie-sslv2-rsa-padding
+      - ssleay-080-client-dh-bug
+      - tls-d5-bug
+      - tls-block-padding-bug
+      - dont-insert-empty-fragments
+      - no-ssl
+      - no-dtls
+      - no-session-resumption-on-renegotiation
+      - no-tlsv1.1
+      - no-tlsv1.2
+      - single-dh-use
+      - ephemeral-rsa
+      - cipher-server-preference
+      - tls-rollback-bug
+      - no-sslv2
+      - no-sslv3
+      - no-tls
+      - no-tlsv1
+      - pkcs1-check-1
+      - pkcs1-check-2
+      - netscape-ca-dn-bug
+      - netscape-demo-cipher-change-bug
+  secure_renegotation:
+    description:
+      - Specifies the method of secure renegotiations for SSL connections. When
+        creating a new profile, the setting is provided by the parent profile.
+      - When C(request) is set the ssystem request secure renegotation of SSL 
+        connections.
+      - C(require) is a default setting and when set the system permits initial SSL 
+        handshakes from clients but terminates renegotiations from unpatched clients.
+      - The C(require-strict) setting the system requires strict renegotiation of SSL 
+        connections. In this mode the system refuses connections to insecure servers,
+        and terminates existing SSL connections to insecure servers.
+    choices:
+      - require
+      - require-strict
+      - request
+  allow_non_ssl
+    description:
+      - Enables or disables acceptance of non-SSL connections.
+      - When creating a new profile, the setting is provided by the parent profile.
   state:
     description:
       - When C(present), ensures that the profile exists.
@@ -82,6 +130,7 @@ notes:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -102,6 +151,27 @@ EXAMPLES = r'''
     password: secret
     name: my_profile
     ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
+  delegate_to: localhost
+  
+- name: Create client SSL profile with specific SSL options
+  bigip_profile_client_ssl:
+    state: present
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_profile
+    options:
+      - no-sslv2
+      - no-sslv3
+  delegate_to: localhost
+
+- name: Create client SSL profile require secure renegotiation
+    state: present
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_profile
+    secure_renegotation: request
   delegate_to: localhost
 
 - name: Create a client SSL profile with a cert/key/chain setting
@@ -124,6 +194,21 @@ ciphers:
   returned: changed
   type: string
   sample: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
+options:
+  description: The list of options for SSL processing.
+  returned: changed
+  type: list
+  sample: ['no-sslv2', 'no-sslv3']
+secure_renegotation:
+  description: The method of secure SSL renegotiation.
+  returned: changed
+  type: string
+  sample: request
+allow_non_ssl:
+  description: Acceptance of non-SSL connections.
+  returned: changed
+  type: bool
+  sample: yes
 '''
 
 import os
@@ -140,6 +225,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import flatten_boolean
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -152,6 +238,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import flatten_boolean
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -161,20 +248,26 @@ except ImportError:
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'certKeyChain': 'cert_key_chain',
-        'defaultsFrom': 'parent'
+        'defaultsFrom': 'parent',
+        'allowNonSsl': 'allow_non_ssl',
+        'secureRenegotiation': 'secure_renegotiation',
+        'tmOptions': 'options'
     }
 
     api_attributes = [
         'ciphers', 'certKeyChain',
-        'defaultsFrom'
+        'defaultsFrom', 'tmOptions',
+        'secureRenegotiation', 'allowNonSsl'
     ]
 
     returnables = [
-        'ciphers'
+        'ciphers', 'allow_non_ssl', 'options',
+        'secure_renegotiation'
     ]
 
     updatables = [
-        'ciphers', 'cert_key_chain'
+        'ciphers', 'cert_key_chain', 'allow_non_ssl',
+        'options', 'secure_renegotiation'
     ]
 
 
@@ -236,6 +329,57 @@ class ModuleParameters(Parameters):
         result = sorted(result, key=lambda x: x['name'])
         return result
 
+    @property
+    def allow_non_ssl(self):
+        result = flatten_boolean(self._values['allow_non_ssl'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def options(self):
+        choices = [
+                    'netscape-reuse-cipher-change-bug',
+                    'microsoft-big-sslv3-buffer',
+                    'msie-sslv2-rsa-padding',
+                    'ssleay-080-client-dh-bug',
+                    'tls-d5-bug',
+                    'tls-block-padding-bug',
+                    'dont-insert-empty-fragments',
+                    'no-ssl',
+                    'no-dtls',
+                    'no-session-resumption-on-renegotiation',
+                    'no-tlsv1.1',
+                    'no-tlsv1.2',
+                    'single-dh-use',
+                    'ephemeral-rsa',
+                    'cipher-server-preference',
+                    'tls-rollback-bug',
+                    'no-sslv2',
+                    'no-sslv3',
+                    'no-tls',
+                    'no-tlsv1',
+                    'pkcs1-check-1',
+                    'pkcs1-check-2',
+                    'netscape-ca-dn-bug',
+                    'netscape-demo-cipher-change-bug'
+                  ]
+        options = self._values['options']
+
+        if options is None:
+            return None
+
+        if options == '':
+            return options
+
+        if set(options).issubset(set(choices)):
+            return options
+        else:
+            offenders = set(options).difference(set(choices))
+            raise F5ModuleError('Invalid options specified: {0}'.format(offenders))
+
 
 class ApiParameters(Parameters):
     @property
@@ -274,7 +418,13 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def allow_non_ssl(self):
+        if self._values['allow_non_ssl'] is None:
+            return None
+        elif self._values['allow_non_ssl'] == 'enabled':
+            return 'yes'
+        return 'no'
 
 
 class Difference(object):
@@ -329,6 +479,21 @@ class Difference(object):
     def cert_key_chain(self):
         result = self._diff_complex_items(self.want.cert_key_chain, self.have.cert_key_chain)
         return result
+
+    @property
+    def options(self):
+        if self.want.options is None:
+            return None
+        if self.have.options is None and self.want.options == '':
+            return None
+        if self.have.options is not None and self.want.options == '':
+            return []
+        if self.have.options is None:
+            return self.want.options
+        if set(self.want.options) == set(self.have.options):
+                return None
+        if set(self.want.options) != set(self.have.options):
+                return self.want.options
 
 
 class ModuleManager(object):
@@ -481,6 +646,11 @@ class ArgumentSpec(object):
             name=dict(required=True),
             parent=dict(default='/Common/clientssl'),
             ciphers=dict(),
+            allow_non_ssl=dict(type='bool'),
+            secure_renegotiation=dict(
+                choices=['require', 'require-strict', 'request']
+            ),
+            options=dict(type=list),
             cert_key_chain=dict(
                 type='list',
                 options=dict(
@@ -506,7 +676,6 @@ class ArgumentSpec(object):
 
 def main():
     spec = ArgumentSpec()
-
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode

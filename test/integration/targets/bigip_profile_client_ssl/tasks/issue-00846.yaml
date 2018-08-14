@@ -1,0 +1,149 @@
+---
+
+- name: Issue 00846 - Include issue variables
+  include_vars:
+    file: issue-00846.yaml
+
+- name: Issue 00846 - Include issue variables
+  include_vars:
+    file: issue-00846.yaml
+
+- name: Issue 00846 - Create a client SSL profile with options
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    options: "{{ opt_1 }}"
+  register: result
+
+- name: Issue 00846 - Assert Create a client SSL profile with options
+  assert:
+    that:
+      - result is changed
+      - result.options == opt_1
+
+- name: Issue 00846 - Create a client SSL profile with options  - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    options: "{{ opt_1 }}"
+  register: result
+
+- name: Issue 00846 - Assert Create a client SSL profile with options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00846 - Update client SSL profile options
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    options: "{{ opt_3 }}"
+  register: result
+
+- name: Issue 00846 - Assert Update client SSL profile options
+  assert:
+    that:
+      - result is changed
+      - result.options == opt_3
+
+- name: Issue 00846 - Update client SSL profile options - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    options: "{{ opt_3 }}"
+  register: result
+
+- name: Issue 00846 - Assert Update client SSL profile options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00846 - Update client SSL profile with invalid options - Expect failure
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    options: "{{ opt_4 }}"
+  register: result
+  ignore_errors: true
+
+- name: Issue 00846 - Disable client SSL profile options
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    options: "{{ opt_2 }}"
+  register: result
+
+- name: Issue 00846 - Assert Disable client SSL profile options
+  assert:
+    that:
+      - result is changed
+      - result.options == []
+
+- name: Issue 00846 - Disable client SSL profile options - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    options: "{{ opt_2 }}"
+  register: result
+
+- name: Issue 00846 - Assert Disable client SSL profile options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00846 - Create a client SSL profile with renegotiation and non ssl
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    allow_non_ssl: yes
+    secure_renegotiation: "{{ renegotiate_1 }}"
+  register: result
+
+- name: Issue 00846 - Assert Create a client SSL profile with renegotiation and non ssl
+  assert:
+    that:
+      - result is changed
+      - result.allow_non_ssl == 'yes'
+      - result.secure_renegotiation == renegotiate_1
+
+- name: Issue 00846 - Create a client SSL profile with renegotiation and non ssl - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    allow_non_ssl: yes
+    secure_renegotiation: "{{ renegotiate_1 }}"
+  register: result
+
+- name: Issue 00846 - Assert Create a client SSL profile with renegotiation and non ssl - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00846 - Modify client SSL profile renegotiation and non-ssl
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    allow_non_ssl: no
+    secure_renegotiation: "{{ renegotiate_2 }}"
+  register: result
+
+- name: Issue 00846 - Assert Modify client SSL profile renegotiation and non-ssl
+  assert:
+    that:
+      - result is changed
+      - result.allow_non_ssl == 'no'
+      - result.secure_renegotiation == renegotiate_2
+
+- name: Issue 00846 - Modify client SSL profile renegotiation and non-ssl - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    allow_non_ssl: no
+    secure_renegotiation: "{{ renegotiate_2 }}"
+  register: result
+
+- name: Issue 00846 - Assert Modify client SSL profile renegotiation and non-ssl - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00846 - Remove first client SSL profile
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    state: absent
+  register: result
+
+- name: Issue 00846 - Remove second client SSL profile
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    state: absent
+  register: result

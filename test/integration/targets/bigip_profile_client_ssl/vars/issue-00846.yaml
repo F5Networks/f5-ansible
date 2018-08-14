@@ -1,0 +1,28 @@
+---
+profile: ssl_profile_issue00846
+profile_2: ssl_profile_issue00846_2
+
+opt_1:
+  - no-tlsv1.1
+  - no-tlsv1.2
+
+opt_2: ''
+
+opt_3:
+  - netscape-reuse-cipher-change-bug
+  - microsoft-big-sslv3-buffer
+  - msie-sslv2-rsa-padding
+  - ssleay-080-client-dh-bug
+  - tls-d5-bug
+  - tls-block-padding-bug
+  - dont-insert-empty-fragments
+
+opt_4:
+  - netscape-reuse-cipher-change-bug
+  - microsoft-big-sslv3-buffer
+  - foo
+  - bar
+
+renegotiate_1: request
+renegotiate_2: require-strict
+
