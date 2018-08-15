@@ -1,0 +1,107 @@
+---
+
+- name: Create a cli alias - shared
+  bigip_cli_alias:
+    name: alias1
+    scope: shared
+    description: my alias
+    command: run /util bash
+  register: result
+
+- name: Assert Create a cli alias - shared
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a cli alias - shared - Idempotent check
+  bigip_cli_alias:
+    name: alias1
+    scope: shared
+    description: my alias
+    command: run /util bash
+  register: result
+
+- name: Assert Create a cli alias - shared - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description - shared
+  bigip_cli_alias:
+    name: alias1
+    scope: shared
+    description: my other alias
+  register: result
+
+- name: Assert Change description - shared
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - shared - Idempotent check
+  bigip_cli_alias:
+    name: alias1
+    scope: shared
+    description: my other alias
+  register: result
+
+- name: Assert Change description - shared - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change command - shared
+  bigip_cli_alias:
+    name: alias1
+    scope: shared
+    command: run other alias
+  register: result
+
+- name: Assert Change command - shared
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change command - shared - Idempotent check
+  bigip_cli_alias:
+    name: alias1
+    scope: shared
+    command: run other alias
+  register: result
+
+- name: Assert Change command - shared - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove cli alias - shared
+  bigip_cli_alias:
+    name: alias1
+    scope: shared
+    state: absent
+  register: result
+
+- name: Assert Remove cli alias - shared
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove cli alias - shared - Idempotent check
+  bigip_cli_alias:
+    name: alias1
+    scope: shared
+    state: absent
+  register: result
+
+- name: Assert Remove cli alias - shared - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
