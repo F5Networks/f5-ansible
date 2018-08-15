@@ -1,0 +1,58 @@
+---
+
+- name: Issue 00832 - Include issue variables
+  include_vars:
+    file: issue-00832.yaml
+
+
+- name: Issue 00832 - Create a TCP profile with disabled time wait recycle
+  bigip_profile_tcp:
+    name: "{{profile_name}}"
+    time_wait_recycle: no
+  register: result
+
+- name: Issue 00832 - Assert Create a TCP profile with disabled time wait recycle
+  assert:
+    that:
+      - result is changed
+      - result.time_wait_recycle == "no"
+
+- name: Issue 00832 - Create a TCP profile with disabled time wait recycle - Idempotent check
+  bigip_profile_tcp:
+    name: "{{profile_name}}"
+    time_wait_recycle: no
+  register: result
+
+- name: Issue 00832 - Assert Create a TCP profile with disabled time wait recycle - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00832 - Update time wait recycle
+  bigip_profile_tcp:
+    name: "{{profile_name}}"
+    time_wait_recycle: yes
+  register: result
+
+- name: Issue 00832 - Assert Update time wait recycle
+  assert:
+    that:
+      - result is changed
+      - result.time_wait_recycle == "yes"
+
+- name: Issue 00832 - Update time wait recycle - Idempotent check
+  bigip_profile_tcp:
+    name: "{{profile_name}}"
+    time_wait_recycle: yes
+  register: result
+
+- name: Issue 00832 - Assert Update time wait recycle - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00832 - Remove profile
+  bigip_profile_tcp:
+    name: "{{profile_name}}"
+    state: absent
+  register: result
