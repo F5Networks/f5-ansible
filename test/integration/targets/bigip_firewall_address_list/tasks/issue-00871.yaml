@@ -1,0 +1,115 @@
+---
+
+- name: Create Address-List - IPs
+  bigip_firewall_address_list:
+    name: "{{ item.name }}"
+    addresses: "{{ item.address }}"
+  register: result
+  loop:
+  - index: 0
+    name: ePDG-SWm-V6-ip
+    address: '2606:ae00:2e10:104::4'
+  - index: 1
+    name: ePDG-DNS-V4-ip
+    address: '166.209.84.99'
+  - index: 2
+    name: ePDG-S2b-V4-ip
+    address: '166.209.84.100'
+  - index: 3
+    name: ePDG-S2b-V6-ip
+    address: '2606:ae00:2e10:104::5'
+
+- name: Assert Create Address-List - IPs
+  assert:
+    that:
+        - result is changed
+        - result is success
+
+- name: Create Address-List - IPs - Idempotent check
+  bigip_firewall_address_list:
+    name: "{{ item.name }}"
+    addresses: "{{ item.address }}"
+  register: result
+  loop:
+  - index: 0
+    name: ePDG-SWm-V6-ip
+    address: '2606:ae00:2e10:104::4'
+  - index: 1
+    name: ePDG-DNS-V4-ip
+    address: '166.209.84.99'
+  - index: 2
+    name: ePDG-S2b-V4-ip
+    address: '166.209.84.100'
+  - index: 3
+    name: ePDG-S2b-V6-ip
+    address: '2606:ae00:2e10:104::5'
+
+- name: Assert Create Address-List - IPs - Idempotent check
+  assert:
+    that:
+        - result is not changed
+        - result is success
+
+- name: Create Address-List - CIDRs
+  bigip_firewall_address_list:
+    name: "{{ item.name }}"
+    addresses: "{{ item.address }}"
+  register: result
+  loop:
+    - index: 0
+      name: ePDG-SWm-V6-cidr
+      address: '2606:ae00:2e10:104::4/128'
+    - index: 1
+      name: ePDG-DNS-V4-cidr
+      address: '166.209.84.99/32'
+    - index: 2
+      name: ePDG-S2b-V4-cidr
+      address: '166.209.84.100/32'
+    - index: 3
+      name: ePDG-S2b-V6-cidr
+      address: '2606:ae00:2e10:104::5/128'
+
+- name: Assert Create Address-List - CIDRs
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create Address-List - CIDRs - Idempotent check
+  bigip_firewall_address_list:
+    name: "{{ item.name }}"
+    addresses: "{{ item.address }}"
+  register: result
+  loop:
+    - index: 0
+      name: ePDG-SWm-V6-cidr
+      address: '2606:ae00:2e10:104::4/128'
+    - index: 1
+      name: ePDG-DNS-V4-cidr
+      address: '166.209.84.99/32'
+    - index: 2
+      name: ePDG-S2b-V4-cidr
+      address: '166.209.84.100/32'
+    - index: 3
+      name: ePDG-S2b-V6-cidr
+      address: '2606:ae00:2e10:104::5/128'
+
+- name: Assert Create Address-List - CIDRs - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove address lists
+  bigip_firewall_address_list:
+    name: "{{ item }}"
+  register: result
+  loop:
+  - ePDG-SWm-V6-ip
+  - ePDG-DNS-V4-ip
+  - ePDG-S2b-V4-ip
+  - ePDG-S2b-V6-ip
+  - ePDG-SWm-V6-cidr
+  - ePDG-DNS-V4-cidr
+  - ePDG-S2b-V4-cidr
+  - ePDG-S2b-V6-cidr
