@@ -97,6 +97,7 @@ options:
       - pkcs1-check-2
       - netscape-ca-dn-bug
       - netscape-demo-cipher-change-bug
+    version_added: 2.7
   secure_renegotation:
     description:
       - Specifies the method of secure renegotiations for SSL connections. When
@@ -112,10 +113,13 @@ options:
       - require
       - require-strict
       - request
-  allow_non_ssl
+    version_added: 2.7
+  allow_non_ssl:
     description:
       - Enables or disables acceptance of non-SSL connections.
       - When creating a new profile, the setting is provided by the parent profile.
+    type: bool
+    version_added: 2.7
   state:
     description:
       - When C(present), ensures that the profile exists.
@@ -490,8 +494,6 @@ class Difference(object):
             return []
         if self.have.options is None:
             return self.want.options
-        if set(self.want.options) == set(self.have.options):
-                return None
         if set(self.want.options) != set(self.have.options):
                 return self.want.options
 
