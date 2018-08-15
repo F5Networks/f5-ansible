@@ -203,7 +203,6 @@ protocol_name:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.six import string_types
 
 try:
