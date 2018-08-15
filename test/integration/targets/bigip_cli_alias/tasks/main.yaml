@@ -1,0 +1,8 @@
+---
+
+- import_tasks: setup.yaml
+
+- import_tasks: scope-shared.yaml
+- import_tasks: scope-private.yaml
+
+- import_tasks: teardown.yaml

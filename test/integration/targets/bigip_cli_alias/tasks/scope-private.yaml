@@ -1,0 +1,107 @@
+---
+
+- name: Create a cli alias - private
+  bigip_cli_alias:
+    name: alias1
+    scope: private
+    description: my alias
+    command: run /util bash
+  register: result
+
+- name: Assert Create a cli alias - private
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a cli alias - private - Idempotent check
+  bigip_cli_alias:
+    name: alias1
+    scope: private
+    description: my alias
+    command: run /util bash
+  register: result
+
+- name: Assert Create a cli alias - private - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description - private
+  bigip_cli_alias:
+    name: alias1
+    scope: private
+    description: my other alias
+  register: result
+
+- name: Assert Change description - private
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - private - Idempotent check
+  bigip_cli_alias:
+    name: alias1
+    scope: private
+    description: my other alias
+  register: result
+
+- name: Assert Change description - private - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change command - private
+  bigip_cli_alias:
+    name: alias1
+    scope: private
+    command: run other alias
+  register: result
+
+- name: Assert Change command - private
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change command - private - Idempotent check
+  bigip_cli_alias:
+    name: alias1
+    scope: private
+    command: run other alias
+  register: result
+
+- name: Assert Change command - private - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove cli alias - private
+  bigip_cli_alias:
+    name: alias1
+    scope: private
+    state: absent
+  register: result
+
+- name: Assert Remove cli alias - private
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove cli alias - private - Idempotent check
+  bigip_cli_alias:
+    name: alias1
+    scope: private
+    state: absent
+  register: result
+
+- name: Assert Remove cli alias - private - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
