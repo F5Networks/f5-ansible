@@ -54,6 +54,7 @@ f5_provider_spec = {
         default='rest'
     ),
     'timeout': dict(type='int'),
+    'auth_provider': dict()
 }
 
 f5_argument_spec = {
@@ -88,6 +89,9 @@ f5_top_spec = {
     'transport': dict(
         removed_in_version=2.9,
         choices=['cli', 'rest']
+    ),
+    'auth_provider': dict(
+        default=None
     )
 }
 f5_argument_spec.update(f5_top_spec)
