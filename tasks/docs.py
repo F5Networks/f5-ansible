@@ -7,15 +7,19 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+
+import os
+
 from invoke import task
-from .lib.common import init
 
 from .lib.common import BASE_DIR
 
 
 @task(name='module')
 def module_(c):
-    result = c.run('python {0}/devtools/bin/limit_module_docs.py'.format(BASE_DIR))
+    files = os.listdir('{0}/library/modules'.format(BASE_DIR))
+    limit_to = ','.join([os.path.splitext(x)[0] for x in files])
+
     c.run('rm {0}/docs/modules/* || true'.format(BASE_DIR))
 
     cmd = [
@@ -24,7 +28,7 @@ def module_(c):
         '--template-dir', '{0}/devtools/templates/'.format(BASE_DIR),
         '--output-dir', '{0}/docs/modules/'.format(BASE_DIR),
         '-v',
-        '--limit-to', result.stdout
+        '--limit-to', limit_to
     ]
     c.run(' '.join(cmd))
 
