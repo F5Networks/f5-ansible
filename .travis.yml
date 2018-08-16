@@ -3,14 +3,14 @@ sudo: required
 language: python
 
 python:
-  - 2.7
-  - 3.5
+#  - 2.7
+#  - 3.5
   - 3.6
-  - 3.7
+#  - 3.7
 
-env:
-  - TOXENV=unit
-  - TOXENV=style
+#env:
+#  - TOXENV=unit
+#  - TOXENV=style
 
 before_install:
   # NOTE: this is probably not required since you're not trying to pull or
@@ -29,11 +29,11 @@ script:
 
 jobs:
   include:
-    - stage: test
-      script: make sanity
-      python: 3.6
-      env: TOXENV=sanity
-      if: branch = devel
+    #- stage: test
+    #  script: make sanity
+    #  python: 3.6
+    #  env: TOXENV=sanity
+    #  if: branch = devel
 
     - stage: test
       script:
