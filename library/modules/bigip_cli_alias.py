@@ -29,7 +29,7 @@ options:
       - The scope of the alias; whether it is shared on the system, or usable only
         for the user who created it.
     default: shared
-    choices
+    choices:
       - private
       - shared
   command:
