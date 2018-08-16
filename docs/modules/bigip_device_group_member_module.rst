@@ -223,7 +223,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the device group member.</div>
+                                                                        <div>When <code>present</code>, ensures that the device group member exists.</div>
                                                     <div>When <code>absent</code>, ensures the device group member is removed.</div>
                                                                                 </td>
             </tr>

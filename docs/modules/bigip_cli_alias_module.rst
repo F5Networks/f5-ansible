@@ -1,14 +1,14 @@
-:source: bigip_profile_client_ssl.py
+:source: bigip_cli_alias.py
 
 :orphan:
 
-.. _bigip_profile_client_ssl_module:
+.. _bigip_cli_alias_module:
 
 
-bigip_profile_client_ssl - Manages client SSL profiles on a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_cli_alias - Manage CLI aliases on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_profile_client_ssl - Manages client SSL profiles on a BIG-IP
 
 Synopsis
 --------
-- Manages client SSL profiles on a BIG-IP.
+- Allows for managing both private and shared aliases on a BIG-IP.
 
 
 
@@ -34,8 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -43,85 +42,22 @@ Parameters
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>allow_non_ssl</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                    <b>command</b>
+                                                        </td>
                                 <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>Enables or disables acceptance of non-SSL connections.</div>
-                                                    <div>When creating a new profile, the setting is provided by the parent profile.</div>
+                                                                        <div>The command to alias.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>cert_key_chain</b>
+                    <b>description</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>One or more certificates and keys to associate with the SSL profile. This option is always a list. The keys in the list dictate the details of the client/key/chain combination. Note that BIG-IPs can only have one of each type of each certificate/key type. This means that you can only have one RSA, one DSA, and one ECDSA per profile. If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo, the device will reject this.</div>
-                                                    <div>This list is a complex list that specifies a number of keys.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>key</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Contains a key name.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>cert</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a cert name for use.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>chain</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Contains a certificate chain that is relevant to the certificate and key mentioned earlier.</div>
-                                                    <div>This key is optional.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>passphrase</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Contains the passphrase of the key file, should it require one.</div>
-                                                    <div>Passphrases are encrypted on the remote BIG-IP device. Therefore, there is no way to compare them when updating a client SSL profile. Due to this, if you specify a passphrase, this module will always register a <code>changed</code> event.</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
-                                                                <td colspan="2">
-                    <b>ciphers</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the list of ciphers that the system supports. When creating a new profile, the default cipher list is provided by the parent profile.</div>
+                                                                        <div>Description of the alias.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -131,66 +67,19 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the profile.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>options</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>netscape-reuse-cipher-change-bug</li>
-                                                                                                                                                                                                <li>microsoft-big-sslv3-buffer</li>
-                                                                                                                                                                                                <li>msie-sslv2-rsa-padding</li>
-                                                                                                                                                                                                <li>ssleay-080-client-dh-bug</li>
-                                                                                                                                                                                                <li>tls-d5-bug</li>
-                                                                                                                                                                                                <li>tls-block-padding-bug</li>
-                                                                                                                                                                                                <li>dont-insert-empty-fragments</li>
-                                                                                                                                                                                                <li>no-ssl</li>
-                                                                                                                                                                                                <li>no-dtls</li>
-                                                                                                                                                                                                <li>no-session-resumption-on-renegotiation</li>
-                                                                                                                                                                                                <li>no-tlsv1.1</li>
-                                                                                                                                                                                                <li>no-tlsv1.2</li>
-                                                                                                                                                                                                <li>single-dh-use</li>
-                                                                                                                                                                                                <li>ephemeral-rsa</li>
-                                                                                                                                                                                                <li>cipher-server-preference</li>
-                                                                                                                                                                                                <li>tls-rollback-bug</li>
-                                                                                                                                                                                                <li>no-sslv2</li>
-                                                                                                                                                                                                <li>no-sslv3</li>
-                                                                                                                                                                                                <li>no-tls</li>
-                                                                                                                                                                                                <li>no-tlsv1</li>
-                                                                                                                                                                                                <li>pkcs1-check-1</li>
-                                                                                                                                                                                                <li>pkcs1-check-2</li>
-                                                                                                                                                                                                <li>netscape-ca-dn-bug</li>
-                                                                                                                                                                                                <li>netscape-demo-cipher-change-bug</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Options that the system uses for SSL processing in the form of a list. When creating a new profile, the list is provided by the parent profile.</div>
-                                                    <div>When an empty list is provided all options for SSL processing are disabled.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>parent</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">/Common/clientssl</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>clientssl</code> parent on the <code>Common</code> partition.</div>
+                                                                        <div>Specifies the name of the alias.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
                     <b>partition</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
+                                                        </td>
                                 <td>
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
                                                                         <div>Device partition to manage resources on.</div>
+                                                    <div>This parameter is disregarded when the <code>scope</code> is <code>private</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -324,20 +213,16 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>secure_renegotation</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                    <b>scope</b>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>require</li>
-                                                                                                                                                                                                <li>require-strict</li>
-                                                                                                                                                                                                <li>request</li>
+                                                                                                                                                                <li>private</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>shared</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the method of secure renegotiations for SSL connections. When creating a new profile, the setting is provided by the parent profile.</div>
-                                                    <div>When <code>request</code> is set the ssystem request secure renegotation of SSL connections.</div>
-                                                    <div><code>require</code> is a default setting and when set the system permits initial SSL handshakes from clients but terminates renegotiations from unpatched clients.</div>
-                                                    <div>The <code>require-strict</code> setting the system requires strict renegotiation of SSL connections. In this mode the system refuses connections to insecure servers, and terminates existing SSL connections to insecure servers.</div>
+                                                                        <div>The scope of the alias; whether it is shared on the system, or usable only for the user who created it.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -366,7 +251,7 @@ Parameters
                                 <tr>
                                                                 <td colspan="2">
                     <b>state</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
@@ -374,8 +259,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the profile exists.</div>
-                                                    <div>When <code>absent</code>, ensures the profile is removed.</div>
+                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
+                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -412,7 +297,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
@@ -424,57 +308,15 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create client SSL profile
-      bigip_profile_client_ssl:
-        state: present
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_profile
-      delegate_to: localhost
-
-    - name: Create client SSL profile with specific ciphers
-      bigip_profile_client_ssl:
-        state: present
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_profile
-        ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
-      delegate_to: localhost
-      
-    - name: Create client SSL profile with specific SSL options
-      bigip_profile_client_ssl:
-        state: present
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_profile
-        options:
-          - no-sslv2
-          - no-sslv3
-      delegate_to: localhost
-
-    - name: Create client SSL profile require secure renegotiation
-        state: present
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_profile
-        secure_renegotation: request
-      delegate_to: localhost
-
-    - name: Create a client SSL profile with a cert/key/chain setting
-      bigip_profile_client_ssl:
-        state: present
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_profile
-        cert_key_chain:
-          - cert: bigip_ssl_cert1
-            key: bigip_ssl_key1
-            chain: bigip_ssl_cert1
+    - name: Create a new alias
+      bigip_cli_alias:
+        name: sync_device_to_bside
+        scope: shared
+        command: save /sys config partitions all; run /cm config-sync to-group device-group-1
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -487,61 +329,35 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>allow_non_ssl</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Acceptance of non-SSL connections.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ciphers</b>
+                    <b>command</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The ciphers applied to the profile.</div>
+                                            <div>The new command that is aliased.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">run /util bash</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>options</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The list of options for SSL processing.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;no-sslv2&#x27;, &#x27;no-sslv3&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>secure_renegotation</b>
+                    <b>description</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The method of secure SSL renegotiation.</div>
+                                            <div>The new description of the alias.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">request</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Run the bash shell</div>
                                     </td>
             </tr>
                         </table>
@@ -562,5 +378,4 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
-- Wojciech Wypior (@wojtek0806)
 
