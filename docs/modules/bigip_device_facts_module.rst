@@ -53,12 +53,16 @@ Parameters
                                                                                                                                                                                                 <li>client-ssl-profiles</li>
                                                                                                                                                                                                 <li>devices</li>
                                                                                                                                                                                                 <li>device-groups</li>
+                                                                                                                                                                                                <li>external-monitors</li>
                                                                                                                                                                                                 <li>fasthttp-profiles</li>
                                                                                                                                                                                                 <li>fastl4-profiles</li>
+                                                                                                                                                                                                <li>gateway-icmp-monitors</li>
                                                                                                                                                                                                 <li>http-monitors</li>
+                                                                                                                                                                                                <li>https-monitors</li>
                                                                                                                                                                                                 <li>http-profiles</li>
                                                                                                                                                                                                 <li>iapp-services</li>
                                                                                                                                                                                                 <li>iapplx-packages</li>
+                                                                                                                                                                                                <li>icmp-monitors</li>
                                                                                                                                                                                                 <li>interfaces</li>
                                                                                                                                                                                                 <li>internal-data-groups</li>
                                                                                                                                                                                                 <li>irules</li>
@@ -76,6 +80,8 @@ Parameters
                                                                                                                                                                                                 <li>ssl-keys</li>
                                                                                                                                                                                                 <li>system-db</li>
                                                                                                                                                                                                 <li>system-info</li>
+                                                                                                                                                                                                <li>tcp-monitors</li>
+                                                                                                                                                                                                <li>tcp-half-open-monitors</li>
                                                                                                                                                                                                 <li>tcp-profiles</li>
                                                                                                                                                                                                 <li>traffic-groups</li>
                                                                                                                                                                                                 <li>trunks</li>
@@ -91,12 +97,16 @@ Parameters
                                                                                                                                                                                                 <li>!client-ssl-profiles</li>
                                                                                                                                                                                                 <li>!devices</li>
                                                                                                                                                                                                 <li>!device-groups</li>
+                                                                                                                                                                                                <li>!external-monitors</li>
                                                                                                                                                                                                 <li>!fasthttp-profiles</li>
                                                                                                                                                                                                 <li>!fastl4-profiles</li>
+                                                                                                                                                                                                <li>!gateway-icmp-monitors</li>
                                                                                                                                                                                                 <li>!http-monitors</li>
+                                                                                                                                                                                                <li>!https-monitors</li>
                                                                                                                                                                                                 <li>!http-profiles</li>
                                                                                                                                                                                                 <li>!iapp-services</li>
                                                                                                                                                                                                 <li>!iapplx-packages</li>
+                                                                                                                                                                                                <li>!icmp-monitors</li>
                                                                                                                                                                                                 <li>!interfaces</li>
                                                                                                                                                                                                 <li>!internal-data-groups</li>
                                                                                                                                                                                                 <li>!irules</li>
@@ -114,6 +124,8 @@ Parameters
                                                                                                                                                                                                 <li>!ssl-keys</li>
                                                                                                                                                                                                 <li>!system-db</li>
                                                                                                                                                                                                 <li>!system-info</li>
+                                                                                                                                                                                                <li>!tcp-monitors</li>
+                                                                                                                                                                                                <li>!tcp-half-open-monitors</li>
                                                                                                                                                                                                 <li>!tcp-profiles</li>
                                                                                                                                                                                                 <li>!traffic-groups</li>
                                                                                                                                                                                                 <li>!trunks</li>
@@ -375,11 +387,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
@@ -400,6 +416,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     
                                                                                                                                                                                                                                                                                                 
                                                                                                                                     
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
@@ -1626,6 +1644,198 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     
                                                 <tr>
                                 <td colspan="4">
+                    <b>external_monitors</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>external-monitors</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>External monitor related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>args</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies any command-line arguments that the script requires.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">arg1 arg2 arg3</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">external</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">external</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>variables</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies any variables that the script requires.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;key1&#x27;: &#x27;val&#x27;, &#x27;key_2&#x27;: &#x27;val 2&#x27;}</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>destination</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">*:*</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>time_until_up</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>manual_resume</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">16</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>up_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>external_program</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the name of the file for the monitor to use.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/arg_example</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/external</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My monitor</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
                     <b>fasthttp_profiles</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -2686,6 +2896,236 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     
                                                 <tr>
                                 <td colspan="4">
+                    <b>gateway_icmp_monitors</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>gateway-icmp-monitors</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>Gateway ICMP monitor related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>destination</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">*:*</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My monitor</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">gateway_icmp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_divergence_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">relative</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_divergence_value</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">25</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>up_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>transparent</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the monitor operates in transparent mode.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_sampling_timespan</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">300</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">gateway_icmp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>time_until_up</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>manual_resume</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">16</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/gateway_icmp</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
                     <b>http_monitors</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -3439,6 +3879,330 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     
                                                 <tr>
                                 <td colspan="4">
+                    <b>https_monitors</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>https-monitors</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>HTTPS monitor related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>username</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the username, if the monitored target requires authentication.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">user1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>receive_string</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the text string that the monitor looks for in the returned resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">check string</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My monitor</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">http</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ssl_profile</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the SSL profile to use for the HTTPS monitor.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/serverssl</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_divergence_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">relative</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_divergence_value</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">25</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>up_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>transparent</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the monitor operates in transparent mode.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">http</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_sampling_timespan</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">300</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>reverse</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the monitor operates in reverse mode. When the monitor is in reverse mode, a successful check marks the monitored object down instead of up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>send_string</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the text string that the monitor sends to the target object.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">GET /\r\n</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>destination</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">*:*</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>time_until_up</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>receive_disable_string</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies a text string that the monitor looks for in the returned resource. If the text string is matched in the returned resource, the corresponding node or pool member is marked session disabled.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">check disable string</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>manual_resume</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">16</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/http</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ip_dscp</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the differentiated services code point (DSCP).</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
                     <b>iapp_services</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -3630,6 +4394,236 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My service</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
+                    <b>icmp_monitors</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>icmp-monitors</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>ICMP monitor related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>destination</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">*:*</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My monitor</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">icmp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_divergence_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">relative</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_divergence_value</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">25</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>up_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>transparent</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the monitor operates in transparent mode.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_sampling_timespan</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">300</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">icmp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>time_until_up</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>manual_resume</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">16</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/icmp</div>
                                     </td>
             </tr>
                     
@@ -7396,6 +8390,422 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td></td>
                 <td>
                                                                         <div>Switch board revision.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
+                    <b>tcp_half_open_monitors</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>tcp-half-open-monitors</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>TCP Half-open monitor related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tcp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tcp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>destination</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">*:*</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>time_until_up</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>manual_resume</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">16</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>up_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>transparent</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the monitor operates in transparent mode.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/tcp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My monitor</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
+                    <b>tcp_monitors</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>tcp-monitors</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>TCP monitor related facts.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>destination</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">*:*</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My monitor</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Profile from which this profile inherits settings.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tcp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_divergence_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">relative</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_divergence_value</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">25</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>up_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>transparent</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the monitor operates in transparent mode.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>reverse</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the monitor operates in reverse mode. When the monitor is in reverse mode, a successful check marks the monitored object down instead of up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_sampling_timespan</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">300</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tcp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>time_until_up</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>manual_resume</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>timeout</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">16</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>adaptive</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/tcp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>ip_dscp</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Specifies the differentiated services code point (DSCP).</div>
                                                                 <br/>
                                     </td>
             </tr>

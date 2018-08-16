@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -101,6 +101,20 @@ Parameters
                                                     <div>When <code>no</code>, the system resolves a DNS query for the FQDN of the node with the single IP address associated with the FQDN.</div>
                                                     <div>When creating a new pool member, the default for this parameter is <code>yes</code>.</div>
                                                     <div>This parameter is ignored when <code>reuse_nodes</code> is <code>yes</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ip_encapsulation</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the IP encapsulation.</div>
+                                                    <div>Any suitable tunnel profile can be specified here. There are two reserved names which can be used in addition to the user-specified profiles. Those reserved names are <code>none</code> and <code>inherit</code>.</div>
+                                                    <div>When <code>none</code>, removes IP encapsulation from the pool member.</div>
+                                                    <div>When <code>inherit</code>, causes the IP encapsulation setting to be inherited from the pool.</div>
+                                                    <div>When adding a new pool member, if this value is not specified, the default is <code>inherit</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
