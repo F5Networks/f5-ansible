@@ -5361,10 +5361,8 @@ import math
 import re
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.network.common.utils import to_netmask
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
-from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.six import string_types
 from collections import namedtuple
