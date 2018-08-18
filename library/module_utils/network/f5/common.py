@@ -208,7 +208,9 @@ def flatten_boolean(value):
         return 'no'
 
 
-def cleanup_tokens(client):
+def cleanup_tokens(client=None):
+    if client is None:
+        return
     try:
         # isinstance cannot be used here because to import it creates a
         # circular dependency with teh module_utils.network.f5.bigip file.
