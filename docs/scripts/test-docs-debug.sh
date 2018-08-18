@@ -17,7 +17,7 @@ write-good \$(find ./docs -name '*.rst') --so --no-illusion --thereIs --cliches
 
 echo "Building docs with Sphinx"
 make -C docs/ clean
-make docs-build
+inv docs.build
 
 echo "Checking links"
 make -C docs/ linkcheck
