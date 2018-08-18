@@ -1,3 +1,4 @@
 git+https://github.com/ansible/ansible.git@devel
 invoke
 cffi
+awscli
