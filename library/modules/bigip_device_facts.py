@@ -1838,7 +1838,7 @@ http_profiles:
     unknown_method:
       description:
         - Specifies the behavior (allow, reject, or pass through) when an unknown
-          HTTP method is parsed. 
+          HTTP method is parsed.
       returned: changed
       type: string
       sample: allow
@@ -1914,7 +1914,7 @@ http_profiles:
       sample: BigIP
     sflow_poll_interval:
       description:
-        - The maximum interval in seconds between two pollings. 
+        - The maximum interval in seconds between two pollings.
       returned: changed
       type: int
       sample: 0
@@ -4090,7 +4090,7 @@ tcp_profiles:
           RFC 5827) to reduce the recovery time for connections that are receive- buffer
           or user-data limited.
       type: bool
-      sample: yes 
+      sample: yes
     explicit_congestion_notification:
       description:
         - Specifies, when C(yes), that the system uses the TCP flags CWR (congestion window
@@ -4652,7 +4652,7 @@ udp_profiles:
         - Allow the passage of datagrams that contain header information, but no essential data.
       returned: changed
       type: bool
-      sample: yes 
+      sample: yes
     buffer_max_bytes:
       description:
         - Ingress buffer byte limit. Maximum allowed value is 16777215.
