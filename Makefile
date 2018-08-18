@@ -1,6 +1,5 @@
 #vim: set tabstop=8:softtabstop=8:shiftwidth=8:noexpandtab
 
-DOCTEST := python ../scripts/ansible-doc-test.py
 PYHOOK := 'import sys;sys.path.insert(1,".")'
 PYLINT := pylint --additional-builtins=_ --init-hook=$(PYHOOK)
 
