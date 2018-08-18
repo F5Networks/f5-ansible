@@ -49,16 +49,10 @@ from six import iteritems, string_types
 
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_bytes, to_text
-from ansible.plugins.loader import PluginLoader
+from ansible.plugins.loader import fragment_loader
 from ansible.utils import plugin_docs
 from ansible.utils.display import Display
 
-fragment_loader = PluginLoader(
-    'ModuleDocFragment',  # class_name
-    '',  # package
-    '/here/library/utils/module_docs_fragments',  # config
-    '',  # subdir
-)
 
 #####################################################################################
 # constants and paths
@@ -184,6 +178,7 @@ def get_plugin_info(module_dir, limit_to=None, verbose=False):
 
     categories = dict()
     module_info = defaultdict(dict)
+    _fragment_loader = get_fragment_loader()
 
     # * windows powershell modules have documentation stubs in python docstring
     #   format (they are not executed) so skip the ps1 format files
@@ -237,12 +232,14 @@ def get_plugin_info(module_dir, limit_to=None, verbose=False):
 
         module_categories = []
         # build up the categories that this module belongs to
+        # START - F5 EDIT
         for new_cat in ['network', 'f5']:
             if new_cat not in category:
                 category[new_cat] = dict()
                 category[new_cat]['_modules'] = []
             module_categories.append(new_cat)
             category = category[new_cat]
+        # END - F5 EDIT
 
         category['_modules'].append(module)
 
@@ -251,7 +248,7 @@ def get_plugin_info(module_dir, limit_to=None, verbose=False):
             primary_category = module_categories[0]
 
         # use ansible core library to parse out doc metadata YAML and plaintext examples
-        doc, examples, returndocs, metadata = plugin_docs.get_docstring(module_path, fragment_loader, verbose=verbose)
+        doc, examples, returndocs, metadata = plugin_docs.get_docstring(module_path, _fragment_loader, verbose=verbose)
 
         # save all the information
         module_info[module] = {'path': module_path,
@@ -583,8 +580,15 @@ def validate_options(options):
         sys.exit("--template-dir must be specified")
 
 
-def main():
+def get_fragment_loader():
+    # This is loaded as an import at the start of the script.
+    #
+    # This method allows one to override the fragment loader that is used
+    # by overloading this function.
+    return fragment_loader
 
+
+def main():
     # INIT
     p = generate_parser()
     (options, args) = p.parse_args()

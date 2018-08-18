@@ -17,17 +17,19 @@ from .lib.common import BASE_DIR
 
 @task(name='module')
 def module_(c):
+    excludes = ['__init__.py']
     files = os.listdir('{0}/library/modules'.format(BASE_DIR))
-    limit_to = ','.join([os.path.splitext(x)[0] for x in files])
+    files = [os.path.splitext(x)[0] for x in files if x not in excludes]
+    limit_to = ','.join(files)
 
     c.run('rm {0}/docs/modules/* || true'.format(BASE_DIR))
 
     cmd = [
-        'python', '{0}/devtools/bin/plugin_formatter.py'.format(BASE_DIR),
+        'python', '{0}/tasks/bin/plugin_formatter.py'.format(BASE_DIR),
         '--module-dir', '{0}/library/modules/'.format(BASE_DIR),
         '--template-dir', '{0}/devtools/templates/'.format(BASE_DIR),
         '--output-dir', '{0}/docs/modules/'.format(BASE_DIR),
-        '-v',
+        '-vvvv',
         '--limit-to', limit_to
     ]
     c.run(' '.join(cmd))
