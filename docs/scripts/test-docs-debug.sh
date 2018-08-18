@@ -12,6 +12,9 @@ set -e
 #echo "Installing project dependencies"
 pip install --user -r requirements.readthedocs.txt
 
+# - needed to put the inv command in path
+export PATH=$PATH:/root/.local/bin
+
 echo "Checking grammar and style"
 write-good \$(find ./docs -name '*.rst') --so --no-illusion --thereIs --cliches
 
