@@ -22,7 +22,6 @@ install:
   - travis_retry sudo apt-get update
   - travis_retry sudo apt-get -y install libffi-dev libssl-dev
   - travis_retry pip install -r requirements.travis.txt
-  - travis_retry pip install cffi
 
 script:
   - tox
