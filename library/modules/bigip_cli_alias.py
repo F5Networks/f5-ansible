@@ -389,7 +389,7 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['present', 'absent']
             ),
-            partition = dict(
+            partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
             )
