@@ -11,7 +11,7 @@
     file: issue-00512.yaml
 
 - name: Issue 00512 - Create Port-List
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: "{{ item.name }}"
     description: "{{ item.description }}"
     ports: "{{ item.port }}"
@@ -24,7 +24,7 @@
       - result is changed
 
 - name: Issue 00512 - Create Port-List - Idempotent check
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: "{{ item.name }}"
     description: "{{ item.description }}"
     ports: "{{ item.port }}"
@@ -37,14 +37,14 @@
       - result is not changed
 
 - name: Issue 00512 - Remove Port-List
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: "{{ item.name }}"
     state: absent
   loop: "{{ port_list }}"
   register: result
 
 - name: Issue 00512 - Create Port-List from list
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: lot-of-ports
     ports: "{{ lookup('file', 'issue-00512.txt').split('\n') }}"
   register: result
@@ -55,7 +55,7 @@
       - result is changed
 
 - name: Issue 00512 - Create Port-List from list - Idempotent check
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: lot-of-ports
     ports: "{{ lookup('file', 'issue-00512.txt').split('\n') }}"
   register: result
@@ -66,7 +66,7 @@
       - result is not changed
 
 - name: Issue 00512 - Remove Port-List from list
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: lot-of-ports
     state: absent
 
