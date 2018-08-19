@@ -63,7 +63,7 @@ options:
     choices:
       - default
       - carp
-  timeout:
+  entry_timeout:
     description:
       - Specifies the duration of the persistence entries.
       - When creating a new profile, if this parameter is not specified, the
@@ -76,6 +76,18 @@ options:
         limits will be overridden for persisted clients.
       - Per-virtual connection limits remain hard limits and are not overridden.
     type: bool
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+  state:
+    description:
+      - When C(present), ensures that the profile exists.
+      - When C(absent), ensures the profile is removed.
+    default: present
+    choices:
+      - present
+      - absent
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -146,7 +158,7 @@ class Parameters(AnsibleF5Parameters):
         'matchAcrossVirtuals': 'match_across_virtuals',
         'overrideConnectionLimit': 'override_connection_limit',
 
-        # This timeout name needs to be overriden because 'timeout' is a connection
+        # This timeout name needs to be overridden because 'timeout' is a connection
         # parameter and we don't want that to be the value that is always set here.
         'timeout': 'entry_timeout'
     }
@@ -512,7 +524,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            parent=dict(default='/Common/source_addr'),
+            parent=dict(),
             match_across_services=dict(type='bool'),
             match_across_virtuals=dict(type='bool'),
             match_across_pools=dict(type='bool'),
