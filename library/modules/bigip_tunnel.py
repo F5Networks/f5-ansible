@@ -533,7 +533,7 @@ class ModuleManager(object):
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
-                raise F5ModuleError(resp.content)
+                raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/net/tunnels/tunnel/{2}".format(
