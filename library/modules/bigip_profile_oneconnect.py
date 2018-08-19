@@ -161,7 +161,7 @@ maximum_reuse:
 idle_timeout_override:
   description: The new idle timeout override.
   returned: changed
-  type: string or int
+  type: string
   sample: disabled
 limit_type:
   description: New limit type of the profile.
