@@ -526,8 +526,8 @@ class ModuleManager(object):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+        if response.status == 200:
             return True
         if 'code' in response and response['code'] == 400:
             if 'message' in response:
