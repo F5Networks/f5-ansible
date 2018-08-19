@@ -20,7 +20,7 @@ description:
   - Manages the assignment of utility licenses on a BIG-IQ. Assignment means that
     the license is assigned to a BIG-IP, or, it needs to be assigned to a BIG-IP.
     Additionally, this module supported revoking the assignments from BIG-IP devices.
-version_added: 2.5
+version_added: 2.7
 options:
   unit_of_measure:
     description:
@@ -28,6 +28,12 @@ options:
       - Depending on your license, you may have different units of measures
         available to you. If a particular unit is not available to you, the module
         will notify you at licensing time.
+    default: hourly
+    choices:
+      - hourly
+      - daily
+      - monthly
+      - yearly
   key:
     description:
       - The registration key that you want choose an offering from.
