@@ -26,6 +26,7 @@
   vars:
     limit_to: '*'
     __metadata__:
+      upstream: yes
       version: 1.1
       tested_versions:
         - NA
