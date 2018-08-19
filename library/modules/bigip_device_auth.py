@@ -153,7 +153,7 @@ EXAMPLES = r'''
     service_name: ppp
     state: present
     use_for_auth: yes
-    provider: 
+    provider:
       password: secret
       server: lb.mydomain.com
       user: admin
@@ -172,7 +172,7 @@ EXAMPLES = r'''
     service_name: ppp
     use_for_auth: yes
     state: present
-    provider: 
+    provider:
       password: secret
       server: lb.mydomain.com
       user: admin
@@ -697,11 +697,7 @@ class TacacsManager(BaseManager):
         resp = self.client.api.delete(uri)
         if resp.status == 200:
             return True
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/auth/tacacs/~Common~system-auth".format(
