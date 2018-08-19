@@ -202,6 +202,18 @@ options:
           - You can also specify an arbitrary code.
           - The ICMP protocol contains definitions for the existing message code and
             number pairs.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+  state:
+    description:
+      - When C(state) is C(present), ensures that the rule exists.
+      - When C(state) is C(absent), ensures that the rule is removed.
+    choices:
+      - present
+      - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -1035,7 +1047,7 @@ class ArgumentSpec(object):
                 ]]
             ),
             action=dict(
-                choice=['accept', 'drop', 'reject', 'accept-decisively']
+                choices=['accept', 'drop', 'reject', 'accept-decisively']
             ),
             status=dict(
                 choices=['enabled', 'disabled', 'scheduled']
