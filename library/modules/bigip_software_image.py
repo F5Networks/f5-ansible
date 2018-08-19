@@ -30,14 +30,12 @@ options:
       - Generally should be C(yes) only in cases where you have reason
         to believe that the image was corrupted during upload.
     default: no
-    choices:
-      - yes
-      - no
+    type: bool
   state:
     description:
       - When C(present), ensures that the image is uploaded.
       - When C(absent), ensures that the image is removed.
-    default: activated
+    default: present
     choices:
       - absent
       - present
@@ -437,14 +435,14 @@ class ModuleManager(object):
             type,
             self.want.filename
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+        if response.status == 200:
             return True
         if 'code' in response and response['code'] == 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
-                raise F5ModuleError(resp.content)
+                raise F5ModuleError(response.content)
 
 
 class ArgumentSpec(object):
@@ -453,7 +451,6 @@ class ArgumentSpec(object):
         argument_spec = dict(
             force=dict(type='bool'),
             image=dict(required=True),
-            validate_image_url_certs=dict(type='bool', default='yes'),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
