@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Create a simple port list
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo1
     ports:
       - 80
@@ -16,7 +16,7 @@
       - result is changed
 
 - name: Create a simple port list - Idempotent check
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo1
     ports:
       - 80
@@ -29,7 +29,7 @@
       - result is not changed
 
 - name: Override the above list of ports with a new list
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo1
     ports:
       - 3389
@@ -43,7 +43,7 @@
       - result is changed
 
 - name: Override the above list of ports with a new list - Idempotent check
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo1
     ports:
       - 3389
@@ -57,7 +57,7 @@
       - result is not changed
 
 - name: Create port list with series of ranges
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo2
     port_ranges:
       - 25-30
@@ -71,7 +71,7 @@
       - result is changed
 
 - name: Create port list with series of ranges - Idempotent check
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo2
     port_ranges:
       - 25-30
@@ -85,7 +85,7 @@
       - result is not changed
 
 - name: Use multiple types of port arguments
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo3
     port_ranges:
       - 25-30
@@ -102,7 +102,7 @@
       - result is changed
 
 - name: Use multiple types of port arguments - Idempotent check
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo3
     port_ranges:
       - 25-30
@@ -119,7 +119,7 @@
       - result is not changed
 
 - name: Order port ranges incorrectly
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo3
     port_ranges:
       - 500-80
@@ -132,7 +132,7 @@
       - "'80-500' in result['port_ranges']"
 
 - name: Order port ranges incorrectly - Idempotent check
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: foo3
     port_ranges:
       - 500-80
@@ -144,7 +144,7 @@
       - result is not changed
 
 - name: Remove port lists
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: "{{ item }}"
     state: absent
   loop:
@@ -159,7 +159,7 @@
       - result is changed
 
 - name: Remove port list - Idempotent check
-  bigip_security_port_list:
+  bigip_firewall_port_list:
     name: "{{ item }}"
     state: absent
   loop:
