@@ -374,11 +374,7 @@ class ModuleManager(object):
         resp = self.client.api.delete(uri)
         if resp.status == 200:
             return True
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/security/firewall/rule-list/{2}/?expandSubcollections=true".format(
