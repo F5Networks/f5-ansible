@@ -337,13 +337,6 @@ port:
   returned: changed
   type: string
   sample: 80
-port:
-  description:
-    - Alias port or service for the monitor to check, on behalf of the pools or pool
-      members with which the monitor is associated.
-  returned: changed
-  type: string
-  sample: 80
 transparent:
   description: Whether the monitor operates in transparent mode.
   returned: changed
