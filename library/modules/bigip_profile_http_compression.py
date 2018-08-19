@@ -81,6 +81,18 @@ options:
       - 32
       - 64
       - 128
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+  state:
+    description:
+      - When C(present), ensures that the profile exists.
+      - When C(absent), ensures the profile is removed.
+    default: present
+    choices:
+      - present
+      - absent
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
