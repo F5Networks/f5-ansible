@@ -1,0 +1,7 @@
+---
+
+- import_tasks: setup.yaml
+
+- import_tasks: protocol-dns.yaml
+
+- import_tasks: teardown.yaml

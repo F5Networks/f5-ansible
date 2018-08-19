@@ -1,0 +1,6 @@
+---
+
+- name: Remove DoS profile
+  bigip_firewall_dos_profile:
+    name: profile1
+    state: absent
