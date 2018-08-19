@@ -1,0 +1,5 @@
+---
+
+- name: Create a new DoS profile container
+  bigip_firewall_dos_profile:
+    name: profile1
