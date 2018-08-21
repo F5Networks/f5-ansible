@@ -71,7 +71,7 @@ options:
     description:
       - Options that the system uses for SSL processing in the form of a list. When 
         creating a new profile, the list is provided by the parent profile.
-      - When an empty list is provided all options for SSL processing are disabled.
+      - When a C('') or C(none) value is provided all options for SSL processing are disabled.
     choices:
       - netscape-reuse-cipher-change-bug
       - microsoft-big-sslv3-buffer
@@ -230,6 +230,7 @@ try:
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.common import is_empty_list
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -243,6 +244,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import flatten_boolean
+    from ansible.module_utils.network.f5.common import is_empty_list
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -255,23 +257,23 @@ class Parameters(AnsibleF5Parameters):
         'defaultsFrom': 'parent',
         'allowNonSsl': 'allow_non_ssl',
         'secureRenegotiation': 'secure_renegotiation',
-        'tmOptions': 'options'
+        'tmOptions': 'options',
     }
 
     api_attributes = [
         'ciphers', 'certKeyChain',
         'defaultsFrom', 'tmOptions',
-        'secureRenegotiation', 'allowNonSsl'
+        'secureRenegotiation', 'allowNonSsl',
     ]
 
     returnables = [
         'ciphers', 'allow_non_ssl', 'options',
-        'secure_renegotiation'
+        'secure_renegotiation',
     ]
 
     updatables = [
         'ciphers', 'cert_key_chain', 'allow_non_ssl',
-        'options', 'secure_renegotiation'
+        'options', 'secure_renegotiation',
     ]
 
 
@@ -375,8 +377,8 @@ class ModuleParameters(Parameters):
         if options is None:
             return None
 
-        if options == '':
-            return options
+        if is_empty_list(options):
+            return []
 
         if set(options).issubset(set(choices)):
             return options
@@ -488,10 +490,13 @@ class Difference(object):
     def options(self):
         if self.want.options is None:
             return None
-        if self.have.options is None and self.want.options == '':
-            return None
-        if self.have.options is not None and self.want.options == '':
-            return []
+        if not self.want.options:
+            if self.have.options is None:
+                return None
+            if not self.have.options:
+                return None
+            if self.have.options is not None:
+                return self.want.options
         if self.have.options is None:
             return self.want.options
         if set(self.want.options) != set(self.have.options):
@@ -652,7 +657,7 @@ class ArgumentSpec(object):
             secure_renegotiation=dict(
                 choices=['require', 'require-strict', 'request']
             ),
-            options=dict(type=list),
+            options=dict(type='list'),
             cert_key_chain=dict(
                 type='list',
                 options=dict(
@@ -685,8 +690,9 @@ def main():
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
 
+    client = F5Client(**module.params)
+
     try:
-        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
