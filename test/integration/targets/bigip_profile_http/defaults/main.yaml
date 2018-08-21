@@ -1,0 +1,25 @@
+---
+profile_1: ansible_http_test
+profile_2: ansible_http_test_2
+profile_3: ansible_http_test_3
+profile_4: ansible_http_test_4
+profile_5: ansible_http_test_5
+description_1: Test_Information
+description_2: Changed_Information
+type_1: explicit
+type_2: transparent
+rewrite_1: all
+rewrite_2: nodes
+cookie_1:
+  - first
+  - second
+cookie_2:
+  - third
+  - fourth
+cookie_3: ''
+cookie_4: none
+secret_1: foobar
+secret_2: barfoo
+resolver_1: foo
+resolver_2: none
+resolver_3: ''

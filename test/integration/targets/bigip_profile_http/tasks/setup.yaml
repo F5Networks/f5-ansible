@@ -1,0 +1,6 @@
+---
+
+- name: Create DNS resolver
+  bigip_command:
+    commands:
+      - tmsh create net dns-resolver foo { route-domain 0 }

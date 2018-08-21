@@ -1,0 +1,371 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create HTTP profile
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+  register: result
+
+- name: Assert Create HTTP profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create HTTP profile - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+  register: result
+
+- name: Assert Create HTTP profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create HTTP profile with some parameters
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    description: "{{ description_1 }}"
+    insert_xforwarded_for: yes
+    proxy_type: "{{ type_1 }}"
+    dns_resolver: "{{ resolver_1 }}"
+    redirect_rewrite: "{{ rewrite_1 }}"
+    encrypt_cookies: "{{ cookie_1 }}"
+  register: result
+
+- name: Assert Create HTTP profile with some parameters
+  assert:
+    that:
+      - result is changed
+      - result.description == description_1
+      - result.insert_xforwarded_for == 'yes'
+      - result.proxy_type == type_1
+      - result.redirect_rewrite == rewrite_1
+      - result.encrypt_cookies == cookie_1
+      - result.dns_resolver == "/Common/foo"
+
+- name: Create HTTP profile with some parameters - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    description: "{{ description_1 }}"
+    insert_xforwarded_for: yes
+    proxy_type: "{{ type_1 }}"
+    dns_resolver: "{{resolver_1}}"
+    redirect_rewrite: "{{ rewrite_1 }}"
+    encrypt_cookies: "{{ cookie_1 }}"
+    encrypt_cookie_secret: "{{ secret_1 }}"
+    update_password: "on_create"
+  register: result
+
+- name: Assert Create HTTP profile with some parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP profile X-Forwarded-For
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    insert_xforwarded_for: no
+  register: result
+
+- name: Assert Update HTTP profile X-Forwarded-For
+  assert:
+    that:
+      - result is changed
+      - result.insert_xforwarded_for == 'no'
+
+- name: Update HTTP profile X-Forwarded-For - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    insert_xforwarded_for: no
+  register: result
+
+- name: Assert Update HTTP profile X-Forwarded-For - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP profile remove dns resolver, proxy type explicit - Expect failure
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    dns_resolver: "{{ resolver_3 }}"
+  register: result
+  ignore_errors: true
+
+- name: Update HTTP profile proxy type, remove dns resolver
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    proxy_type: "{{ type_2 }}"
+    dns_resolver: "{{ resolver_3 }}"
+  register: result
+
+- name: Assert Update HTTP profile proxy type, remove dns resolver
+  assert:
+    that:
+      - result is changed
+      - result.proxy_type == type_2
+      - result.dns_resolver == ""
+
+- name: Update HTTP profile proxy type, remove dns resolver - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    proxy_type: "{{ type_2 }}"
+    dns_resolver: "{{ resolver_3 }}"
+  register: result
+
+- name: Assert Update HTTP profile proxy type, remove dns resolver - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP profile description
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    description: "{{ description_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile description
+  assert:
+    that:
+      - result is changed
+      - result.description == description_2
+
+- name: Update HTTP profile description - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    description: "{{ description_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP profile rewrite
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    redirect_rewrite: "{{ rewrite_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile rewrite
+  assert:
+    that:
+      - result is changed
+      - result.redirect_rewrite == rewrite_2
+
+- name: Update HTTP profile rewrite - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    redirect_rewrite: "{{ rewrite_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile rewrite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP profile encrypted cookie list
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    encrypt_cookies: "{{ cookie_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile encrypted cookie list
+  assert:
+    that:
+      - result is changed
+      - result.encrypt_cookies == cookie_2
+
+- name: Update HTTP profile encrypted cookie list - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    encrypt_cookies: "{{ cookie_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile encrypted cookie list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Empty HTTP profile encrypted cookie list
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    encrypt_cookies: "{{ cookie_3 }}"
+  register: result
+
+- name: Assert Empty HTTP profile encrypted cookie list
+  assert:
+    that:
+      - result is changed
+      - result.encrypt_cookies == []
+
+- name: Empty HTTP profile encrypted cookie list - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    encrypt_cookies: "{{ cookie_3 }}"
+  register: result
+
+- name: Assert Empty HTTP profile encrypted cookie list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create HTTP profile with cookie encryption password
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    encrypt_cookie_secret: "{{ secret_1 }}"
+    update_password: on_create
+  register: result
+
+- name: Assert Create HTTP profile with cookie encryption password
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update HTTP profile - change cookie encryption password
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    encrypt_cookie_secret: "{{ secret_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile - change cookie encryption password
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change HTTP profile proxy type to explicit, dns resolver missing - Expect failure
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    proxy_type: "{{ type_1 }}"
+  register: result
+  ignore_errors: true
+
+- name: Remove HTTP profile
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove HTTP profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove HTTP profile - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove HTTP profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create HTTP profile with encrypted cookie list
+  bigip_profile_http:
+    name: "{{ profile_4 }}"
+    encrypt_cookies: "{{ cookie_2 }}"
+  register: result
+
+- name: Assert Create HTTP profile with encrypted cookie list
+  assert:
+    that:
+      - result is changed
+      - result.encrypt_cookies == cookie_2
+
+- name: Create HTTP profile with encrypted cookie list - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_4 }}"
+    encrypt_cookies: "{{ cookie_2 }}"
+  register: result
+
+- name: Assert Create HTTP profile with encrypted cookie list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Empty HTTP profile encrypted cookie list using 'none'
+  bigip_profile_http:
+    name: "{{ profile_4 }}"
+    encrypt_cookies: "{{ cookie_4 }}"
+  register: result
+
+- name: Assert Empty HTTP profile encrypted cookie list using 'none'
+  assert:
+    that:
+      - result is changed
+      - result.encrypt_cookies == []
+
+- name: Empty HTTP profile encrypted cookie list using 'none' - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_4 }}"
+    encrypt_cookies: "{{ cookie_4 }}"
+  register: result
+
+- name: Assert Empty HTTP profile encrypted cookie list using 'none' - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create HTTP profile with explicit proxy type
+  bigip_profile_http:
+    name: "{{ profile_5 }}"
+    proxy_type: "{{ type_1 }}"
+    dns_resolver: foo
+  register: result
+
+- name: Update HTTP profile, change proxy type and remove resolver with 'none'
+  bigip_profile_http:
+    name: "{{ profile_5 }}"
+    proxy_type: "{{ type_2 }}"
+    dns_resolver: "{{ resolver_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile, change proxy type and remove resolver with 'none'
+  assert:
+    that:
+      - result is changed
+      - result.proxy_type == type_2
+      - result.dns_resolver == ""
+
+- name: Update HTTP profile, change proxy type and remove resolver with 'none' - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_5 }}"
+    proxy_type: "{{ type_2 }}"
+    dns_resolver: "{{ resolver_2 }}"
+  register: result
+
+- name: Assert Update HTTP profile, change proxy type and remove resolver with 'none' - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+- name: Remove profiles
+  bigip_profile_http:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ profile_2 }}"
+    - "{{ profile_3 }}"
+    - "{{ profile_4 }}"
+    - "{{ profile_5 }}"
+
+- import_tasks: teardown.yaml
