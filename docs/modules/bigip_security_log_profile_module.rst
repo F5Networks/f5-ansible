@@ -25,7 +25,7 @@ Requirements
 ~~~~~~~~~~~~
 The below requirements are needed on the host that executes this module.
 
-- f5-sdk >= 3.0.16
+- f5-sdk >= 3.0.9
 
 
 Parameters
@@ -36,13 +36,13 @@ Parameters
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                     
                                                                                                                                                                 
-                                                                                                                                                                                                                                                            
-                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                            
                                                                                                                                                                 
                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                
                                                                                                                                                                 
-                                    
+                                                                                                                                                                
+                                                                                                                                                                
+                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                     <tr>
             <th colspan="3">Parameter</th>
@@ -94,6 +94,17 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
+                    <b>publisher</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the log publisher used for IP Intelligence events.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
                     <b>log_translation_fields</b>
                                                         </td>
                                 <td>
@@ -105,17 +116,6 @@ Parameters
                                                                 <td>
                                                                         <div>This option is used to enable or disable the logging of translated (i.e server side) fields in IP Intelligence log messages.</div>
                                                     <div>Translated fields include (but are not limited to) source address/port, destination address/port, IP protocol, route domain, and VLAN.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>publisher</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of the log publisher used for IP Intelligence events.</div>
                                                                                 </td>
             </tr>
                     
@@ -142,47 +142,6 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
-                    <b>log_tcp_events</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                                                    </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>This option is used to enable or disable the logging of TCP events on the client side.</div>
-                                                    <div>Only &#x27;Established&#x27; and &#x27;Closed&#x27; states of a TCP session are logged if this option is enabled.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>rate_limit</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>This option is used to set rate limits for the logging of TCP events on client side.</div>
-                                                    <div>This option is effective only if logging of this message type is enabled.</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
                     <b>publisher</b>
                                                         </td>
                                 <td>
@@ -194,7 +153,7 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
-                    <b>log_tcp_errors</b>
+                    <b>log_matches_accept_rule</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
@@ -214,7 +173,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>This option is used to enable or disable the logging of TCP error packets.</div>
+                                                                        <div>This option is used to enable or disable the logging of packets that match ACL rules configured with an &quot;accept&quot; or &quot;accept decisively&quot; action.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -226,7 +185,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>This option is used to set rate limits for the logging of TCP error packets.</div>
+                                                                        <div>This option is used to set rate limits for the logging of packets that match ACL rules configured with an &quot;accept&quot; or &quot;accept decisively&quot; action.</div>
                                                     <div>This option is effective only if logging of this message type is enabled.</div>
                                                                                 </td>
             </tr>
@@ -274,6 +233,46 @@ Parameters
                                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
+                    <b>log_matches_reject_rule</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                                                    </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>enabled</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>This option is used to enable or disable the logging of packets that match ACL rules configured with a reject action.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>rate_limit</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>This option is used to set rate limits for the logging of packets that match ACL rules configured with a reject action.</div>
+                                                    <div>This option is effective only if logging of this message type is enabled.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
                     <b>log_ip_errors</b>
                                                         </td>
                                 <td>
@@ -307,6 +306,87 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>This option is used to set rate limits for the logging of IP error packets.</div>
+                                                    <div>This option is effective only if logging of this message type is enabled.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>log_tcp_errors</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                                                    </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>enabled</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>This option is used to enable or disable the logging of TCP error packets.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>rate_limit</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>This option is used to set rate limits for the logging of TCP error packets.</div>
+                                                    <div>This option is effective only if logging of this message type is enabled.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>log_tcp_events</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                                                    </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>enabled</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>This option is used to enable or disable the logging of TCP events on the client side.</div>
+                                                    <div>Only &#x27;Established&#x27; and &#x27;Closed&#x27; states of a TCP session are logged if this option is enabled.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>rate_limit</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>This option is used to set rate limits for the logging of TCP events on client side.</div>
                                                     <div>This option is effective only if logging of this message type is enabled.</div>
                                                                                 </td>
             </tr>
@@ -407,87 +487,7 @@ Parameters
                                                     <div>The order of the list is important as the server displays the selected traffic items in the log sequentially according to it.</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>log_matches_reject_rule</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                                                    </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>This option is used to enable or disable the logging of packets that match ACL rules configured with a reject action.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>rate_limit</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>This option is used to set rate limits for the logging of packets that match ACL rules configured with a reject action.</div>
-                                                    <div>This option is effective only if logging of this message type is enabled.</div>
-                                                                                </td>
-            </tr>
                     
-                                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>log_matches_accept_rule</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                                                    </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>This option is used to enable or disable the logging of packets that match ACL rules configured with an &quot;accept&quot; or &quot;accept decisively&quot; action.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>rate_limit</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>This option is used to set rate limits for the logging of packets that match ACL rules configured with an &quot;accept&quot; or &quot;accept decisively&quot; action.</div>
-                                                    <div>This option is effective only if logging of this message type is enabled.</div>
-                                                                                </td>
-            </tr>
-                    
-                                    
                                                 <tr>
                                                                 <td colspan="3">
                     <b>partition</b>
@@ -506,8 +506,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
             </tr>
@@ -516,8 +515,7 @@ Parameters
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">None</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>A dict object containing connection details.</div>
                                                                                 </td>
@@ -525,13 +523,62 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
-                    <b>ssh_keyfile</b>
-                                                        </td>
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
+                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>server</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>server_port</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>user</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>validate_certs</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -549,67 +596,12 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
-                    <b>server</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The BIG-IP host.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>server_port</b>
+                    <b>ssh_keyfile</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The BIG-IP server port.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>validate_certs</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -635,8 +627,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The BIG-IP host.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                        <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -647,8 +638,7 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">443</div>
                                     </td>
                                                                 <td>
-                                                                        <div>The BIG-IP server port.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
+                                                                        <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -673,8 +663,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -682,14 +671,13 @@ Parameters
                     <b>validate_certs</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
                                 <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                        <ul><b>Choices:</b>
                                                                                                                                                                 <li>no</li>
                                                                                                                                                                                                 <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
+                                                                        <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -702,7 +690,6 @@ Notes
 .. note::
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
-    - Requires BIG-IP software version >= 12.
 
 
 Examples

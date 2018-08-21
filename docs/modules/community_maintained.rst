@@ -75,6 +75,7 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_pool_member_module`
   * :ref:`bigip_profile_client_ssl_module`
   * :ref:`bigip_profile_dns_module`
+  * :ref:`bigip_profile_http_module`
   * :ref:`bigip_profile_http_compression_module`
   * :ref:`bigip_profile_oneconnect_module`
   * :ref:`bigip_profile_persistence_src_addr_module`
