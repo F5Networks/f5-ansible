@@ -37,7 +37,7 @@ def module_(c):
 
 @task
 def build(c):
-    with c.cd("docs"):
+    with c.cd("{0}/docs".format(BASE_DIR)):
         c.run("rm -rf _build")
         c.run("make html")
 

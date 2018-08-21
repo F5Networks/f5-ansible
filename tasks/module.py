@@ -7,8 +7,11 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+import hashlib
 import os
 import sys
+import tarfile
+import yaml
 
 from .lib.common import BASE_DIR
 
@@ -103,3 +106,57 @@ def upstream(c, module):
     c.run(' '.join(cmd))
 
     print("Copy complete")
+
+
+@task
+def md5_update(c, branch=None):
+    branches = [
+        '2.4.0.0',
+        '2.4.1.0',
+        '2.4.2.0',
+        '2.4.3.0',
+        '2.4.4.0',
+        '2.4.5.0',
+        '2.4.6.0',
+        '2.5.0',
+        '2.5.1',
+        '2.5.2',
+        '2.5.3',
+        '2.5.4',
+        '2.5.5',
+        '2.5.6',
+        '2.5.7',
+        '2.5.8',
+        '2.6.0',
+        '2.6.1',
+        '2.6.2',
+        '2.6.3',
+    ]
+
+    work_dir = '{0}/tmp/ansible-hashes'.format(BASE_DIR)
+    c.run('mkdir -p {0}'.format(work_dir))
+    results = dict()
+    with c.cd(work_dir):
+        for branch in branches:
+            c.run('pip download --exists-action=i --no-deps --no-binary --progress-bar=off ansible=={0}'.format(branch))
+            tar = tarfile.open("{0}/ansible-{1}.tar.gz".format(work_dir, branch), "r:gz")
+            results[branch] = []
+            for member in tar.getmembers():
+                if 'lib/ansible/modules/network/f5/' not in member.name:
+                    continue
+                if member.name.endswith('__init__.py'):
+                    continue
+                if 'iworkflow' in member.name:
+                    continue
+
+                hash_md5 = hashlib.md5()
+                f = tar.extractfile(member)
+                for chunk in iter(lambda: f.read(4096), b""):
+                    hash_md5.update(chunk)
+                results[branch].append(dict(
+                    name=os.path.basename(member.name),
+                    hash=hash_md5.hexdigest())
+                )
+            tar.close()
+        with open('{0}/docs/data/hashes.yaml'.format(BASE_DIR), 'w') as outfile:
+            yaml.dump(results, outfile, default_flow_style=False)
