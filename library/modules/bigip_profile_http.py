@@ -37,15 +37,15 @@ options:
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     choices:
-        - reverse
-        - transparent
-        - explicit
+      - reverse
+      - transparent
+      - explicit
   dns_resolver:
     description:
       - Specifies the name of a configured DNS resolver, this option is mandatory when C(proxy_type)
         is set to C(explicit).
-      - Format of the name can be either be prepended by partition: C(/Common/foo) ,or specified
-        just as an object name: C(foo).
+      - Format of the name can be either be prepended by partition (C(/Common/foo)), or specified
+        just as an object name (C(foo)).
       - To remove the entry a value of C(none) or C('') can be set, however the profile C(proxy_type) 
         must not be set as C(explicit).       
   insert_xforwarded_for: 
@@ -161,7 +161,7 @@ dns_resolver:
   type: string
   sample: '/Common/FooBar'
 '''
-import q
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
@@ -197,7 +197,7 @@ class Parameters(AnsibleF5Parameters):
         'encryptCookies': 'encrypt_cookies',
         'encryptCookieSecret': 'encrypt_cookie_secret',
         'proxyType': 'proxy_type',
-        'explicitProxy': 'explicit_proxy'
+        'explicitProxy': 'explicit_proxy',
 
     }
 
@@ -209,7 +209,7 @@ class Parameters(AnsibleF5Parameters):
         'encryptCookies',
         'encryptCookieSecret',
         'proxyType',
-        'explicitProxy'
+        'explicitProxy',
     ]
 
     returnables = [
@@ -230,7 +230,7 @@ class Parameters(AnsibleF5Parameters):
         'encrypt_cookies',
         'encrypt_cookie_secret',
         'proxy_type',
-        'dns_resolver'
+        'dns_resolver',
     ]
 
 
