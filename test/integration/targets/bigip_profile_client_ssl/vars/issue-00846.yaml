@@ -23,6 +23,8 @@ opt_4:
   - foo
   - bar
 
+opt_5: none
+
 renegotiate_1: request
 renegotiate_2: require-strict
 
