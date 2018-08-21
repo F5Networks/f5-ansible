@@ -46,6 +46,18 @@ options:
       - low
       - medium
       - high
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+  state:
+    description:
+      - When C(present), ensures that the resource exists.
+      - When C(absent), ensures the resource is removed.
+    default: present
+    choices:
+      - present
+      - absent
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -376,11 +388,7 @@ class ModuleManager(object):
         resp = self.client.api.delete(uri)
         if resp.status == 200:
             return True
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}".format(
