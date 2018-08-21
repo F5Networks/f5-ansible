@@ -1,14 +1,14 @@
-:source: bigiq_regkey_license.py
+:source: bigip_profile_http.py
 
 :orphan:
 
-.. _bigiq_regkey_license_module:
+.. _bigip_profile_http_module:
 
 
-bigiq_regkey_license - Manages licenses in a BIG-IQ registration key pool
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_http - Manage HTTP profiles on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.7
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigiq_regkey_license - Manages licenses in a BIG-IQ registration key pool
 
 Synopsis
 --------
-- Manages licenses in a BIG-IQ registration key pool.
+- Manage HTTP profiles on a BIG-IP.
 
 
 
@@ -25,7 +25,6 @@ Requirements
 ~~~~~~~~~~~~
 The below requirements are needed on the host that executes this module.
 
-- BIG-IQ >= 5.3.0
 - f5-sdk >= 3.0.9
 
 
@@ -35,15 +34,60 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>accept_eula</b>
+                    <b>description</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Description of the profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>dns_resolver</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of a configured DNS resolver, this option is mandatory when <code>proxy_type</code> is set to <code>explicit</code>.</div>
+                                                    <div>Format of the name can be either be prepended by partition (<code>/Common/foo</code>), or specified just as an object name (<code>foo</code>).</div>
+                                                    <div>To remove the entry a value of <code>none</code> or <code>&#x27;&#x27;</code> can be set, however the profile <code>proxy_type</code> must not be set as <code>explicit</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>encrypt_cookie_secret</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Passphrase for cookie encryption.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>encrypt_cookies</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Cookie names for the system to encrypt.</div>
+                                                    <div>To remove the entry completely a value of <code>none</code> or <code>&#x27;&#x27;</code> should be set.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>insert_xforwarded_for</b>
                                                         </td>
                                 <td>
                                                                                                                                                                         <ul><b>Choices:</b>
@@ -52,29 +96,29 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>A key that signifies that you accept the F5 EULA for this license.</div>
-                                                    <div>A copy of the EULA can be found here https://askf5.f5.com/csp/article/K12902</div>
-                                                    <div>This is required when <code>state</code> is <code>present</code>.</div>
+                                                                        <div>When specified system inserts an X-Forwarded-For header in an HTTP request with the client IP address, to use with connection pooling.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>description</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Description of the license.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>license_key</b>
+                    <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The license key to put in the pool.</div>
+                                                                        <div>Specifies the name of the profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>parent</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the profile from which this profile inherits settings.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>http</code> profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -200,13 +244,39 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>regkey_pool</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>proxy_type</b>
+                                                        </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>reverse</li>
+                                                                                                                                                                                                <li>transparent</li>
+                                                                                                                                                                                                <li>explicit</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>The registration key pool that you want to place the license in.</div>
-                                                    <div>You must be mindful to name your registration pools unique names. While BIG-IQ does not require this, this module does. If you do not do this, the behavior of the module is undefined and you may end up putting licenses in the wrong registration key pool.</div>
+                                                                        <div>Specifies the proxy mode for the profile,</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>redirect_rewrite</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>none</li>
+                                                                                                                                                                                                <li>all</li>
+                                                                                                                                                                                                <li>matching</li>
+                                                                                                                                                                                                <li>nodes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the system rewrites the URIs that are part of HTTP redirect (3XX) responses.</div>
+                                                    <div>When set to <code>none</code> the system will not rewrite the URI in any HTTP redirect responses.</div>
+                                                    <div>When set to <code>all</code> the system rewrites the URI in all HTTP redirect responses.</div>
+                                                    <div>When set to <code>matching</code> the system rewrites the URI in any HTTP redirect responses that match the request URI.</div>
+                                                    <div>When set to <code>nodes</code> if the URI contains a node IP address instead of a host name, the system changes it to the virtual server address.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -232,18 +302,17 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>state</b>
+                    <b>update_password</b>
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>absent</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>on_create</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>The state of the regkey license in the pool on the system.</div>
-                                                    <div>When <code>present</code>, guarantees that the license exists in the pool.</div>
-                                                    <div>When <code>absent</code>, removes the license from the pool.</div>
+                                                                        <div><code>always</code> will update passwords if the <code>encrypt_cookie_secret</code> is specified.</div>
+                                                    <div><code>on_create</code> will only set the password for newly created profiles.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -288,25 +357,33 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Add a registration key license to a pool
-      bigiq_regkey_license:
-        regkey_pool: foo-pool
-        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-        accept_eula: yes
+    - name: Create HTTP profile
+      bigip_profile_http:
+        name: my_profile
         password: secret
         server: lb.mydomain.com
+        insert_xforwarded_for: yes
+        redirect_rewrite: all
         state: present
         user: admin
       delegate_to: localhost
-
-    - name: Remove a registration key license from a pool
-      bigiq_regkey_license:
-        regkey_pool: foo-pool
-        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-        password: secret
-        server: lb.mydomain.com
+      
+    - name: Remove HTTP profile
+      bigip_profile_http:
+        name: my_profile
         state: absent
+        server: lb.mydomain.com
         user: admin
+        password: secret
+      delegate_to: localhost
+
+    - name: Add HTTP profile for transparent proxy
+      bigip_profile_http:
+        name: my_profile
+        server: lb.mydomain.com
+        user: admin
+        proxy_type: transparent
+        password: secret
       delegate_to: localhost
 
 
@@ -319,7 +396,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                        <tr>
+                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -331,10 +408,75 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new description of the license key.</div>
+                                            <div>Description of the profile.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My license for BIG-IP 1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My profile</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>dns_resolver</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Configured dns resolver.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/FooBar</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>encrypt_cookies</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Cookie names to encrypt.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;MyCookie1&#x27;, &#x27;MyCookie2&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>insert_xforwarded_for</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Insert X-Forwarded-For-Header.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>proxy_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specify proxy mode of the profile.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">explicit</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>redirect_rewrite</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Rewrite URI that are part of 3xx responses.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">all</div>
                                     </td>
             </tr>
                         </table>
@@ -354,5 +496,5 @@ This module is **preview** which means that it is not guaranteed to have a backw
 Author
 ~~~~~~
 
-- Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 
