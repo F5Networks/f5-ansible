@@ -1,0 +1,192 @@
+- name: Issue 00879 - Create iApp f5.citrix_vdi service from iApp template
+  bigip_iapp_service:
+    name: iapp1
+    template: f5.diameter
+    parameters:
+      lists:
+        - name: irules__irules
+          encrypted: no
+      tables:
+        - name: basic__snatpool_members
+        - name: server_pools__servers
+        - name: vs_pool__pool_members
+          columnNames:
+            - addr
+            - port
+            - conn_limit
+          rows:
+            - row:
+                - ""
+                - 3868
+                - 0
+        - name: vs_pool__snatpool_members
+      variables:
+        - name: app_health__frequency
+          encrypted: no
+          value: 30
+        - name: app_health__monitor
+          encrypted: no
+          value: /#create_new#
+        - name: basic__advanced_mode
+          encrypted: no
+          value: yes
+        - name: basic__display_help
+          encrypted: no
+          value: hide
+        - name: basic__protocol_new
+          encrypted: no
+          value: tcp
+        - name: client_opt__tcp_opt
+          encrypted: no
+          value: /#wan#
+        - name: security__mode
+          encrypted: no
+          value: no_ssl
+        - name: server_opt__tcp_opt
+          encrypted: no
+          value: /#lan#
+        - name: vs_pool__bigip_route
+          encrypted: no
+          value: no
+        - name: vs_pool__lb_method_choice
+          encrypted: no
+          value: round-robin
+        - name: vs_pool__persistence
+          encrypted: no
+          value: /#do_not_use#
+        - name: vs_pool__pool_to_use
+          encrypted: no
+          value: /#create_new#
+        - name: vs_pool__same_subnet
+          encrypted: no
+          value: no
+        - name: vs_pool__server_initiated_messages
+          encrypted: no
+          value: no
+        - name: vs_pool__slow_ramp_setvalue
+          encrypted: no
+          value: 300
+        - name: vs_pool__snat_type
+          encrypted: no
+          value: automap
+        - name: vs_pool__tcp_req_queueing
+          encrypted: no
+          value: no
+        - name: vs_pool__use_pga
+          encrypted: no
+          value: no
+        - name: vs_pool__use_slow_ramp
+          encrypted: no
+          value: yes
+        - name: vs_pool__vs_addr
+          encrypted: no
+          value: 3.3.3.3
+        - name: vs_pool__vs_port
+          encrypted: no
+          value: 3868
+  register: result
+
+- name: Issue 00879 - Assert Create iApp f5.citrix_vdi service from iApp template
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00879 - Create iApp f5.citrix_vdi service from iApp template - Idempotent check
+  bigip_iapp_service:
+    name: iapp1
+    template: f5.diameter
+    parameters:
+      lists:
+        - name: irules__irules
+          encrypted: no
+      tables:
+        - name: basic__snatpool_members
+        - name: server_pools__servers
+        - name: vs_pool__pool_members
+          columnNames:
+            - addr
+            - port
+            - conn_limit
+          rows:
+            - row:
+                - ""
+                - 3868
+                - 0
+        - name: vs_pool__snatpool_members
+      variables:
+        - name: app_health__frequency
+          encrypted: no
+          value: 30
+        - name: app_health__monitor
+          encrypted: no
+          value: /#create_new#
+        - name: basic__advanced_mode
+          encrypted: no
+          value: yes
+        - name: basic__display_help
+          encrypted: no
+          value: hide
+        - name: basic__protocol_new
+          encrypted: no
+          value: tcp
+        - name: client_opt__tcp_opt
+          encrypted: no
+          value: /#wan#
+        - name: security__mode
+          encrypted: no
+          value: no_ssl
+        - name: server_opt__tcp_opt
+          encrypted: no
+          value: /#lan#
+        - name: vs_pool__bigip_route
+          encrypted: no
+          value: no
+        - name: vs_pool__lb_method_choice
+          encrypted: no
+          value: round-robin
+        - name: vs_pool__persistence
+          encrypted: no
+          value: /#do_not_use#
+        - name: vs_pool__pool_to_use
+          encrypted: no
+          value: /#create_new#
+        - name: vs_pool__same_subnet
+          encrypted: no
+          value: no
+        - name: vs_pool__server_initiated_messages
+          encrypted: no
+          value: no
+        - name: vs_pool__slow_ramp_setvalue
+          encrypted: no
+          value: 300
+        - name: vs_pool__snat_type
+          encrypted: no
+          value: automap
+        - name: vs_pool__tcp_req_queueing
+          encrypted: no
+          value: no
+        - name: vs_pool__use_pga
+          encrypted: no
+          value: no
+        - name: vs_pool__use_slow_ramp
+          encrypted: no
+          value: yes
+        - name: vs_pool__vs_addr
+          encrypted: no
+          value: 3.3.3.3
+        - name: vs_pool__vs_port
+          encrypted: no
+          value: 3868
+  register: result
+
+- name: Issue 00879 - Assert Create iApp f5.citrix_vdi service from iApp template - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00879 - Remove iApp
+  bigip_iapp_service:
+    name: iapp1
+    state: absent
