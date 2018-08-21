@@ -80,28 +80,31 @@
     that:
       - result is not changed
 
-- name: Issue 00846 - Create a client SSL profile with renegotiation and non ssl
+- name: Issue 00846 - Create a client SSL profile with renegotiation, non ssl and options
   bigip_profile_client_ssl:
     name: "{{ profile_2 }}"
     allow_non_ssl: yes
     secure_renegotiation: "{{ renegotiate_1 }}"
+    options: "{{ opt_1 }}"
   register: result
 
-- name: Issue 00846 - Assert Create a client SSL profile with renegotiation and non ssl
+- name: Issue 00846 - Assert Create a client SSL profile with renegotiation, non ssl and options
   assert:
     that:
       - result is changed
       - result.allow_non_ssl == 'yes'
       - result.secure_renegotiation == renegotiate_1
+      - result.options == opt_1
 
-- name: Issue 00846 - Create a client SSL profile with renegotiation and non ssl - Idempotent check
+- name: Issue 00846 - Create a client SSL profile with renegotiation, non ssl and options - Idempotent check
   bigip_profile_client_ssl:
     name: "{{ profile_2 }}"
     allow_non_ssl: yes
     secure_renegotiation: "{{ renegotiate_1 }}"
+    options: "{{ opt_1 }}"
   register: result
 
-- name: Issue 00846 - Assert Create a client SSL profile with renegotiation and non ssl - Idempotent check
+- name: Issue 00846 - Assert Create a client SSL profile with renegotiation, non ssl and options - Idempotent check
   assert:
     that:
       - result is not changed
@@ -132,14 +135,34 @@
     that:
       - result is not changed
 
-- name: Issue 00846 - Remove first client SSL profile
-  bigip_profile_client_ssl:
-    name: "{{ profile }}"
-    state: absent
-  register: result
-
-- name: Issue 00846 - Remove second client SSL profile
+- name: Issue 00846 - Modify client SSL profile disable options using none
   bigip_profile_client_ssl:
     name: "{{ profile_2 }}"
-    state: absent
+    options: "{{ opt_5 }}"
   register: result
+
+- name: Issue 00846 - Assert Modify client SSL profile disable options using none
+  assert:
+    that:
+      - result is changed
+      - result.options == []
+
+- name: Issue 00846 - Modify client SSL profile disable options using none - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    options: "{{ opt_5 }}"
+  register: result
+
+- name: Issue 00846 - Assert Modify client SSL profile disable options using none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove profiles
+  bigip_profile_client_ssl:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ profile }}"
+    - "{{ profile_2 }}"
+
