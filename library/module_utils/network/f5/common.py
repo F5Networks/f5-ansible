@@ -109,6 +109,13 @@ def load_params(params):
                 params[key] = value
 
 
+def is_empty_list(seq):
+    if len(seq) == 1:
+        if seq[0] == '' or seq[0] == 'none':
+            return True
+    return False
+
+
 # Fully Qualified name (with the partition)
 def fqdn_name(partition, value):
     """This method is not used
