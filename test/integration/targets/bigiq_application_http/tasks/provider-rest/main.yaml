@@ -171,7 +171,7 @@
       - result is success
       - "'must be specified when creating a new application.' in result['msg']"
 
-- name: Load balance an HTTP application on port 80 on BIG-IP - default device
+- name: Load balance an HTTP application on port 80 on BIG-IP - default device - Provider
   bigiq_application_http:
     name: "{{ app_name }}"
     description: Load balance HTTP
@@ -193,13 +193,13 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Load balance an HTTP application on port 80 on BIG-IP - default device
+- name: Assert Load balance an HTTP application on port 80 on BIG-IP - default device - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Load balance an HTTP application on port 80 on BIG-IP - default device - Idempotent check
+- name: Load balance an HTTP application on port 80 on BIG-IP - default device - Provider - Idempotent check
   bigiq_application_http:
     name: "{{ app_name }}"
     description: Load balance HTTP
@@ -221,7 +221,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Load balance an HTTP application on port 80 on BIG-IP - default device - Idempotent check
+- name: Assert Load balance an HTTP application on port 80 on BIG-IP - default device - Provider - Idempotent check
   assert:
     that:
       - result is not changed
