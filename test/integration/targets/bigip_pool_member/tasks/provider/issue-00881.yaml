@@ -1,0 +1,81 @@
+---
+
+- name: Issue 00881 - Create a pool
+  bigip_pool:
+    name: pool1
+    lb_method: round-robin
+    provider: "{{ provider }}"
+
+- name: Issue 00881 - Create pool member
+  bigip_pool_member:
+    pool: pool1
+    name: google.com
+    fqdn: google.com
+    port: 80
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00881 - Assert Create pool member
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00881 - Create pool member - Idempotent check
+  bigip_pool_member:
+    pool: pool1
+    name: google.com
+    fqdn: google.com
+    port: 80
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00881 - Assert Create pool member - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00881 - Disable FQDN pool member
+  bigip_pool_member:
+    pool: pool1
+    name: google.com
+    port: 80
+    state: disabled
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00881 - Assert Disable FQDN pool member
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00881 - Disable FQDN pool member - Idempotent check
+  bigip_pool_member:
+    pool: pool1
+    name: google.com
+    port: 80
+    state: disabled
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00881 - Assert Disable FQDN pool member - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove pool member
+  bigip_pool_member:
+    pool: pool1
+    name: google.com
+    port: 80
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 00881 - Remove pool
+  bigip_pool:
+    name: pool1
+    state: absent
+    provider: "{{ provider }}"
