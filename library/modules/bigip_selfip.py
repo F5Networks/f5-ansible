@@ -416,7 +416,7 @@ class ApiParameters(Parameters):
         try:
             pattern = r'(?P<rd>%[0-9]+)'
             addr = re.sub(pattern, '', self._values['address'])
-            ip = ip_interface(addr)
+            ip = ip_interface(u'{0}'.format(addr))
             return ip.with_prefixlen
         except ValueError:
             raise F5ModuleError(
