@@ -8,3 +8,6 @@
 
 - import_tasks: issue-00823.yaml
   tags: issue-00823
+
+- import_tasks: issue-00881.yaml
+  tags: issue-00881
