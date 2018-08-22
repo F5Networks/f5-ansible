@@ -28,12 +28,13 @@ options:
       - Specifies the profile from which this profile inherits settings.
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(http) profile.
+    default: /Common/http
   description:
     description:
       - Description of the profile.
   proxy_type:
     description:
-      - Specifies the proxy mode for the profile, 
+      - Specifies the proxy mode for the profile.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     choices:
@@ -46,25 +47,25 @@ options:
         is set to C(explicit).
       - Format of the name can be either be prepended by partition (C(/Common/foo)), or specified
         just as an object name (C(foo)).
-      - To remove the entry a value of C(none) or C('') can be set, however the profile C(proxy_type) 
-        must not be set as C(explicit).       
-  insert_xforwarded_for: 
+      - To remove the entry a value of C(none) or C('') can be set, however the profile C(proxy_type)
+        must not be set as C(explicit).
+  insert_xforwarded_for:
     description:
-      - When specified system inserts an X-Forwarded-For header in an HTTP request 
+      - When specified system inserts an X-Forwarded-For header in an HTTP request
         with the client IP address, to use with connection pooling.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: bool
   redirect_rewrite:
     description:
-      - Specifies whether the system rewrites the URIs that are part of HTTP 
+      - Specifies whether the system rewrites the URIs that are part of HTTP
         redirect (3XX) responses.
-      - When set to C(none) the system will not rewrite the URI in any 
+      - When set to C(none) the system will not rewrite the URI in any
         HTTP redirect responses.
       - When set to C(all) the system rewrites the URI in all HTTP redirect responses.
-      - When set to C(matching) the system rewrites the URI in any 
+      - When set to C(matching) the system rewrites the URI in any
         HTTP redirect responses that match the request URI.
-      - When set to C(nodes) if the URI contains a node IP address instead of a host name, 
+      - When set to C(nodes) if the URI contains a node IP address instead of a host name,
         the system changes it to the virtual server address.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
@@ -76,7 +77,7 @@ options:
   encrypt_cookies:
     description:
       - Cookie names for the system to encrypt.
-      - To remove the entry completely a value of C(none) or C('') should be set.  
+      - To remove the entry completely a value of C(none) or C('') should be set.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: list
@@ -92,7 +93,19 @@ options:
     default: always
     choices:
       - always
-      - on_create       
+      - on_create
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+  state:
+    description:
+      - When C(present), ensures that the profile exists.
+      - When C(absent), ensures the profile is removed.
+    default: present
+    choices:
+      - present
+      - absent
 extends_documentation_fragment: f5
 author:
   - Wojciech Wypior (@wojtek0806)
@@ -109,7 +122,7 @@ EXAMPLES = r'''
     state: present
     user: admin
   delegate_to: localhost
-  
+
 - name: Remove HTTP profile
   bigip_profile_http:
     name: my_profile
@@ -615,18 +628,21 @@ class ArgumentSpec(object):
             description=dict(),
             proxy_type=dict(
                 choices=[
-                    'reverse', 'transparent',
+                    'reverse',
+                    'transparent',
                     'explicit'
-                    ]
-                ),
+                ]
+            ),
             dns_resolver=dict(),
             insert_xforwarded_for=dict(type='bool'),
             redirect_rewrite=dict(
                 choices=[
-                    'none', 'all', 'matching',
+                    'none',
+                    'all',
+                    'matching',
                     'nodes'
-                    ]
-                ),
+                ]
+            ),
             encrypt_cookies=dict(type='list'),
             encrypt_cookie_secret=dict(no_log=True),
             update_password=dict(
