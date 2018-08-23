@@ -206,6 +206,8 @@ from ansible.module_utils.network.common.utils import ComplexList
 from ansible.module_utils.network.common.utils import to_list
 from ansible.module_utils.six import string_types
 from collections import deque
+from f5.sdk_exception import LazyAttributesRequired
+
 
 try:
     from library.module_utils.network.f5.bigip import HAS_F5SDK
@@ -635,6 +637,10 @@ class V2Manager(BaseManager):
                     responses.append(output.strip())
             except F5ModuleError:
                 raise
+            except LazyAttributesRequired:
+                # This can happen if there is no "commandResult" attribute in
+                # the output variable above.
+                pass
         return responses
 
 
