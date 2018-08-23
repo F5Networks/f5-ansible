@@ -32,6 +32,7 @@ options:
   description:
     description:
       - The description of the monitor.
+    version_added: 2.7
   send:
     description:
       - The send string for the monitor call.

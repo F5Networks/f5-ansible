@@ -32,6 +32,7 @@ options:
   description:
     description:
       - The description of the monitor.
+    version_added: 2.7
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not

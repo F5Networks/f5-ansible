@@ -28,10 +28,11 @@ options:
       - The parent template of this monitor template. Once this value has
         been set, it cannot be changed. By default, this value is the C(udp)
         parent on the C(Common) partition.
-    default: "/Common/udp"
+    default: /Common/udp
   description:
     description:
       - The description of the monitor.
+    version_added: 2.7
   send:
     description:
       - The send string for the monitor call. When creating a new monitor, if
