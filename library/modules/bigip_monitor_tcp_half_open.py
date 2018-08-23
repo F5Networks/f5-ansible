@@ -28,10 +28,11 @@ options:
       - The parent template of this monitor template. Once this value has
         been set, it cannot be changed. By default, this value is the C(tcp_half_open)
         parent on the C(Common) partition.
-    default: "/Common/tcp_half_open"
+    default: /Common/tcp_half_open
   description:
     description:
       - The description of the monitor.
+    version_added: 2.7
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
