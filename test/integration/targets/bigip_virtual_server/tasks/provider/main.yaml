@@ -1,0 +1,4 @@
+---
+
+- import_tasks: issue-00882.yaml
+  tags: issue-00882
