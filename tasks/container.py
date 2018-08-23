@@ -36,6 +36,13 @@ def df(c):
 
 @task
 def container_update(c):
+    """Pull containers from registry and update locally
+
+    This command will pull containers from the remote registry using the docker-compose
+    files that exist 1. In this repository and 2. In your home directory (for site specific
+    configuration).
+    """
+
     init()
     cmd = [
         'docker-compose', '-f', '{0}/devtools/docker-compose.yaml'.format(BASE_DIR),
@@ -47,6 +54,16 @@ def container_update(c):
 
 @task(help={'python': "Python version to use in container."})
 def run(c, python='3.6'):
+    """Start a container running a specific version of Python
+
+    Args:
+        c:
+        python: The python version that you want to run. This determines
+                the container that is used.
+
+    Returns:
+
+    """
     if str(python) not in AVAILABLE_PYTHON:
         print("The specified --python value is not in the allowed list")
         print("Allowed values are {0}".format(', '.join(AVAILABLE_PYTHON)))
