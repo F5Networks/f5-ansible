@@ -956,5 +956,6 @@ def main():
         cleanup_tokens(client)
         module.fail_json(msg=str(ex))
 
+
 if __name__ == '__main__':
     main()
