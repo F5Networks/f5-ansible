@@ -69,7 +69,7 @@ options:
     version_added: 2.5
   options:
     description:
-      - Options that the system uses for SSL processing in the form of a list. When 
+      - Options that the system uses for SSL processing in the form of a list. When
         creating a new profile, the list is provided by the parent profile.
       - When a C('') or C(none) value is provided all options for SSL processing are disabled.
     choices:
@@ -98,15 +98,15 @@ options:
       - netscape-ca-dn-bug
       - netscape-demo-cipher-change-bug
     version_added: 2.7
-  secure_renegotation:
+  secure_renegotiation:
     description:
       - Specifies the method of secure renegotiations for SSL connections. When
         creating a new profile, the setting is provided by the parent profile.
-      - When C(request) is set the ssystem request secure renegotation of SSL 
+      - When C(request) is set the ssystem request secure renegotation of SSL
         connections.
-      - C(require) is a default setting and when set the system permits initial SSL 
+      - C(require) is a default setting and when set the system permits initial SSL
         handshakes from clients but terminates renegotiations from unpatched clients.
-      - The C(require-strict) setting the system requires strict renegotiation of SSL 
+      - The C(require-strict) setting the system requires strict renegotiation of SSL
         connections. In this mode the system refuses connections to insecure servers,
         and terminates existing SSL connections to insecure servers.
     choices:
@@ -348,31 +348,31 @@ class ModuleParameters(Parameters):
     @property
     def options(self):
         choices = [
-                    'netscape-reuse-cipher-change-bug',
-                    'microsoft-big-sslv3-buffer',
-                    'msie-sslv2-rsa-padding',
-                    'ssleay-080-client-dh-bug',
-                    'tls-d5-bug',
-                    'tls-block-padding-bug',
-                    'dont-insert-empty-fragments',
-                    'no-ssl',
-                    'no-dtls',
-                    'no-session-resumption-on-renegotiation',
-                    'no-tlsv1.1',
-                    'no-tlsv1.2',
-                    'single-dh-use',
-                    'ephemeral-rsa',
-                    'cipher-server-preference',
-                    'tls-rollback-bug',
-                    'no-sslv2',
-                    'no-sslv3',
-                    'no-tls',
-                    'no-tlsv1',
-                    'pkcs1-check-1',
-                    'pkcs1-check-2',
-                    'netscape-ca-dn-bug',
-                    'netscape-demo-cipher-change-bug'
-                  ]
+            'netscape-reuse-cipher-change-bug',
+            'microsoft-big-sslv3-buffer',
+            'msie-sslv2-rsa-padding',
+            'ssleay-080-client-dh-bug',
+            'tls-d5-bug',
+            'tls-block-padding-bug',
+            'dont-insert-empty-fragments',
+            'no-ssl',
+            'no-dtls',
+            'no-session-resumption-on-renegotiation',
+            'no-tlsv1.1',
+            'no-tlsv1.2',
+            'single-dh-use',
+            'ephemeral-rsa',
+            'cipher-server-preference',
+            'tls-rollback-bug',
+            'no-sslv2',
+            'no-sslv3',
+            'no-tls',
+            'no-tlsv1',
+            'pkcs1-check-1',
+            'pkcs1-check-2',
+            'netscape-ca-dn-bug',
+            'netscape-demo-cipher-change-bug'
+        ]
         options = self._values['options']
 
         if options is None:
@@ -658,7 +658,35 @@ class ArgumentSpec(object):
             secure_renegotiation=dict(
                 choices=['require', 'require-strict', 'request']
             ),
-            options=dict(type='list'),
+            options=dict(
+                type='list',
+                choices=[
+                    'netscape-reuse-cipher-change-bug',
+                    'microsoft-big-sslv3-buffer',
+                    'msie-sslv2-rsa-padding',
+                    'ssleay-080-client-dh-bug',
+                    'tls-d5-bug',
+                    'tls-block-padding-bug',
+                    'dont-insert-empty-fragments',
+                    'no-ssl',
+                    'no-dtls',
+                    'no-session-resumption-on-renegotiation',
+                    'no-tlsv1.1',
+                    'no-tlsv1.2',
+                    'single-dh-use',
+                    'ephemeral-rsa',
+                    'cipher-server-preference',
+                    'tls-rollback-bug',
+                    'no-sslv2',
+                    'no-sslv3',
+                    'no-tls',
+                    'no-tlsv1',
+                    'pkcs1-check-1',
+                    'pkcs1-check-2',
+                    'netscape-ca-dn-bug',
+                    'netscape-demo-cipher-change-bug',
+                ]
+            ),
             cert_key_chain=dict(
                 type='list',
                 options=dict(
