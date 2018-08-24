@@ -17,6 +17,8 @@ from .lib.common import BASE_DIR
 
 from .lib.upstream import module_name
 from .lib.upstream import get_fixtures
+from .lib.upstream import get_all_module_names
+from .lib.upstream import should_upstream_module
 
 from .lib.stubber import HAS_JINJA
 from .lib.stubber import stub_roles_dirs
@@ -72,38 +74,51 @@ def unstub(c, module=None):
 
 @task
 def upstream(c, module):
-    module = module_name(module)
     root_dest = '{0}/local/ansible/'.format(BASE_DIR)
     if not os.path.exists(root_dest):
         print("The specified upstream directory does not exist")
         sys.exit(1)
 
-    # Handle deprecated modules
-    if module.startswith('_'):
-        module = module[1:]
+    if module == 'all':
+        modules = get_all_module_names()
+    else:
+        modules = [module_name(module)]
 
-    # - upstream unit test file
-    cmd = [
-        'cp', '{0}/test/unit/test_{1}.py'.format(BASE_DIR, module),
-        '{0}/local/ansible/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module)
-    ]
-    c.run(' '.join(cmd))
+    for module in modules:
+        deprecated = True if module.startswith('_') else False
 
-    # - upstream unit test fixtures
-    fixtures = get_fixtures(c, module)
-    for fixture in fixtures:
-        cmd = [
-            'cp', '{0}/test/unit/fixtures/{1}'.format(BASE_DIR, fixture),
-            '{0}/local/ansible/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture)
-        ]
-        c.run(' '.join(cmd))
+        # Handle deprecated modules
+        if module.startswith('_'):
+            module = module[1:]
 
-    # - upstream module file
-    cmd = [
-        'cp', '{0}/library/modules/{1}.py'.format(BASE_DIR, module),
-        '{0}/local/ansible/lib/ansible/modules/network/f5/{1}.py'.format(BASE_DIR, module)
-    ]
-    c.run(' '.join(cmd))
+        if not deprecated and not should_upstream_module(module):
+            continue
+
+        print("Upstreaming {0}".format(module))
+        if os.path.exists('{0}/test/unit/test_{1}.py'.format(BASE_DIR, module)):
+            # - upstream unit test file
+            cmd = [
+                'cp', '{0}/test/unit/test_{1}.py'.format(BASE_DIR, module),
+                '{0}/local/ansible/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module)
+            ]
+            c.run(' '.join(cmd))
+
+        # - upstream unit test fixtures
+        fixtures = get_fixtures(c, module)
+        for fixture in fixtures:
+            cmd = [
+                'cp', '{0}/test/unit/fixtures/{1}'.format(BASE_DIR, fixture),
+                '{0}/local/ansible/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture)
+            ]
+            c.run(' '.join(cmd))
+
+        if os.path.exists('{0}/library/modules/{1}.py'.format(BASE_DIR, module)):
+            # - upstream module file
+            cmd = [
+                'cp', '{0}/library/modules/{1}.py'.format(BASE_DIR, module),
+                '{0}/local/ansible/lib/ansible/modules/network/f5/{1}.py'.format(BASE_DIR, module)
+            ]
+            c.run(' '.join(cmd))
 
     print("Copy complete")
 
