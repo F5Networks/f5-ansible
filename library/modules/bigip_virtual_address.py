@@ -185,6 +185,7 @@ options:
       - When creating a new virtual address, if this parameter is not specified, the default
         valus is C(no).
     version_added: 2.7
+    type: bool
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -264,7 +265,6 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
-from ansible.module_utils.parsing.convert_bool import BOOLEANS
 from distutils.version import LooseVersion
 
 try:
