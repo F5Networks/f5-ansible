@@ -1,5 +1,7 @@
 ---
 
+- import_tasks: setup.yaml
+
 - name: Issue 00752 - Create a partition
   bigip_partition:
     name: Part_Ilb
@@ -177,3 +179,5 @@
   bigip_partition:
     name: Part_Ilb
     state: absent
+
+- import_tasks: teardown.yaml

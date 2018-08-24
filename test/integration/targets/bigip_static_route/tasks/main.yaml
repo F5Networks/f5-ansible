@@ -1,5 +1,7 @@
 ---
 
+- import_tasks: setup.yaml
+
 - name: Create static route with gateway address
   bigip_static_route:
     destination: "{{ destination1 }}"
@@ -153,6 +155,8 @@
       - result is not changed
       - result is success
 
+- import_tasks: teardown.yaml
+
 - import_tasks: issue-00104.yaml
   tags: issue-00104
 
@@ -164,3 +168,6 @@
 
 - import_tasks: issue-00752.yaml
   tags: issue-00752
+
+- import_tasks: issue-00865.yaml
+  tags: issue-00865

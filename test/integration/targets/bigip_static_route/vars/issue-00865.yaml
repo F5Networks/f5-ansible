@@ -1,0 +1,20 @@
+---
+static_route_name_1: test-route-issue00865_1
+static_route_name_2: test-route-issue00865_2
+static_route_name_3: test-route-issue00865_3
+static_route_name_4: test-route-issue00865_4
+
+destination_1: 11.11.11.0
+destination_2: 172.16.64.0
+
+mask_1: 255.255.255.0
+mask_2: 255.255.192.0
+
+IPV6destination_1: "fd8d:90c6:d393:7558::"
+IPV6destination_2: "fd8d:90c6:d321:1234:2100::"
+
+IPV6mask_1: ffff:ffff:ffff:ffff:0:0:0:0
+IPV6mask_2: ffff:ffff:ffff:ffff:ff00:0:0:0
+
+gateway_address: 10.2.2.4
+IPV6gateway_address: fd8d:0:0:0:0:0:0:1
