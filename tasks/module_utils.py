@@ -16,7 +16,7 @@ from invoke import task
 
 
 @task
-def upstream(c, module):
+def upstream(c):
     root_dest = '{0}/local/ansible/'.format(BASE_DIR)
     if not os.path.exists(root_dest):
         print("The specified upstream directory does not exist")
@@ -24,9 +24,8 @@ def upstream(c, module):
 
     # - upstream module utils files
     cmd = [
-        'cp', '{0}/library/modules_utils/network/f5/*'.format(BASE_DIR, module),
-        '{0}/local/ansible/lib/ansible/module_utils/network/f5/'.format(BASE_DIR, module)
+        'cp', '{0}/library/module_utils/network/f5/*'.format(BASE_DIR),
+        '{0}/local/ansible/lib/ansible/module_utils/network/f5/'.format(BASE_DIR)
     ]
     c.run(' '.join(cmd))
-
     print("Copy complete")
