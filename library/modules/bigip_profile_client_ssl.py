@@ -156,7 +156,7 @@ EXAMPLES = r'''
     name: my_profile
     ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
   delegate_to: localhost
-  
+
 - name: Create client SSL profile with specific SSL options
   bigip_profile_client_ssl:
     state: present
@@ -170,6 +170,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Create client SSL profile require secure renegotiation
+  bigip_profile_client_ssl:
     state: present
     server: lb.mydomain.com
     user: admin
