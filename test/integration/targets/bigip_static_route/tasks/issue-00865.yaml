@@ -1,0 +1,142 @@
+---
+- import_tasks: setup.yaml
+
+- name: Issue 00865 - Include issue variables
+  include_vars:
+    file: issue-00865.yaml
+
+- name: Issue 00865 - Create IPv6 Self IP
+  bigip_selfip:
+    name: issue00865-ipv6
+    address: "fd8d:0:0:0:0:0:0:12"
+    netmask: "ffff:ffff:ffff:ffff:0:0:0:0"
+    vlan: vlan1
+
+- name: Issue 00865 - Create static /24 IPv4 route
+  bigip_static_route:
+    destination: "{{ destination_1 }}"
+    netmask: "{{ mask_1 }}"
+    gateway_address: "{{ gateway_address }}"
+    name: "{{ static_route_name_1 }}"
+  register: result
+
+- name: Issue 00865 - Assert Create static /24 IPv4 route
+  assert:
+    that:
+      - result is changed
+      - result.netmask == 24
+
+- name: Issue 00865 - Create static /24 IPv4 route - Idempotent check
+  bigip_static_route:
+    destination: "{{ destination_1 }}"
+    netmask: "{{ mask_1 }}"
+    gateway_address: "{{ gateway_address }}"
+    name: "{{ static_route_name_1 }}"
+  register: result
+
+- name: Issue 00865 - Assert Create static /24 IPv4 route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00865 - Create static /18 IPv4 route
+  bigip_static_route:
+    destination: "{{ destination_2 }}"
+    netmask: "{{ mask_2 }}"
+    gateway_address: "{{ gateway_address }}"
+    name: "{{ static_route_name_2 }}"
+  register: result
+
+- name: Issue 00865 - Assert Create static /18 IPv4 route
+  assert:
+    that:
+      - result is changed
+      - result.netmask == 18
+
+- name: Issue 00865 - Create static /18 IPv4 route - Idempotent check
+  bigip_static_route:
+    destination: "{{ destination_2 }}"
+    netmask: "{{ mask_2 }}"
+    gateway_address: "{{ gateway_address }}"
+    name: "{{ static_route_name_2 }}"
+  register: result
+
+- name: Issue 00865 - Assert Create static /18 IPv4 route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00865 - Create static /64 IPv6 route
+  bigip_static_route:
+    destination: "{{ IPV6destination_1 }}"
+    netmask: "{{ IPV6mask_1 }}"
+    gateway_address: "{{ IPV6gateway_address }}"
+    name: "{{ static_route_name_3 }}"
+  register: result
+
+- name: Issue 00865 - Assert Create static /64 IPv6 route
+  assert:
+    that:
+      - result is changed
+      - result.netmask == 64
+
+- name: Issue 00865 - Create static /64 IPv6 route - Idempotent check
+  bigip_static_route:
+    destination: "{{ IPV6destination_1 }}"
+    netmask: "{{ IPV6mask_1 }}"
+    gateway_address: "{{ IPV6gateway_address }}"
+    name: "{{ static_route_name_3 }}"
+  register: result
+
+- name: Issue 00865 - Assert Create static /64 IPv6 route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00865 - Create static /72 IPv6 route
+  bigip_static_route:
+    destination: "{{ IPV6destination_2 }}"
+    netmask: "{{ IPV6mask_2 }}"
+    gateway_address: "{{ IPV6gateway_address }}"
+    name: "{{ static_route_name_4 }}"
+  register: result
+
+- name: Issue 00865 - Assert Create static /72 IPv6 route
+  assert:
+    that:
+      - result is changed
+      - result.netmask == 72
+
+- name: Issue 00865 - Create static /72 IPv6 route - Idempotent check
+  bigip_static_route:
+    destination: "{{ IPV6destination_2 }}"
+    netmask: "{{ IPV6mask_2 }}"
+    gateway_address: "{{ IPV6gateway_address }}"
+    name: "{{ static_route_name_4 }}"
+  register: result
+
+- name: Issue 00865 - Assert Create static /72 IPv6 route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00865 - Remove routes
+  bigip_static_route:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ static_route_name_1 }}"
+    - "{{ static_route_name_2 }}"
+    - "{{ static_route_name_3 }}"
+    - "{{ static_route_name_4 }}"
+
+- name: Issue 00865 - Remove IPv6 Self IP
+  bigip_selfip:
+    name: issue00865-ipv6
+    state: absent
+
+- import_tasks: teardown.yaml
