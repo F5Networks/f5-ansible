@@ -206,7 +206,6 @@ from ansible.module_utils.network.common.utils import ComplexList
 from ansible.module_utils.network.common.utils import to_list
 from ansible.module_utils.six import string_types
 from collections import deque
-from f5.sdk_exception import LazyAttributesRequired
 
 
 try:
@@ -239,6 +238,10 @@ try:
     HAS_CLI_TRANSPORT = True
 except ImportError:
     HAS_CLI_TRANSPORT = False
+
+
+if HAS_F5SDK:
+    from f5.sdk_exception import LazyAttributesRequired
 
 
 class NoChangeReporter(object):
