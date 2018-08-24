@@ -1307,6 +1307,12 @@ class ApiParameters(Parameters):
             return None
         return self._values['security_nat_policy']['policy']
 
+    @property
+    def irules(self):
+        if self._values['irules'] is None:
+            return []
+        return self._values['irules']
+
 
 class ModuleParameters(Parameters):
     services_map = {
@@ -2695,8 +2701,6 @@ class Difference(object):
     def irules(self):
         if self.want.irules is None:
             return None
-        if self.have.irules is None:
-            return self.want.irules
         if self.want.irules == '' and len(self.have.irules) > 0:
             return []
         if self.want.irules == '' and len(self.have.irules) == 0:
