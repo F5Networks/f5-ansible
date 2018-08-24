@@ -10,5 +10,3 @@ destination4: 12.12.12.0
 description1: foo description
 
 gateway_address1: 10.2.2.4
-pool_name: pool1
-vlan_name: vlan1
