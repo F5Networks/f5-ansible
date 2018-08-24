@@ -39,7 +39,6 @@ options:
     choices:
       - sync-failover
       - sync-only
-    default: sync-only
   description:
     description:
       - Description of the device group.
