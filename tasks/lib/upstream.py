@@ -10,7 +10,6 @@ __metaclass__ = type
 import glob
 import os
 import re
-import sys
 import yaml
 
 from . common import BASE_DIR
