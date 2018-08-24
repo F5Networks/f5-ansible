@@ -1,3 +1,4 @@
+---
 
 # Test the bigip_monitor_https module
 #
@@ -17,6 +18,20 @@
 #
 #    ansible-playbook -i notahost, test/integration/bigip_monitor_https.yaml
 #
+
+- name: Metadata of bigip_monitor_https
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    __metadata__:
+      upstream: yes
+      version: 1.2
+      tested_versions:
+        - NA
+      tested_platforms:
+        - NA
 
 - name: Test the bigip_monitor_https module
   hosts: "f5-test[0]"

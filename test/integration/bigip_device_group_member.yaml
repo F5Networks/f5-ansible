@@ -18,6 +18,20 @@
 #    ansible-playbook -i notahost, test/integration/bigip_device_group_member.yaml
 #
 
+- name: Metadata of bigip_device_group_member
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    __metadata__:
+      upstream: yes
+      version: 1.2
+      tested_versions:
+        - NA
+      tested_platforms:
+        - NA
+
 - name: Test the bigip_device_group_member module
   hosts: "f5-test[0]"
   connection: local
@@ -25,20 +39,6 @@
 
   vars:
     limit_to: '*'
-    __metadata__:
-      upstream: yes
-      version: 1.2
-      tested_platforms:
-        - NA
-      callgraph_exclude:
-        - pycallgraph.*
-
-        # Ansible related
-        - ansible.module_utils.basic.AnsibleModule.*
-        - ansible.module_utils.basic.*
-        - ansible.module_utils.parsing.*
-        - ansible.module_utils._text.*
-        - ansible.module_utils.six.*
 
   environment:
     F5_SERVER: "{{ ansible_host }}"

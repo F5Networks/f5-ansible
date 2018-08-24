@@ -1,43 +1,39 @@
 ---
 
-# Test the bigip_gtm_facts module
+# Test the bigip_firewall_dos_vector module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# bigip_gtm_facts module behaves as expected.
-#
-# Requirements:
-#
-#    GTM must be licensed for these tests to succeed
+# bigip_firewall_dos_vector module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, playbooks/bigip_gtm_facts.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_firewall_dos_vector.yaml
 #
 # Examples:
 #
-#    Run all tests on the bigip_gtm_facts module
+#    Run all tests on the bigip_firewall_dos_vector module
 #
-#    ansible-playbook -i notahost, playbooks/bigip_gtm_facts.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_firewall_dos_vector.yaml
 #
 
-- name: Metadata of bigip_gtm_facts
+- name: Metadata of bigip_firewall_dos_vector
   hosts: localhost
   connection: local
   any_errors_fatal: true
 
   vars:
     __metadata__:
-      upstream: yes
+      upstream: no
       version: 1.2
       tested_versions:
         - NA
       tested_platforms:
         - NA
 
-- name: Test the bigip_gtm_facts module
+- name: Test the bigip_firewall_dos_vector module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
@@ -53,4 +49,4 @@
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-    - bigip_gtm_facts
+    - bigip_firewall_dos_vector
