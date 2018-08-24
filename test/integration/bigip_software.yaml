@@ -19,6 +19,20 @@
 #    ansible-playbook -i notahost, playbooks/bigip_software.yaml
 #
 
+- name: Metadata of bigip_software
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    __metadata__:
+      upstream: no
+      version: 1.2
+      tested_versions:
+        - NA
+      tested_platforms:
+        - NA
+
 - name: Test the bigip_software module
   hosts: "f5-test[0]"
   connection: local
@@ -26,42 +40,6 @@
 
   vars:
     limit_to: '*'
-    __metadata__:
-      upstream: no
-      version: 1.2
-      tested_platforms:
-        - 13.0.0
-      callgraph_exclude:
-        - pycallgraph.*
-        - httplib.*
-        - mimetools.*
-        - rfc822.*
-        - cookielib.*
-        - contextlib.*
-        - threading.*
-        - Queue.*
-        - logging.*
-        - Connection.*
-        - cgi.*
-        - collections.*
-        - socket.*
-        - Context.*
-        - _asFileDescriptor
-        - base64.*
-        - urllib.*
-        - json.*
-        - functools.*
-        - _VerifyHelper.*
-        - weakref.*
-        - distutils.*
-        - string.*
-
-        # Ansible related
-        - ansible.module_utils.basic.AnsibleModule.*
-        - ansible.module_utils.basic.*
-        - ansible.module_utils.parsing.*
-        - ansible.module_utils._text.*
-        - ansible.module_utils.six.*
 
   environment:
     F5_SERVER: "{{ ansible_host }}"

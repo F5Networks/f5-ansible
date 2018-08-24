@@ -19,6 +19,20 @@
 #    ansible-playbook -i notahost, playbooks/bigip_pool.yaml
 #
 
+- name: Metadata of bigip_pool
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    __metadata__:
+      upstream: yes
+      version: 1.2
+      tested_versions:
+        - NA
+      tested_platforms:
+        - NA
+
 - name: Test the bigip_pool module
   hosts: "f5-test[0]"
   connection: local
@@ -26,29 +40,6 @@
 
   vars:
     limit_to: '*'
-    __metadata__:
-      upstream: yes
-      version: 1.2
-      tested_platforms:
-        - 12.0.0
-        - 12.1.0
-        - 12.1.0-hf1
-        - 12.1.0-hf2
-        - 12.1.1
-        - 12.1.1-hf1
-        - 12.1.1-hf2
-        - 12.1.2
-        - 12.1.2-hf1
-        - 13.0.0
-      callgraph_exclude:
-        - pycallgraph.*
-
-        # Ansible related
-        - ansible.module_utils.basic.AnsibleModule.*
-        - ansible.module_utils.basic.*
-        - ansible.module_utils.parsing.*
-        - ansible.module_utils._text.*
-        - ansible.module_utils.six.*
 
   environment:
     F5_SERVER: "{{ ansible_host }}"

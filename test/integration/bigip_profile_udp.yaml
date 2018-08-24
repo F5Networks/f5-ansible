@@ -1,3 +1,4 @@
+---
 
 # Test the bigip_profile_udp module
 #
@@ -18,13 +19,12 @@
 #    ansible-playbook -i notahost, test/integration/bigip_profile_udp.yaml
 #
 
-- name: Test the bigip_profile_udp module
-  hosts: "f5-test[0]"
+- name: Metadata of bigip_profile_udp
+  hosts: localhost
   connection: local
   any_errors_fatal: true
 
   vars:
-    limit_to: '*'
     __metadata__:
       upstream: yes
       version: 1.2
@@ -32,18 +32,14 @@
         - NA
       tested_platforms:
         - NA
-      supported_harnesses:
-        - NA
-      coding_standards: v3
-      callgraph_exclude:
-        - pycallgraph.*
 
-        # Ansible related
-        - ansible.module_utils.basic.AnsibleModule.*
-        - ansible.module_utils.basic.*
-        - ansible.module_utils.parsing.*
-        - ansible.module_utils._text.*
-        - ansible.module_utils.six.*
+- name: Test the bigip_profile_udp module
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
 
   environment:
     F5_SERVER: "{{ ansible_host }}"
