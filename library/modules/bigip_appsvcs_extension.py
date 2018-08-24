@@ -55,6 +55,7 @@ options:
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -103,11 +104,8 @@ action:
   sample: deploy
 '''
 
-import json
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.basic import json
 from ansible.module_utils.six import iteritems
 
 try:
@@ -409,7 +407,7 @@ class ModuleManager(object):
                 obj['passphrase']['ignoreChanges'] = True
             if 'class' in obj and obj['class'] == 'WAF_Policy':
                 obj['ignoreChanges'] = True
-            return {k: self.ignore_changes(v) for k, v in obj.items()}
+            return dict((k, self.ignore_changes(v)) for k, v in iteritems(obj))
         else:
             return obj
 
