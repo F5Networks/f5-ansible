@@ -1,0 +1,125 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a CLI script
+  bigip_cli_script:
+    name: script01
+    content: "{{ lookup('file', 'script01.tcl') }}"
+  register: result
+
+- name: Assert Create a CLI script
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a CLI script - Idempotent check
+  bigip_cli_script:
+    name: script01
+    content: "{{ lookup('file', 'script01.tcl') }}"
+  register: result
+
+- name: Assert Create a CLI script - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update CLI script
+  bigip_cli_script:
+    name: script01
+    content: "{{ lookup('file', 'script02.tcl') }}"
+  register: result
+
+- name: Assert Update CLI script
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update CLI script - Idempotent check
+  bigip_cli_script:
+    name: script01
+    content: "{{ lookup('file', 'script02.tcl') }}"
+  register: result
+
+- name: Assert Update CLI script - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description
+  bigip_cli_script:
+    name: script01
+    description: my description
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - Idempotent check
+  bigip_cli_script:
+    name: script01
+    description: my description
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove description
+  bigip_cli_script:
+    name: script01
+    description: none
+  register: result
+
+- name: Assert Remove description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove description - Idempotent check
+  bigip_cli_script:
+    name: script01
+    description: none
+  register: result
+
+- name: Assert Remove description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove CLI script
+  bigip_cli_script:
+    name: script01
+    state: absent
+  register: result
+
+- name: Assert Remove CLI script
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove CLI script - Idempotent check
+  bigip_cli_script:
+    name: script01
+    state: absent
+  register: result
+
+- name: Assert Remove CLI script - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
