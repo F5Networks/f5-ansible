@@ -12,87 +12,88 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
+
 DOCUMENTATION = r'''
 ---
 module: bigip_software_install
-short_description: __SHORT_DESCRIPTION__
+short_description: Install software images on a BIG-IP
 description:
-  - __LONG DESCRIPTION__.
-version_added: 2.6
+  - Install new images on a BIG-IP.
+version_added: 2.7
 options:
   image:
     description:
       - Image to install on the remote device.
   volume:
     description:
-      - The volume to install the software and, optionally, the hotfix to. This
-        parameter is only required when the C(state) is C(activated) or
-        C(installed).
-  reuse_inactive_volume:
+      - The volume to install the software image to.
+  state:
     description:
-      - Automatically chooses the first inactive volume in alphanumeric order.
-        If there is no inactive volume, new volume with incremented volume name
-        will be created. For example, if HD1.1 is currently active and no other
-        volume exists, then the module will create HD1.2 and install the
-        software. If volume name does not end with numeric character,
-        then add C(.1) to the current active volume name. When C(volume) is
-        specified, this option will be ignored.
+      - When C(installed), ensures that the software is installed on the volume
+        and the volume is set to be booted from. The device is B(not) rebooted
+        into the new software.
+      - When C(activated), performs the same operation as C(installed), but
+        the system is rebooted to the new software.
+    default: activated
+    choices:
+      - activated
+      - installed
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
-
 EXAMPLES = r'''
-- name: Create a ...
+- name: Ensure an existing image is installed in specified volume
   bigip_software_install:
-    name: foo
-    password: secret
-    server: lb.mydomain.com
-    state: present
-    user: admin
+    image: BIGIP-13.0.0.0.0.1645.iso
+    volume: HD1.2
+    state: installed
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Ensure an existing image is activated in specified volume
+  bigip_software_install:
+    image: BIGIP-13.0.0.0.0.1645.iso
+    state: activated
+    volume: HD1.2
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
-  returned: changed
-  type: string
-  sample: Foo is bar
+# only common fields returned
 '''
 
+import time
+
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 
 try:
     from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
 except ImportError:
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
 
 
 class Parameters(AnsibleF5Parameters):
@@ -101,7 +102,8 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-
+        'options',
+        'volume',
     ]
 
     returnables = [
@@ -114,11 +116,102 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def image_names(self):
+        result = []
+        result += self.read_image_from_device('image')
+        result += self.read_image_from_device('hotfix')
+        return result
+
+    def read_image_from_device(self, t):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            t,
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return []
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                return []
+            else:
+                return []
+        if 'items' not in response:
+            return []
+        return [x['name'] for x in response['items']]
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def version(self):
+        if self._values['version']:
+            return self._values['version']
+
+        self._values['version'] = self.image_info['version']
+        return self._values['version']
+
+    @property
+    def build(self):
+        # Return cached copy if we have it
+        if self._values['build']:
+            return self._values['build']
+
+        # Otherwise, get copy from image info cache
+        self._values['build'] = self.image_info['build']
+        return self._values['build']
+
+    @property
+    def image_info(self):
+        if self._values['image_info']:
+            image = self._values['image_info']
+        else:
+            # Otherwise, get a new copy and store in cache
+            image = self.read_image()
+            self._values['image_info'] = image
+        return image
+
+    @property
+    def image_type(self):
+        if self._values['image_type']:
+            return self._values['image_type']
+        if 'software:image' in self.image_info['kind']:
+            self._values['image_type'] = 'image'
+        else:
+            self._values['image_type'] = 'hotfix'
+        return self._values['image_type']
+
+    def read_image(self):
+        image = self.read_image_from_device(type='image')
+        if image:
+            return image
+        image = self.read_hotfix_from_device(type='hotfix')
+        if image:
+            return image
+        return None
+
+    def read_image_from_device(self, type):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            type,
+            self.image,
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return None
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                return None
+            else:
+                return None
+        return response
 
 
 class Changes(Parameters):
@@ -167,8 +260,8 @@ class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-        self.want = ModuleParameters(params=self.module.params)
-        self.have = ApiParameters()
+        self.want = ModuleParameters(params=self.module.params, client=self.client)
+        self.have = ApiParameters(client=self.client)
         self.changes = UsableChanges()
 
     def _set_changed_options(self):
@@ -204,17 +297,9 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
-        changed = False
         result = dict()
-        state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        changed = self.present()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
@@ -233,84 +318,163 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return self.update()
+            return False
         else:
-            return self.create()
+            return self.update()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.volume
         )
-        return result
-
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
             return False
-        if self.module.check_mode:
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+
+        # version key can be missing in the event that an existing volume has
+        # no installed software in it.
+        if self.want.version != response.get('version', None):
+            return False
+        if self.want.build != response.get('build', None):
+            return False
+
+        if self.want.state == 'installed':
             return True
-        self.update_on_device()
-        return True
-
-    def remove(self):
-        if self.module.check_mode:
-            return True
-        self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the resource.")
-        return True
-
-    def create(self):
-        self._set_changed_options()
-        if self.module.check_mode:
-            return True
-        self.create_on_device()
-        return True
-
-    def create_on_device(self):
-        params = self.changes.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
-        )
-
-    def update_on_device(self):
-        params = self.changes.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        resource.modify(**params)
-
-    def absent(self):
-        if self.exists():
-            return self.remove()
+        if self.want.state == 'activated':
+            if 'defaultBootLocation' in response['media'][0]:
+                return True
         return False
 
-    def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+    def volume_exists(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.volume
         )
-        if resource:
-            resource.delete()
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
 
-    def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+    def update(self):
+        if self.module.check_mode:
+            return True
+
+        if self.want.image and self.want.image not in self.have.image_names:
+            raise F5ModuleError(
+                "The specified image was not found on the device"
+            )
+
+        options = list()
+        if not self.volume_exists():
+            options.append({'create-volume': True})
+        if self.want.state == 'activated':
+            options.append({'reboot': True})
+        self.want.update({'options': options})
+
+        self.update_on_device()
+        self.wait_for_software_install_on_device()
+        if self.want.state == 'activated':
+            self.wait_for_device_reboot()
+        return True
+
+    def update_on_device(self):
+        params = {
+            "command": "install",
+            "name": self.want.image,
+        }
+        params.update(self.want.api_params())
+
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.image_type
         )
-        result = resource.attrs
-        return ApiParameters(params=result)
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+            if 'commandResult' in response and len(response['commandResult'].strip()) > 0:
+                raise F5ModuleError(response['commandResult'])
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return True
+
+    def wait_for_device_reboot(self):
+        while True:
+            time.sleep(5)
+            try:
+                self.client.reconnect()
+                volume = self.read_volume_from_device()
+                if 'active' in volume and volume['active'] is True:
+                    break
+            except F5ModuleError:
+                # Handle all exceptions because if the system is offline (for a
+                # reboot) the REST client will raise exceptions about
+                # connections
+                pass
+
+    def wait_for_software_install_on_device(self):
+        # We need to delay this slightly in case the the volume needs to be
+        # created first
+        for _ in range(10):
+            try:
+                if self.volume_exists():
+                    break
+            except F5ModuleError:
+                pass
+            time.sleep(5)
+        while True:
+            time.sleep(10)
+            volume = self.read_volume_from_device()
+            if volume['status'] == 'complete':
+                break
+            elif volume['status'] == 'failed':
+                raise F5ModuleError
+
+    def read_volume_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.volume
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return response
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            image=dict(),
+            volume=dict(),
+            state=dict(
+                default='activated',
+                choices=['activated', 'installed']
+            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
@@ -322,20 +486,16 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode
+        supports_check_mode=spec.supports_check_mode,
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        client = F5Client(**module.params)
+        client = F5RestClient(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
-        cleanup_tokens(client)
-        module.exit_json(**results)
+        exit_json(module, results, client)
     except F5ModuleError as ex:
-        cleanup_tokens(client)
-        module.fail_json(msg=str(ex))
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':
