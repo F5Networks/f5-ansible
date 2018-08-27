@@ -1,12 +1,12 @@
 ---
 
-- name: Issue 00882 - Create a pool
+- name: Issue 00882 - Create a pool - Provider
   bigip_pool:
     name: pool1
     lb_method: round-robin
     provider: "{{ provider }}"
 
-- name: Issue 00882 - Create virtual server
+- name: Issue 00882 - Create virtual server - Provider
   bigip_virtual_server:
     name: virt1
     destination: 2.1.3.4
@@ -18,13 +18,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00882 - Create virtual server
+- name: Issue 00882 - Create virtual server - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 00882 - Create virtual server - Idempotent check
+- name: Issue 00882 - Create virtual server - Provider - Idempotent check
   bigip_virtual_server:
     name: virt1
     destination: 2.1.3.4
@@ -36,25 +36,25 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00882 - Create virtual server - Idempotent check
+- name: Issue 00882 - Create virtual server - Provider - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 00882 - Gather facts of virtual
+- name: Issue 00882 - Gather facts of virtual - Provider
   bigip_device_facts:
     gather_subset:
       - virtual-servers
     provider: "{{ provider }}"
   register: f
 
-- name: Assert that virtual is disabled
+- name: Assert that virtual is disabled - Provider
   assert:
     that:
       - f.virtual_servers | json_query("[?name=='virt1'].enabled") | first == "no"
 
-- name: Issue 00882 - Remove virtual server
+- name: Issue 00882 - Remove virtual server - Provider
   bigip_virtual_server:
     name: virt1
     state: absent
