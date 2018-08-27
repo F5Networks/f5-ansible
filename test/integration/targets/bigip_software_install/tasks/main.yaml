@@ -2,6 +2,56 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Ensure something is installed in HD1.6
+  bigip_software_install:
+    image: "{{ initial_image|basename }}"
+    state: installed
+    volume: HD1.6
+  register: result
+
+- name: Assert Ensure something is installed in HD1.6
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Ensure something is installed in HD1.6 - Idempotent check
+  bigip_software_install:
+    image: "{{ initial_image|basename }}"
+    state: installed
+    volume: HD1.6
+  register: result
+
+- name: Assert Ensure something is installed in HD1.6 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Ensure something is activated in HD1.7
+  bigip_software_install:
+    image: "{{ initial_image|basename }}"
+    state: activated
+    volume: HD1.7
+  register: result
+
+- name: Ensure something is activated in HD1.7
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Ensure something is activated in HD1.7 - Idempotent check
+  bigip_software_install:
+    image: "{{ initial_image|basename }}"
+    state: activated
+    volume: HD1.7
+  register: result
+
+- name: Ensure something is activated in HD1.7 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - import_tasks: teardown.yaml
