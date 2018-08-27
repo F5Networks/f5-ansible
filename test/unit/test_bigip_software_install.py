@@ -64,35 +64,56 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            volume='HD1.2',
+            image='BIGIP-13.0.0.0.0.1645.iso',
+        )
 
-    def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        p = ModuleParameters(params=args)
+        assert p.volume == 'HD1.2'
+        assert p.image == 'BIGIP-13.0.0.0.0.1645.iso'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        set_module_args(dict(
+            image='BIGIP-13.0.0.0.0.1645.iso',
+            volume='HD1.2',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        current = ApiParameters()
+        current.read_image_from_device = Mock(
+            side_effect=[
+                ['BIGIP-13.0.0.0.0.1645.iso'],
+                ['BIGIP-12.1.3.4-0.0.2.iso'],
+            ]
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.have = current
+
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+        mm.volume_exists = Mock(return_value=True)
+        mm.update_on_device = Mock(return_value=True)
+        mm.wait_for_device_reboot = Mock(return_value=True)
+        mm.wait_for_software_install_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
