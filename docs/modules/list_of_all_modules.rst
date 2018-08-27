@@ -8,6 +8,7 @@ All modules
   * :ref:`bigip_appsvcs_extension_module`
   * :ref:`bigip_asm_policy_module`
   * :ref:`bigip_cli_alias_module`
+  * :ref:`bigip_cli_script_module`
   * :ref:`bigip_command_module`
   * :ref:`bigip_config_module`
   * :ref:`bigip_configsync_action_module`

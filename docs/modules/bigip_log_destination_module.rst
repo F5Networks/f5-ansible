@@ -97,21 +97,13 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>distribution</b>
+                    <b>pool</b>
                                                         </td>
                                 <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>adaptive</li>
-                                                                                                                                                                                                <li>balanced</li>
-                                                                                                                                                                                                <li>replicated</li>
-                                                                                    </ul>
-                                                                            </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the distribution method used by the Remote High Speed Log destination to send messages to pool members.</div>
-                                                    <div>When <code>adaptive</code>, connections to pool members will be added as required to provide enough logging bandwidth. This can have the undesirable effect of logs accumulating on only one pool member when it provides sufficient logging bandwidth on its own.</div>
-                                                    <div>When <code>balanced</code>, sends each successive log to a new pool member, balancing the logs among them according to the pool&#x27;s load balancing method.</div>
-                                                    <div>When <code>replicated</code>, replicates each log to all pool members, for redundancy.</div>
-                                                    <div>When creating a new log destination (and <code>type</code> is <code>remote-high-speed-log</code>), if this parameter is not specified, the default is <code>adaptive</code>.</div>
+                                                                        <div>Specifies the existing pool of remote high-speed log servers where logs will be sent.</div>
+                                                    <div>When creating a new destination (and <code>type</code> is <code>remote-high-speed-log</code>), this parameter is required.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -133,13 +125,21 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>pool</b>
+                    <b>distribution</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>adaptive</li>
+                                                                                                                                                                                                <li>balanced</li>
+                                                                                                                                                                                                <li>replicated</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the existing pool of remote high-speed log servers where logs will be sent.</div>
-                                                    <div>When creating a new destination (and <code>type</code> is <code>remote-high-speed-log</code>), this parameter is required.</div>
+                                                                        <div>Specifies the distribution method used by the Remote High Speed Log destination to send messages to pool members.</div>
+                                                    <div>When <code>adaptive</code>, connections to pool members will be added as required to provide enough logging bandwidth. This can have the undesirable effect of logs accumulating on only one pool member when it provides sufficient logging bandwidth on its own.</div>
+                                                    <div>When <code>balanced</code>, sends each successive log to a new pool member, balancing the logs among them according to the pool&#x27;s load balancing method.</div>
+                                                    <div>When <code>replicated</code>, replicates each log to all pool members, for redundancy.</div>
+                                                    <div>When creating a new log destination (and <code>type</code> is <code>remote-high-speed-log</code>), if this parameter is not specified, the default is <code>adaptive</code>.</div>
                                                                                 </td>
             </tr>
                     
@@ -156,25 +156,14 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>ssh_keyfile</b>
-                                                        </td>
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -185,17 +174,6 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -213,14 +191,13 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>password</b>
+                    <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -235,6 +212,29 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>ssh_keyfile</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
                                                                                 </td>
             </tr>
                                 <tr>
