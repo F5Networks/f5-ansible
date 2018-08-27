@@ -430,7 +430,7 @@ class ModuleManager(object):
     def wait_for_software_install_on_device(self):
         # We need to delay this slightly in case the the volume needs to be
         # created first
-        for _ in range(10):
+        for dummy in range(10):
             try:
                 if self.volume_exists():
                     break
