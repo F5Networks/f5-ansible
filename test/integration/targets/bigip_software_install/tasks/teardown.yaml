@@ -1,0 +1,23 @@
+---
+
+- name: Switch back to default boot location
+  bigip_command:
+    commands:
+      - reboot volume HD1.1
+  ignore_errors: yes
+
+- name: Wait for bigip to come back
+  bigip_wait:
+    delay: 60
+
+- name: Delete software volumes
+  bigip_command:
+    commands:
+      - delete sys software volume HD1.6
+      - delete sys software volume HD1.7
+
+- name: Remove installed image
+  bigip_software_image:
+    image: "{{ initial_image }}"
+    state: absent
+

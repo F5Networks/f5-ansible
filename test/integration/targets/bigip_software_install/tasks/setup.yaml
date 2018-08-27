@@ -1,0 +1,15 @@
+---
+
+- name: Get the size of the image
+  stat:
+    path: "{{ initial_image }}"
+  register: st
+
+- name: Fail if the file is too small
+  fail:
+    msg: "The initial_image value is too small to be an ISO."
+  when: st.stat.size < 100
+
+- name: Upload an image to BIG-IP
+  bigip_software_image:
+    image: "{{ initial_image }}"
