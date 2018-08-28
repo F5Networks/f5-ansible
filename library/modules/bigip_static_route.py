@@ -82,7 +82,6 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
-  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
