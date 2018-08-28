@@ -30,6 +30,7 @@ notes:
   - Tested with manager and above account privilege level
   - C(provision) facts were added in 2.2
   - This module is deprecated. Use the C(bigip_device_facts) module instead.
+deprecated: 2.7
 requirements:
   - bigsuds
 options:
