@@ -1,6 +1,6 @@
 ---
 
-- name: Collect all facts
+- name: Collect all facts - Environment
   bigip_facts:
     include:
       - vlan

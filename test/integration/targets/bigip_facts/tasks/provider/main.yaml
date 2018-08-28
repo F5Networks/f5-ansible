@@ -1,6 +1,6 @@
 ---
 
-- name: Collect all facts
+- name: Collect all facts - Provider
   bigip_facts:
     include:
       - address_class
@@ -22,27 +22,18 @@
       - virtual_address
       - virtual_server
       - vlan
+    provider: "{{ provider }}"
 
-- name: Collect BIG-IP facts
+- name: Collect BIG-IP facts - Provider
   bigip_facts:
     include: "{{ item }}"
+    provider: "{{ provider }}"
   register: result
   loop: "{{ valid_includes }}"
 
-- name: Collect multiple BIG-IP facts
+- name: Collect multiple BIG-IP facts - Provider
   bigip_facts:
     include:
       - system_info
       - interface
-
-- import_tasks: issue-00393.yaml
-  tags: issue-00393
-
-- import_tasks: issue-00409.yaml
-  tags: issue-00409
-
-- import_tasks: issue-00410.yaml
-  tags: issue-00410
-
-- import_tasks: issue-00706.yaml
-  tags: issue-00706
+    provider: "{{ provider }}"
