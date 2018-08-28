@@ -295,23 +295,36 @@ class ModuleParameters(Parameters):
     def netmask(self):
         if self._values['netmask'] is None:
             return None
-        result = -1
         try:
             result = int(self._values['netmask'])
-            if 0 < result < 256:
-                pass
+
+            # CIDRs between 0 and 128 are allowed
+            if 0 <= result <= 128:
+                return result
+            else:
+                raise F5ModuleError(
+                    "The provided netmask must be between 0 and 32 for IPv4, or "
+                    "0 and 128 for IPv6."
+                )
         except ValueError:
-            if is_valid_ip(self._values['netmask']):
-                addr = ip_address(u'{0}'.format(str(self._values['netmask'])))
-                if addr.version == 4:
-                    ip = ip_network(u'0.0.0.0/%s' % str(self._values['netmask']))
-                    result = ip.prefixlen
-                else:
-                    result = ipv6_netmask_to_cidr(self._values['netmask'])
-        if result < 0:
+            # not a number, but that's ok. Further processing necessary
+            pass
+
+        if not is_valid_ip(self._values['netmask']):
             raise F5ModuleError(
                 'The provided netmask {0} is neither in IP or CIDR format'.format(result)
             )
+
+        # Create a temporary address to check if the netmask IP is v4 or v6
+        addr = ip_address(u'{0}'.format(str(self._values['netmask'])))
+        if addr.version == 4:
+            # Create a more real v4 address using a wildcard, so that we can determine
+            # the CIDR value from it.
+            ip = ip_network(u'0.0.0.0/%s' % str(self._values['netmask']))
+            result = ip.prefixlen
+        else:
+            result = ipv6_netmask_to_cidr(self._values['netmask'])
+
         return result
 
 
