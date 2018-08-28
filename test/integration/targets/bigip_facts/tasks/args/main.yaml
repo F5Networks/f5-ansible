@@ -1,0 +1,51 @@
+---
+
+- name: Collect all facts - Args
+  bigip_facts:
+    include:
+      - address_class
+      - certificate
+      - client_ssl_profile
+      - device
+      - device_group
+      - interface
+      - key
+      - node
+      - pool
+      - provision
+      - rule
+      - self_ip
+      - software
+      - system_info
+      - traffic_group
+      - trunk
+      - virtual_address
+      - virtual_server
+      - vlan
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+
+- name: Collect BIG-IP facts - Args
+  bigip_facts:
+    include: "{{ item }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+  loop: "{{ valid_includes }}"
+
+- name: Collect multiple BIG-IP facts - Args
+  bigip_facts:
+    include:
+      - system_info
+      - interface
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
