@@ -492,6 +492,13 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        self._set_default_creation_values()
+        if self.module.check_mode:
+            return True
+        self.create_on_device()
+        return True
+
+    def _set_default_creation_values(self):
         if self.want.timeout is None:
             self.want.update({'timeout': 16})
         if self.want.interval is None:
@@ -504,10 +511,6 @@ class ModuleManager(object):
             self.want.update({'port': '*'})
         if self.want.send is None:
             self.want.update({'send': 'GET /\r\n'})
-        if self.module.check_mode:
-            return True
-        self.create_on_device()
-        return True
 
     def create_on_device(self):
         params = self.changes.api_params()
