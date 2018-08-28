@@ -160,7 +160,7 @@
     state: absent
   register: result
 
-- name: Remove selfip
+- name: Issue 00752 - Remove selfip
   bigip_selfip:
     name: net4
     state: absent
