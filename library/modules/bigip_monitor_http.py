@@ -645,5 +645,6 @@ def main():
         cleanup_tokens(client)
         fail_json(module, ex, client)
 
+
 if __name__ == '__main__':
     main()
