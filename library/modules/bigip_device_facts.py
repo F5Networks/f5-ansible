@@ -40,6 +40,21 @@ options:
       - fasthttp-profiles
       - fastl4-profiles
       - gateway-icmp-monitors
+      - gtm-pools
+      - gtm-servers
+      - gtm-wide-ips
+      - gtm-a-pools
+      - gtm-a-wide-ips
+      - gtm-aaaa-pools
+      - gtm-aaaa-wide-ips
+      - gtm-cname-pools
+      - gtm-cname-wide-ips
+      - gtm-mx-pools
+      - gtm-mx-wide-ips
+      - gtm-naptr-pools
+      - gtm-naptr-wide-ips
+      - gtm-srv-pools
+      - gtm-srv-wide-ips
       - http-monitors
       - https-monitors
       - http-profiles
@@ -84,6 +99,21 @@ options:
       - "!fasthttp-profiles"
       - "!fastl4-profiles"
       - "!gateway-icmp-monitors"
+      - "!gtm-pools"
+      - "!gtm-servers"
+      - "!gtm-wide-ips"
+      - "!gtm-a-pools"
+      - "!gtm-a-wide-ips"
+      - "!gtm-aaaa-pools"
+      - "!gtm-aaaa-wide-ips"
+      - "!gtm-cname-pools"
+      - "!gtm-cname-wide-ips"
+      - "!gtm-mx-pools"
+      - "!gtm-mx-wide-ips"
+      - "!gtm-naptr-pools"
+      - "!gtm-naptr-wide-ips"
+      - "!gtm-srv-pools"
+      - "!gtm-srv-wide-ips"
       - "!http-monitors"
       - "!https-monitors"
       - "!http-profiles"
@@ -5493,21 +5523,11 @@ class Parameters(AnsibleF5Parameters):
 class BaseParameters(Parameters):
     @property
     def enabled(self):
-        if self._values['enabled'] is None:
-            return None
-        elif self._values['enabled'] in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
+        return flatten_boolean(self._values['enabled'])
 
     @property
     def disabled(self):
-        if self._values['disabled'] is None:
-            return None
-        elif self._values['disabled'] in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
+        return flatten_boolean(self._values['disabled'])
 
     def _remove_internal_keywords(self, resource):
         resource.pop('kind', None)
@@ -6793,6 +6813,1024 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
 
     def read_collection_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/gateway-icmp".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmXPoolsParameters(BaseParameters):
+    api_map = {
+        'alternateMode': 'alternate_mode',
+        'dynamicRatio': 'dynamic_ratio',
+        'fallbackMode': 'fallback_mode',
+        'fullPath': 'full_path',
+        'loadBalancingMode': 'load_balancing_mode',
+        'manualResume': 'manual_resume',
+        'maxAnswersReturned': 'max_answers_returned',
+        'qosHitRatio': 'qos_hit_ratio',
+        'qosHops': 'qos_hops',
+        'qosKilobytesSecond': 'qos_kilobytes_second',
+        'qosLcs': 'qos_lcs',
+        'qosPacketRate': 'qos_packet_rate',
+        'qosRtt': 'qos_rtt',
+        'qosTopology': 'qos_topology',
+        'qosVsCapacity': 'qos_vs_capacity',
+        'qosVsScore': 'qos_vs_score',
+        'verifyMemberAvailability': 'verify_member_availability',
+        'membersReference': 'members'
+    }
+
+    returnables = [
+        'alternate_mode',
+        'dynamic_ratio',
+        'enabled',
+        'disabled',
+        'fallback_mode',
+        'full_path',
+        'load_balancing_mode',
+        'manual_resume',
+        'max_answers_returned',
+        'members',
+        'name',
+        'partition',
+        'qos_hit_ratio',
+        'qos_hops',
+        'qos_kilobytes_second',
+        'qos_lcs',
+        'qos_packet_rate',
+        'qos_rtt',
+        'qos_topology',
+        'qos_vs_capacity',
+        'qos_vs_score',
+        'ttl',
+        'type',
+        'full_path',
+        'availability_state',
+        'enabled_state',
+        'availability_status',
+    ]
+
+    @property
+    def max_answers_returned(self):
+        if self._values['max_answers_returned'] is None:
+            return None
+        return int(self._values['max_answers_returned'])
+
+    @property
+    def members(self):
+        result = []
+        if self._values['members'] is None or 'items' not in self._values['members']:
+            return result
+        for item in self._values['members']['items']:
+            self._remove_internal_keywords(item)
+            if 'disabled' in item:
+                item['disabled'] = flatten_boolean(item['disabled'])
+                item['enabled'] = flatten_boolean(not item['disabled'])
+            if 'enabled' in item:
+                item['enabled'] = flatten_boolean(item['enabled'])
+                item['disabled'] = flatten_boolean(not item['enabled'])
+            if 'fullPath' in item:
+                item['full_path'] = item.pop('fullPath')
+            if 'memberOrder' in item:
+                item['member_order'] = int(item.pop('memberOrder'))
+            # Cast some attributes to integer
+            for x in ['order', 'preference', 'ratio', 'service']:
+                if x in item:
+                    item[x] = int(item[x])
+            result.append(item)
+        return result
+
+    @property
+    def qos_hit_ratio(self):
+        if self._values['qos_hit_ratio'] is None:
+            return None
+        return int(self._values['qos_hit_ratio'])
+
+    @property
+    def qos_hops(self):
+        if self._values['qos_hops'] is None:
+            return None
+        return int(self._values['qos_hops'])
+
+    @property
+    def qos_kilobytes_second(self):
+        if self._values['qos_kilobytes_second'] is None:
+            return None
+        return int(self._values['qos_kilobytes_second'])
+
+    @property
+    def qos_lcs(self):
+        if self._values['qos_lcs'] is None:
+            return None
+        return int(self._values['qos_lcs'])
+
+    @property
+    def qos_packet_rate(self):
+        if self._values['qos_packet_rate'] is None:
+            return None
+        return int(self._values['qos_packet_rate'])
+
+    @property
+    def qos_rtt(self):
+        if self._values['qos_rtt'] is None:
+            return None
+        return int(self._values['qos_rtt'])
+
+    @property
+    def qos_topology(self):
+        if self._values['qos_topology'] is None:
+            return None
+        return int(self._values['qos_topology'])
+
+    @property
+    def qos_vs_capacity(self):
+        if self._values['qos_vs_capacity'] is None:
+            return None
+        return int(self._values['qos_vs_capacity'])
+
+    @property
+    def qos_vs_score(self):
+        if self._values['qos_vs_score'] is None:
+            return None
+        return int(self._values['qos_vs_score'])
+
+    @property
+    def availability_state(self):
+        if self._values['stats'] is None:
+            return None
+        try:
+            result = self._values['stats']['status_availabilityState']
+            return result['description']
+        except AttributeError:
+            return None
+
+    @property
+    def enabled_state(self):
+        if self._values['stats'] is None:
+            return None
+        try:
+            result = self._values['stats']['status_enabledState']
+            return result['description']
+        except AttributeError:
+            return None
+
+    @property
+    def availability_status(self):
+        # This fact is a combination of the availability_state and enabled_state
+        #
+        # The purpose of the fact is to give a higher-level view of the availability
+        # of the pool, that can be used in playbooks. If you need further detail,
+        # consider using the following facts together.
+        #
+        # - availability_state
+        # - enabled_state
+        #
+        if self.enabled_state == 'enabled':
+            if self.availability_state == 'offline':
+                return 'red'
+            elif self.availability_state == 'available':
+                return 'green'
+            elif self.availability_state == 'unknown':
+                return 'blue'
+            else:
+                return 'none'
+        else:
+            # disabled
+            return 'black'
+
+
+class GtmAPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmAPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_a_pools=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/a".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmAaaaPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmAaaaPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_aaaa_pools=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/aaaa".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmCnamePoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmCnamePoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_cname_pools=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/cname".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmMxPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmMxPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_mx_pools=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/mx".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmNaptrPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmNaptrPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_naptr_pools=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/naptr".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmSrvPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmSrvPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_srv_pools=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/srv".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmServersParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'exposeRouteDomains': 'expose_route_domains',
+        'iqAllowPath': 'iq_allow_path',
+        'iqAllowServiceCheck': 'iq_allow_service_check',
+        'iqAllowSnmp': 'iq_allow_snmp',
+        'limitCpuUsage': 'limit_cpu_usage',
+        'limitCpuUsageStatus': 'limit_cpu_usage_status',
+        'limitMaxBps': 'limit_max_bps',
+        'limitMaxBpsStatus': 'limit_max_bps_status',
+        'limitMaxConnections': 'limit_max_connections',
+        'limitMaxConnectionsStatus': 'limit_max_connections_status',
+        'limitMaxPps': 'limit_max_pps',
+        'limitMaxPpsStatus': 'limit_max_pps_status',
+        'limitMemAvail': 'limit_mem_available',
+        'limitMemAvailStatus': 'limit_mem_available_status',
+        'linkDiscovery': 'link_discovery',
+        'proberFallback': 'prober_fallback',
+        'proberPreference': 'prober_preference',
+        'virtualServerDiscovery': 'virtual_server_discovery',
+        'devicesReference': 'devices',
+        'virtualServersReference': 'virtual_servers',
+    }
+
+    returnables = [
+        'datacenter',
+        'enabled',
+        'disabled',
+        'expose_route_domains',
+        'iq_allow_path',
+        'full_path',
+        'iq_allow_service_check',
+        'iq_allow_snmp',
+        'limit_cpu_usage',
+        'limit_cpu_usage_status',
+        'limit_max_bps',
+        'limit_max_bps_status',
+        'limit_max_connections',
+        'limit_max_connections_status',
+        'limit_max_pps',
+        'limit_max_pps_status',
+        'limit_mem_available',
+        'limit_mem_available_status',
+        'link_discovery',
+        'monitor',
+        'name',
+        'product',
+        'prober_fallback',
+        'prober_preference',
+        'virtual_server_discovery',
+        'addresses',
+        'devices',
+        'virtual_servers',
+    ]
+
+    @property
+    def product(self):
+        if self._values['product'] is None:
+            return None
+        if self._values['product'] in ['single-bigip', 'redundant-bigip']:
+            return 'bigip'
+        return self._values['product']
+
+    @property
+    def devices(self):
+        result = []
+        if self._values['devices'] is None or 'items' not in self._values['devices']:
+            return result
+        for item in self._values['devices']['items']:
+            self._remove_internal_keywords(item)
+            if 'fullPath' in item:
+                item['full_path'] = item.pop('fullPath')
+            result.append(item)
+        return result
+
+    @property
+    def virtual_servers(self):
+        result = []
+        if self._values['virtual_servers'] is None or 'items' not in self._values['virtual_servers']:
+            return result
+        for item in self._values['virtual_servers']['items']:
+            self._remove_internal_keywords(item)
+            if 'disabled' in item:
+                if item['disabled'] in BOOLEANS_TRUE:
+                    item['disabled'] = flatten_boolean(item['disabled'])
+                    item['enabled'] = flatten_boolean(not item['disabled'])
+            if 'enabled' in item:
+                if item['enabled'] in BOOLEANS_TRUE:
+                    item['enabled'] = flatten_boolean(item['enabled'])
+                    item['disabled'] = flatten_boolean(not item['enabled'])
+            if 'fullPath' in item:
+                item['full_path'] = item.pop('fullPath')
+            if 'limitMaxBps' in item:
+                item['limit_max_bps'] = int(item.pop('limitMaxBps'))
+            if 'limitMaxBpsStatus' in item:
+                item['limit_max_bps_status'] = item.pop('limitMaxBpsStatus')
+            if 'limitMaxConnections' in item:
+                item['limit_max_connections'] = int(item.pop('limitMaxConnections'))
+            if 'limitMaxConnectionsStatus' in item:
+                item['limit_max_connections_status'] = item.pop('limitMaxConnectionsStatus')
+            if 'limitMaxPps' in item:
+                item['limit_max_pps'] = int(item.pop('limitMaxPps'))
+            if 'limitMaxPpsStatus' in item:
+                item['limit_max_pps_status'] = item.pop('limitMaxPpsStatus')
+            if 'translationAddress' in item:
+                item['translation_address'] = item.pop('translationAddress')
+            if 'translationPort' in item:
+                item['translation_port'] = int(item.pop('translationPort'))
+            result.append(item)
+        return result
+
+    @property
+    def limit_cpu_usage(self):
+        if self._values['limit_cpu_usage'] is None:
+            return None
+        return int(self._values['limit_cpu_usage'])
+
+    @property
+    def limit_max_bps(self):
+        if self._values['limit_max_bps'] is None:
+            return None
+        return int(self._values['limit_max_bps'])
+
+    @property
+    def limit_max_connections(self):
+        if self._values['limit_max_connections'] is None:
+            return None
+        return int(self._values['limit_max_connections'])
+
+    @property
+    def limit_max_pps(self):
+        if self._values['limit_max_pps'] is None:
+            return None
+        return int(self._values['limit_max_pps'])
+
+    @property
+    def limit_mem_available(self):
+        if self._values['limit_mem_available'] is None:
+            return None
+        return int(self._values['limit_mem_available'])
+
+
+class GtmServersFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmServersFactManager, self).__init__(**kwargs)
+        self.want = GtmServersParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_servers=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmServersParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/server".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmXWideIpsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'failureRcode': 'failure_return_code',
+        'failureRcodeResponse': 'failure_return_code_response',
+        'failureRcodeTtl': 'failure_return_code_ttl',
+        'lastResortPool': 'last_resort_pool',
+        'minimalResponse': 'minimal_response',
+        'persistCidrIpv4': 'persist_cidr_ipv4',
+        'persistCidrIpv6': 'persist_cidr_ipv6',
+        'poolLbMode': 'pool_lb_mode',
+        'ttlPersistence': 'ttl_persistence'
+    }
+
+    returnables = [
+        'full_path',
+        'description',
+        'enabled',
+        'disabled',
+        'failure_return_code',
+        'failure_return_code_response',
+        'failure_return_code_ttl',
+        'last_resort_pool',
+        'minimal_response',
+        'name',
+        'persist_cidr_ipv4',
+        'persist_cidr_ipv6',
+        'pool_lb_mode',
+        'ttl_persistence',
+        'pools',
+    ]
+
+    @property
+    def pools(self):
+        result = []
+        if self._values['pools'] is None:
+            return []
+        for pool in self._values['pools']:
+            del pool['nameReference']
+            for x in ['order', 'ratio']:
+                if x in pool:
+                    pool[x] = int(pool[x])
+            result.append(pool)
+        return result
+
+    @property
+    def failure_return_code_ttl(self):
+        if self._values['failure_return_code_ttl'] is None:
+            return None
+        return int(self._values['failure_return_code_ttl'])
+
+    @property
+    def persist_cidr_ipv4(self):
+        if self._values['persist_cidr_ipv4'] is None:
+            return None
+        return int(self._values['persist_cidr_ipv4'])
+
+    @property
+    def persist_cidr_ipv6(self):
+        if self._values['persist_cidr_ipv6'] is None:
+            return None
+        return int(self._values['persist_cidr_ipv6'])
+
+    @property
+    def ttl_persistence(self):
+        if self._values['ttl_persistence'] is None:
+            return None
+        return int(self._values['ttl_persistence'])
+
+
+class GtmAWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmAWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_a_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/a".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmAaaaWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmAaaaWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_aaaa_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/aaaa".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmCnameWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmCnameWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_cname_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/cname".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmMxWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmMxWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_mx_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/mx".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmNaptrWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmNaptrWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_naptr_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/naptr".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+
+class GtmSrvWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmSrvWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_srv_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/srv".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
@@ -11488,6 +12526,58 @@ class ModuleManager(object):
                 manager=GatewayIcmpMonitorsFactManager,
                 client=F5RestClient
             ),
+            'gtm-a-pools': dict(
+                manager=GtmAPoolsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-servers': dict(
+                manager=GtmServersFactManager,
+                client=F5RestClient
+            ),
+            'gtm-a-wide-ips': dict(
+                manager=GtmAWideIpsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-aaaa-pools': dict(
+                manager=GtmAaaaPoolsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-aaaa-wide-ips': dict(
+                manager=GtmAaaaWideIpsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-cname-pools': dict(
+                manager=GtmCnamePoolsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-cname-wide-ips': dict(
+                manager=GtmCnameWideIpsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-mx-pools': dict(
+                manager=GtmMxPoolsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-mx-wide-ips': dict(
+                manager=GtmMxWideIpsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-naptr-pools': dict(
+                manager=GtmNaptrPoolsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-naptr-wide-ips': dict(
+                manager=GtmNaptrWideIpsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-srv-pools': dict(
+                manager=GtmSrvPoolsFactManager,
+                client=F5RestClient
+            ),
+            'gtm-srv-wide-ips': dict(
+                manager=GtmSrvWideIpsFactManager,
+                client=F5RestClient
+            ),
             'http-monitors': dict(
                 manager=HttpMonitorsFactManager,
                 client=F5RestClient
@@ -11615,6 +12705,8 @@ class ModuleManager(object):
         self.handle_all_keyword()
         self.handle_profiles_keyword()
         self.handle_monitors_keyword()
+        self.handle_gtm_pools_keyword()
+        self.handle_gtm_wide_ips_keyword()
         res = self.check_valid_gather_subset(self.want.gather_subset)
         if res:
             invalid = ','.join(res)
@@ -11668,6 +12760,24 @@ class ModuleManager(object):
             return
         managers = [x for x in self.managers.keys() if '-monitors' in x] + self.want.gather_subset
         managers.remove('monitors')
+        self.want.update({'gather_subset': managers})
+
+    def handle_gtm_pools_keyword(self):
+        if 'gtm-pools' not in self.want.gather_subset:
+            return
+        keys = self.managers.keys()
+        managers = [x for x in keys if x.startswith('gtm-') and x.endswith('-pools')]
+        managers += self.want.gather_subset
+        managers.remove('gtm-pools')
+        self.want.update({'gather_subset': managers})
+
+    def handle_gtm_wide_ips_keyword(self):
+        if 'gtm-wide-ips' not in self.want.gather_subset:
+            return
+        keys = self.managers.keys()
+        managers = [x for x in keys if x.startswith('gtm-') and x.endswith('-wide-ips')]
+        managers += self.want.gather_subset
+        managers.remove('gtm-wide-ips')
         self.want.update({'gather_subset': managers})
 
     def check_valid_gather_subset(self, includes):
@@ -11727,6 +12837,8 @@ class ArgumentSpec(object):
                     'all',
                     'monitors',
                     'profiles',
+                    'gtm-pools',
+                    'gtm-wide-ips',
 
                     # Non-meta choices
                     'asm-policy-stats',
@@ -11737,6 +12849,19 @@ class ArgumentSpec(object):
                     'fasthttp-profiles',
                     'fastl4-profiles',
                     'gateway-icmp-monitors',
+                    'gtm-a-pools',
+                    'gtm-servers',
+                    'gtm-a-wide-ips',
+                    'gtm-aaaa-pools',
+                    'gtm-aaaa-wide-ips',
+                    'gtm-cname-pools',
+                    'gtm-cname-wide-ips',
+                    'gtm-mx-pools',
+                    'gtm-mx-wide-ips',
+                    'gtm-naptr-pools',
+                    'gtm-naptr-wide-ips',
+                    'gtm-srv-pools',
+                    'gtm-srv-wide-ips',
                     'http-profiles',
                     'http-monitors',
                     'https-monitors',
@@ -11775,6 +12900,8 @@ class ArgumentSpec(object):
                     '!all',
                     "!monitors",
                     '!profiles',
+                    '!gtm-pools',
+                    '!gtm-wide-ips',
 
                     # Negations of non-meta-choices
                     '!asm-policy-stats',
@@ -11785,6 +12912,19 @@ class ArgumentSpec(object):
                     '!fasthttp-profiles',
                     '!fastl4-profiles',
                     '!gateway-icmp-monitors',
+                    '!gtm-a-pools',
+                    '!gtm-servers',
+                    '!gtm-a-wide-ips',
+                    '!gtm-aaaa-pools',
+                    '!gtm-aaaa-wide-ips',
+                    '!gtm-cname-pools',
+                    '!gtm-cname-wide-ips',
+                    '!gtm-mx-pools',
+                    '!gtm-mx-wide-ips',
+                    '!gtm-naptr-pools',
+                    '!gtm-naptr-wide-ips',
+                    '!gtm-srv-pools',
+                    '!gtm-srv-wide-ips',
                     '!http-profiles',
                     '!http-monitors',
                     '!https-monitors',
