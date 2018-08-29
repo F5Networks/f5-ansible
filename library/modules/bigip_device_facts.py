@@ -1700,9 +1700,6 @@ gtm_servers:
       returned: changed
       type: string
       sample: and_list
-    name:
-      description:
-        - Name of the server
     product:
       description:
         - Specifies the server type.
