@@ -750,7 +750,6 @@ class Difference(object):
             self.want.update({'port': self.have.port})
         if self.want.address is None:
             self.want.update({'address': self.have.address})
-        import q; q.q(self.want.destination, self.have.destination)
         if self.want.destination != self.have.destination:
             return self.want.destination
 
@@ -927,7 +926,6 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        import q; q.q(params)
         resource = self.client.api.tm.gtm.servers.server.load(
             name=self.want.server_name,
             partition=self.want.partition
