@@ -407,7 +407,7 @@ class Difference(object):
                 variables=self.want.variables
             )
         result = dict()
-        different = compare_dictionary([self.want.variables], [self.have.variables])
+        different = compare_dictionary(self.want.variables, self.have.variables)
         if not different:
             return None
 

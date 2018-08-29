@@ -244,13 +244,14 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
 try:
+    from library.module_utils.compat.ipaddress import ip_address
     from library.module_utils.network.f5.bigip import HAS_F5SDK
     from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
-    from library.module_utils.network.f5.common import compare_dictionary
+    from library.module_utils.network.f5.common import compare_complex_list
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
@@ -260,13 +261,14 @@ try:
     except ImportError:
         HAS_F5SDK = False
 except ImportError:
+    from ansible.module_utils.compat.ipaddress import ip_address
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
     from ansible.module_utils.network.f5.bigip import F5Client
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import compare_dictionary
+    from ansible.module_utils.network.f5.common import compare_complex_list
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
@@ -534,7 +536,8 @@ class ModuleParameters(Parameters):
         if self._values['address'] is None:
             return None
         if is_valid_ip(self._values['address']):
-            return self._values['address']
+            ip = u'{0}'.format(ip_address(self._values['address']))
+            return ip
         raise F5ModuleError(
             "Specified 'address' is not an IP address."
         )
@@ -747,6 +750,7 @@ class Difference(object):
             self.want.update({'port': self.have.port})
         if self.want.address is None:
             self.want.update({'address': self.have.address})
+        import q; q.q(self.want.destination, self.have.destination)
         if self.want.destination != self.have.destination:
             return self.want.destination
 
@@ -758,7 +762,8 @@ class Difference(object):
             return None
         if self.want.virtual_server_dependencies is None:
             return None
-        return compare_dictionary(self.want.virtual_server_dependencies, self.have.virtual_server_dependencies)
+        result = compare_complex_list(self.want.virtual_server_dependencies, self.have.virtual_server_dependencies)
+        return result
 
     @property
     def enabled(self):
@@ -922,6 +927,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
+        import q; q.q(params)
         resource = self.client.api.tm.gtm.servers.server.load(
             name=self.want.server_name,
             partition=self.want.partition
