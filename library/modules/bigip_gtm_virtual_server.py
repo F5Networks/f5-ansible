@@ -536,7 +536,7 @@ class ModuleParameters(Parameters):
         if self._values['address'] is None:
             return None
         if is_valid_ip(self._values['address']):
-            ip = u'{0}'.format(ip_address(self._values['address']))
+            ip = str(ip_address(u'{0}'.format(self._values['address'])))
             return ip
         raise F5ModuleError(
             "Specified 'address' is not an IP address."
