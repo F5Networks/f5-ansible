@@ -3,4 +3,7 @@
 # Don't set -x
 # we need to keep the secrets AWS variables out of the logs
 
-exec docker run --rm -i -v $PWD:$PWD --workdir $PWD -e  AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e AWS_S3_BUCKET=$AWS_S3_BUCKET f5devcentral/containthedocs "$@"
+env | grep -E "^(PATH=)" > .env_travis
+env | grep -E "^(AWS_)" >> .env_travis
+
+exec docker run --rm -i -v $PWD:$PWD --workdir $PWD --env-file=.env_travis f5devcentral/containthedocs "$@"
