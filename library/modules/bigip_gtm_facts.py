@@ -34,6 +34,8 @@ options:
         the resource. Valid filters are anything that can be provided to
         Python's C(re) module.
 extends_documentation_fragment: f5
+notes:
+  - This module is deprecated. Use the C(bigip_device_facts) module instead.
 author:
   - Tim Rupp (@caphrim007)
 '''
