@@ -1472,6 +1472,334 @@ gateway_icmp_monitors:
       type: int
       sample: 0
   sample: hash/dictionary of values
+gtm_pools:
+  description:
+    - GTM pool related facts.
+    - Every "type" of pool has the exact same list of possible facts. Therefore,
+      the list of facts here is presented once instead of 6 times.
+  returned: When any of C(gtm-pools) or C(gtm-*-pools) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/pool1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: pool1
+    alternate_mode:
+      description:
+        - The load balancing mode that the system uses to load balance name resolution
+          requests among the members of the pool.
+      type: string
+      sample: drop-packet
+    dynamic_ratio:
+      description:
+        - Whether or not the dynamic ratio load balancing algorithm is enabled for this
+          pool.
+      type: bool
+      sample: yes
+    enabled:
+      description:
+        - Is the pool enabled.
+      type: bool
+    disabled:
+      description:
+        - Is the pool disabled
+      type: bool
+    fallback_mode:
+      description:
+        - Specifies the load balancing mode that the system uses to load balance
+          name resolution amongst the pool members if the preferred and alternate
+          modes are unsuccessful in picking a pool.
+      type: string
+    load_balancing_mode:
+      description:
+        - Specifies the preferred load balancing mode that the system uses to load
+          balance requests across pool members.
+      type: string
+    manual_resume:
+      description:
+        - Whether manual resume is enabled for this pool
+      type: bool
+    max_answers_returned:
+      description:
+        - Maximum number of available virtual servers that the system lists in a
+          response.
+      type: int
+    members:
+      description:
+        - Lists of members (and their configurations) in the pool.
+      type: complex
+    partition:
+      description:
+        - Partition the pool exists on.
+    qos_hit_ratio:
+      description:
+        - Weight of the Hit Ratio performance factor for the QoS dynamic load
+          balancing method
+      type: int
+    qos_hops:
+      description:
+        - Weight of the Hops performance factor when load balancing mode or fallback mode
+          is QoS.
+      type: int
+    qos_kilobytes_second:
+      description:
+        - Weight assigned to Kilobytes per Second performance factor when load balancing
+          option is QoS.
+      type: int
+    qos_lcs:
+      description:
+        - Weight assign to the Link Capacity performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_packet_rate:
+      description:
+        - Weight assign to the Packet Rate performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_rtt:
+      description:
+        - Weight assign to the Round Trip Time performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_topology:
+      description:
+        - Weight assign to the Topology performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_vs_capacity:
+      description:
+        - Weight assign to the Virtual Server performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_vs_score:
+      description:
+        - Weight assign to the Virtual Server Score performance factor when load balacing
+          option is QoS.
+      type: int
+    ttl:
+      description:
+        - Number of seconds that the IP address, once found, is valid.
+      type: int
+    verify_member_availability:
+      description:
+        - Whether or not the system verifies the availability of the members before
+          sending a connection to them.
+      type: bool
+  sample: hash/dictionary of values
+gtm_servers:
+  description:
+    - GTM server related facts.
+  returned: When C(gtm-servers) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/server1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: server1
+    datacenter:
+      description:
+        - Full name of the datacenter this server belongs to.
+      type: string
+    enabled:
+      description:
+        - Whether the server is enabled.
+      type: bool
+    disabled:
+      description:
+        - Whether the server is disabled.
+      type: bool
+    expose_route_domains:
+      description:
+        - Allow the GTM server to auto-discover the LTM virtual servers from all
+          route domains.
+      type: bool
+    iq_allow_path:
+      description:
+        - Whether the GTM uses this BIG-IP system to conduct a path probe before
+          delegating traffic to it.
+      type: bool
+    iq_allow_service_check:
+      description:
+        - Whether the GTM uses this BIG-IP system to conduct a service check probe
+          before delegating traffic to it.
+      type: bool
+    iq_allow_snmp:
+      description:
+        - Whether the GTM uses this BIG-IP system to conduct an SNMP probe
+          before delegating traffic to it.
+      type: bool
+    limit_cpu_usage:
+      description:
+        - For a server configured as a generic host, specifies the percent of CPU
+          usage, otherwise has no effect.
+    limit_cpu_usage_status:
+      description:
+        - Whether C(limit_cpu_usage) is enabled for this server.
+      type: bool
+    limit_max_bps:
+      description:
+        - Maximum allowable data throughput rate in bits per second for this server.
+    limit_max_bps_status:
+      description:
+        - Whether C(limit_max_bps) is enabled for this server.
+      type: bool
+    limit_max_connections:
+      description:
+        - Maximum number of concurrent connections, combind, for this server.
+    limit_max_connections_status:
+      description:
+        - Whether C(limit_max_connections) is enabled for this server.
+      type: bool
+    limit_max_pps:
+      description:
+        - Maximum allowable data transfer rate, in packets per second, for this server.
+    limit_max_pps_status:
+      description:
+        - Whether C(limit_max_pps) is enabled for this server.
+      type: bool
+    limit_mem_available:
+      description:
+        - For a server configured as a generic host, specifies the available memory
+          required by the virtual servers on the server.
+        - If available memory falls below this limit, the system marks the server as
+          unavailable.
+    limit_mem_available_status:
+      description:
+        - Whether C(limit_mem_available) is enabled for this server.
+      type: bool
+    link_discovery:
+      description:
+        - Specifies whether the system auto-discovers the links for this server.
+      type: string
+    monitors:
+      description:
+        - Specifies health monitors that the system uses to determine whether this
+          server is available for load balancing.
+      returned: changed
+      type: list
+      sample: ['/Common/https_443', '/Common/icmp']
+    monitor_type:
+      description:
+        - Whether one or monitors need to pass, or all monitors need to pass.
+      returned: changed
+      type: string
+      sample: and_list
+    name:
+      description:
+        - Name of the server
+    product:
+      description:
+        - Specifies the server type.
+    prober_fallback:
+      description:
+        - The type of prober to use to monitor this servers resources when the
+          preferred type is not available.
+    prober_preference:
+      description:
+        - Specifies the type of prober to use to monitor this servers resources.
+    virtual_server_discovery:
+      description:
+        - Whether the system auto-discovers the virtual servers for this server.
+      type: string
+    addresses:
+      description:
+        - Specifies the server IP addresses for the server.
+      type: complex
+    devices:
+      description:
+        - Specifies the names of the devies that represent this server.
+      type: complex.
+    virtual_servers:
+      description:
+        - Virtual servers that are resources for this server.
+      type: complex
+  sample: hash/dictionary of values
+gtm_wide_ips:
+  description:
+    - GTM Wide IP related facts.
+    - Every "type" of wide-ip has the exact same list of possible facts. Therefore,
+      the list of facts here is presented once instead of 6 times.
+  returned: When any of C(gtm-wide-ips) or C(gtm-*-wide-ips) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/wide1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: wide1
+    description:
+      description:
+        - Description of the wide ip.
+    enabled:
+      description:
+        - Whether the Wide IP is enabled.
+      type: bool
+    disabled:
+      description:
+        - Whether the Wide IP is disabled.
+      type: bool
+    failure_rcode:
+      description:
+        - Specifies the DNS RCODE used when C(failure_rcode_response) is C(yes).
+    failure_rcode_response:
+      description:
+        - When C(yes), specifies that the system returns a RCODE response to
+          Wide IP requests after exhausting all load-balancing methods.
+      type: bool
+    failure_rcode_ttl:
+      description:
+        - Specifies the negative caching TTL of the SOA for the RCODE response.
+    last_resort_pool:
+      description:
+        - Specifies which pool, as listed in Pool List, for the system to use as
+          the last resort pool for the wide IP.
+    minimal_response:
+      description:
+        - Specifies that the system forms the smallest allowable DNS response to
+          a query.
+    persist_cidr_ipv4:
+      description:
+        - Specifies the number of bits the system uses to identify IPv4 addresses
+          when persistence is enabled.
+    persist_cidr_ipv6:
+      description:
+        - Specifies the number of bits the system uses to identify IPv6 addresses
+          when persistence is enabled.
+    pool_lb_mode:
+      description:
+        - Specifies the load balancing method used to select a pool in this wide IP.
+    ttl_persistence:
+      description:
+        - Specifies, in seconds, the length of time for which the persistence
+          entry is valid.
+    pools:
+      description:
+        - Specifies the pools that this wide IP uses for load balancing.
+      type: complex
+  sample: hash/dictionary of values
 http_monitors:
   description: HTTP monitor related facts.
   returned: When C(http-monitors) is specified in C(gather_subset).
@@ -6875,12 +7203,16 @@ class GtmXPoolsParameters(BaseParameters):
         'qos_vs_capacity',
         'qos_vs_score',
         'ttl',
-        'type',
-        'full_path',
-        'availability_state',
-        'enabled_state',
-        'availability_status',
+        'verify_member_availability',
     ]
+
+    @property
+    def verify_member_availability(self):
+        return flatten_boolean(self._values['verify_member_availability'])
+
+    @property
+    def dynamic_ratio(self):
+        return flatten_boolean(self._values['dynamic_ratio'])
 
     @property
     def max_answers_returned(self):
@@ -7009,6 +7341,10 @@ class GtmXPoolsParameters(BaseParameters):
         else:
             # disabled
             return 'black'
+
+    @property
+    def manual_resume(self):
+        return flatten_boolean(self._values['manual_resume'])
 
 
 class GtmAPoolsFactManager(BaseManager):
@@ -7322,6 +7658,7 @@ class GtmServersParameters(BaseParameters):
         'virtualServerDiscovery': 'virtual_server_discovery',
         'devicesReference': 'devices',
         'virtualServersReference': 'virtual_servers',
+        'monitor': 'monitors',
     }
 
     returnables = [
@@ -7344,7 +7681,8 @@ class GtmServersParameters(BaseParameters):
         'limit_mem_available',
         'limit_mem_available_status',
         'link_discovery',
-        'monitor',
+        'monitors',
+        'monitor_type',
         'name',
         'product',
         'prober_fallback',
@@ -7354,6 +7692,63 @@ class GtmServersParameters(BaseParameters):
         'devices',
         'virtual_servers',
     ]
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            return result
+        except Exception:
+            return [self._values['monitors']]
+
+    @property
+    def monitor_type(self):
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+\d+\s+of'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches:
+            return 'm_of_n'
+        else:
+            return 'and_list'
+
+    @property
+    def limit_mem_available_status(self):
+        return flatten_boolean(self._values['limit_mem_available_status'])
+
+    @property
+    def limit_max_pps_status(self):
+        return flatten_boolean(self._values['limit_max_pps_status'])
+
+    @property
+    def limit_max_connections_status(self):
+        return flatten_boolean(self._values['limit_max_connections_status'])
+
+    @property
+    def limit_max_bps_status(self):
+        return flatten_boolean(self._values['limit_max_bps_status'])
+
+    @property
+    def limit_cpu_usage_status(self):
+        return flatten_boolean(self._values['limit_cpu_usage_status'])
+
+    @property
+    def iq_allow_service_check(self):
+        return flatten_boolean(self._values['iq_allow_service_check'])
+
+    @property
+    def iq_allow_snmp(self):
+        return flatten_boolean(self._values['iq_allow_snmp'])
+
+    @property
+    def expose_route_domains(self):
+        return flatten_boolean(self._values['expose_route_domains'])
+
+    @property
+    def iq_allow_path(self):
+        return flatten_boolean(self._values['iq_allow_path'])
 
     @property
     def product(self):
@@ -7493,9 +7888,9 @@ class GtmServersFactManager(BaseManager):
 class GtmXWideIpsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
-        'failureRcode': 'failure_return_code',
-        'failureRcodeResponse': 'failure_return_code_response',
-        'failureRcodeTtl': 'failure_return_code_ttl',
+        'failureRcode': 'failure_rcode',
+        'failureRcodeResponse': 'failure_rcode_response',
+        'failureRcodeTtl': 'failure_rcode_ttl',
         'lastResortPool': 'last_resort_pool',
         'minimalResponse': 'minimal_response',
         'persistCidrIpv4': 'persist_cidr_ipv4',
@@ -7509,9 +7904,9 @@ class GtmXWideIpsParameters(BaseParameters):
         'description',
         'enabled',
         'disabled',
-        'failure_return_code',
-        'failure_return_code_response',
-        'failure_return_code_ttl',
+        'failure_rcode',
+        'failure_rcode_response',
+        'failure_rcode_ttl',
         'last_resort_pool',
         'minimal_response',
         'name',
@@ -7536,10 +7931,14 @@ class GtmXWideIpsParameters(BaseParameters):
         return result
 
     @property
-    def failure_return_code_ttl(self):
-        if self._values['failure_return_code_ttl'] is None:
+    def failure_rcode_response(self):
+        return flatten_boolean(self._values['failure_rcode_response'])
+
+    @property
+    def failure_rcode_ttl(self):
+        if self._values['failure_rcode_ttl'] is None:
             return None
-        return int(self._values['failure_return_code_ttl'])
+        return int(self._values['failure_rcode_ttl'])
 
     @property
     def persist_cidr_ipv4(self):
