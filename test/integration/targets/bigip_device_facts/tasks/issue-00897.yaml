@@ -1,0 +1,263 @@
+---
+
+- name: Issue 00897 - Provision GTM
+  bigip_provision:
+    name: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 00897 - Create datacenter
+  bigip_gtm_datacenter:
+    name: dc1
+
+- name: Issue 00897 - Create GTM server
+  bigip_gtm_server:
+    name: server1
+    devices:
+      - name: foo
+        address: 1.1.1.1
+        translation: 2.2.2.2
+    datacenter: dc1
+    state: present
+
+- name: Issue 00897 - Create GTM pools
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    name: "gtm-pool-{{ item }}"
+    state: present
+    type: "{{ item }}"
+  loop:
+    - a
+    - aaaa
+    - cname
+    - mx
+    - naptr
+    - srv
+
+- name: Issue 00897 - Create Wide IPs
+  bigip_gtm_wide_ip:
+    lb_method: round-robin
+    state: present
+    type: "{{ item }}"
+    wide_ip: "wide-{{ item }}.foo.bar"
+  loop:
+    - a
+    - aaaa
+    - cname
+    - mx
+    - naptr
+    - srv
+
+- name: Issue 00897 - Select gtm-a-pools facts
+  bigip_device_facts:
+    include:
+      - gtm-a-pools
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-a-pools facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_a_pools | selectattr("name", "match", "gtm-pool-a") | map(attribute='load_balancing_mode') | first == "round-robin"
+      - result.gtm_a_pools | json_query("[?name=='gtm-pool-a'].load_balancing_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-aaaa-pools facts
+  bigip_device_facts:
+    include:
+      - gtm-aaaa-pools
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-aaaa-pools facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_aaaa_pools | selectattr("name", "match", "gtm-pool-aaaa") | map(attribute='load_balancing_mode') | first == "round-robin"
+      - result.gtm_aaaa_pools | json_query("[?name=='gtm-pool-aaaa'].load_balancing_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-cname-pools facts
+  bigip_device_facts:
+    include:
+      - gtm-cname-pools
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-cname-pools facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_cname_pools | selectattr("name", "match", "gtm-pool-cname") | map(attribute='load_balancing_mode') | first == "round-robin"
+      - result.gtm_cname_pools | json_query("[?name=='gtm-pool-cname'].load_balancing_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-mx-pools facts
+  bigip_device_facts:
+    include:
+      - gtm-mx-pools
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-mx-pools facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_mx_pools | selectattr("name", "match", "gtm-pool-mx") | map(attribute='load_balancing_mode') | first == "round-robin"
+      - result.gtm_mx_pools | json_query("[?name=='gtm-pool-mx'].load_balancing_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-naptr-pools facts
+  bigip_device_facts:
+    include:
+      - gtm-naptr-pools
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-naptr-pools facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_naptr_pools | selectattr("name", "match", "gtm-pool-naptr") | map(attribute='load_balancing_mode') | first == "round-robin"
+      - result.gtm_naptr_pools | json_query("[?name=='gtm-pool-naptr'].load_balancing_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-srv-pools facts
+  bigip_device_facts:
+    include:
+      - gtm-srv-pools
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-srv-pools facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_srv_pools | selectattr("name", "match", "gtm-pool-srv") | map(attribute='load_balancing_mode') | first == "round-robin"
+      - result.gtm_srv_pools | json_query("[?name=='gtm-pool-srv'].load_balancing_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-a-wide-ips facts
+  bigip_device_facts:
+    include:
+      - gtm-a-wide-ips
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-a-wide-ips facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_a_wide_ips | selectattr("name", "match", "wide-a.foo.bar") | map(attribute='pool_lb_mode') | first == "round-robin"
+      - result.gtm_a_wide_ips | json_query("[?name=='wide-a.foo.bar'].pool_lb_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-aaaaa-wide-ips facts
+  bigip_device_facts:
+    include:
+      - gtm-aaaa-wide-ips
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-aaaa-wide-ips facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_aaaa_wide_ips | selectattr("name", "match", "wide-aaaa.foo.bar") | map(attribute='pool_lb_mode') | first == "round-robin"
+      - result.gtm_aaaa_wide_ips | json_query("[?name=='wide-aaaa.foo.bar'].pool_lb_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-cname-wide-ips facts
+  bigip_device_facts:
+    include:
+      - gtm-cname-wide-ips
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-cname-wide-ips facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_cname_wide_ips | selectattr("name", "match", "wide-cname.foo.bar") | map(attribute='pool_lb_mode') | first == "round-robin"
+      - result.gtm_cname_wide_ips | json_query("[?name=='wide-cname.foo.bar'].pool_lb_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-mx-wide-ips facts
+  bigip_device_facts:
+    include:
+      - gtm-mx-wide-ips
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-mx-wide-ips facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_mx_wide_ips | selectattr("name", "match", "wide-mx.foo.bar") | map(attribute='pool_lb_mode') | first == "round-robin"
+      - result.gtm_mx_wide_ips | json_query("[?name=='wide-mx.foo.bar'].pool_lb_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-naptr-wide-ips facts
+  bigip_device_facts:
+    include:
+      - gtm-naptr-wide-ips
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-naptr-wide-ips facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_naptr_wide_ips | selectattr("name", "match", "wide-naptr.foo.bar") | map(attribute='pool_lb_mode') | first == "round-robin"
+      - result.gtm_naptr_wide_ips | json_query("[?name=='wide-naptr.foo.bar'].pool_lb_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-srv-wide-ips facts
+  bigip_device_facts:
+    include:
+      - gtm-srv-wide-ips
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-srv-wide-ips facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_srv_wide_ips | selectattr("name", "match", "wide-srv.foo.bar") | map(attribute='pool_lb_mode') | first == "round-robin"
+      - result.gtm_srv_wide_ips | json_query("[?name=='wide-srv.foo.bar'].pool_lb_mode") | first == "round-robin"
+
+- name: Issue 00897 - Select gtm-servers facts
+  bigip_device_facts:
+    include:
+      - gtm-servers
+  register: result
+
+- name: Issue 00897 - Assert Select gtm-servers facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_servers | selectattr("name", "match", "server1") | map(attribute='datacenter') | first == "/Common/dc1"
+      - result.gtm_servers | json_query("[?name=='server1'].datacenter") | first == "/Common/dc1"
+
+- name: Issue 00897 - Remove Wide IPs
+  bigip_gtm_wide_ip:
+    state: absent
+    type: "{{ item }}"
+    wide_ip: "wide-{{ item }}.foo.bar"
+  loop:
+    - a
+    - aaaa
+    - cname
+    - mx
+    - naptr
+    - srv
+
+- name: Issue 00897 - Remove GTM pools
+  bigip_gtm_pool:
+    name: "gtm-pool-{{ item }}"
+    state: absent
+    type: "{{ item }}"
+  loop:
+    - a
+    - aaaa
+    - cname
+    - mx
+    - naptr
+    - srv
+
+- name: Issue 00897 - Remove GTM server
+  bigip_gtm_server:
+    name: server1
+    datacenter: dc1
+    state: absent
+
+- name: Issue 00897 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: dc1
+    state: absent
+
+- name: Issue 00897 - De-Provision GTM
+  bigip_provision:
+    name: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
