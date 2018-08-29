@@ -34,7 +34,7 @@ options:
         the resource. Valid filters are anything that can be provided to
         Python's C(re) module.
 deprecated:
-  removed_in: 2.11
+  removed_in: '2.11'
   alternative: bigip_device_facts
   why: >
     The bigip_gtm_facts module is an outlier as all facts are being collected

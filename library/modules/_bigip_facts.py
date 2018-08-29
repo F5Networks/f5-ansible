@@ -31,7 +31,7 @@ notes:
   - C(provision) facts were added in 2.2
   - This module is deprecated. Use the C(bigip_device_facts) module instead.
 deprecated:
-  removed_in: 2.11
+  removed_in: '2.11'
   alternative: bigip_device_facts
   why: >
     The bigip_facts module relies on SOAP to communicate with the BIG-IP,
