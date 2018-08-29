@@ -37,20 +37,8 @@ jobs:
     - stage: test
       script:
         - inv docs.module
-        - make docker-test 
+        - make docker-test && make docker-deploy
+        - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel
       python: 3.6
       env: TOXENV=docs-deploy
       if: branch = devel
-    - stage: deploy
-      if: branch = devel
-      - provider: s3
-        skip_cleanup: true
-        access_key_id: $AWS_ACCESS_KEY_ID
-        secret_access_key: $AWS_SECRET_ACCESS_KEY
-        bucket: clouddocs.f5.com
-        local_dir: docs/_build/html
-        upload_dir: products/orchestration/ansible/devel
-        on:
-          repo: F5Networks/f5-ansible
-        after_deploy:
-          - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel/  
