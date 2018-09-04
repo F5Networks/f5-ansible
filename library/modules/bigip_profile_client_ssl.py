@@ -302,6 +302,8 @@ class ModuleParameters(Parameters):
     def parent(self):
         if self._values['parent'] is None:
             return None
+        if self._values['parent'] == 'clientssl':
+            return '/Common/clientssl'
         result = fq_name(self.partition, self._values['parent'])
         return result
 
@@ -347,45 +349,12 @@ class ModuleParameters(Parameters):
 
     @property
     def options(self):
-        choices = [
-            'netscape-reuse-cipher-change-bug',
-            'microsoft-big-sslv3-buffer',
-            'msie-sslv2-rsa-padding',
-            'ssleay-080-client-dh-bug',
-            'tls-d5-bug',
-            'tls-block-padding-bug',
-            'dont-insert-empty-fragments',
-            'no-ssl',
-            'no-dtls',
-            'no-session-resumption-on-renegotiation',
-            'no-tlsv1.1',
-            'no-tlsv1.2',
-            'single-dh-use',
-            'ephemeral-rsa',
-            'cipher-server-preference',
-            'tls-rollback-bug',
-            'no-sslv2',
-            'no-sslv3',
-            'no-tls',
-            'no-tlsv1',
-            'pkcs1-check-1',
-            'pkcs1-check-2',
-            'netscape-ca-dn-bug',
-            'netscape-demo-cipher-change-bug'
-        ]
         options = self._values['options']
-
         if options is None:
             return None
-
         if is_empty_list(options):
             return []
-
-        if set(options).issubset(set(choices)):
-            return options
-        else:
-            offenders = set(options).difference(set(choices))
-            raise F5ModuleError('Invalid options specified: {0}'.format(offenders))
+        return options
 
 
 class ApiParameters(Parameters):
@@ -685,6 +654,7 @@ class ArgumentSpec(object):
                     'pkcs1-check-2',
                     'netscape-ca-dn-bug',
                     'netscape-demo-cipher-change-bug',
+                    'none',
                 ]
             ),
             cert_key_chain=dict(
