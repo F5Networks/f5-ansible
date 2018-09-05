@@ -89,7 +89,7 @@ def upstream(c, module):
 
         # Handle deprecated modules
         if module.startswith('_'):
-            module = module[1:]
+            non_deprecated_module = module[1:]
 
         if not deprecated and not should_upstream_module(module):
             continue
@@ -102,6 +102,9 @@ def upstream(c, module):
                 '{0}/local/ansible/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module)
             ]
             c.run(' '.join(cmd))
+
+        if deprecated:
+            module = non_deprecated_module
 
         # - upstream unit test fixtures
         fixtures = get_fixtures(c, module)
