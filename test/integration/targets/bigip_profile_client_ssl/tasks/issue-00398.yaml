@@ -22,7 +22,7 @@
   bigip_profile_client_ssl:
     state: present
     ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
-    name: my_profile
+    name: my_profile_issue-00398
     cert_key_chain:
       - cert: "{{ cert }}"
         key: "{{ key }}"
@@ -37,7 +37,7 @@
   bigip_profile_client_ssl:
     state: present
     ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
-    name: my_profile
+    name: my_profile_issue-00398
     cert_key_chain:
       - cert: "{{ cert }}"
         key: "{{ key }}"
@@ -50,7 +50,7 @@
 
 - name: Issue 00398 - Remove client SSL profile
   bigip_profile_client_ssl:
-    name: my_profile
+    name: my_profile_issue-00398
     state: absent
 
 - name: Issue 00398 - Remove certificate
