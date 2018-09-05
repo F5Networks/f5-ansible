@@ -35,7 +35,7 @@ F5
   * :ref:`bigip_dns_nameserver_module`
   * :ref:`bigip_dns_record_module`
   * :ref:`bigip_dns_zone_module`
-  * :ref:`bigip_facts_module`
+  * :ref:`bigip_facts_module` **(D)**
   * :ref:`bigip_firewall_address_list_module`
   * :ref:`bigip_firewall_dos_profile_module`
   * :ref:`bigip_firewall_dos_vector_module`
@@ -44,7 +44,7 @@ F5
   * :ref:`bigip_firewall_rule_module`
   * :ref:`bigip_firewall_rule_list_module`
   * :ref:`bigip_gtm_datacenter_module`
-  * :ref:`bigip_gtm_facts_module`
+  * :ref:`bigip_gtm_facts_module` **(D)**
   * :ref:`bigip_gtm_global_module`
   * :ref:`bigip_gtm_monitor_bigip_module`
   * :ref:`bigip_gtm_monitor_external_module`
@@ -104,7 +104,6 @@ F5
   * :ref:`bigip_snmp_module`
   * :ref:`bigip_snmp_community_module`
   * :ref:`bigip_snmp_trap_module`
-  * :ref:`bigip_software_module`
   * :ref:`bigip_software_image_module`
   * :ref:`bigip_software_install_module`
   * :ref:`bigip_software_update_module`

@@ -1,18 +1,26 @@
-:source: bigip_facts.py
+:source: _bigip_facts.py
 
 :orphan:
 
-.. _bigip_facts_module:
+.. __bigip_facts_module:
 
 
-bigip_facts - Collect facts from F5 BIG-IP devices
-++++++++++++++++++++++++++++++++++++++++++++++++++
+_bigip_facts - Collect facts from F5 BIG-IP devices
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 1.6
 
 .. contents::
    :local:
    :depth: 2
+
+DEPRECATED
+----------
+:Removed in Ansible: version: 2.11
+:Why: The bigip_facts module relies on SOAP to communicate with the BIG-IP, and has a large amount of code that does not conform to existing F5 standards. The :ref:`bigip_device_facts <bigip_device_facts_module>` module is easier to maintain and use.
+
+:Alternative: bigip_device_facts
+
 
 
 Synopsis
@@ -303,11 +311,7 @@ Examples
 Status
 ------
 
-
-
-This module is **preview** which means that it is not guaranteed to have a backwards compatible interface.
-
-
+This module is **deprecated** and will be removed in version 2.11. For more information see `DEPRECATED`_.
 
 
 Author

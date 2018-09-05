@@ -1,4 +1,4 @@
-:source: bigip_gtm_facts.py
+:source: _bigip_gtm_facts.py
 
 :orphan:
 
@@ -13,6 +13,14 @@ bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices
 .. contents::
    :local:
    :depth: 2
+
+DEPRECATED
+----------
+:Removed in Ansible: version: 2.11
+:Why: The bigip_gtm_facts module is an outlier as all facts are being collected in the bigip_device_facts module. Additionally, the :ref:`bigip_device_facts <bigip_device_facts_module>` module is easier to maintain and use.
+
+:Alternative: bigip_device_facts
+
 
 
 Synopsis
@@ -239,6 +247,7 @@ Notes
 -----
 
 .. note::
+    - This module is deprecated. Use the ``bigip_device_facts`` module instead.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
@@ -319,11 +328,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 Status
 ------
 
-
-
-This module is **preview** which means that it is not guaranteed to have a backwards compatible interface.
-
-
+This module is **deprecated** and will be removed in version 2.11. For more information see `DEPRECATED`_.
 
 
 Author
