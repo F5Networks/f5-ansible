@@ -7,6 +7,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+
+import sys
+
 from invoke import task
 from .lib.common import init
 from .lib.common import BASE_DIR
