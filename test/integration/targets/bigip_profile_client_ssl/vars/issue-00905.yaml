@@ -1,0 +1,5 @@
+---
+profile: ssl_profile_issue00905
+profile_2: ssl_profile_issue00905_2
+server_1: "foo.com"
+server_2: "*.com"

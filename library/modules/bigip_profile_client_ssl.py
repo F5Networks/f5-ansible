@@ -102,7 +102,7 @@ options:
     description:
       - Specifies the method of secure renegotiations for SSL connections. When
         creating a new profile, the setting is provided by the parent profile.
-      - When C(request) is set the ssystem request secure renegotation of SSL
+      - When C(request) is set the system request secure renegotation of SSL
         connections.
       - C(require) is a default setting and when set the system permits initial SSL
         handshakes from clients but terminates renegotiations from unpatched clients.
@@ -118,6 +118,26 @@ options:
     description:
       - Enables or disables acceptance of non-SSL connections.
       - When creating a new profile, the setting is provided by the parent profile.
+    type: bool
+    version_added: 2.7
+  server_name:
+    description:
+      - Specifies the fully qualified DNS hostname of the server used in Server Name Indication communications.
+        When creating a new profile, the setting is provided by the parent profile.
+      - The server name can also be a wildcard string containing the asterisk C(*) character.
+      version_added: 2.7
+  sni_default:
+    description:
+      - Indicates that the system uses this profile as the default SSL profile when there is no match to the 
+        server name, or when the client provides no SNI extension support. 
+      - When creating a new profile, the setting is provided by the parent profile. 
+      - There can be only one SSL profile with this setting enabled.
+    type: bool
+    version_added: 2.7
+  sni_require:
+    description:
+      - Requires that the network peers also provide SNI support. This setting only takes effect when C(sni_default) is
+        set to C(true). When creating a new profile, the setting is provided by the parent profile.
     type: bool
     version_added: 2.7
   state:
@@ -255,23 +275,30 @@ class Parameters(AnsibleF5Parameters):
         'allowNonSsl': 'allow_non_ssl',
         'secureRenegotiation': 'secure_renegotiation',
         'tmOptions': 'options',
+        'sniDefault': 'sni_default',
+        'sniRequire': 'sni_require',
+        'serverName': 'server_name',
     }
 
     api_attributes = [
         'ciphers', 'certKeyChain',
         'defaultsFrom', 'tmOptions',
         'secureRenegotiation', 'allowNonSsl',
+        'sniDefault', 'sniRequire', 'serverName'
     ]
 
     returnables = [
         'ciphers', 'allow_non_ssl', 'options',
         'secure_renegotiation', 'cert_key_chain',
-        'parent',
+        'parent', 'sni_default', 'sni_require',
+        'server_name',
+
     ]
 
     updatables = [
         'ciphers', 'cert_key_chain', 'allow_non_ssl',
         'options', 'secure_renegotiation',
+        'sni_default', 'sni_require', 'server_name',
     ]
 
 
@@ -353,6 +380,21 @@ class ModuleParameters(Parameters):
             return []
         return options
 
+    @property
+    def sni_require(self):
+        require = flatten_boolean(self._values['sni_require'])
+        default = self.sni_default
+        if require is None:
+            return None
+        if default in [None, False]:
+            if require == 'yes':
+                raise F5ModuleError(
+                    "Cannot set 'sni_require' to {0} if 'sni_default' is set as {1}".format(require, default))
+        if require == 'yes':
+            return True
+        else:
+            return False
+
 
 class ApiParameters(Parameters):
     @property
@@ -372,6 +414,26 @@ class ApiParameters(Parameters):
             result.append(tmp)
         result = sorted(result, key=lambda y: y['name'])
         return result
+
+    @property
+    def sni_default(self):
+        result = self._values['sni_default']
+        if result is None:
+            return None
+        if result == 'true':
+            return True
+        else:
+            return False
+
+    @property
+    def sni_require(self):
+        result = self._values['sni_require']
+        if result is None:
+            return None
+        if result == 'true':
+            return True
+        else:
+            return False
 
 
 class Changes(Parameters):
@@ -468,6 +530,20 @@ class Difference(object):
             return self.want.options
         if set(self.want.options) != set(self.have.options):
                 return self.want.options
+
+    @property
+    def sni_require(self):
+        if self.want.sni_require is None:
+            return None
+        if self.want.sni_require is False:
+            if self.have.sni_default is True and self.want.sni_default is None:
+                raise F5ModuleError(
+                    "Cannot set 'sni_require' to {0} if 'sni_default' is {1}".format(
+                        self.want.sni_require, self.have.sni_default)
+                )
+        if self.want.sni_require == self.have.sni_require:
+            return None
+        return self.want.sni_require
 
 
 class ModuleManager(object):
@@ -710,6 +786,9 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['present', 'absent']
             ),
+            sni_default=dict(type='bool'),
+            sni_require=dict(type='bool'),
+            server_name=dict(),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
