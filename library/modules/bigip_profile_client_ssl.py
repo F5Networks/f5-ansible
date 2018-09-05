@@ -292,7 +292,6 @@ class Parameters(AnsibleF5Parameters):
         'secure_renegotiation', 'cert_key_chain',
         'parent', 'sni_default', 'sni_require',
         'server_name',
-
     ]
 
     updatables = [
