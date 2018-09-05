@@ -158,7 +158,7 @@
     that:
       - result is not changed
 
-- name: Remove profiles
+- name: Issue 00846 - Remove profiles
   bigip_profile_client_ssl:
     name: "{{ item }}"
     state: absent

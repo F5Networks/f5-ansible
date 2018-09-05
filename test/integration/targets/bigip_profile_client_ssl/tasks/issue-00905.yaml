@@ -1,0 +1,179 @@
+---
+
+- name: Issue 00905 - Include issue variables
+  include_vars:
+    file: issue-00905.yaml
+
+- name: Issue 00905 - Create a client SSL profile and set sni default
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_default: yes
+  register: result
+
+- name: Issue 00846 - Assert Create a client SSL profile and set sni default
+  assert:
+    that:
+      - result is changed
+      - result.sni_default == true
+
+- name: Issue 00905 - Create a client SSL profile and set sni default - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_default: yes
+  register: result
+
+- name: Issue 00905 - Assert Create a client SSL profile and set sni default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00905 - Modify client SSL profile and unset sni default
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_default: no
+  register: result
+
+- name: Issue 00846 - Assert Modify a client SSL profile and unset sni default
+  assert:
+    that:
+      - result is changed
+      - result.sni_default == false
+
+- name: Issue 00905 - Modify a client SSL profile and unset sni default - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_default: no
+  register: result
+
+- name: Issue 00905 - Assert Modify a client SSL profile and unset sni default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00905 - Modify client SSL profile and set sni require, sni default unset - Expect failure
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_require: yes
+  register: result
+  ignore_errors: true
+
+- name: Issue 00905 - Modify client SSL profile, set sni require and sni default
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_default: yes
+    sni_require: yes
+  register: result
+
+- name: Issue 00905 - Modify client SSL profile, set sni require and sni default
+  assert:
+    that:
+      - result is changed
+      - result.sni_default == true
+      - result.sni_require == true
+
+- name: Issue 00905 - Modify client SSL profile, set sni require and sni default - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_default: yes
+    sni_require: yes
+  register: result
+
+- name: Issue 00905 - Modify client SSL profile, set sni require and sni default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00905 - Modify client SSL profile and unset sni require, sni default set - Expect failure
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_require: no
+  register: result
+  ignore_errors: true
+
+- name: Issue 00905 - Modify client SSL profile and unset sni require, unset sni default
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_default: no
+    sni_require: no
+  register: result
+
+- name: Issue 00905 - Modify client SSL profile and unset sni require, unset sni default
+  assert:
+    that:
+      - result is changed
+      - result.sni_default == false
+      - result.sni_require == false
+
+- name: Issue 00905 - Modify client SSL profile and unset sni require, unset sni default - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    sni_default: no
+    sni_require: no
+  register: result
+
+- name: Issue 00905 - Modify client SSL profile and unset sni require, unset sni default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00905 - Create a client SSL profile and set server_name
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    server_name: "{{ server_1 }}"
+  register: result
+
+- name: Issue 00905 - Create a client SSL profile and set server_name
+  assert:
+    that:
+      - result is changed
+      - result.server_name == server_1
+
+- name: Issue 00905 - Create a client SSL profile and set server_name - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    server_name: "{{ server_1 }}"
+  register: result
+
+- name: Issue 00905 - Create a client SSL profile and set server_name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00905 - Modify a client SSL profile server_name
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    server_name: "{{ server_2 }}"
+  register: result
+
+- name: Issue 00905 - Modify a client SSL profile server_name
+  assert:
+    that:
+      - result is changed
+      - result.server_name == server_2
+
+- name: Issue 00905 - Modify a client SSL profile server_name - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile_2 }}"
+    server_name: "{{ server_2 }}"
+  register: result
+
+- name: Issue 00905 - Modify a client SSL profile server_name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00905 - Remove profiles
+  bigip_profile_client_ssl:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ profile }}"
+    - "{{ profile_2 }}"
+
+
