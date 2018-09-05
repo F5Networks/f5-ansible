@@ -13,6 +13,7 @@ from . import container
 from . import docs
 from . import ip
 from . import module
+from . import module_doc_fragments
 from . import module_utils
 from . import test
 
@@ -21,6 +22,7 @@ ns = Collection(
     docs,
     ip,
     module,
+    module_doc_fragments,
     module_utils,
     test,
 )
