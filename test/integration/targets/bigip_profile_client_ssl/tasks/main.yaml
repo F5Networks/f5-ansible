@@ -200,6 +200,7 @@
     - chain2
 
 - import_tasks: test-cert-key-chain.yaml
+  tags: cert-key-chain
 
 - import_tasks: issue-00398.yaml
   tags: issue-00398

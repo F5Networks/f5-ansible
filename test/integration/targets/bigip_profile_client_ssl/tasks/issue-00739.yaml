@@ -33,3 +33,11 @@
   assert:
     that:
       - f.client_ssl_profiles | json_query("[?name=='test'].parent") | first == '/Common/parent'
+
+- name: Issue 00739 - Remove client SSL profiles
+  bigip_profile_client_ssl:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - test
+    - parent
