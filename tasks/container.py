@@ -72,11 +72,6 @@ def run(c, python='3.6'):
         print("Allowed values are {0}".format(', '.join(AVAILABLE_PYTHON)))
         sys.exit(1)
 
-    try:
-        container_update(c)
-    except:
-        pass
-
     cmd = [
         'docker-compose', '-f', '{0}/devtools/docker-compose.yaml'.format(BASE_DIR),
         '-f {0}/docker-compose.site.yaml'.format(CONFIG_DIR),
