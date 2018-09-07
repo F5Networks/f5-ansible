@@ -45,7 +45,7 @@ def stub(c, module=None):
     work on a new module.
     """
     if not HAS_JINJA:
-        click.echo("The jinja library is required", err=True)
+        print("The jinja library is required")
         sys.exit(1)
     module, extension = os.path.splitext(module)
     extension = extension + '.py' if extension == '' else extension
