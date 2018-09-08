@@ -1,0 +1,7 @@
+---
+
+- name: Remove test VLAN
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag }}"
+    state: absent

@@ -14,4 +14,19 @@
       - result is success
       - result.system_info.product_code == 'BIG-IQ'
 
+
+- name: Select vlans facts
+  bigip_device_facts:
+    include:
+      - vlans
+  register: result
+
+- name: Assert Select vlans facts
+  assert:
+    that:
+      - result is success
+      - result.vlans | selectattr("name", "match", "alice") | map(attribute='mtu') | first == 1500
+      - result.vlans | json_query("[?name=='alice'].mtu") | first == 1500
+      - "'alice' not in result.vlans | json_query(\"[?tag!=`3605`].name\")"
+
 - import_tasks: teardown.yaml
