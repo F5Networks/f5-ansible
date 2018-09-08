@@ -416,6 +416,7 @@ try:
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.common import transform_name
 except ImportError:
     from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -425,6 +426,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible.module_utils.network.f5.common import transform_name
 
 
 def parseStats(entry):
@@ -583,6 +585,8 @@ class SystemInfoParameters(BaseParameters):
 
     @property
     def is_system_setup(self):
+        if self._values['is_system_setup'] is None:
+            return 'no'
         return flatten_boolean(self._values['is_system_setup'])
 
     @property
@@ -951,6 +955,8 @@ class SystemInfoFactManager(BaseManager):
             else:
                 raise F5ModuleError(resp.content)
         result = parseStats(response)
+        if result is None:
+            return None
         return result[0]
 
     def read_version_info_from_device(self):
@@ -1031,6 +1037,8 @@ class SystemInfoFactManager(BaseManager):
             else:
                 raise F5ModuleError(resp.content)
         result = parseStats(response)
+        if result is None:
+            return None
         return result[0]
 
 
@@ -1111,13 +1119,13 @@ class VlansParameters(BaseParameters):
 
     @property
     def true_mac_address(self):
-        # Who made this field a "description"!?
-        return self._values['stats']['macTrue']['description']
+        if self._values['stats']['macTrue'] in [None, 'none']:
+            return None
+        return self._values['stats']['macTrue']
 
     @property
     def tag(self):
-        # We can't agree on field names...SMH
-        return self._values['stats']['id']['value']
+        return self._values['stats']['id']
 
     @property
     def failsafe_enabled(self):
@@ -1149,18 +1157,50 @@ class VlansFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
-            params = VlansParameters(params=attrs)
+            resource.update(self.read_stats(resource['fullPath']))
+            params = VlansParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
-        result = self.client.api.tm.net.vlans.get_collection(
-            requests_params=dict(
-                params='expandSubcollections=true'
-            )
+    def read_stats(self, resource):
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=resource)
+
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        return result
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan/?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -1173,7 +1213,11 @@ class ModuleManager(object):
         self.managers = {
             'system-info': dict(
                 manager=SystemInfoFactManager,
-                client=F5RestClient
+                client=F5RestClient,
+            ),
+            'vlans': dict(
+                manager=VlansFactManager,
+                client=F5RestClient,
             ),
         }
 
@@ -1269,7 +1313,6 @@ class ArgumentSpec(object):
             gather_subset=dict(
                 type='list',
                 required=True,
-                aliases=['include'],
                 choices=[
                     # Meta choices
                     'all',
