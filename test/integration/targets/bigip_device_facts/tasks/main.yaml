@@ -275,7 +275,7 @@
       - result is success
       - result.vlans | selectattr("name", "match", "alice") | map(attribute='mtu') | first == 1500
       - result.vlans | json_query("[?name=='alice'].mtu") | first == 1500
-      - "'alice' not in result.vlans | json_query(\"[?vlan_id!=`3605`].name\")"
+      - "'alice' not in result.vlans | json_query(\"[?tag!=`3605`].name\")"
 
 - name: Select provision-info facts
   bigip_device_facts:
