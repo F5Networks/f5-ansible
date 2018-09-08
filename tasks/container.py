@@ -48,11 +48,12 @@ def container_update(c):
 
     init()
     cmd = [
-        'docker-compose', '-f', '{0}/devtools/docker-compose.yaml'.format(BASE_DIR),
-        '-f {0}/docker-compose.site.yaml'.format(CONFIG_DIR),
+        'docker-compose',
+        '--file', '{0}/devtools/docker-compose.yaml'.format(BASE_DIR),
+        '--file {0}/docker-compose.site.yaml'.format(CONFIG_DIR),
         'pull'
     ]
-    c.run(' '.join(cmd), hide='err')
+    c.run(' '.join(cmd))
 
 
 @task(help={'python': "Python version to use in container."})
@@ -73,8 +74,9 @@ def run(c, python='3.6'):
         sys.exit(1)
 
     cmd = [
-        'docker-compose', '-f', '{0}/devtools/docker-compose.yaml'.format(BASE_DIR),
-        '-f {0}/docker-compose.site.yaml'.format(CONFIG_DIR),
+        'docker-compose',
+        '--file', '{0}/devtools/docker-compose.yaml'.format(BASE_DIR),
+        '--file {0}/docker-compose.site.yaml'.format(CONFIG_DIR),
         'run', 'py{0}'.format(python)
     ]
     c.run(' '.join(cmd), pty=True)
