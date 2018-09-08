@@ -169,6 +169,24 @@ system_info:
                 - Value of the property
               type: string
               sample: 154.00G
+    is_admin_password_changed:
+      description:
+        - Whether the admin password was changed from its default or not.
+      returned: changed
+      type: bool
+      sample: yes
+    is_root_password_changed:
+      description:
+        - Whether the root password was changed from its default or not.
+      returned: changed
+      type: bool
+      sample: no
+    is_system_setup:
+      description:
+        - Whether the system has been setup or not.
+      returned: changed
+      type: bool
+      sample: yes
     package_edition:
       description:
         - Displays the software edition.
