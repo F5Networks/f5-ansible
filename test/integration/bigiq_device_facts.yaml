@@ -47,6 +47,7 @@
     F5_PASSWORD: "{{ f5_password }}"
     F5_SERVER_PORT: "{{ f5_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
+    F5_AUTH_PROVIDER: "{{ f5_auth_provider|default(omit) }}"
 
   roles:
     - bigiq_device_facts
