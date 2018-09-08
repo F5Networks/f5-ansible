@@ -125,7 +125,7 @@ options:
       - Specifies the fully qualified DNS hostname of the server used in Server Name Indication communications.
         When creating a new profile, the setting is provided by the parent profile.
       - The server name can also be a wildcard string containing the asterisk C(*) character.
-      version_added: 2.7
+    version_added: 2.7
   sni_default:
     description:
       - Indicates that the system uses this profile as the default SSL profile when there is no match to the 
