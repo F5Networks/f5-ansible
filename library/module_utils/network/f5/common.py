@@ -599,7 +599,7 @@ class F5BaseClient(object):
         #
         #  __omit_place_holder__11bd71a2840bff144594b9cc2149db814256f253
         #
-        if '__omit_place_holder__' in result['auth_provider']:
+        if result['auth_provider'] is not None and '__omit_place_holder__' in result['auth_provider']:
             result['auth_provider'] = None
 
     def merge_provider_user_param(self, result, provider):
