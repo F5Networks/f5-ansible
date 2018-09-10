@@ -597,8 +597,15 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        tmp_uri = self.pool_exist()
-        uri = tmp_uri + "/members/{0}".format(transform_name(self.want.partition, self.want.full_name))
+        if not self.pool_exist():
+            F5ModuleError('The specified pool does not exist')
+
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.pool),
+            transform_name(self.want.partition, self.want.full_name)
+        )
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
@@ -618,12 +625,10 @@ class ModuleManager(object):
         try:
             response = resp.json()
         except ValueError:
-            raise F5ModuleError('The specified pool does not exist')
-
+            return False
         if resp.status == 404 or 'code' in response and response['code'] == 404:
-            raise F5ModuleError('The specified pool does not exist')
-
-        return uri
+            return False
+        return True
 
     def node_exists(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/node/{2}".format(
