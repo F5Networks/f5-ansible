@@ -28,4 +28,7 @@
       - result.vlans | json_query("[?name=='alice'].mtu") | first == 1500
       - "'alice' not in result.vlans | json_query(\"[?tag!=`3605`].name\")"
 
+- import_tasks: issue-00923.yaml
+  tags: issue-00923
+
 - import_tasks: teardown.yaml

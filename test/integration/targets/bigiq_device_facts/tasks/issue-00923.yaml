@@ -1,0 +1,14 @@
+---
+
+- name: Select managed-devices facts
+  bigiq_device_facts:
+    gather_subset:
+      - managed-devices
+  register: result
+
+- name: Assert Select managed-devices facts
+  assert:
+    that:
+      - result is success
+      - result.managed_devices | selectattr("group_name", "match", "cm-bigip-allBigIpDevices") | list | count >= 1
+      - result.managed_devices | json_query("[?group_name=='cm-bigip-allBigIpDevices']") | list | count >= 1
