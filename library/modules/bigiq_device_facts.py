@@ -29,9 +29,11 @@ options:
     required: True
     choices:
       - all
+      - managed-devices
       - system-db
       - system-info
       - "!all"
+      - "!managed-devices"
       - "!system-db"
       - "!system-info"
 extends_documentation_fragment: f5
@@ -74,6 +76,144 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+managed_devices:
+  description: Managed device related facts.
+  returned: When C(managed-devices) is specified in C(gather_subset).
+  type: complex
+  contains:
+    address:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: 10.10.10.10
+    build:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: 0.0.4
+    device_uri:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: "https://10.10.10.10:443"
+    edition:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: Final
+    group_name:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: cm-bigip-allBigIpDevices
+    hostname:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: tier2labB1.lab.fp.foo.com
+    https_port:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: int
+      sample: 443
+    is_clustered:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: bool
+      sample: no
+    is_license_expired:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: bool
+      sample: yes
+    is_virtual:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: bool
+      sample: yes
+    machine_id:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: c141bc88-f734-4434-be64-a3e9ea98356e
+    management_address:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: 10.10.10.10
+    mcp_device_name:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: /Common/tier2labB1.lab.fp.foo.com
+    product:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: BIG-IP
+    rest_framework_version:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: 13.1.1-0.0.4
+    self_link:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: "https://localhost/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/c141bc88-f734-4434-be64-a3e9ea98356e"
+    slots:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: complex
+      sample: {"volume": "HD1.1", "product": "BIG-IP", "version": "13.1.1", "build": "0.0.4", "isActive": "yes"}
+    state:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: ACTIVE
+    tags:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: complex
+      sample: {'BIGIQ_tier_2_device': '2018-08-22T13:30:47.693-07:00', 'BIGIQ_SSG_name': 'tim-ssg'}
+    trust_domain_guid:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: 40ddf541-e604-4905-bde3005056813e36
+    uuid:
+      description:
+        - TODO("Write description")
+      returned: changed
+      type: string
+      sample: c141bc88-f734-4434-be64-a3e9ea98356e
+    version:
+      description:
+        - Version of TMOS installed on the device
+      returned: changed
+      type: string
+      sample: 13.1.1
+  sample: hash/dictionary of values
 system_info:
   description: System info related facts.
   returned: When C(system-info) is specified in C(gather_subset).
@@ -538,6 +678,132 @@ class BaseParameters(Parameters):
         for returnable in self.returnables:
             result[returnable] = getattr(self, returnable)
         result = self._filter_params(result)
+        return result
+
+
+class ManagedDevicesParameters(BaseParameters):
+    api_map = {
+        'deviceUri': 'device_uri',
+        'groupName': 'group_name',
+        'httpsPort': 'https_port',
+        'isClustered': 'is_clustered',
+        'isLicenseExpired': 'is_license_expired',
+        'isVirtual': 'is_virtual',
+        'machineId': 'machine_id',
+        'managementAddress': 'management_address',
+        'mcpDeviceName': 'mcp_device_name',
+        'restFrameworkVersion': 'rest_framework_version',
+        'selfLink': 'self_link',
+        'trustDomainGuid': 'trust_domain_guid',
+    }
+
+    returnables = [
+        'address',
+        'build',
+        'device_uri',
+        'edition',
+        'group_name',
+        'hostname',
+        'https_port',
+        'is_clustered',
+        'is_license_expired',
+        'is_virtual',
+        'machine_id',
+        'management_address',
+        'mcp_device_name',
+        'product',
+        'rest_framework_version',
+        'self_link',
+        'slots',
+        'state',
+        'tags',
+        'trust_domain_guid',
+        'uuid',
+        'version',
+    ]
+
+    @property
+    def slots(self):
+        result = []
+        if self._values['slots'] is None:
+            return None
+        for x in self._values['slots']:
+            x['is_active'] = flatten_boolean(x.pop('isActive', False))
+            result.append(x)
+        return result
+
+    @property
+    def tags(self):
+        if self._values['tags'] is None:
+            return None
+        result = dict((x['name'], x['value']) for x in self._values['tags'])
+        return result
+
+    @property
+    def https_port(self):
+        return int(self._values['https_port'])
+
+    @property
+    def is_clustered(self):
+        return flatten_boolean(self._values['is_clustered'])
+
+    @property
+    def is_license_expired(self):
+        return flatten_boolean(self._values['is_license_expired'])
+
+    @property
+    def is_virtual(self):
+        return flatten_boolean(self._values['is_virtual'])
+
+
+class ManagedDevicesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ManagedDevicesFactManager, self).__init__(**kwargs)
+        self.want = ManagedDevicesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(managed_devices=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['hostname'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ManagedDevicesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -1211,6 +1477,10 @@ class ModuleManager(object):
         self.kwargs = kwargs
         self.want = Parameters(params=self.module.params)
         self.managers = {
+            'managed-devices': dict(
+                manager=ManagedDevicesFactManager,
+                client=F5RestClient,
+            ),
             'system-info': dict(
                 manager=SystemInfoFactManager,
                 client=F5RestClient,
@@ -1318,6 +1588,7 @@ class ArgumentSpec(object):
                     'all',
 
                     # Non-meta choices
+                    'managed-devices',
                     'system-info',
                     'vlans',
 
@@ -1325,6 +1596,7 @@ class ArgumentSpec(object):
                     '!all',
 
                     # Negations of non-meta-choices
+                    '!managed-devices',
                     '!system-info',
                     '!vlans',
                 ]
