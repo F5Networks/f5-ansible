@@ -463,3 +463,6 @@
 
 - import_tasks: issue-00774.yaml
   tags: issue-00774
+
+- import_tasks: issue-00772.yaml
+  tags: issue-00772
