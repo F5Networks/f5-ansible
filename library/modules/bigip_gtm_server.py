@@ -210,29 +210,29 @@ from ansible.module_utils.basic import env_fallback
 from distutils.version import LooseVersion
 
 try:
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import fq_name
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.icontrol import tmos_version
+    from library.module_utils.network.f5.icontrol import module_provisioned
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import fq_name
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import transform_name
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.icontrol import tmos_version
+    from ansible.module_utils.network.f5.icontrol import module_provisioned
 
 try:
     from collections import OrderedDict
@@ -287,6 +287,7 @@ class Parameters(AnsibleF5Parameters):
         'iquery_allow_path',
         'iquery_allow_service_check',
         'iquery_allow_snmp',
+        'devices',
     ]
 
 
@@ -382,11 +383,6 @@ class ModuleParameters(Parameters):
                         'translation': translation
                     })
         return result
-
-    def devices_list(self):
-        if self._values['devices'] is None:
-            return None
-        return self._values['devices']
 
     @property
     def enabled(self):
@@ -612,8 +608,8 @@ class Difference(object):
         server_change = self._server_type_changed()
         if not devices_change and not server_change:
             return None
-        tmos_version = self.client.api.tmos_version
-        if LooseVersion(tmos_version) >= LooseVersion('13.0.0'):
+        tmos = tmos_version(self.client)
+        if LooseVersion(tmos) >= LooseVersion('13.0.0'):
             result = self._handle_current_server_type_and_devices(
                 devices_change, server_change
             )
@@ -639,7 +635,7 @@ class ModuleManager(object):
         self.kwargs = kwargs
 
     def exec_module(self):
-        if not self.gtm_provisioned():
+        if not module_provisioned(self.client, 'gtm'):
             raise F5ModuleError(
                 "GTM must be provisioned to use this module."
             )
@@ -656,19 +652,11 @@ class ModuleManager(object):
             return V2Manager(**self.kwargs)
 
     def version_is_less_than(self, version):
-        tmos_version = self.client.api.tmos_version
-        if LooseVersion(tmos_version) < LooseVersion(version):
+        tmos = tmos_version(self.client)
+        if LooseVersion(tmos) < LooseVersion(version):
             return True
         else:
             return False
-
-    def gtm_provisioned(self):
-        resource = self.client.api.tm.sys.dbs.db.load(
-            name='provisioned.cpu.gtm'
-        )
-        if int(resource.value) == 0:
-            return False
-        return True
 
 
 class BaseManager(object):
@@ -712,13 +700,10 @@ class BaseManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state in ['present', 'enabled', 'disabled']:
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        if state in ['present', 'enabled', 'disabled']:
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
@@ -761,7 +746,7 @@ class BaseManager(object):
                 "You must provide an initial device."
             )
         self._assign_creation_defaults()
-
+        self._set_changed_options()
         if self.module.check_mode:
             return True
         self.create_on_device()
@@ -772,11 +757,24 @@ class BaseManager(object):
 
     def create_on_device(self):
         params = self.changes.api_params()
-        self.client.api.tm.gtm.servers.server.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        params['name'] = self.want.name
+        params['partition'] = self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/gtm/server/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
         )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return response['selfLink']
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -788,12 +786,23 @@ class BaseManager(object):
         return True
 
     def read_current_from_device(self):
-        resource = self.client.api.tm.gtm.servers.server.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/gtm/server/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        result = resource.attrs
-        return ApiParameters(params=result)
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return ApiParameters(params=response)
 
     def should_update(self):
         result = self._update_changed_options()
@@ -803,11 +812,22 @@ class BaseManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        resource = self.client.api.tm.gtm.servers.server.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/gtm/server/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        resource.modify(**params)
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def absent(self):
         changed = False
@@ -824,18 +844,30 @@ class BaseManager(object):
         return True
 
     def remove_from_device(self):
-        resource = self.client.api.tm.gtm.servers.server.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/gtm/server/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        resource.delete()
+        response = self.client.api.delete(uri)
+        if response.status == 200:
+            return True
+        raise F5ModuleError(response.content)
 
     def exists(self):
-        result = self.client.api.tm.gtm.servers.server.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/gtm/server/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        return result
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
 
 
 class V1Manager(BaseManager):
@@ -941,20 +973,19 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode
+        supports_check_mode=spec.supports_check_mode,
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
+
+    client = F5RestClient(**module.params)
 
     try:
-        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        module.exit_json(**results)
+        exit_json(module, results, client)
     except F5ModuleError as ex:
         cleanup_tokens(client)
-        module.fail_json(msg=str(ex))
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':

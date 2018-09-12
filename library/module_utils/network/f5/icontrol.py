@@ -16,6 +16,7 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS
 from ansible.module_utils.six import string_types
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.urls import urllib_error
+from ansible.module_utils.urls import urlparse
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import PY3
 
@@ -502,4 +503,56 @@ def upload_file(client, url, dest):
                 # If this is not done, then you risk uploading a partial file.
                 fileobj.seek(0)
                 retries += 1
+    return True
+
+
+def tmos_version(client):
+    uri = "https://{0}:{1}/mgmt/tm/sys/".format(
+        client.provider['server'],
+        client.provider['server_port'],
+    )
+    resp = client.api.get(uri)
+
+    try:
+        response = resp.json()
+    except ValueError as ex:
+        raise F5ModuleError(str(ex))
+
+    if 'code' in response and response['code'] in [400, 403]:
+        if 'message' in response:
+            raise F5ModuleError(response['message'])
+        else:
+            raise F5ModuleError(resp.content)
+
+    to_parse = urlparse(response['selfLink'])
+    query = to_parse.query
+    version = query.split('=')[1]
+    return version
+
+
+def module_provisioned(client, module_name):
+    modules = dict(
+        afm='provisioned.cpu.afm', avr='provisioned.cpu.avr', asm='provisioned.cpu.asm',
+        apm='provisioned.cpu.apm', gtm='provisioned.cpu.gtm', ilx='provisioned.cpu.ilx',
+        pem='provisioned.cpu.pem', vcmp='provisioned.cpu.vcmp'
+    )
+    uri = "https://{0}:{1}/mgmt/tm/sys/db/{2}".format(
+        client.provider['server'],
+        client.provider['server_port'],
+        modules[module_name]
+    )
+    resp = client.api.get(uri)
+
+    try:
+        response = resp.json()
+    except ValueError as ex:
+        raise F5ModuleError(str(ex))
+
+    if 'code' in response and response['code'] in [400, 403]:
+        if 'message' in response:
+            raise F5ModuleError(response['message'])
+        else:
+            raise F5ModuleError(resp.content)
+    if int(response['value']) == 0:
+        return False
     return True
