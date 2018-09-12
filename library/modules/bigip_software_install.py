@@ -71,6 +71,7 @@ RETURN = r'''
 '''
 
 import time
+import ssl
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -416,6 +417,8 @@ class ModuleManager(object):
             try:
                 self.client.reconnect()
                 volume = self.read_volume_from_device()
+                if volume is None:
+                    continue
                 if 'active' in volume and volume['active'] is True:
                     break
             except F5ModuleError:
@@ -437,6 +440,8 @@ class ModuleManager(object):
         while True:
             time.sleep(10)
             volume = self.read_volume_from_device()
+            if volume is None:
+                continue
             if volume['status'] == 'complete':
                 break
             elif volume['status'] == 'failed':
@@ -453,6 +458,10 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
+        except ssl.SSLError:
+            # Suggests BIG-IP is still in the middle of restarting itself or
+            # restjavad is restarting.
+            return None
 
         if 'code' in response and response['code'] == 400:
             if 'message' in response:
