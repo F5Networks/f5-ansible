@@ -1,0 +1,97 @@
+---
+
+- name: Issue 00925 - Include issue variables - Provider
+  include_vars:
+    file: issue-00925.yaml
+
+- name: Issue 00925 - Get the size of the base image
+  stat:
+    path: "{{ base_image }}"
+  register: st
+
+- name: Issue 00925 - Fail if the base file is too small
+  fail:
+    msg: "The base_image value is too small to be an ISO."
+  when: st.stat.size < 100
+
+- name: Issue 00925 - Get the size of the hotfix image
+  stat:
+    path: "{{ hotfix_image }}"
+  register: st
+
+- name: Issue 00925 - Fail if the hotfix file is too small
+  fail:
+    msg: "The base_image value is too small to be an ISO."
+  when: st.stat.size < 100
+
+- name: Issue 00925 - Upload images
+  bigip_software_image:
+    image: "{{ item }}"
+  loop:
+    - "{{ base_image }}"
+    - "{{ hotfix_image }}"
+
+- name: Issue 00925 - Ensure base image is installed
+  bigip_software_install:
+    image: "{{ base_image|basename }}"
+    state: installed
+    volume: HD1.6
+  register: result
+
+- name: Issue 00925 - Assert Ensure base image is installed
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00925 - Ensure base image is installed - Idempotent check
+  bigip_software_install:
+    image: "{{ base_image|basename }}"
+    state: installed
+    volume: HD1.6
+  register: result
+
+- name: Issue 00925 - Assert Ensure base image is installed - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00925 - Ensure hotfix image is installed
+  bigip_software_install:
+    image: "{{ hotfix_image|basename }}"
+    state: installed
+    volume: HD1.6
+  register: result
+
+- name: Issue 00925 - Assert Ensure hotfix image is installed
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00925 - Ensure hotfix image is installed - Idempotent check
+  bigip_software_install:
+    image: "{{ hotfix_image|basename }}"
+    state: installed
+    volume: HD1.6
+  register: result
+
+- name: Issue 00925 - Assert Ensure hotfix image is installed - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00925 - Delete software volumes
+  bigip_command:
+    commands:
+      - delete sys software volume HD1.6
+
+- name: Issue 00925 - Remove installed image
+  bigip_software_image:
+    image: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ base_image }}"
+    - "{{ hotfix_image }}"

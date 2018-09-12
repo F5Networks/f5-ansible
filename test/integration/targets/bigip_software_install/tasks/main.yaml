@@ -55,3 +55,6 @@
       - result is success
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-00925.yaml
+  tags: issue-00925

@@ -1,0 +1,4 @@
+---
+
+base_image: "{{ role_path }}/files/BIGIP-13.0.0.0.0.1645.iso.example"
+hotfix_image: "{{ role_path }}/files/Hotfix-BIGIP-13.0.0.1.0.1668-HF1.iso.example"
