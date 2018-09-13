@@ -453,8 +453,8 @@ class ModuleManager(object):
             self.client.provider['server_port'],
             self.want.volume
         )
-        resp = self.client.api.get(uri)
         try:
+            resp = self.client.api.get(uri)
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
