@@ -62,37 +62,44 @@ def load_fixture(name):
     return data
 
 
-class TestParameters(unittest.TestCase):
-    def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
-
-    def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
-
-
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        set_module_args(dict(
+            lines=[
+                'bgp graceful-restart restart-time 120',
+                'redistribute kernel route-map rhi',
+                'neighbor 10.10.10.11 remote-as 65000',
+                'neighbor 10.10.10.11 fall-over bfd',
+                'neighbor 10.10.10.11 remote-as 65000',
+                'neighbor 10.10.10.11 fall-over bfd'
+            ],
+            parents='router bgp 64664',
+            before='bfd slow-timer 2000',
+            match='exact',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        current = load_fixture('load_imish_output_1.json')
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.read_current_from_device = Mock(return_value=current['commandResult'])
+        mm.upload_file_to_device = Mock(return_value=True)
+        mm.load_config_on_device = Mock(return_value=True)
+        mm.remove_uploaded_file_from_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
