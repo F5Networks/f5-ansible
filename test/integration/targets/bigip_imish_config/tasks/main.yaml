@@ -41,7 +41,7 @@
     that:
       - result is changed
       - result is success
-      - "'backup_file' in result"
+      - "'backup_path' in result"
 
 - name: Configure top level configuration - create backup - Idempotent check
   bigip_imish_config:
@@ -56,9 +56,58 @@
     that:
       - result is not changed
       - result is success
-      - "'backup_file' in result"
+      - "'backup_path' in result"
 
+- name: Configure from source
+  bigip_imish_config:
+    src: "{{ role_path }}/files/config03.txt"
+  register: result
 
+- name: Assert Configure from source
+  assert:
+    that:
+      - result is changed
+      - result is success
 
+- name: Configure from source - Idempotent check
+  bigip_imish_config:
+    src: "{{ role_path }}/files/config03.txt"
+  register: result
 
-#- import_tasks: teardown.yaml
+- name: Assert Configure from source - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Use before param to deconfigure
+  bigip_imish_config:
+    lines:
+      - access-list 10 permit 20.20.20.20
+      - access-list 10 permit 20.20.20.21
+      - access-list 10 deny any
+    before: no access-list 10
+  register: result
+
+- name: Assert Use before param to deconfigure
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Use before param to deconfigure - Idempotent check
+  bigip_imish_config:
+    lines:
+      - access-list 10 permit 20.20.20.20
+      - access-list 10 permit 20.20.20.21
+      - access-list 10 deny any
+    before: no access-list 10
+  register: result
+
+- name: Assert Use before param to deconfigure - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml

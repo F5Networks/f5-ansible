@@ -168,7 +168,8 @@ EXAMPLES = r'''
     diff_against: intended
     intended_config: "{{ lookup('file', 'master.cfg') }}"
 
-- bigip_imish_config:
+- name: Add config to a parent block
+  bigip_imish_config:
     lines:
       - bgp graceful-restart restart-time 120
       - redistribute kernel route-map rhi
@@ -177,18 +178,15 @@ EXAMPLES = r'''
       - neighbor 10.10.10.11 remote-as 65000
       - neighbor 10.10.10.11 fall-over bfd
     parents: router bgp 64664
-    before: bfd slow-timer 2000
     match: exact
 
-- bigip_imish_config:
+- name: Remove an existing acl before writing it
+  bigip_imish_config:
     lines:
-      - neighbor 20.20.20.21 remote-as 65000
-      - neighbor 20.20.20.21 fall-over bfd
-      - neighbor 20.20.20.21 remote-as 65000
-      - neighbor 20.20.20.21 fall-over bfd
-    parents: router bgp 64664
-    before: bfd slow-timer 2000
-    replace: block
+      - access-list 10 permit 20.20.20.20
+      - access-list 10 permit 20.20.20.21
+      - access-list 10 deny any
+    before: no access-list 10
 
 - name: for idempotency, use full-form commands
   bigip_imish_config:
@@ -668,9 +666,11 @@ class ModuleManager(object):
     def save_config(self, result):
         result['changed'] = True
         if self.module.check_mode:
-            self.module.warn('Skipping command `copy running-config startup-config` '
-                        'due to check_mode.  Configuration not copied to '
-                        'non-volatile storage')
+            self.module.warn(
+                'Skipping command `copy running-config startup-config` '
+                'due to check_mode.  Configuration not copied to '
+                'non-volatile storage'
+            )
             return
         self.save_on_device()
 
