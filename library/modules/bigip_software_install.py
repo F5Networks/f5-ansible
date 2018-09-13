@@ -437,12 +437,9 @@ class ModuleManager(object):
             except F5ModuleError:
                 pass
             time.sleep(5)
-        fh = open('/tmp/ansible.out', 'w')
-        import json
         while True:
             time.sleep(10)
             volume = self.read_volume_from_device()
-            fh.write(json.dumps(volume) + "\n")
             if volume is None or 'status' not in volume:
                 self.client.reconnect()
                 continue
