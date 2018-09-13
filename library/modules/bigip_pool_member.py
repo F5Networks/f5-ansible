@@ -275,7 +275,6 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import is_valid_hostname
     from library.module_utils.network.f5.ipaddress import is_valid_ip
-    from library.module_utils.network.f5.ipaddress import validate_ip_address
     from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
@@ -290,7 +289,6 @@ except ImportError:
     from ansible.module_utils.network.f5.common import is_valid_hostname
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.ipaddress import validate_ip_address
     from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
 
 
