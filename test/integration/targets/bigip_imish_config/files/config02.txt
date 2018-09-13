@@ -1,0 +1,72 @@
+!
+no service password-encryption
+!
+access-list SNAT_SELF permit 10.10.10.0/24
+access-list SNAT_SELF permit 10.11.11.0/24
+access-list VIP_POOL_EXT permit 20.20.20.0/24
+!
+interface lo
+!
+interface tmm
+!
+interface VL_CLUSTER_SNAT
+!
+bgp extended-asn-cap
+!
+router bgp 4201000050
+ max-paths ebgp 32
+ bgp graceful-restart restart-time 120
+ redistribute kernel route-map LB-CR-OUT
+ neighbor CLUSTER peer-group
+ neighbor CLUSTER fall-over bfd
+ neighbor CLUSTER maximum-prefix 12000
+ no neighbor CLUSTER capability graceful-restart
+ neighbor CLUSTER route-map LB-CR-OUT out
+ neighbor CLUSTER-v6 peer-group
+ neighbor CLUSTER-v6 fall-over bfd
+ neighbor CLUSTER-v6 maximum-prefix 12000
+ no neighbor CLUSTER-v6 capability graceful-restart
+ neighbor CLUSTER-v6 route-map LB-CR-OUT-v6 out
+ neighbor 10.10.10.254 remote-as 4201000046
+ neighbor 10.10.10.254 peer-group CLUSTER
+ neighbor 10.10.10.254 description VL_CLUSTER_SNAT
+ neighbor 10.10.10.254 update-source VL_CLUSTER_SNAT
+ no neighbor 10.10.10254 capability graceful-restart
+ neighbor 2000:100:6000:10d::fe remote-as 4201000046
+ neighbor 2000:100:6000:10d::fe peer-group CLUSTER-v6
+ neighbor 2000:100:6000:10d::fe description VL_CLUSTER_SNAT
+ neighbor 2000:100:6000:10d::fe update-source VL_CLUSTER_SNAT
+ no neighbor 2000:100:6000:10d::fe capability graceful-restart
+!
+bfd gtsm enable
+!
+ip community-list standard AS22697.INTERNAL.DC permit 22697:20001
+ip community-list standard AS22697.LEAK.POP_ONLY permit 22697:10007
+ip community-list standard AS22697.VIPS permit 22697:20005
+!
+route-map LB-CR-OUT permit 10
+ match ip address SNAT_SELF
+ set community 22697:20001 22697:10007
+!
+route-map LB-CR-OUT permit 20
+ match ip address VIP_POOL_EXT
+ set community 22697:20001 22697:10007 22697:20005
+!
+route-map LB-CR-OUT deny 999
+!
+route-map LB-CR-OUT-v6 permit 10
+ match ip address SNAT6_SELF
+ set community 22697:20001 22697:10007
+!
+route-map LB-CR-OUT-v6 permit 20
+ match ip address VIP6_POOL_EXT
+ set community 22697:20001 22697:10007 22697:20005
+!
+route-map LB-CR-OUT-v6 deny 999
+!
+line con 0
+ login
+line vty 0 39
+ login
+!
+end

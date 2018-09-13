@@ -1,0 +1,64 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Configure top level configuration
+  bigip_imish_config:
+    lines:
+      - description My Interface
+    parents: interface DMZ
+  register: result
+
+- name: Assert Configure top level configuration
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Configure top level configuration - Idempotent check
+  bigip_imish_config:
+    lines:
+      - description My Interface
+    parents: interface DMZ
+  register: result
+
+- name: Assert Configure top level configuration - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Configure top level configuration - create backup
+  bigip_imish_config:
+    lines:
+      - description My nterface
+    parents: interface DMZ
+    backup: yes
+  register: result
+
+- name: Assert Configure top level configuration - create backup
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - "'backup_file' in result"
+
+- name: Configure top level configuration - create backup - Idempotent check
+  bigip_imish_config:
+    lines:
+      - description My nterface
+    parents: interface DMZ
+    backup: yes
+  register: result
+
+- name: Assert Configure top level configuration - create backup - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+      - "'backup_file' in result"
+
+
+
+
+#- import_tasks: teardown.yaml
