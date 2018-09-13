@@ -95,7 +95,7 @@ import traceback
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
-from ansible.module_utils.six.moves import map, zip
+from ansible.module_utils.six.moves import zip
 
 try:
     from library.module_utils.network.f5.legacy import bigip_api, bigsuds_found
