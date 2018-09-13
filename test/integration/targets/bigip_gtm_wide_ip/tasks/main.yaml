@@ -7,13 +7,13 @@
     - module-provisioning
 
 - name: Collect BIG-IP facts
-  bigip_facts:
-    include: system_info
-  register: result
+  bigip_device_facts:
+    include: system-info
+  register: f
 
 - name: Test BIG-IP versions greater than 12
   import_tasks: typed-gtm-wideip.yaml
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Deprovision GTM
   bigip_provision:
