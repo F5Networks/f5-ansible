@@ -1,23 +1,7 @@
-
-!
-no service password-encryption
 !
 access-list 10 permit 20.20.20.20
 access-list 10 permit 20.20.20.21
 access-list 10 deny any
-
-!
-interface lo
-!
-interface tmm
-!
-interface ANYCAST-P2P-1
- bfd interval 100 minrx 200 multiplier 4
-!
-interface ANYCAST-P2P-2
- bfd interval 100 minrx 200 multiplier 4
-!
-interface DMZ
 !
 interface SYSLOG
 !
@@ -28,16 +12,5 @@ router bgp 4201000050
  neighbor 10.10.10.10 fall-over bfd
  neighbor 10.10.10.10 remote-as 65000
  neighbor 10.10.10.10 fall-over bfd
-!
-bfd slow-timer 2000
-bfd gtsm enable
-!
-route-map rhi permit 1
- match ip address 10
-!
-line con 0
- login
-line vty 0 39
- login
 !
 end
