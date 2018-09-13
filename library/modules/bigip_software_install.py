@@ -440,7 +440,7 @@ class ModuleManager(object):
         while True:
             time.sleep(10)
             volume = self.read_volume_from_device()
-            if volume is None:
+            if volume is None or 'status' not in volume:
                 continue
             if volume['status'] == 'complete':
                 break
