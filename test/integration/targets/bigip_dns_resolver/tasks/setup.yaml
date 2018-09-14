@@ -1,0 +1,5 @@
+---
+
+- name: Create a route domain
+  bigip_routedomain:
+    id: 10
