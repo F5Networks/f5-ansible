@@ -84,6 +84,7 @@ F5
   * :ref:`bigip_pool_member_module`
   * :ref:`bigip_profile_client_ssl_module`
   * :ref:`bigip_profile_dns_module`
+  * :ref:`bigip_profile_fastl4_module`
   * :ref:`bigip_profile_http_module`
   * :ref:`bigip_profile_http_compression_module`
   * :ref:`bigip_profile_oneconnect_module`
@@ -130,6 +131,7 @@ F5
   * :ref:`bigiq_application_http_module`
   * :ref:`bigiq_application_https_offload_module`
   * :ref:`bigiq_application_https_waf_module`
+  * :ref:`bigiq_device_facts_module`
   * :ref:`bigiq_regkey_license_module`
   * :ref:`bigiq_regkey_license_assignment_module`
   * :ref:`bigiq_regkey_pool_module`
