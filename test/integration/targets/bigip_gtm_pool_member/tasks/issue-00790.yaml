@@ -1,5 +1,11 @@
 ---
 
+- name: Issue 00716 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
 - name: Issue 00790 - Create a pool
   bigip_gtm_pool:
     name: test.example.com_external
@@ -96,3 +102,11 @@
   bigip_gtm_datacenter:
     name: "{{ dc_name1 }}"
     state: absent
+
+- name: Issue 00716 - De-provision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

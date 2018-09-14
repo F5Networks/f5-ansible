@@ -7,7 +7,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['stableinterface'],
                     'supported_by': 'community'}
@@ -127,10 +126,51 @@ options:
             agent.
         type: bool
     version_added: 2.7
+  monitors:
+    description:
+      - Specifies the health monitors that the system currently uses to monitor this resource.
+      - When C(availability_requirements.type) is C(require), you may only have a single monitor in the
+        C(monitors) list.
+    version_added: 2.8
+  availability_requirements:
+    description:
+      - Specifies, if you activate more than one health monitor, the number of health
+        monitors that must receive successful responses in order for the link to be
+        considered available.
+    suboptions:
+      type:
+        description:
+          - Monitor rule type when C(monitors) is specified.
+          - When creating a new pool, if this value is not specified, the default of 'all' will be used.
+        choices: ['all', 'at_least', 'require']
+      at_least:
+        description:
+          - Specifies the minimum number of active health monitors that must be successful
+            before the link is considered up.
+          - This parameter is only relevant when a C(type) of C(at_least) is used.
+          - This parameter will be ignored if a type of either C(all) or C(require) is used.
+      number_of_probes:
+        description:
+          - Specifies the minimum number of probes that must succeed for this server to be declared up.
+          - When creating a new virtual server, if this parameter is specified, then the C(number_of_probers)
+            parameter must also be specified.
+          - The value of this parameter should always be B(lower) than, or B(equal to), the value of C(number_of_probers).
+          - This parameter is only relevant when a C(type) of C(require) is used.
+          - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
+      number_of_probers:
+        description:
+          - Specifies the number of probers that should be used when running probes.
+          - When creating a new virtual server, if this parameter is specified, then the C(number_of_probes)
+            parameter must also be specified.
+          - The value of this parameter should always be B(higher) than, or B(equal to), the value of C(number_of_probers).
+          - This parameter is only relevant when a C(type) of C(require) is used.
+          - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
+    version_added: 2.8
 extends_documentation_fragment: f5
 author:
   - Robert Teller
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -183,6 +223,11 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+monitors:
+  description: The new list of monitors for the resource.
+  returned: changed
+  type: list
+  sample: ['/Common/monitor1', '/Common/monitor2']
 link_discovery:
   description: The new C(link_discovery) configured on the remote device.
   returned: changed
@@ -205,6 +250,8 @@ datacenter:
   sample: datacenter01
 '''
 
+import re
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 from distutils.version import LooseVersion
@@ -219,6 +266,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import is_empty_list
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import module_provisioned
 except ImportError:
@@ -231,6 +279,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import is_empty_list
     from ansible.module_utils.network.f5.icontrol import tmos_version
     from ansible.module_utils.network.f5.icontrol import module_provisioned
 
@@ -252,6 +301,7 @@ class Parameters(AnsibleF5Parameters):
         'iqAllowPath': 'iquery_allow_path',
         'iqAllowServiceCheck': 'iquery_allow_service_check',
         'iqAllowSnmp': 'iquery_allow_snmp',
+        'monitor': 'monitors',
     }
 
     api_attributes = [
@@ -265,6 +315,7 @@ class Parameters(AnsibleF5Parameters):
         'iqAllowPath',
         'iqAllowServiceCheck',
         'iqAllowSnmp',
+        'monitor',
     ]
 
     updatables = [
@@ -276,6 +327,7 @@ class Parameters(AnsibleF5Parameters):
         'iquery_allow_path',
         'iquery_allow_service_check',
         'iquery_allow_snmp',
+        'monitors',
     ]
 
     returnables = [
@@ -288,6 +340,8 @@ class Parameters(AnsibleF5Parameters):
         'iquery_allow_service_check',
         'iquery_allow_snmp',
         'devices',
+        'monitors',
+        'availability_requirements',
     ]
 
 
@@ -348,6 +402,111 @@ class ApiParameters(Parameters):
         elif self._values['iquery_allow_snmp'] == 'yes':
             return True
         return False
+
+    @property
+    def availability_requirement_type(self):
+        if self._values['monitors'] is None:
+            return None
+        if 'min ' in self._values['monitors']:
+            return 'at_least'
+        elif 'require ' in self._values['monitors']:
+            return 'require'
+        else:
+            return 'all'
+
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            result.sort()
+            return result
+        except Exception:
+            return self._values['monitors']
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        if self._values['monitors'] == '/Common/bigip':
+            return '/Common/bigip'
+        monitors = [fq_name(self.partition, x) for x in self.monitors_list]
+        if self.availability_requirement_type == 'at_least':
+            monitors = ' '.join(monitors)
+            result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
+        elif self.availability_requirement_type == 'require':
+            monitors = ' '.join(monitors)
+            result = 'require {0} from {1} {{ {2} }}'.format(self.number_of_probes, self.number_of_probers, monitors)
+        else:
+            result = ' and '.join(monitors).strip()
+        return result
+
+    @property
+    def number_of_probes(self):
+        """Returns the probes value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            require 1 from 2 { /Common/tcp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "probes" value that can be updated in the module.
+
+        Returns:
+             int: The probes value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'require\s+(?P<probes>\d+)\s+from'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('probes')
+
+    @property
+    def number_of_probers(self):
+        """Returns the probers value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            require 1 from 2 { /Common/tcp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "probers" value that can be updated in the module.
+
+        Returns:
+             int: The probers value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'require\s+\d+\s+from\s+(?P<probers>\d+)\s+'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('probers')
+
+    @property
+    def at_least(self):
+        """Returns the 'at least' value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            min 1 of { /Common/gateway_icmp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "at_least" value that can be updated in the module.
+
+        Returns:
+             int: The at_least value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+(?P<least>\d+)\s+of\s+'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('least')
 
 
 class ModuleParameters(Parameters):
@@ -431,6 +590,68 @@ class ModuleParameters(Parameters):
             return None
         return self._values['iquery_options']['allow_snmp']
 
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            result.sort()
+            return result
+        except Exception:
+            return self._values['monitors']
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        if is_empty_list(self._values['monitors']):
+            return '/Common/bigip'
+        monitors = [fq_name(self.partition, x) for x in self.monitors_list]
+        if self.availability_requirement_type == 'at_least':
+            if self.at_least > len(self.monitors_list):
+                raise F5ModuleError(
+                    "The 'at_least' value must not exceed the number of 'monitors'."
+                )
+            monitors = ' '.join(monitors)
+            result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
+        elif self.availability_requirement_type == 'require':
+            monitors = ' '.join(monitors)
+            if self.number_of_probes > self.number_of_probers:
+                raise F5ModuleError(
+                    "The 'number_of_probes' must not exceed the 'number_of_probers'."
+                )
+            result = 'require {0} from {1} {{ {2} }}'.format(self.number_of_probes, self.number_of_probers, monitors)
+        else:
+            result = ' and '.join(monitors).strip()
+
+        return result
+
+    def _get_availability_value(self, type):
+        if self._values['availability_requirements'] is None:
+            return None
+        if self._values['availability_requirements'][type] is None:
+            return None
+        return int(self._values['availability_requirements'][type])
+
+    @property
+    def availability_requirement_type(self):
+        if self._values['availability_requirements'] is None:
+            return None
+        return self._values['availability_requirements']['type']
+
+    @property
+    def number_of_probes(self):
+        return self._get_availability_value('number_of_probes')
+
+    @property
+    def number_of_probers(self):
+        return self._get_availability_value('number_of_probers')
+
+    @property
+    def at_least(self):
+        return self._get_availability_value('at_least')
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -442,6 +663,19 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
+    @property
+    def monitors(self):
+        monitor_string = self._values['monitors']
+        if monitor_string is None:
+            return None
+
+        if '{' in monitor_string and '}':
+            tmp = monitor_string.strip('}').split('{')
+            monitor = ''.join(tmp).rstrip()
+            return monitor
+
+        return monitor_string
+
     @property
     def iquery_allow_path(self):
         if self._values['iquery_allow_path'] is None:
@@ -473,6 +707,105 @@ class ReportableChanges(Changes):
         if self._values['server_type'] in ['single-bigip', 'redundant-bigip']:
             return 'bigip'
         return self._values['server_type']
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            result.sort()
+            return result
+        except Exception:
+            return self._values['monitors']
+
+    @property
+    def availability_requirement_type(self):
+        if self._values['monitors'] is None:
+            return None
+        if 'min ' in self._values['monitors']:
+            return 'at_least'
+        elif 'require ' in self._values['monitors']:
+            return 'require'
+        else:
+            return 'all'
+
+    @property
+    def number_of_probes(self):
+        """Returns the probes value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            require 1 from 2 { /Common/tcp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "probes" value that can be updated in the module.
+
+        Returns:
+             int: The probes value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'require\s+(?P<probes>\d+)\s+from'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return int(matches.group('probes'))
+
+    @property
+    def number_of_probers(self):
+        """Returns the probers value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            require 1 from 2 { /Common/tcp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "probers" value that can be updated in the module.
+
+        Returns:
+             int: The probers value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'require\s+\d+\s+from\s+(?P<probers>\d+)\s+'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return int(matches.group('probers'))
+
+    @property
+    def at_least(self):
+        """Returns the 'at least' value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            min 1 of { /Common/gateway_icmp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "at_least" value that can be updated in the module.
+
+        Returns:
+             int: The at_least value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+(?P<least>\d+)\s+of\s+'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return int(matches.group('least'))
+
+    @property
+    def availability_requirements(self):
+        if self._values['monitors'] is None:
+            return None
+        result = dict()
+        result['type'] = self.availability_requirement_type
+        result['at_least'] = self.at_least
+        result['number_of_probers'] = self.number_of_probers
+        result['number_of_probes'] = self.number_of_probes
+        return result
 
 
 class Difference(object):
@@ -626,6 +959,21 @@ class Difference(object):
             return dict(disabled=True)
         elif self.want.state in ['present', 'enabled'] and self.have.disabled:
             return dict(enabled=True)
+
+    @property
+    def monitors(self):
+        if self.want.monitors is None:
+            return None
+        if self.want.monitors == '/Common/bigip' and self.have.monitors == '/Common/bigip':
+            return None
+        if self.want.monitors == '/Common/bigip' and self.have.monitors is None:
+            return None
+        if self.want.monitors == '/Common/bigip' and len(self.have.monitors) > 0:
+            return '/Common/bigip'
+        if self.have.monitors is None:
+            return self.want.monitors
+        if self.have.monitors != self.want.monitors:
+            return self.want.monitors
 
 
 class ModuleManager(object):
@@ -961,7 +1309,29 @@ class ArgumentSpec(object):
                     allow_service_check=dict(type='bool'),
                     allow_snmp=dict(type='bool')
                 )
-            )
+            ),
+            availability_requirements=dict(
+                type='dict',
+                options=dict(
+                    type=dict(
+                        choices=['all', 'at_least', 'require'],
+                        required=True
+                    ),
+                    at_least=dict(type='int'),
+                    number_of_probes=dict(type='int'),
+                    number_of_probers=dict(type='int')
+                ),
+                mutually_exclusive=[
+                    ['at_least', 'number_of_probes'],
+                    ['at_least', 'number_of_probers'],
+                ],
+                required_if=[
+                    ['type', 'at_least', ['at_least']],
+                    ['type', 'require', ['number_of_probes', 'number_of_probers']]
+                ]
+            ),
+            monitors=dict(type='list'),
+
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

@@ -1,0 +1,16 @@
+---
+
+datacenter: issue-00772-dc
+server_name: issue-00772
+server_name_2: issue-00772_2
+
+monitors_1:
+  - gateway_icmp
+  - tcp
+  - udp
+
+monitors_2:
+  - gateway_icmp
+  - tcp
+
+monitors_3: ''

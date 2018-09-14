@@ -1,5 +1,10 @@
 ---
 
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
 - name: Provision GTM
   bigip_provision:
     name: gtm

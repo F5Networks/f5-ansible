@@ -128,9 +128,9 @@ options:
     version_added: 2.7
   sni_default:
     description:
-      - Indicates that the system uses this profile as the default SSL profile when there is no match to the 
-        server name, or when the client provides no SNI extension support. 
-      - When creating a new profile, the setting is provided by the parent profile. 
+      - Indicates that the system uses this profile as the default SSL profile when there is no match to the
+        server name, or when the client provides no SNI extension support.
+      - When creating a new profile, the setting is provided by the parent profile.
       - There can be only one SSL profile with this setting enabled.
     type: bool
     version_added: 2.7
