@@ -64,35 +64,113 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            name='foo',
+            parent='bar',
+            idle_timeout=100,
+            client_timeout=101,
+            description='description one',
+            explicit_flow_migration=False,
+            ip_df_mode='pmtu',
+            ip_tos_to_client=102,
+            ip_tos_to_server=103,
+            ip_ttl_v4=104,
+            ip_ttl_v6=105,
+            ip_ttl_mode='proxy',
+            keep_alive_interval=106,
+            late_binding=True,
+            link_qos_to_client=7,
+            link_qos_to_server=6,
+            loose_close=False,
+            loose_initialization=True,
+            mss_override=4,
+            reassemble_fragments=True,
+            receive_window_size=109,
+            reset_on_timeout=False,
+            rtt_from_client=True,
+            rtt_from_server=False,
+            server_sack=True,
+            server_timestamp=False,
+            syn_cookie_mss=110,
+            tcp_close_timeout=111,
+            tcp_generate_isn=True,
+            tcp_handshake_timeout=112,
+            tcp_strip_sack=False,
+            tcp_time_wait_timeout=113,
+            tcp_timestamp_mode='rewrite',
+            tcp_wscale_mode='strip',
+            timeout_recovery='fallback',
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.parent == '/Common/bar'
+        assert p.description == 'description one'
+        assert p.idle_timeout == 100
+        assert p.client_timeout == 101
+        assert p.explicit_flow_migration == 'no'
+        assert p.ip_df_mode == 'pmtu'
+        assert p.ip_tos_to_client == 102
+        assert p.ip_tos_to_server == 103
+        assert p.ip_ttl_v4 == 104
+        assert p.ip_ttl_v6 == 105
+        assert p.ip_ttl_mode == 'proxy'
+        assert p.keep_alive_interval == 106
+        assert p.late_binding == 'yes'
+        assert p.link_qos_to_client == 7
+        assert p.link_qos_to_server == 6
+        assert p.loose_close == 'no'
+        assert p.loose_initialization == 'yes'
+        assert p.mss_override == 4
+        assert p.reassemble_fragments == 'yes'
+        assert p.receive_window_size == 109
+        assert p.reset_on_timeout == 'no'
+        assert p.rtt_from_client == 'yes'
+        assert p.rtt_from_server == 'no'
+        assert p.server_sack == 'yes'
+        assert p.server_timestamp == 'no'
+        assert p.syn_cookie_mss == 110
+        assert p.tcp_close_timeout == 111
+        assert p.tcp_generate_isn == 'yes'
+        assert p.tcp_handshake_timeout == 112
+        assert p.tcp_strip_sack == 'no'
+        assert p.tcp_time_wait_timeout == 113
+        assert p.tcp_timestamp_mode == 'rewrite'
+        assert p.tcp_wscale_mode == 'strip'
+        assert p.timeout_recovery == 'fallback'
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_ltm_fastl4_profile_1.json')
+        p = ApiParameters(params=args)
+        assert p.name == 'fastL4'
+        assert p.description is None
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='foo',
+            parent='bar',
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
