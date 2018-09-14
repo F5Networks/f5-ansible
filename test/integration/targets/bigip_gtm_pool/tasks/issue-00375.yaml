@@ -1,9 +1,9 @@
 ---
 
 - name: Issue 00375 - Collect BIG-IP facts
-  bigip_facts:
-    include: system_info
-  register: result
+  bigip_device_facts:
+    include: system-info
+  register: f
 
 - name: Issue 00375 - Provision GTM on the device
   bigip_provision:
