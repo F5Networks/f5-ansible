@@ -1,5 +1,10 @@
 ---
 
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
 - name: Issue 00142 - Include issue variables
   include_vars:
     file: issue-00142.yaml
@@ -30,6 +35,8 @@
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp', '/Common/udp']
+      - result.availability_requirements.type == "all"
 
 - name: Issue 00142 - Update monitors, all - Idempotent check
   bigip_gtm_pool:
@@ -61,6 +68,8 @@
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/udp']
+      - result.availability_requirements.type == "all"
 
 - name: Issue 00142 - Remove monitor, all - Idempotent check
   bigip_gtm_pool:
@@ -95,6 +104,9 @@
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp', '/Common/udp']
+      - result.availability_requirements.type == "at_least"
+      - result.availability_requirements.at_least == 2
 
 - name: Issue 00142 - Update monitors, at_least - Idempotent check
   bigip_gtm_pool:
@@ -130,6 +142,9 @@
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/udp']
+      - result.availability_requirements.type == "at_least"
+      - result.availability_requirements.at_least == 1
 
 - name: Issue 00142 - Remove monitor, at_least - Idempotent check
   bigip_gtm_pool:
@@ -159,11 +174,17 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Assert Update monitors, require
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp']
+      - result.availability_requirements.type == "require"
+      - result.availability_requirements.number_of_probes == 10
+      - result.availability_requirements.number_of_probers == 20
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Update monitors, require - Idempotent check
   bigip_gtm_pool:
@@ -176,11 +197,13 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Assert Update monitors, require - Idempotent check
   assert:
     that:
       - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Remove monitor, require
   bigip_gtm_pool:
@@ -193,11 +216,17 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Assert Update monitors, require
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/udp']
+      - result.availability_requirements.type == "require"
+      - result.availability_requirements.number_of_probes == 10
+      - result.availability_requirements.number_of_probers == 20
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Remove monitor, require - Idempotent check
   bigip_gtm_pool:
@@ -210,11 +239,13 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Assert Remove monitor, require - Idempotent check
   assert:
     that:
       - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Remove monitor, for create monitor, all
   bigip_gtm_pool:
@@ -237,6 +268,8 @@
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/udp']
+      - result.availability_requirements.type == "all"
 
 - name: Issue 00142 - Create pool monitor, all - Idempotent check
   bigip_gtm_pool:
@@ -276,6 +309,9 @@
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/udp']
+      - result.availability_requirements.type == "at_least"
+      - result.availability_requirements.at_least == 1
 
 - name: Issue 00142 - Create pool monitor, at_least - Idempotent check
   bigip_gtm_pool:
@@ -311,11 +347,17 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Assert Create pool monitor, require
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp']
+      - result.availability_requirements.type == "require"
+      - result.availability_requirements.number_of_probes == 10
+      - result.availability_requirements.number_of_probers == 20
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Create pool monitor, require - Idempotent check
   bigip_gtm_pool:
@@ -328,11 +370,13 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Assert Create pool monitor, require - Idempotent check
   assert:
     that:
       - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 00142 - Remove monitors
   bigip_gtm_pool:

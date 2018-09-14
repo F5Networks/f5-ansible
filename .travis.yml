@@ -28,11 +28,13 @@ script:
 
 jobs:
   include:
-    #- stage: test
-    #  script: make sanity
-    #  python: 3.6
-    #  env: TOXENV=sanity
-    #  if: branch = devel
+    - stage: test
+      script:
+        - inv docs.build
+        - inv test.style
+      python: 3.6
+      env: TOXENV=sanity
+      if: branch = devel AND type = pull_request
 
     - stage: test
       script:
@@ -41,4 +43,4 @@ jobs:
         - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel
       python: 3.6
       env: TOXENV=docs-deploy
-      if: branch = devel
+      if: branch = devel AND type != pull_request
