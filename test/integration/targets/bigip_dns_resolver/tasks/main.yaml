@@ -1,0 +1,387 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create default DNS resolver
+  bigip_dns_resolver:
+    name: resolver1
+  register: result
+
+- name: Assert Create default DNS resolver
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create default DNS resolver - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+  register: result
+
+- name: Assert Create default DNS resolver - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change route domain
+  bigip_dns_resolver:
+    name: resolver1
+    route_domain: 10
+  register: result
+
+- name: Assert Change route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change route domain - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    route_domain: 10
+  register: result
+
+- name: Assert Change route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change cache_size
+  bigip_dns_resolver:
+    name: resolver1
+    cache_size: 100000
+  register: result
+
+- name: Assert Change cache_size
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change cache_size - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    cache_size: 100000
+  register: result
+
+- name: Assert Change cache_size - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change answer_default_zones - yes
+  bigip_dns_resolver:
+    name: resolver1
+    answer_default_zones: yes
+  register: result
+
+- name: Assert Change answer_default_zones - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change answer_default_zones - yes - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    answer_default_zones: yes
+  register: result
+
+- name: Assert Change answer_default_zones - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change answer_default_zones - no
+  bigip_dns_resolver:
+    name: resolver1
+    answer_default_zones: no
+  register: result
+
+- name: Assert Change answer_default_zones - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change answer_default_zones - no - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    answer_default_zones: no
+  register: result
+
+- name: Assert Change answer_default_zones - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change randomize_query_case - no
+  bigip_dns_resolver:
+    name: resolver1
+    randomize_query_case: no
+  register: result
+
+- name: Assert Change randomize_query_case - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change randomize_query_case - no - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    randomize_query_case: no
+  register: result
+
+- name: Assert Change randomize_query_case - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change randomize_query_case - yes
+  bigip_dns_resolver:
+    name: resolver1
+    randomize_query_case: yes
+  register: result
+
+- name: Assert Change randomize_query_case - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change randomize_query_case - yes - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    randomize_query_case: yes
+  register: result
+
+- name: Assert Change randomize_query_case - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use_ipv4 - no
+  bigip_dns_resolver:
+    name: resolver1
+    use_ipv4: no
+  register: result
+
+- name: Assert Change use_ipv4 - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use_ipv4 - no - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    use_ipv4: no
+  register: result
+
+- name: Assert Change use_ipv4 - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use_ipv4 - yes
+  bigip_dns_resolver:
+    name: resolver1
+    use_ipv4: yes
+  register: result
+
+- name: Assert Change use_ipv4 - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use_ipv4 - yes - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    use_ipv4: yes
+  register: result
+
+- name: Assert Change use_ipv4 - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use_ipv6 - no
+  bigip_dns_resolver:
+    name: resolver1
+    use_ipv6: no
+  register: result
+
+- name: Assert Change use_ipv6 - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use_ipv6 - no - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    use_ipv6: no
+  register: result
+
+- name: Assert Change use_ipv6 - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use_ipv6 - yes
+  bigip_dns_resolver:
+    name: resolver1
+    use_ipv6: yes
+  register: result
+
+- name: Assert Change use_ipv6 - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use_ipv6 - yes - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    use_ipv6: yes
+  register: result
+
+- name: Assert Change use_ipv6 - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use_udp - no
+  bigip_dns_resolver:
+    name: resolver1
+    use_udp: no
+  register: result
+
+- name: Assert Change use_udp - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use_udp - no - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    use_udp: no
+  register: result
+
+- name: Assert Change use_udp - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use_udp - yes
+  bigip_dns_resolver:
+    name: resolver1
+    use_udp: yes
+  register: result
+
+- name: Assert Change use_udp - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use_udp - yes - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    use_udp: yes
+  register: result
+
+- name: Assert Change use_udp - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use_tcp - no
+  bigip_dns_resolver:
+    name: resolver1
+    use_tcp: no
+  register: result
+
+- name: Assert Change use_tcp - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use_tcp - no - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    use_tcp: no
+  register: result
+
+- name: Assert Change use_tcp - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change use_tcp - yes
+  bigip_dns_resolver:
+    name: resolver1
+    use_tcp: yes
+  register: result
+
+- name: Assert Change use_tcp - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change use_tcp - yes - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    use_tcp: yes
+  register: result
+
+- name: Assert Change use_tcp - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove resolver
+  bigip_dns_resolver:
+    name: resolver1
+    state: absent
+  register: result
+
+- name: Assert Remove resolver
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove resolver - Idempotent check
+  bigip_dns_resolver:
+    name: resolver1
+    state: absent
+  register: result
+
+- name: Assert Remove resolver - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
