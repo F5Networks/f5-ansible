@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_profile_fastl4
-short_description: - Manages Fast L4 profiles
+short_description: Manages Fast L4 profiles
 description:
   - Manages Fast L4 profiles.
 version_added: 2.8
@@ -49,7 +49,7 @@ options:
         select a back-end server. That is, this is the maximum time that the BIG-IP system
         waits for information about the sender and the target.
       - This information typically arrives at the beginning of the FIX logon packet.
-      - When C(0, or C(immediate), allows for no time beyond the moment of the first packet
+      - When C(0), or C(immediate), allows for no time beyond the moment of the first packet
         transmission.
       - When C(indefinite), disables the limit. This allows the client unlimited time
         to send the sender and target information.
@@ -63,7 +63,7 @@ options:
       - When C(no), a late-binding connection migrates down to ePVA immediately after
         establishing the server-side connection.
       - When C(yes), this parameter stops automatic migration to ePVA, and requires that
-        the iRule explicitly trigger ePVA processing by invoking the C(BIGTCP::release_flow)
+        the iRule explicitly trigger ePVA processing by invoking the C(release_flow)
         iRule command. This allows an iRule author to control when the connection uses the
         ePVA hardware.
     type: bool
