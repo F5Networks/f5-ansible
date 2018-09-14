@@ -41,4 +41,4 @@ jobs:
         - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel
       python: 3.6
       env: TOXENV=docs-deploy
-      if: branch = devel
+      if: branch = devel AND type != pull_request

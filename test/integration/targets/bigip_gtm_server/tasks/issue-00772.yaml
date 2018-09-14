@@ -1,0 +1,303 @@
+---
+
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
+- name: Issue 00772 - Include issue variables
+  include_vars:
+    file: issue-00772.yaml
+
+- name: Issue 00772 - Provision GTM
+  bigip_provision:
+    name: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 00772 - Create datacenters
+  bigip_gtm_datacenter:
+    name: "{{ datacenter }}"
+
+- name: Issue 00772 - Create a GTM server with non-default monitors, all
+  bigip_gtm_server:
+     name: "{{ server_name }}"
+     datacenter: "{{ datacenter }}"
+     server_type: generic-host
+     link_discovery: disabled
+     virtual_server_discovery: disabled
+     devices:
+       - name: server_1
+         address: 1.1.1.1
+     monitors: "{{ monitors_1 }}"
+     availability_requirements:
+       type: all
+  register: result
+
+- name: Issue 00772 - Assert Create a GTM server with non-default monitors, all
+  assert:
+    that:
+      - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp', '/Common/udp']
+      - result.availability_requirements.type == "all"
+
+- name: Issue 00772 - Create a GTM server with non-default monitors, all  - Idempotent check
+  bigip_gtm_server:
+     name: "{{ server_name }}"
+     datacenter: "{{ datacenter }}"
+     server_type: generic-host
+     link_discovery: disabled
+     virtual_server_discovery: disabled
+     devices:
+       - name: server_1
+         address: 1.1.1.1
+     monitors: "{{ monitors_1 }}"
+     availability_requirements:
+       type: all
+  register: result
+
+- name: Issue 00772 - Assert Create a GTM server with non-default monitors, all  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00772 - Remove monitor, all
+  bigip_gtm_server:
+     name: "{{ server_name }}"
+     monitors: "{{ monitors_2 }}"
+  register: result
+
+- name: Issue 00772 - Assert Remove monitor, all
+  assert:
+    that:
+      - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp']
+
+- name: Issue 00772 - Remove monitor, all - Idempotent check
+  bigip_gtm_server:
+     name: "{{ server_name }}"
+     monitors: "{{ monitors_2 }}"
+  register: result
+
+- name: Issue 00772 - Assert Remove monitor, all - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00772 - Update monitors, at_least
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    monitors: "{{ monitors_1 }}"
+    availability_requirements:
+      type: at_least
+      at_least: 2
+  register: result
+
+- name: Issue 00772 - Assert Update monitors, at_least
+  assert:
+    that:
+      - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp', '/Common/udp']
+      - result.availability_requirements.type == "at_least"
+      - result.availability_requirements.at_least == 2
+
+- name: Issue 00772 - Update monitors, at_least - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    monitors: "{{ monitors_1 }}"
+    availability_requirements:
+      type: at_least
+      at_least: 2
+  register: result
+
+- name: Issue 00772 - Assert Update monitors, at_least - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00772 - Remove monitor, at_least
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    monitors: "{{ monitors_2 }}"
+    availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00772 - Assert Remove monitor, at_least
+  assert:
+    that:
+      - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp']
+      - result.availability_requirements.at_least == 1
+
+- name: Issue 00772 - Remove monitor, at_least - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    monitors: "{{ monitors_2 }}"
+    availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00772 - Assert Remove monitor, at_least - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00772 - Update monitors, revert to default
+  bigip_gtm_server:
+     name: "{{ server_name }}"
+     monitors: "{{ monitors_3 }}"
+  register: result
+
+- name: Issue 00772 - Assert Update monitors, revert to default
+  assert:
+    that:
+      - result is changed
+      - result.monitors == ['/Common/bigip']
+
+- name: Issue 00772 - Update monitors, revert to default - Idempotent check
+  bigip_gtm_server:
+     name: issue-00772
+     monitors: "{{ monitors_3 }}"
+  register: result
+
+- name: Issue 00772 - Assert Update monitors, revert to default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00772 - Create a GTM server with non-default monitors, at_least
+  bigip_gtm_server:
+     name: "{{ server_name_2 }}"
+     datacenter: "{{ datacenter }}"
+     server_type: generic-host
+     link_discovery: disabled
+     virtual_server_discovery: disabled
+     devices:
+       - name: server_2
+         address: 2.2.2.2
+     monitors: "{{ monitors_1 }}"
+     availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00772 - Assert Create a GTM server with non-default monitors, at_least
+  assert:
+    that:
+      - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp', '/Common/udp']
+      - result.availability_requirements.type == "at_least"
+      - result.availability_requirements.at_least == 1
+
+- name: Issue 00772 - Create a GTM server with non-default monitors, at_least - Idempotent check
+  bigip_gtm_server:
+     name: "{{ server_name_2 }}"
+     datacenter: "{{ datacenter }}"
+     server_type: generic-host
+     link_discovery: disabled
+     virtual_server_discovery: disabled
+     devices:
+       - name: server_2
+         address: 2.2.2.2
+     monitors: "{{ monitors_1 }}"
+     availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00772 - Assert Create a GTM server with non-default monitors, at_least - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00772 - Remove GTM servers
+  bigip_gtm_server:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ server_name }}"
+    - "{{ server_name_2 }}"
+
+- name: Issue 00772 - Create a GTM server with monitors, require
+  bigip_gtm_server:
+     name: "{{ server_name }}"
+     datacenter: "{{ datacenter }}"
+     server_type: generic-host
+     link_discovery: disabled
+     virtual_server_discovery: disabled
+     devices:
+       - name: server_1
+         address: 1.1.1.1
+     monitors:
+       - gateway_icmp
+     availability_requirements:
+       type: require
+       number_of_probes: 10
+       number_of_probers: 20
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00772 - Assert Create pool monitor, require
+  assert:
+    that:
+      - result is changed
+      - result.monitors == ['/Common/gateway_icmp']
+      - result.availability_requirements.type == "require"
+      - result.availability_requirements.number_of_probes == 10
+      - result.availability_requirements.number_of_probers == 20
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00772 - Create a GTM server with monitors, require - Idempotent check
+  bigip_gtm_server:
+     name: "{{ server_name }}"
+     datacenter: "{{ datacenter }}"
+     server_type: generic-host
+     link_discovery: disabled
+     virtual_server_discovery: disabled
+     devices:
+       - name: server_1
+         address: 1.1.1.1
+     monitors:
+       - gateway_icmp
+     availability_requirements:
+       type: require
+       number_of_probes: 10
+       number_of_probers: 20
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00772 - Assert Create pool monitor, require - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00772 - Remove a GTM server, require test
+  bigip_gtm_server:
+     name: "{{ server_name }}"
+     state: absent
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00772 - Remove datacenters
+  bigip_gtm_datacenter:
+    name: "{{ datacenter }}"
+    state: absent
+
+- name: Issue 00772 - De-provision GTM
+  bigip_provision:
+    name: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
