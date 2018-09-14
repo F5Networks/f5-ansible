@@ -33,10 +33,10 @@ EXAMPLES = r'''
 - name: Create a ...
   {{ module }}:
     name: foo
-    password: secret
-    server: lb.mydomain.com
-    state: present
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
