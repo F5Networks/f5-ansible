@@ -28,11 +28,13 @@ script:
 
 jobs:
   include:
-    #- stage: test
-    #  script: make sanity
-    #  python: 3.6
-    #  env: TOXENV=sanity
-    #  if: branch = devel
+    - stage: test
+      script:
+        - inv docs.build
+        #- inv test.style
+      python: 3.6
+      env: TOXENV=sanity
+      if: branch = devel AND type = pull_request
 
     - stage: test
       script:
