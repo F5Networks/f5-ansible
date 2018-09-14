@@ -1,0 +1,5 @@
+!
+interface DMZ
+ description The DMZ
+!
+end

@@ -1,0 +1,11 @@
+---
+
+- name: Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - ANYCAST-P2P-1
+    - ANYCAST-P2P-2
+    - DMZ
+    - SYSLOG

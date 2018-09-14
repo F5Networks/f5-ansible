@@ -1,0 +1,16 @@
+!
+access-list 10 permit 20.20.20.20
+access-list 10 permit 20.20.20.21
+access-list 10 deny any
+!
+interface SYSLOG
+!
+router bgp 4201000050
+ bgp graceful-restart restart-time 120
+ redistribute kernel route-map rhi
+ neighbor 10.10.10.10 remote-as 65000
+ neighbor 10.10.10.10 fall-over bfd
+ neighbor 10.10.10.10 remote-as 65000
+ neighbor 10.10.10.10 fall-over bfd
+!
+end
