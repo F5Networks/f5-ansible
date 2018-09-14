@@ -895,7 +895,7 @@ class ModuleManager(object):
             transform_name(self.want.partition, self.want.name)
         )
         query = '?expandSubcollections=true'
-        resp = self.client.api.get(uri+query)
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
