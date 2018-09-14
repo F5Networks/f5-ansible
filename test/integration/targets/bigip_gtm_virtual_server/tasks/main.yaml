@@ -628,7 +628,7 @@
     that:
       - result is not changed
 
-- name: Update monitors, all
+- name: Update GTM virtual server monitors, all
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -638,12 +638,14 @@
       - udp
   register: result
 
-- name: Assert Update monitors, all
+- name: Assert Update GTM virtual server monitors, all
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp', '/Common/udp']
+      - result.availability_requirements.type == "all"
 
-- name: Update monitors, all - Idempotent check
+- name: Update GTM virtual server monitors, all - Idempotent check
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -653,12 +655,12 @@
       - udp
   register: result
 
-- name: Assert Update monitors, all - Idempotent check
+- name: Assert Update GTM virtual server monitors, all - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Remove monitor, all
+- name: Remove GTM virtual server monitor, all
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -669,12 +671,14 @@
       type: all
   register: result
 
-- name: Assert Remove monitor, all
+- name: Assert Remove GTM virtual server monitor, all
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/udp']
+      - result.availability_requirements.type == "all"
 
-- name: Remove monitor, all - Idempotent check
+- name: Remove GTM virtual server monitor, all - Idempotent check
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -685,30 +689,12 @@
       type: all
   register: result
 
-- name: Assert Remove monitor, all - Idempotent check
+- name: Assert Remove GTM virtual server monitor, all - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Update monitors, at_least
-  bigip_gtm_virtual_server:
-    name: "{{ virtual_server_name_1 }}"
-    server_name: "{{ server_name }}"
-    monitors:
-      - gateway_icmp
-      - tcp
-      - udp
-    availability_requirements:
-      type: at_least
-      at_least: 2
-  register: result
-
-- name: Assert Update monitors, at_least
-  assert:
-    that:
-      - result is changed
-
-- name: Update monitors, at_least - Idempotent check
+- name: Update GTM virtual server monitors, at_least
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -721,12 +707,33 @@
       at_least: 2
   register: result
 
-- name: Assert Update monitors, at_least - Idempotent check
+- name: Assert Update GTM virtual server monitors, at_least
+  assert:
+    that:
+      - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/tcp', '/Common/udp']
+      - result.availability_requirements.type == "at_least"
+      - result.availability_requirements.at_least == 2
+
+- name: Update GTM virtual server monitors, at_least - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    monitors:
+      - gateway_icmp
+      - tcp
+      - udp
+    availability_requirements:
+      type: at_least
+      at_least: 2
+  register: result
+
+- name: Assert Update GTM virtual server monitors, at_least - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Remove monitor, at_least
+- name: Remove GTM virtual server monitor, at_least
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -738,12 +745,14 @@
       at_least: 1
   register: result
 
-- name: Assert Remove monitor, at_least
+- name: Assert Remove GTM virtual server monitor, at_least
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/udp']
+      - result.availability_requirements.at_least == 1
 
-- name: Remove monitor, at_least - Idempotent check
+- name: Remove GTM virtual server monitor, at_least - Idempotent check
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -755,12 +764,12 @@
       at_least: 1
   register: result
 
-- name: Assert Remove monitor, at_least - Idempotent check
+- name: Assert Remove GTM virtual server monitor, at_least - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Update monitors, require
+- name: Update GTM virtual server monitors, require
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -771,13 +780,18 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Assert Update monitors, require
+- name: Assert Update GTM virtual server monitors, require
   assert:
     that:
-      - result is changed
+      - result.monitors == ['/Common/gateway_icmp']
+      - result.availability_requirements.type == "require"
+      - result.availability_requirements.number_of_probes == 10
+      - result.availability_requirements.number_of_probers == 20
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Update monitors, require - Idempotent check
+- name: Update GTM virtual server monitors, require - Idempotent check
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -788,13 +802,15 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Assert Update monitors, require - Idempotent check
+- name: Assert Update GTM virtual server monitors, require - Idempotent check
   assert:
     that:
       - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Remove monitor, require
+- name: Remove GTM virtual server monitor, require
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -805,13 +821,19 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Assert Update monitors, require
+- name: Assert Remove GTM virtual server monitor, require
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/udp']
+      - result.availability_requirements.type == "require"
+      - result.availability_requirements.number_of_probes == 10
+      - result.availability_requirements.number_of_probers == 20
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Remove monitor, require - Idempotent check
+- name: Remove GTM virtual server monitor, require - Idempotent check
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -822,19 +844,21 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Assert Remove monitor, require - Idempotent check
+- name: Assert Remove GTM virtual server monitor, require - Idempotent check
   assert:
     that:
       - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Remove monitor, for create monitor, all
+- name: Remove GTM virtual server, for create monitor, all
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
     state: absent
 
-- name: Create server monitor, all
+- name: Create GTM virtual server monitors, all
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -847,12 +871,14 @@
       type: all
   register: result
 
-- name: Assert Create server monitor, all
+- name: Assert Create GTM virtual server monitors, all
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/udp']
+      - result.availability_requirements.type == "all"
 
-- name: Create server monitor, all - Idempotent check
+- name: Create GTM virtual server monitors, all - Idempotent check
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -865,18 +891,18 @@
       type: all
   register: result
 
-- name: Assert Create server monitor, all - Idempotent check
+- name: Assert Create GTM virtual server monitor, all - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Remove monitor, for create monitor, at_least
+- name: Remove GTM virtual server, for create monitor, at_least
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
     state: absent
 
-- name: Create server monitor, at_least
+- name: Create GTM virtual server monitors, at_least
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -890,12 +916,15 @@
       at_least: 1
   register: result
 
-- name: Assert Create server monitor, at_least
+- name: Assert Create GTM virtual server monitors, at_least
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp', '/Common/udp']
+      - result.availability_requirements.type == "at_least"
+      - result.availability_requirements.at_least == 1
 
-- name: Create server monitor, at_least - Idempotent check
+- name: Create GTM virtual server monitors, at_least - Idempotent check
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -909,18 +938,18 @@
       at_least: 1
   register: result
 
-- name: Assert Create server monitor, at_least - Idempotent check
+- name: Assert Create GTM virtual server monitors, at_least - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Remove monitor, for create monitor, require
+- name: Remove GTM virtual server, for create monitor, require
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
     state: absent
 
-- name: Create server monitor, require
+- name: Create GTM virtual server monitors, require
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -933,13 +962,19 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Assert Create server monitor, require
+- name: Assert Create GTM virtual server monitors, require
   assert:
     that:
       - result is changed
+      - result.monitors == ['/Common/gateway_icmp']
+      - result.availability_requirements.type == "require"
+      - result.availability_requirements.number_of_probes == 10
+      - result.availability_requirements.number_of_probers == 20
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Create server monitor, require - Idempotent check
+- name: Create GTM virtual server monitors, require - Idempotent check
   bigip_gtm_virtual_server:
     name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
@@ -952,11 +987,13 @@
       number_of_probes: 10
       number_of_probers: 20
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
-- name: Assert Create server monitor, require - Idempotent check
+- name: Assert Create GTM virtual server monitors, require - Idempotent check
   assert:
     that:
       - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
 - import_tasks: teardown.yaml
 
