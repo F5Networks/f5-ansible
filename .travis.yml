@@ -31,7 +31,7 @@ jobs:
     - stage: test
       script:
         - inv docs.build
-        #- inv test.style
+        - inv test.style
       python: 3.6
       env: TOXENV=sanity
       if: branch = devel AND type = pull_request
