@@ -2,6 +2,1856 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create fastl4 profile
+  bigip_profile_fastl4:
+    name: fast1
+  register: result
+
+- name: Assert Create fastl4 profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create fastl4 profile - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+  register: result
+
+- name: Assert Create fastl4 profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description
+  bigip_profile_fastl4:
+    name: fast1
+    description: desc one
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    description: desc one
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description - none
+  bigip_profile_fastl4:
+    name: fast1
+    description: none
+  register: result
+
+- name: Assert Change description - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - none - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    description: none
+  register: result
+
+- name: Assert Change description - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description idempotent empty - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    description: ''
+  register: result
+
+- name: Assert Change description idempotent empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description back
+  bigip_profile_fastl4:
+    name: fast1
+    description: desc one
+  register: result
+
+- name: Change description - empty
+  bigip_profile_fastl4:
+    name: fast1
+    description: ''
+  register: result
+
+- name: Assert Change description - empty
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - empty - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    description: ''
+  register: result
+
+- name: Assert Change description - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change explicit flow migration - yes
+  bigip_profile_fastl4:
+    name: fast1
+    explicit_flow_migration: yes
+  register: result
+
+- name: Assert Change explicit flow migration - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change explicit flow migration - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    explicit_flow_migration: yes
+  register: result
+
+- name: Assert Change explicit flow migration - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change explicit flow migration - no
+  bigip_profile_fastl4:
+    name: fast1
+    explicit_flow_migration: no
+  register: result
+
+- name: Assert Change explicit flow migration - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change explicit flow migration - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    explicit_flow_migration: no
+  register: result
+
+- name: Assert Change explicit flow migration - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change idle_timeout - number
+  bigip_profile_fastl4:
+    name: fast1
+    idle_timeout: 1234
+  register: result
+
+- name: Assert Change idle_timeout - number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change idle_timeout - number - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    idle_timeout: 1234
+  register: result
+
+- name: Assert Change idle_timeout - number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change idle_timeout - immediate
+  bigip_profile_fastl4:
+    name: fast1
+    idle_timeout: immediate
+  register: result
+
+- name: Assert Change idle_timeout - immediate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change idle_timeout - immediate - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    idle_timeout: immediate
+  register: result
+
+- name: Assert Change idle_timeout - immediate - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change idle_timeout - zero - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    idle_timeout: 0
+  register: result
+
+- name: Assert Change idle_timeout - zero - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change idle_timeout - indefinite
+  bigip_profile_fastl4:
+    name: fast1
+    idle_timeout: indefinite
+  register: result
+
+- name: Assert Change idle_timeout - indefinite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change idle_timeout - indefinite - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    idle_timeout: indefinite
+  register: result
+
+- name: Assert Change idle_timeout - indefinite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_df_mode - pmtu
+  bigip_profile_fastl4:
+    name: fast1
+    ip_df_mode: pmtu
+  register: result
+
+- name: Assert Change ip_df_mode - pmtu
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_df_mode - pmtu - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_df_mode: pmtu
+  register: result
+
+- name: Assert Change ip_df_mode - pmtu - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_df_mode - preserve
+  bigip_profile_fastl4:
+    name: fast1
+    ip_df_mode: preserve
+  register: result
+
+- name: Assert Change ip_df_mode - preserve
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_df_mode - preserve - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_df_mode: preserve
+  register: result
+
+- name: Assert Change ip_df_mode - preserve - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_df_mode - set
+  bigip_profile_fastl4:
+    name: fast1
+    ip_df_mode: set
+  register: result
+
+- name: Assert Change ip_df_mode - set
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_df_mode - set - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_df_mode: set
+  register: result
+
+- name: Assert Change ip_df_mode - set - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_df_mode - clear
+  bigip_profile_fastl4:
+    name: fast1
+    ip_df_mode: clear
+  register: result
+
+- name: Assert Change ip_df_mode - clear
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_df_mode - clear - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_df_mode: clear
+  register: result
+
+- name: Assert Change ip_df_mode - clear - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_tos_to_client - number
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_client: 250
+  register: result
+
+- name: Assert Change ip_tos_to_client - number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_tos_to_client - number - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_client: 250
+  register: result
+
+- name: Assert Change ip_tos_to_client - number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_tos_to_client - pass-through
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_client: pass-through
+  register: result
+
+- name: Assert Change ip_tos_to_client - pass-through
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_tos_to_client - pass-through - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_client: pass-through
+  register: result
+
+- name: Assert Change ip_tos_to_client - pass-through - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_tos_to_client - mimic
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_client: mimic
+  register: result
+
+- name: Assert Change ip_tos_to_client - mimic
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_tos_to_client - mimic - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_client: mimic
+  register: result
+
+- name: Assert Change ip_tos_to_client - mimic - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_tos_to_client - numeric mimic - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_client: 65534
+  register: result
+
+- name: Assert Change ip_tos_to_client - numeric mimic - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_tos_to_server - number
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_server: 250
+  register: result
+
+- name: Assert Change ip_tos_to_server - number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_tos_to_server - number - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_server: 250
+  register: result
+
+- name: Assert Change ip_tos_to_server - number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_tos_to_server - pass-through
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_server: pass-through
+  register: result
+
+- name: Assert Change ip_tos_to_server - pass-through
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_tos_to_server - pass-through - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_server: pass-through
+  register: result
+
+- name: Assert Change ip_tos_to_server - pass-through - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_tos_to_server - mimic
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_server: mimic
+  register: result
+
+- name: Assert Change ip_tos_to_server - mimic
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_tos_to_server - mimic - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_server: mimic
+  register: result
+
+- name: Assert Change ip_tos_to_server - mimic - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_tos_to_server - numeric mimic - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_tos_to_server: 65534
+  register: result
+
+- name: Assert Change ip_tos_to_server - numeric mimic - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_ttl_mode - proxy
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_mode: proxy
+  register: result
+
+- name: Assert Change ip_ttl_mode - proxy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_ttl_mode - proxy - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_mode: proxy
+  register: result
+
+- name: Assert Change ip_ttl_mode - proxy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_ttl_mode - set
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_mode: set
+  register: result
+
+- name: Assert Change ip_ttl_mode - set
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_ttl_mode - set - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_mode: set
+  register: result
+
+- name: Assert Change ip_ttl_mode - set - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_ttl_mode - preserve
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_mode: preserve
+  register: result
+
+- name: Assert Change ip_ttl_mode - preserve
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_ttl_mode - preserve - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_mode: preserve
+  register: result
+
+- name: Assert Change ip_ttl_mode - preserve - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_ttl_mode - decrement
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_mode: decrement
+  register: result
+
+- name: Assert Change ip_ttl_mode - decrement
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_ttl_mode - decrement - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_mode: decrement
+  register: result
+
+- name: Assert Change ip_ttl_mode - decrement - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_ttl_v4
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_v4: 120
+  register: result
+
+- name: Assert Change ip_ttl_v4
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_ttl_v4 - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_v4: 120
+  register: result
+
+- name: Assert Change ip_ttl_v4 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ip_ttl_v6
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_v6: 120
+  register: result
+
+- name: Assert Change ip_ttl_v6
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ip_ttl_v6 - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    ip_ttl_v6: 120
+  register: result
+
+- name: Assert Change ip_ttl_v6 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change keep_alive_interval
+  bigip_profile_fastl4:
+    name: fast1
+    keep_alive_interval: 120
+  register: result
+
+- name: Assert Change keep_alive_interval
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change keep_alive_interval - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    keep_alive_interval: 120
+  register: result
+
+- name: Assert Change keep_alive_interval - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change late_binding - yes
+  bigip_profile_fastl4:
+    name: fast1
+    late_binding: yes
+  register: result
+
+- name: Assert Change late_binding - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change late_binding - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    late_binding: yes
+  register: result
+
+- name: Assert Change late_binding - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change late_binding - no
+  bigip_profile_fastl4:
+    name: fast1
+    late_binding: no
+  register: result
+
+- name: Assert Change late_binding - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change late_binding - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    late_binding: no
+  register: result
+
+- name: Assert Change late_binding - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change link_qos_to_client - number
+  bigip_profile_fastl4:
+    name: fast1
+    link_qos_to_client: 4
+  register: result
+
+- name: Assert Change link_qos_to_client - number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change link_qos_to_client - number - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    link_qos_to_client: 4
+  register: result
+
+- name: Assert Change link_qos_to_client - number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change link_qos_to_client - pass-through
+  bigip_profile_fastl4:
+    name: fast1
+    link_qos_to_client: pass-through
+  register: result
+
+- name: Assert Change link_qos_to_client - pass-through
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change link_qos_to_client - pass-through - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    link_qos_to_client: pass-through
+  register: result
+
+- name: Assert Change link_qos_to_client - pass-through - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change link_qos_to_server - number
+  bigip_profile_fastl4:
+    name: fast1
+    link_qos_to_server: 4
+  register: result
+
+- name: Assert Change link_qos_to_server - number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change link_qos_to_server - number - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    link_qos_to_server: 4
+  register: result
+
+- name: Assert Change link_qos_to_server - number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change link_qos_to_server - pass-through
+  bigip_profile_fastl4:
+    name: fast1
+    link_qos_to_server: pass-through
+  register: result
+
+- name: Assert Change link_qos_to_server - pass-through
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change link_qos_to_server - pass-through - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    link_qos_to_server: pass-through
+  register: result
+
+- name: Assert Change link_qos_to_server - pass-through - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change loose_close - yes
+  bigip_profile_fastl4:
+    name: fast1
+    loose_close: yes
+  register: result
+
+- name: Assert Change loose_close - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change loose_close - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    loose_close: yes
+  register: result
+
+- name: Assert Change loose_close - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change loose_close - no
+  bigip_profile_fastl4:
+    name: fast1
+    loose_close: no
+  register: result
+
+- name: Assert Change loose_close - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change loose_close - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    loose_close: no
+  register: result
+
+- name: Assert Change loose_close - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change loose_initialization - yes
+  bigip_profile_fastl4:
+    name: fast1
+    loose_initialization: yes
+  register: result
+
+- name: Assert Change loose_initialization - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change loose_initialization - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    loose_initialization: yes
+  register: result
+
+- name: Assert Change loose_initialization - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change loose_initialization - no
+  bigip_profile_fastl4:
+    name: fast1
+    loose_initialization: no
+  register: result
+
+- name: Assert Change loose_initialization - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change loose_initialization - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    loose_initialization: no
+  register: result
+
+- name: Assert Change loose_initialization - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mss_override
+  bigip_profile_fastl4:
+    name: fast1
+    mss_override: 400
+  register: result
+
+- name: Assert Change mss_override
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mss_override - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    mss_override: 400
+  register: result
+
+- name: Assert Change mss_override - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change reassemble_fragments - yes
+  bigip_profile_fastl4:
+    name: fast1
+    reassemble_fragments: yes
+  register: result
+
+- name: Assert Change reassemble_fragments - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change reassemble_fragments - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    reassemble_fragments: yes
+  register: result
+
+- name: Assert Change reassemble_fragments - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change reassemble_fragments - no
+  bigip_profile_fastl4:
+    name: fast1
+    reassemble_fragments: no
+  register: result
+
+- name: Assert Change reassemble_fragments - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change reassemble_fragments - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    reassemble_fragments: no
+  register: result
+
+- name: Assert Change reassemble_fragments - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change receive_window_size
+  bigip_profile_fastl4:
+    name: fast1
+    receive_window_size: 1024
+  register: result
+
+- name: Assert Change receive_window_size
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change receive_window_size - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    receive_window_size: 1024
+  register: result
+
+- name: Assert Change receive_window_size - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change reset_on_timeout - no
+  bigip_profile_fastl4:
+    name: fast1
+    reset_on_timeout: no
+  register: result
+
+- name: Assert Change reset_on_timeout - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change reset_on_timeout - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    reset_on_timeout: no
+  register: result
+
+- name: Assert Change reset_on_timeout - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change reset_on_timeout - yes
+  bigip_profile_fastl4:
+    name: fast1
+    reset_on_timeout: yes
+  register: result
+
+- name: Assert Change reset_on_timeout - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change reset_on_timeout - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    reset_on_timeout: yes
+  register: result
+
+- name: Assert Change reset_on_timeout - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change rtt_from_client - yes
+  bigip_profile_fastl4:
+    name: fast1
+    rtt_from_client: yes
+  register: result
+
+- name: Assert Change rtt_from_client - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change rtt_from_client - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    rtt_from_client: yes
+  register: result
+
+- name: Assert Change rtt_from_client - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change rtt_from_client - no
+  bigip_profile_fastl4:
+    name: fast1
+    rtt_from_client: no
+  register: result
+
+- name: Assert Change rtt_from_client - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change rtt_from_client - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    rtt_from_client: no
+  register: result
+
+- name: Assert Change rtt_from_client - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change rtt_from_server - yes
+  bigip_profile_fastl4:
+    name: fast1
+    rtt_from_server: yes
+  register: result
+
+- name: Assert Change rtt_from_server - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change rtt_from_server - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    rtt_from_server: yes
+  register: result
+
+- name: Assert Change rtt_from_server - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change rtt_from_server - no
+  bigip_profile_fastl4:
+    name: fast1
+    rtt_from_server: no
+  register: result
+
+- name: Assert Change rtt_from_server - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change rtt_from_server - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    rtt_from_server: no
+  register: result
+
+- name: Assert Change rtt_from_server - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change server_sack - yes
+  bigip_profile_fastl4:
+    name: fast1
+    server_sack: yes
+  register: result
+
+- name: Assert Change server_sack - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change server_sack - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    server_sack: yes
+  register: result
+
+- name: Assert Change server_sack - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change server_sack - no
+  bigip_profile_fastl4:
+    name: fast1
+    server_sack: no
+  register: result
+
+- name: Assert Change server_sack - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change server_sack - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    server_sack: no
+  register: result
+
+- name: Assert Change server_sack - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change server_timestamp - yes
+  bigip_profile_fastl4:
+    name: fast1
+    server_timestamp: yes
+  register: result
+
+- name: Assert Change server_timestamp - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change server_timestamp - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    server_timestamp: yes
+  register: result
+
+- name: Assert Change server_timestamp - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change server_timestamp - no
+  bigip_profile_fastl4:
+    name: fast1
+    server_timestamp: no
+  register: result
+
+- name: Assert Change server_timestamp - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change server_timestamp - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    server_timestamp: no
+  register: result
+
+- name: Assert Change server_timestamp - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change syn_cookie_mss
+  bigip_profile_fastl4:
+    name: fast1
+    syn_cookie_mss: 400
+  register: result
+
+- name: Assert Change syn_cookie_mss
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change syn_cookie_mss - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    syn_cookie_mss: 400
+  register: result
+
+- name: Assert Change syn_cookie_mss - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_close_timeout - number
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_close_timeout: 10
+  register: result
+
+- name: Assert Change tcp_close_timeout - number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_close_timeout - number - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_close_timeout: 10
+  register: result
+
+- name: Assert Change tcp_close_timeout - number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_close_timeout - immediate
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_close_timeout: immediate
+  register: result
+
+- name: Assert Change tcp_close_timeout - immediate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_close_timeout - immediate - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_close_timeout: immediate
+  register: result
+
+- name: Assert Change tcp_close_timeout - immediate - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_close_timeout - indefinite
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_close_timeout: indefinite
+  register: result
+
+- name: Assert Change tcp_close_timeout - indefinite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_close_timeout - indefinite - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_close_timeout: indefinite
+  register: result
+
+- name: Assert Change tcp_close_timeout - indefinite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_generate_isn - yes
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_generate_isn: yes
+  register: result
+
+- name: Assert Change tcp_generate_isn - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_generate_isn - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_generate_isn: yes
+  register: result
+
+- name: Assert Change tcp_generate_isn - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_generate_isn - no
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_generate_isn: no
+  register: result
+
+- name: Assert Change tcp_generate_isn - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_generate_isn - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_generate_isn: no
+  register: result
+
+- name: Assert Change tcp_generate_isn - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_handshake_timeout - indefinite
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_handshake_timeout: indefinite
+  register: result
+
+- name: Assert Change tcp_handshake_timeout - indefinite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_handshake_timeout - indefinite - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_handshake_timeout: indefinite
+  register: result
+
+- name: Assert Change tcp_handshake_timeout - indefinite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_handshake_timeout - disabled
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_handshake_timeout: disabled
+  register: result
+
+- name: Assert Change tcp_handshake_timeout - disabled
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_handshake_timeout - disabled - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_handshake_timeout: disabled
+  register: result
+
+- name: Assert Change tcp_handshake_timeout - disabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_handshake_timeout - number
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_handshake_timeout: 10
+  register: result
+
+- name: Assert Change tcp_handshake_timeout - number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_handshake_timeout - number - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_handshake_timeout: 10
+  register: result
+
+- name: Assert Change tcp_handshake_timeout - number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_strip_sack - yes
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_strip_sack: yes
+  register: result
+
+- name: Assert Change tcp_strip_sack - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_strip_sack - yes - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_strip_sack: yes
+  register: result
+
+- name: Assert Change tcp_strip_sack - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_strip_sack - no
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_strip_sack: no
+  register: result
+
+- name: Assert Change tcp_strip_sack - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_strip_sack - no - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_strip_sack: no
+  register: result
+
+- name: Assert Change tcp_strip_sack - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_time_wait_timeout
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_time_wait_timeout: 1024
+  register: result
+
+- name: Assert Change tcp_time_wait_timeout
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_time_wait_timeout - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_time_wait_timeout: 1024
+  register: result
+
+- name: Assert Change tcp_time_wait_timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_timestamp_mode - rewrite
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_timestamp_mode: rewrite
+  register: result
+
+- name: Assert Change tcp_timestamp_mode - rewrite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_timestamp_mode - rewrite - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_timestamp_mode: rewrite
+  register: result
+
+- name: Assert Change tcp_timestamp_mode - rewrite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_timestamp_mode - preserve
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_timestamp_mode: preserve
+  register: result
+
+- name: Assert Change tcp_timestamp_mode - preserve
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_timestamp_mode - preserve - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_timestamp_mode: preserve
+  register: result
+
+- name: Assert Change tcp_timestamp_mode - preserve - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_timestamp_mode - strip
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_timestamp_mode: strip
+  register: result
+
+- name: Assert Change tcp_timestamp_mode - strip
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_timestamp_mode - strip - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_timestamp_mode: strip
+  register: result
+
+- name: Assert Change tcp_timestamp_mode - strip - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_wscale_mode - rewrite
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_wscale_mode: rewrite
+  register: result
+
+- name: Assert Change tcp_wscale_mode - rewrite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_wscale_mode - rewrite - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_wscale_mode: rewrite
+  register: result
+
+- name: Assert Change tcp_wscale_mode - rewrite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_wscale_mode - preserve
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_wscale_mode: preserve
+  register: result
+
+- name: Assert Change tcp_wscale_mode - preserve
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_wscale_mode - preserve - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_wscale_mode: preserve
+  register: result
+
+- name: Assert Change tcp_wscale_mode - preserve - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change tcp_wscale_mode - strip
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_wscale_mode: strip
+  register: result
+
+- name: Assert Change tcp_wscale_mode - strip
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change tcp_wscale_mode - strip - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    tcp_wscale_mode: strip
+  register: result
+
+- name: Assert Change tcp_wscale_mode - strip - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change timeout_recovery - fallback
+  bigip_profile_fastl4:
+    name: fast1
+    timeout_recovery: fallback
+  register: result
+
+- name: Assert Change timeout_recovery - fallback
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change timeout_recovery - fallback - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    timeout_recovery: fallback
+  register: result
+
+- name: Assert Change timeout_recovery - fallback - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change timeout_recovery - disconnect
+  bigip_profile_fastl4:
+    name: fast1
+    timeout_recovery: disconnect
+  register: result
+
+- name: Assert Change timeout_recovery - disconnect
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change timeout_recovery - disconnect - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    timeout_recovery: disconnect
+  register: result
+
+- name: Assert Change timeout_recovery - disconnect - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change client_timeout - number
+  bigip_profile_fastl4:
+    name: fast1
+    client_timeout: 1234
+  register: result
+
+- name: Assert Change client_timeout - number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change client_timeout - number - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    client_timeout: 1234
+  register: result
+
+- name: Assert Change timeout_recovery - number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change client_timeout - immediate
+  bigip_profile_fastl4:
+    name: fast1
+    client_timeout: immediate
+  register: result
+
+- name: Assert Change client_timeout - immediate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change client_timeout - immediate - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    client_timeout: immediate
+  register: result
+
+- name: Assert Change timeout_recovery - immediate - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change client_timeout - zero - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    client_timeout: 0
+  register: result
+
+- name: Assert Change timeout_recovery - zero - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change client_timeout - indefinite
+  bigip_profile_fastl4:
+    name: fast1
+    client_timeout: indefinite
+  register: result
+
+- name: Assert Change client_timeout - indefinite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change client_timeout - indefinite - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    client_timeout: indefinite
+  register: result
+
+- name: Assert Change timeout_recovery - indefinite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change client_timeout - 4294967295 - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    client_timeout: 4294967295
+  register: result
+
+- name: Assert Change timeout_recovery - 4294967295 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove fastl4 profile
+  bigip_profile_fastl4:
+    name: fast1
+    state: absent
+  register: result
+
+- name: Assert Remove fastl4 profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove fastl4 profile - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    state: absent
+  register: result
+
+- name: Assert Remove fastl4 profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - import_tasks: teardown.yaml
