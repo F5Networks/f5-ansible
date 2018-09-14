@@ -7,19 +7,21 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+from .lib.common import BASE_DIR
+
 from invoke import task
 
 
 @task(name='sanity-all')
 def sanity_all_(c):
     cmds = [
-        'bash test/ansible/sanity/correct-defaultdict-import.sh',
-        'bash test/ansible/sanity/correct-iteritems-import.sh',
-        'bash test/ansible/sanity/incorrect-comparisons.sh',
-        'bash test/ansible/sanity/integration-test-idempotent-names.sh',
-        'bash test/ansible/sanity/q-debugging-exists.sh',
-        'python test/ansible/sanity/f5-sdk-install-missing-code-highlighting.py',
-        'python test/ansible/sanity/short-description-ends-with-period.py'
+        'bash {0}/test/ansible/sanity/correct-defaultdict-import.sh'.format(BASE_DIR),
+        'bash {0}/test/ansible/sanity/correct-iteritems-import.sh'.format(BASE_DIR),
+        'bash {0}/test/ansible/sanity/incorrect-comparisons.sh'.format(BASE_DIR),
+        'bash {0}/test/ansible/sanity/integration-test-idempotent-names.sh'.format(BASE_DIR),
+        'bash {0}/test/ansible/sanity/q-debugging-exists.sh'.format(BASE_DIR),
+        'python {0}/test/ansible/sanity/f5-sdk-install-missing-code-highlighting.py'.format(BASE_DIR),
+        'python {0}/test/ansible/sanity/short-description-ends-with-period.py'.format(BASE_DIR),
     ]
 
     for cmd in cmds:
@@ -28,9 +30,9 @@ def sanity_all_(c):
 
 @task
 def unit(c):
-    c.run("pytest -s test/")
+    c.run("pytest -s {0}/test/".format(BASE_DIR))
 
 
 @task
 def style(c):
-    c.run("pycodestyle .")
+    c.run("pycodestyle {0}".format(BASE_DIR))
