@@ -91,6 +91,7 @@ options:
       - Defining SSL profiles enables refined customization of the SSL attributes
         for an HTTPS monitor.
       - This parameter is only supported on BIG-IP versions 13.x and later.
+    version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.
