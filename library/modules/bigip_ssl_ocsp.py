@@ -99,7 +99,7 @@ options:
   update_password:
     description:
       - C(always) will allow to update passwords if the user chooses to do so.
-        C(on_create) will only set the password for newly created OCSP validators
+        C(on_create) will only set the password for newly created OCSP validators.
     default: always
     choices:
       - always
