@@ -85,6 +85,12 @@ options:
   target_password:
     description:
       - Specifies the password, if the monitored target requires authentication.
+  ssl_profile:
+    description:
+      - Specifies the SSL profile to use for the HTTPS monitor.
+      - Defining SSL profiles enables refined customization of the SSL attributes
+        for an HTTPS monitor.
+      - This parameter is only supported on BIG-IP versions 13.x and later.
   partition:
     description:
       - Device partition to manage resources on.
@@ -195,21 +201,50 @@ class Parameters(AnsibleF5Parameters):
         'defaultsFrom': 'parent',
         'recv': 'receive',
         'recvDisable': 'receive_disable',
+        'sslProfile': 'ssl_profile',
     }
 
     api_attributes = [
-        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'recv', 'send',
-        'destination', 'username', 'password', 'recvDisable', 'description',
+        'timeUntilUp',
+        'defaultsFrom',
+        'interval',
+        'timeout',
+        'recv',
+        'send',
+        'destination',
+        'username',
+        'password',
+        'recvDisable',
+        'description',
+        'sslProfile',
     ]
 
     returnables = [
-        'parent', 'send', 'receive', 'ip', 'port', 'interval', 'timeout',
-        'time_until_up', 'receive_disable', 'description',
+        'parent',
+        'send',
+        'receive',
+        'ip',
+        'port',
+        'interval',
+        'timeout',
+        'time_until_up',
+        'receive_disable',
+        'description',
+        'ssl_profile',
     ]
 
     updatables = [
-        'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up',
-        'target_username', 'target_password', 'receive_disable', 'description',
+        'destination',
+        'send',
+        'receive',
+        'interval',
+        'timeout',
+        'time_until_up',
+        'target_username',
+        'target_password',
+        'receive_disable',
+        'description',
+        'ssl_profile',
     ]
 
     @property
@@ -295,7 +330,14 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def ssl_profile(self):
+        if self._values['ssl_profile'] is None:
+            return None
+        if self._values['ssl_profile'] in ['', 'none']:
+            return ''
+        result = fq_name(self.partition, self._values['ssl_profile'])
+        return result
 
 
 class Changes(Parameters):
@@ -374,6 +416,15 @@ class Difference(object):
                 )
         if self.want.interval != self.have.interval:
             return self.want.interval
+
+    @property
+    def ssl_profile(self):
+        if self.want.ssl_profile is None:
+            return None
+        if self.want.ssl_profile == '' and self.have.ssl_profile is None:
+            return None
+        if self.want.ssl_profile != self.have.ssl_profile:
+            return self.want.ssl_profile
 
     def __default(self, param):
         attr1 = getattr(self.want, param)
@@ -601,6 +652,7 @@ class ArgumentSpec(object):
             time_until_up=dict(type='int'),
             target_username=dict(),
             target_password=dict(no_log=True),
+            ssl_profile=dict(),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
