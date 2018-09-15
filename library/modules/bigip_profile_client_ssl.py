@@ -281,23 +281,38 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'ciphers', 'certKeyChain',
-        'defaultsFrom', 'tmOptions',
-        'secureRenegotiation', 'allowNonSsl',
-        'sniDefault', 'sniRequire', 'serverName'
+        'ciphers',
+        'certKeyChain',
+        'defaultsFrom',
+        'tmOptions',
+        'secureRenegotiation',
+        'allowNonSsl',
+        'sniDefault',
+        'sniRequire',
+        'serverName',
     ]
 
     returnables = [
-        'ciphers', 'allow_non_ssl', 'options',
-        'secure_renegotiation', 'cert_key_chain',
-        'parent', 'sni_default', 'sni_require',
+        'ciphers',
+        'allow_non_ssl',
+        'options',
+        'secure_renegotiation',
+        'cert_key_chain',
+        'parent',
+        'sni_default',
+        'sni_require',
         'server_name',
     ]
 
     updatables = [
-        'ciphers', 'cert_key_chain', 'allow_non_ssl',
-        'options', 'secure_renegotiation',
-        'sni_default', 'sni_require', 'server_name',
+        'ciphers',
+        'cert_key_chain',
+        'allow_non_ssl',
+        'options',
+        'secure_renegotiation',
+        'sni_default',
+        'sni_require',
+        'server_name',
     ]
 
 
@@ -674,7 +689,6 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-        return response['selfLink']
 
     def update_on_device(self):
         params = self.changes.api_params()
