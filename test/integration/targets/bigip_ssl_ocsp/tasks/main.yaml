@@ -2,6 +2,551 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create a OCSP validator, mutually exclusive params - Expected failure
+  bigip_ssl_ocsp:
+    name: ocsp1
+    proxy_server_pool: pool1
+    dns_resolver: resolver1
+  register: result
+  failed_when: result is success
+
+- name: Assert Create a OCSP validator, mutually exclusive params - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create a OCSP validator
+  bigip_ssl_ocsp:
+    name: ocsp1
+    dns_resolver: resolver1
+  register: result
+
+- name: Assert Create a OCSP validator
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a OCSP validator - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    dns_resolver: resolver1
+  register: result
+
+- name: Assert Create a OCSP validator - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change cache_error_timeout
+  bigip_ssl_ocsp:
+    name: ocsp1
+    cache_error_timeout: 100
+  register: result
+
+- name: Assert Change cache_error_timeout
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change cache_error_timeout - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    cache_error_timeout: 100
+  register: result
+
+- name: Assert Change cache_error_timeout - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change cache_timeout - number
+  bigip_ssl_ocsp:
+    name: ocsp1
+    cache_timeout: 100
+  register: result
+
+- name: Assert Change cache_timeout - number
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change cache_timeout - number - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    cache_timeout: 100
+  register: result
+
+- name: Assert Change cache_timeout - number - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change cache_timeout - indefinite
+  bigip_ssl_ocsp:
+    name: ocsp1
+    cache_timeout: indefinite
+  register: result
+
+- name: Assert Change cache_timeout - indefinite
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change cache_timeout - indefinite - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    cache_timeout: indefinite
+  register: result
+
+- name: Assert Change cache_timeout - indefinite - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change responder_url
+  bigip_ssl_ocsp:
+    name: ocsp1
+    responder_url: "http://google.com"
+  register: result
+
+- name: Assert Change responder_url
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change responder_url - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    responder_url: "http://google.com"
+  register: result
+
+- name: Assert Change responder_url - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change responder_url - none
+  bigip_ssl_ocsp:
+    name: ocsp1
+    responder_url: none
+  register: result
+
+- name: Assert Change responder_url - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change responder_url - none - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    responder_url: none
+  register: result
+
+- name: Assert Change responder_url - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change responder_url - empty - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    responder_url: ''
+  register: result
+
+- name: Assert Change responder_url - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change clock_skew
+  bigip_ssl_ocsp:
+    name: ocsp1
+    clock_skew: 100
+  register: result
+
+- name: Assert Change clock_skew
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change clock_skew - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    clock_skew: 100
+  register: result
+
+- name: Assert Change clock_skew - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change connections_limit
+  bigip_ssl_ocsp:
+    name: ocsp1
+    connections_limit: 100
+  register: result
+
+- name: Assert Change connections_limit
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change connections_limit - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    connections_limit: 100
+  register: result
+
+- name: Assert Change connections_limit - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change hash_algorithm - sha1
+  bigip_ssl_ocsp:
+    name: ocsp1
+    hash_algorithm: sha1
+  register: result
+
+- name: Assert Change hash_algorithm - sha1
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change hash_algorithm - sha1 - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    hash_algorithm: sha1
+  register: result
+
+- name: Assert Change hash_algorithm - sha1 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change hash_algorithm - sha256
+  bigip_ssl_ocsp:
+    name: ocsp1
+    hash_algorithm: sha256
+  register: result
+
+- name: Assert Change hash_algorithm - sha256
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change hash_algorithm - sha256 - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    hash_algorithm: sha256
+  register: result
+
+- name: Assert Change hash_algorithm - sha256 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change status_age
+  bigip_ssl_ocsp:
+    name: ocsp1
+    status_age: 100
+  register: result
+
+- name: Assert Change status_age
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change status_age - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    status_age: 100
+  register: result
+
+- name: Assert Change status_age - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change strict_responder_checking - no
+  bigip_ssl_ocsp:
+    name: ocsp1
+    strict_responder_checking: no
+  register: result
+
+- name: Assert Change strict_responder_checking - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change strict_responder_checking - no - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    strict_responder_checking: no
+  register: result
+
+- name: Assert Change strict_responder_checking - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change strict_responder_checking - yes
+  bigip_ssl_ocsp:
+    name: ocsp1
+    strict_responder_checking: yes
+  register: result
+
+- name: Assert Change strict_responder_checking - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change strict_responder_checking - yes - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    strict_responder_checking: yes
+  register: result
+
+- name: Assert Change strict_responder_checking - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change proxy_server_pool
+  bigip_ssl_ocsp:
+    name: ocsp1
+    proxy_server_pool: pool1
+  register: result
+
+- name: Assert Change proxy_server_pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change proxy_server_pool - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    proxy_server_pool: pool1
+  register: result
+
+- name: Assert Change proxy_server_pool - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change dns_resolver
+  bigip_ssl_ocsp:
+    name: ocsp1
+    dns_resolver: resolver1
+  register: result
+
+- name: Assert Change dns_resolver
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change dns_resolver - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    dns_resolver: resolver1
+  register: result
+
+- name: Assert Change dns_resolver - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change password
+  bigip_ssl_ocsp:
+    name: ocsp1
+    passphrase: secret
+  register: result
+
+- name: Assert Change password
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change password - Idempotent check - Expected non-idempotence
+  bigip_ssl_ocsp:
+    name: ocsp1
+    passphrase: secret
+  register: result
+
+- name: Assert Change password - Idempotent check - Expected non-idempotence
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change password - on_create - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    passphrase: secret
+    update_password: on_create
+  register: result
+
+- name: Assert Change password - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change certificate and key
+  bigip_ssl_ocsp:
+    name: ocsp1
+    certificate: default.crt
+    key: default.key
+  register: result
+
+- name: Assert Change certificate and key
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change certificate and key - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    certificate: default.crt
+    key: default.key
+  register: result
+
+- name: Assert Change certificate and key - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change certificate and key - none
+  bigip_ssl_ocsp:
+    name: ocsp1
+    certificate: none
+    key: none
+  register: result
+
+- name: Assert Change certificate and key - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change certificate and key - none - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    certificate: none
+    key: none
+  register: result
+
+- name: Assert Change certificate and key - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change trusted_responders
+  bigip_ssl_ocsp:
+    name: ocsp1
+    trusted_responders: default.crt
+  register: result
+
+- name: Assert Change trusted_responders
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change trusted_responders - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    trusted_responders: default.crt
+  register: result
+
+- name: Assert Change trusted_responders - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change trusted_responders - none
+  bigip_ssl_ocsp:
+    name: ocsp1
+    trusted_responders: none
+  register: result
+
+- name: Assert Change trusted_responders - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change trusted_responders - none - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    trusted_responders: none
+  register: result
+
+- name: Assert Change trusted_responders - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove OCSP validator
+  bigip_ssl_ocsp:
+    name: ocsp1
+    state: absent
+  register: result
+
+- name: Assert Remove OCSP validator
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove OCSP validator - Idempotent check
+  bigip_ssl_ocsp:
+    name: ocsp1
+    state: absent
+  register: result
+
+- name: Assert Remove OCSP validator - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
 
 - import_tasks: teardown.yaml

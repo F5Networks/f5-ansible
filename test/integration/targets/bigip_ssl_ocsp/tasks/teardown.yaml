@@ -1,0 +1,11 @@
+---
+
+- name: Create a DNS resolver
+  bigip_dns_resolver:
+    name: resolver1
+    state: absent
+
+- name: Create pool
+  bigip_pool:
+    name: pool1
+    state: absent
