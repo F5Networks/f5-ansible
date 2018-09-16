@@ -1,0 +1,462 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a base server SSL profile
+  bigip_profile_server_ssl:
+    name: foo
+  register: result
+
+- name: Assert Create a base server SSL profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a base server SSL profile - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+  register: result
+
+- name: Assert Create a base server SSL profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change server_certificate - require
+  bigip_profile_server_ssl:
+    name: foo
+    server_certificate: require
+  register: result
+
+- name: Assert Change server_certificate - require
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change server_certificate - require - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    server_certificate: require
+  register: result
+
+- name: Assert Change server_certificate - require - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+- name: Change server_certificate - ignore
+  bigip_profile_server_ssl:
+    name: foo
+    server_certificate: ignore
+  register: result
+
+- name: Assert Change server_certificate - ignore
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change server_certificate - ignore - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    server_certificate: ignore
+  register: result
+
+- name: Assert Change server_certificate - ignore - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+
+
+
+- name: Set ciphers
+  bigip_profile_server_ssl:
+    name: foo
+    ciphers: "{{ ciphers1 }}"
+  register: result
+
+- name: Assert Set ciphers
+  assert:
+    that:
+      - result is changed
+
+- name: Set ciphers - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    ciphers: "{{ ciphers1 }}"
+  register: result
+
+- name: Assert Set ciphers - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change ciphers
+  bigip_profile_server_ssl:
+    name: foo
+    ciphers: "{{ ciphers2 }}"
+  register: result
+
+- name: Assert Change ciphers
+  assert:
+    that:
+      - result is changed
+
+- name: Change ciphers - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    ciphers: "{{ ciphers2 }}"
+  register: result
+
+- name: Assert Change ciphers - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Default ciphers
+  bigip_profile_server_ssl:
+    name: foo
+    ciphers: "DEFAULT"
+  register: result
+
+- name: Assert Default ciphers
+  assert:
+    that:
+      - result is changed
+
+- name: Default ciphers - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    ciphers: "DEFAULT"
+  register: result
+
+- name: Assert Default ciphers - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+- name: Set certificate and key
+  bigip_profile_server_ssl:
+    name: foo
+    certificate: default.crt
+    key: default.key
+  register: result
+
+- name: Assert Set certificate and key
+  assert:
+    that:
+      - result is changed
+
+- name: Set certificate and key - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    certificate: default.crt
+    key: default.key
+  register: result
+
+- name: Assert Set certificate and key - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+- name: Set certificate and key - none
+  bigip_profile_server_ssl:
+    name: foo
+    certificate: none
+    key: none
+  register: result
+
+- name: Assert Set certificate and key - none
+  assert:
+    that:
+      - result is changed
+
+- name: Set certificate and key - none - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    certificate: none
+    key: none
+  register: result
+
+- name: Assert Set certificate and key - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Remove base server SSL profile
+  bigip_profile_server_ssl:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove base server SSL profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove base server SSL profile - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove base server SSL profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Create a client SSL profile and set sni default
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_default: yes
+  register: result
+
+- name: Assert Create a client SSL profile and set sni default
+  assert:
+    that:
+      - result is changed
+      - result.sni_default == 'yes'
+
+- name: Create a client SSL profile and set sni default - Idempotent check
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_default: yes
+  register: result
+
+- name: Assert Create a client SSL profile and set sni default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify client SSL profile and unset sni default
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_default: no
+  register: result
+
+- name: Issue 00846 - Assert Modify a client SSL profile and unset sni default
+  assert:
+    that:
+      - result is changed
+      - result.sni_default == 'no'
+
+- name: Modify a client SSL profile and unset sni default - Idempotent check
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_default: no
+  register: result
+
+- name: Assert Modify a client SSL profile and unset sni default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify client SSL profile and set sni require, sni default unset - Expect failure
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_require: yes
+  register: result
+  ignore_errors: true
+
+- name: Modify client SSL profile, set sni require and sni default
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_default: yes
+    sni_require: yes
+  register: result
+
+- name: Modify client SSL profile, set sni require and sni default
+  assert:
+    that:
+      - result is changed
+      - result.sni_default == 'yes'
+      - result.sni_require == 'yes'
+
+- name: Modify client SSL profile, set sni require and sni default - Idempotent check
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_default: yes
+    sni_require: yes
+  register: result
+
+- name: Modify client SSL profile, set sni require and sni default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify client SSL profile and unset sni require, sni default set - Expect failure
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_require: no
+  register: result
+  ignore_errors: true
+
+- name: Modify client SSL profile and unset sni require, unset sni default
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_default: no
+    sni_require: no
+  register: result
+
+- name: Modify client SSL profile and unset sni require, unset sni default
+  assert:
+    that:
+      - result is changed
+      - result.sni_default == 'no'
+      - result.sni_require == 'no'
+
+- name: Modify client SSL profile and unset sni require, unset sni default - Idempotent check
+  bigip_profile_server_ssl:
+    name: "{{ profile }}"
+    sni_default: no
+    sni_require: no
+  register: result
+
+- name: Modify client SSL profile and unset sni require, unset sni default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a client SSL profile and set server_name
+  bigip_profile_server_ssl:
+    name: "{{ profile_2 }}"
+    server_name: "{{ server_1 }}"
+  register: result
+
+- name: Create a client SSL profile and set server_name
+  assert:
+    that:
+      - result is changed
+      - result.server_name == server_1
+
+- name: Create a client SSL profile and set server_name - Idempotent check
+  bigip_profile_server_ssl:
+    name: "{{ profile_2 }}"
+    server_name: "{{ server_1 }}"
+  register: result
+
+- name: Create a client SSL profile and set server_name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify a client SSL profile server_name
+  bigip_profile_server_ssl:
+    name: "{{ profile_2 }}"
+    server_name: "{{ server_2 }}"
+  register: result
+
+- name: Modify a client SSL profile server_name
+  assert:
+    that:
+      - result is changed
+      - result.server_name == server_2
+
+- name: Modify a client SSL profile server_name - Idempotent check
+  bigip_profile_server_ssl:
+    name: "{{ profile_2 }}"
+    server_name: "{{ server_2 }}"
+  register: result
+
+- name: Modify a client SSL profile server_name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove profiles
+  bigip_profile_server_ssl:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ profile }}"
+    - "{{ profile_2 }}"
+
+- import_tasks: teardown.yaml
