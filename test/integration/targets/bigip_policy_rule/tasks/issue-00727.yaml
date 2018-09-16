@@ -6,7 +6,7 @@
     destination: 1.1.1.1
     port: 80
 
-- name: Create published policy
+- name: Issue 00727 - Create published policy
   bigip_policy:
     name: "{{ policy_name1 }}"
 
@@ -40,7 +40,7 @@
       - result is not changed
       - result is success
 
-- name: Create published policy
+- name: Issue 00727 - Remove published policy
   bigip_policy:
     name: "{{ policy_name1 }}"
     state: absent
