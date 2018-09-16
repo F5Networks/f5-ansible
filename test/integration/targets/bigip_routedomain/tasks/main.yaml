@@ -2,6 +2,11 @@
 
 - import_tasks: setup.yaml
 
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
 - name: Create route domain
   bigip_routedomain:
     id: "{{ new_routedomain }}"
@@ -396,26 +401,26 @@
     id: "{{ new_routedomain }}"
     service_policy: "{{ valid_service_policy }}"
   register: result
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Assert Set service policy, valid
   assert:
     that:
       - result is changed
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Set service policy, valid - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     service_policy: "{{ valid_service_policy }}"
   register: result
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Assert Set service policy, valid - Idempotent check
   assert:
     that:
       - result is not changed
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Set service policy, invalid
   bigip_routedomain:
@@ -424,13 +429,13 @@
   register: result
   ignore_errors: true
   loop: "{{ invalid_service_policy }}"
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Assert Set service policy, invalid
   assert:
     that:
       - result is not changed
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Set service policy, invalid - Idempotent check
   bigip_routedomain:
@@ -439,13 +444,13 @@
   register: result
   ignore_errors: true
   loop: "{{ invalid_service_policy }}"
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Assert Set service policy, invalid - Idempotent check
   assert:
     that:
       - result is not changed
-  when: system_info.product_information.product_version >= "12.0.0"
+  when: f.system_info.product_version >= "12.0.0"
 
 - name: Delete a route domain
   bigip_routedomain:
@@ -522,9 +527,6 @@
 
 - import_tasks: issue-00379.yaml
   tags: issue-00379
-
-#- import_tasks: issue-00693.yaml
-#  tags: issue-00693
 
 - import_tasks: issue-00775.yaml
   tags: issue-00775
