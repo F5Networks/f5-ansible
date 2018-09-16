@@ -36,7 +36,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                     
-                                                                                                                                                                
+                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
@@ -134,6 +134,7 @@ Parameters
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li>http_uri</li>
                                                                                                                                                                                                 <li>all_traffic</li>
+                                                                                                                                                                                                <li>http_host</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -152,6 +153,30 @@ Parameters
                                                                 <td>
                                                                         <div>A list of strings of characters that the HTTP URI should start with.</div>
                                                     <div>This parameter is only valid with the <code>http_uri</code> type.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>host_is_any</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>A list of strings of characters that the HTTP Host should match.</div>
+                                                    <div>This parameter is only valid with the <code>http_host</code> type.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>host_begins_with_any</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>A list of strings of characters that the HTTP Host should start with.</div>
+                                                    <div>This parameter is only valid with the <code>http_host</code> type.</div>
                                                                                 </td>
             </tr>
                     

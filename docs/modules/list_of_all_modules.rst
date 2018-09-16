@@ -25,8 +25,7 @@ All modules
   * :ref:`bigip_device_sshd_module`
   * :ref:`bigip_device_trust_module`
   * :ref:`bigip_dns_nameserver_module`
-  * :ref:`bigip_dns_record_module`
-  * :ref:`bigip_dns_zone_module`
+  * :ref:`bigip_dns_resolver_module`
   * :ref:`bigip_facts_module` **(D)**
   * :ref:`bigip_firewall_address_list_module`
   * :ref:`bigip_firewall_dos_profile_module`
@@ -81,6 +80,7 @@ All modules
   * :ref:`bigip_profile_http_compression_module`
   * :ref:`bigip_profile_oneconnect_module`
   * :ref:`bigip_profile_persistence_src_addr_module`
+  * :ref:`bigip_profile_server_ssl_module`
   * :ref:`bigip_profile_tcp_module`
   * :ref:`bigip_profile_udp_module`
   * :ref:`bigip_provision_module`
@@ -102,6 +102,7 @@ All modules
   * :ref:`bigip_software_update_module`
   * :ref:`bigip_ssl_certificate_module`
   * :ref:`bigip_ssl_key_module`
+  * :ref:`bigip_ssl_ocsp_module`
   * :ref:`bigip_static_route_module`
   * :ref:`bigip_sys_db_module`
   * :ref:`bigip_sys_global_module`

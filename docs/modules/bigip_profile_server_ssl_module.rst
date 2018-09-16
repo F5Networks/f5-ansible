@@ -1,14 +1,14 @@
-:source: bigip_monitor_https.py
+:source: bigip_profile_server_ssl.py
 
 :orphan:
 
-.. _bigip_monitor_https_module:
+.. _bigip_profile_server_ssl_module:
 
 
-bigip_monitor_https - Manages F5 BIG-IP LTM https monitors
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_server_ssl - Manages server SSL profiles on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_monitor_https - Manages F5 BIG-IP LTM https monitors
 
 Synopsis
 --------
-- Manages F5 BIG-IP LTM https monitors.
+- Manages server SSL profiles on a BIG-IP.
 
 
 
@@ -34,40 +34,50 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>description</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The description of the monitor.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>interval</b>
+                    <b>certificate</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The interval specifying how frequently the monitor instance of this template will run. If this parameter is not provided when creating a new monitor, then the default value will be 5. This value <b>must</b> be less than the <code>timeout</code> value.</div>
+                                                                        <div>Specifies the name of the certificate that the system uses for server-side SSL processing.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>ip</b>
+                    <b>chain</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>
+                                                                        <div>Specifies the certificates-key chain to associate with the SSL profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ciphers</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the list of ciphers that the system supports. When creating a new profile, the default cipher list is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>key</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the file name of the SSL key.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -77,7 +87,17 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Monitor name.</div>
+                                                                        <div>Specifies the name of the profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ocsp_profile</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the OCSP profile for purpose of validating status of server certificate.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -85,10 +105,9 @@ Parameters
                     <b>parent</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">/Common/https</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>https</code> parent on the <code>Common</code> partition.</div>
+                                                                        <div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>clientssl</code> parent on the <code>Common</code> partition.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -104,6 +123,16 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>passphrase</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a passphrase used to encrypt the key.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -113,16 +142,6 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>port</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -243,32 +262,20 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>receive</b>
+                    <b>secure_renegotiation</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>require</li>
+                                                                                                                                                                                                <li>require-strict</li>
+                                                                                                                                                                                                <li>request</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>The receive string for the monitor call.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>receive_disable</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>This setting works like <code>receive</code>, except that the system marks the node or pool member disabled when its response matches the <code>receive_disable</code> string but not <code>receive</code>. To use this setting, you must specify both <code>receive_disable</code> and <code>receive</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>send</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The send string for the monitor call. When creating a new monitor, if this value is not provided, the default <code>GET /\\r\\n</code> will be used.</div>
+                                                                        <div>Specifies the method of secure renegotiations for SSL connections. When creating a new profile, the setting is provided by the parent profile.</div>
+                                                    <div>When <code>request</code> is set the system request secure renegotation of SSL connections.</div>
+                                                    <div><code>require</code> is a default setting and when set the system permits initial SSL handshakes from clients but terminates renegotiations from unpatched clients.</div>
+                                                    <div>The <code>require-strict</code> setting the system requires strict renegotiation of SSL connections. In this mode the system refuses connections to insecure servers, and terminates existing SSL connections to insecure servers.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -280,6 +287,32 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>server_certifcate</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>ignore</li>
+                                                                                                                                                                                                <li>require</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the way the system handles server certificates.</div>
+                                                    <div>When <code>ignore</code>, specifies that the system ignores certificates from server systems.</div>
+                                                    <div>When <code>require</code>, specifies that the system requires a server to present a valid certificate.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>server_name</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the fully qualified DNS hostname of the server used in Server Name Indication communications. When creating a new profile, the setting is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -296,20 +329,38 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>ssl_profile</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                    <b>sni_default</b>
+                                                        </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the SSL profile to use for the HTTPS monitor.</div>
-                                                    <div>Defining SSL profiles enables refined customization of the SSL attributes for an HTTPS monitor.</div>
-                                                    <div>This parameter is only supported on BIG-IP versions 13.x and later.</div>
+                                                                        <div>Indicates that the system uses this profile as the default SSL profile when there is no match to the server name, or when the client provides no SNI extension support.</div>
+                                                    <div>When creating a new profile, the setting is provided by the parent profile.</div>
+                                                    <div>There can be only one SSL profile with this setting enabled.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>sni_require</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Requires that the network peers also provide SNI support. This setting only takes effect when <code>sni_default</code> is <code>yes</code>. When creating a new profile, the setting is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
                     <b>state</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
@@ -317,48 +368,22 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the monitor exists.</div>
-                                                    <div>When <code>absent</code>, ensures the monitor is removed.</div>
+                                                                        <div>When <code>present</code>, ensures that the profile exists.</div>
+                                                    <div>When <code>absent</code>, ensures the profile is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>target_password</b>
+                    <b>update_password</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>on_create</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the password, if the monitored target requires authentication.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>target_username</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the user name, if the monitored target requires authentication.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>time_until_up</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the amount of time in seconds after the first successful response before a node will be marked up. A value of 0 will cause a node to be marked up immediately after a valid response is received from the node. If this parameter is not provided when creating a new monitor, then the default value will be 0.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 16.</div>
+                                                                        <div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created profiles.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -395,7 +420,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
@@ -408,23 +432,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create HTTPS Monitor
-      bigip_monitor_https:
-        state: present
-        ip: 10.10.10.10
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_http_monitor
-      delegate_to: localhost
-
-    - name: Remove HTTPS Monitor
-      bigip_monitor_https:
-        state: absent
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_http_monitor
+    - name: Create a new server SSL profile
+      bigip_profile_server_ssl:
+        name: foo
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -437,87 +451,35 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The description of the monitor.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Important Monitor</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>interval</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new interval in which to run the monitor check.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ip</b>
+                    <b>ciphers</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new IP of IP/port definition.</div>
+                                            <div>The ciphers applied to the profile.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.12.13.14</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>parent</b>
+                    <b>secure_renegotation</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>New parent template of the monitor.</div>
+                                            <div>The method of secure SSL renegotiation.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">https</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>time_until_up</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new time in which to mark a system as up after first successful response.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>timeout</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new timeout in which the remote system must respond to the monitor.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">request</div>
                                     </td>
             </tr>
                         </table>
@@ -538,5 +500,4 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
-- Wojciech Wypior (@wojtek0806)
 

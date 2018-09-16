@@ -1,14 +1,14 @@
-:source: bigip_monitor_https.py
+:source: bigip_dns_resolver.py
 
 :orphan:
 
-.. _bigip_monitor_https_module:
+.. _bigip_dns_resolver_module:
 
 
-bigip_monitor_https - Manages F5 BIG-IP LTM https monitors
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_dns_resolver - Manage DNS resolvers on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_monitor_https - Manages F5 BIG-IP LTM https monitors
 
 Synopsis
 --------
-- Manages F5 BIG-IP LTM https monitors.
+- Manage DNS resolver on a BIG-IP.
 
 
 
@@ -34,40 +34,37 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>description</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                    <b>answer_default_zones</b>
+                                                        </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>The description of the monitor.</div>
+                                                                        <div>Specifies whether the system answers DNS queries for the default zones localhost, reverse 127.0.0.1 and ::1, and AS112.</div>
+                                                    <div>When creating a new resolver, if this parameter is not specified, the default is <code>no</code>, meaning that the system passes along the DNS queries for the default zones.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>interval</b>
+                    <b>cache_size</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The interval specifying how frequently the monitor instance of this template will run. If this parameter is not provided when creating a new monitor, then the default value will be 5. This value <b>must</b> be less than the <code>timeout</code> value.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>ip</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>
+                                                                        <div>Specifies the size of the internal DNS resolver cache.</div>
+                                                    <div>When creating a new resolver, if this parameter is not specified, the default is 5767168 bytes.</div>
+                                                    <div>After the cache reaches this size, when new or refreshed content arrives, the system removes expired and older content and caches the new or updated content.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -77,29 +74,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Monitor name.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>parent</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">/Common/https</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>https</code> parent on the <code>Common</code> partition.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>partition</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>Device partition to manage resources on.</div>
+                                                                        <div>Specifies the name of the DNS resolver.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -113,16 +88,6 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>port</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -243,32 +208,27 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>receive</b>
+                    <b>randomize_query_case</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>The receive string for the monitor call.</div>
+                                                                        <div>When <code>yes</code>, specifies that the internal DNS resolver randomizes character case in domain name queries issued to the root DNS servers.</div>
+                                                    <div>When creating a new resolver, if this parameter is not specified, the default is <code>yes</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>receive_disable</b>
+                    <b>route_domain</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>This setting works like <code>receive</code>, except that the system marks the node or pool member disabled when its response matches the <code>receive_disable</code> string but not <code>receive</code>. To use this setting, you must specify both <code>receive_disable</code> and <code>receive</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>send</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The send string for the monitor call. When creating a new monitor, if this value is not provided, the default <code>GET /\\r\\n</code> will be used.</div>
+                                                                        <div>Specifies the route domain the resolver uses for outbound traffic.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -296,69 +256,64 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>ssl_profile</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                    <b>use_ipv4</b>
+                                                        </td>
                                 <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SSL profile to use for the HTTPS monitor.</div>
-                                                    <div>Defining SSL profiles enables refined customization of the SSL attributes for an HTTPS monitor.</div>
-                                                    <div>This parameter is only supported on BIG-IP versions 13.x and later.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>state</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>absent</li>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the monitor exists.</div>
-                                                    <div>When <code>absent</code>, ensures the monitor is removed.</div>
+                                                                        <div>Specifies whether the system can use IPv4 to query backend nameservers.</div>
+                                                    <div>An IPv4 Self IP and default route must be available for these queries to work successfully.</div>
+                                                    <div>When creating a new resolver, if this parameter is not specified, the default is <code>yes</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>target_password</b>
+                    <b>use_ipv6</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the password, if the monitored target requires authentication.</div>
+                                                                        <div>Specifies whether the system can use IPv6 to query backend nameservers.</div>
+                                                    <div>An IPv6 Self IP and default route must be available for these queries to work successfully.</div>
+                                                    <div>When creating a new resolver, if this parameter is not specified, the default is <code>yes</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>target_username</b>
+                    <b>use_tcp</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the user name, if the monitored target requires authentication.</div>
+                                                                        <div>Specifies whether the system answers and issues TCP-formatted queries.</div>
+                                                    <div>When creating a new resolver, if this parameter is not specified, the default is <code>yes</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>time_until_up</b>
+                    <b>use_udp</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the amount of time in seconds after the first successful response before a node will be marked up. A value of 0 will cause a node to be marked up immediately after a valid response is received from the node. If this parameter is not provided when creating a new monitor, then the default value will be 0.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 16.</div>
+                                                                        <div>Specifies whether the system answers and issues UDP-formatted queries.</div>
+                                                    <div>When creating a new resolver, if this parameter is not specified, the default is <code>yes</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -395,7 +350,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
@@ -408,23 +362,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create HTTPS Monitor
-      bigip_monitor_https:
-        state: present
-        ip: 10.10.10.10
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_http_monitor
-      delegate_to: localhost
-
-    - name: Remove HTTPS Monitor
-      bigip_monitor_https:
-        state: absent
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_http_monitor
+    - name: Create a simple DNS responder for OCSP stapling
+      bigip_dns_resolver:
+        name: resolver1
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -437,87 +381,107 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">str</div>
+                    <b>answer_default_zones</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The description of the monitor.</div>
+                                            <div>The new Answer Default Zones setting.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Important Monitor</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>interval</b>
+                    <b>cache_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new interval in which to run the monitor check.</div>
+                                            <div>The new cache size of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">50000</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>ip</b>
+                    <b>randomize_query_case</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Randomize Query Character Case setting.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>route_domain</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new IP of IP/port definition.</div>
+                                            <div>The new route domain of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.12.13.14</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/0</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>parent</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>use_ipv4</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>New parent template of the monitor.</div>
+                                            <div>The new Use IPv4 setting.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">https</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>time_until_up</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>use_ipv6</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new time in which to mark a system as up after first successful response.</div>
+                                            <div>The new Use IPv6 setting.</div>
                                         <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>timeout</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>use_tcp</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new timeout in which the remote system must respond to the monitor.</div>
+                                            <div>The new Use TCP setting.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>use_udp</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Use UDP setting.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                         </table>
@@ -538,5 +502,4 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
-- Wojciech Wypior (@wojtek0806)
 
