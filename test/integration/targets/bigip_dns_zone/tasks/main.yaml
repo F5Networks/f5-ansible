@@ -1,7 +1,0 @@
-- name: Create a new zone on the BIG-IP
-  bigip_dns_zone:
-    name: my_datacenter
-    contact: admin@root.local
-    location: New York
-    description: The New York data center
-    state: present
