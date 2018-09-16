@@ -302,7 +302,7 @@ class ModuleManager(object):
             return True
         return False
 
-    def exec_module(self):
+    def exec_module(self):  # lgtm [py/similar-function]
         result = dict()
 
         try:

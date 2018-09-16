@@ -216,7 +216,7 @@ class ModuleManager(object):
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
-    def exec_module(self):
+    def exec_module(self):  # lgtm [py/similar-function]
         result = dict()
 
         try:

@@ -227,7 +227,7 @@ class ModuleManager(object):
         if changed:
             self.changes = Changes(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -261,7 +261,7 @@ class ModuleManager(object):
         self._announce_deprecations()
         return result
 
-    def _announce_deprecations(self):
+    def _announce_deprecations(self):  # lgtm [py/similar-function]
         warnings = []
         if self.want:
             warnings += self.want._values.get('__warnings', [])

@@ -418,7 +418,7 @@ class V3Manager(BaseManager):
         if changed:
             self.changes = V3Parameters(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         changed = {}
         for key in V3Parameters.updatables:
             if getattr(self.want, key) is not None:
@@ -457,7 +457,7 @@ class V2Manager(BaseManager):
         if changed:
             self.changes = V2Parameters(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         changed = {}
         for key in V2Parameters.updatables:
             if getattr(self.want, key) is not None:
@@ -507,7 +507,7 @@ class V1Manager(BaseManager):
         if changed:
             self.changes = V1Parameters(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         changed = {}
         for key in V1Parameters.updatables:
             if getattr(self.want, key) is not None:

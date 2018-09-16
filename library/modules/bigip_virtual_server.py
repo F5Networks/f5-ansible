@@ -2857,7 +2857,7 @@ class ModuleManager(object):
             return True
         return False
 
-    def exists(self):
+    def exists(self):  # lgtm [py/similar-function]
         uri = "https://{0}:{1}/mgmt/tm/ltm/virtual/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
