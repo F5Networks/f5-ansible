@@ -24,10 +24,66 @@
       - result is not changed
       - result is success
 
+- name: Change OCSP - profile
+  bigip_profile_server_ssl:
+    name: foo
+    ocsp_profile: ocsp1
+  register: result
+
+- name: Assert Change OCSP - profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change OCSP - profile - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    ocsp_profile: ocsp1
+  register: result
+
+- name: Assert Change OCSP - profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change OCSP - none
+  bigip_profile_server_ssl:
+    name: foo
+    ocsp_profile: none
+  register: result
+
+- name: Assert Change OCSP - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change OCSP - none - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    ocsp_profile: none
+  register: result
+
+- name: Assert Change OCSP - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 
+- name: Change OCSP - empty - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo
+    ocsp_profile: ''
+  register: result
 
-
+- name: Assert Change OCSP - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - name: Change server_certificate - require
   bigip_profile_server_ssl:
@@ -53,9 +109,6 @@
       - result is not changed
       - result is success
 
-
-
-
 - name: Change server_certificate - ignore
   bigip_profile_server_ssl:
     name: foo
@@ -79,16 +132,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
-
-
-
-
-
 
 - name: Set ciphers
   bigip_profile_server_ssl:
@@ -156,15 +199,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
 - name: Set certificate and key
   bigip_profile_server_ssl:
     name: foo
@@ -188,12 +222,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
 
 - name: Set certificate and key - none
   bigip_profile_server_ssl:
@@ -219,25 +247,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Remove base server SSL profile
   bigip_profile_server_ssl:
     name: foo
@@ -261,31 +270,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 - name: Create a client SSL profile and set sni default
   bigip_profile_server_ssl:
@@ -317,7 +301,7 @@
     sni_default: no
   register: result
 
-- name: Issue 00846 - Assert Modify a client SSL profile and unset sni default
+- name: Assert Modify a client SSL profile and unset sni default
   assert:
     that:
       - result is changed
@@ -349,7 +333,7 @@
     sni_require: yes
   register: result
 
-- name: Modify client SSL profile, set sni require and sni default
+- name: Assert Modify client SSL profile, set sni require and sni default
   assert:
     that:
       - result is changed
@@ -363,7 +347,7 @@
     sni_require: yes
   register: result
 
-- name: Modify client SSL profile, set sni require and sni default - Idempotent check
+- name: Assert Modify client SSL profile, set sni require and sni default - Idempotent check
   assert:
     that:
       - result is not changed
@@ -383,7 +367,7 @@
     sni_require: no
   register: result
 
-- name: Modify client SSL profile and unset sni require, unset sni default
+- name: Assert Modify client SSL profile and unset sni require, unset sni default
   assert:
     that:
       - result is changed
@@ -397,7 +381,7 @@
     sni_require: no
   register: result
 
-- name: Modify client SSL profile and unset sni require, unset sni default - Idempotent check
+- name: Assert Modify client SSL profile and unset sni require, unset sni default - Idempotent check
   assert:
     that:
       - result is not changed
@@ -409,7 +393,7 @@
     server_name: "{{ server_1 }}"
   register: result
 
-- name: Create a client SSL profile and set server_name
+- name: Assert Create a client SSL profile and set server_name
   assert:
     that:
       - result is changed
@@ -421,7 +405,7 @@
     server_name: "{{ server_1 }}"
   register: result
 
-- name: Create a client SSL profile and set server_name - Idempotent check
+- name: Assert Create a client SSL profile and set server_name - Idempotent check
   assert:
     that:
       - result is not changed
@@ -433,7 +417,7 @@
     server_name: "{{ server_2 }}"
   register: result
 
-- name: Modify a client SSL profile server_name
+- name: Assert Modify a client SSL profile server_name
   assert:
     that:
       - result is changed
@@ -445,7 +429,42 @@
     server_name: "{{ server_2 }}"
   register: result
 
-- name: Modify a client SSL profile server_name - Idempotent check
+- name: Assert Modify a client SSL profile server_name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set server_name - none
+  bigip_profile_server_ssl:
+    name: "{{ profile_2 }}"
+    server_name: none
+  register: result
+
+- name: Assert Set server_name - none
+  assert:
+    that:
+      - result is changed
+
+- name: Set server_name - none - Idempotent check
+  bigip_profile_server_ssl:
+    name: "{{ profile_2 }}"
+    server_name: none
+  register: result
+
+- name: Assert Set server_name - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set server_name - empty - Idempotent check
+  bigip_profile_server_ssl:
+    name: "{{ profile_2 }}"
+    server_name: ''
+  register: result
+
+- name: Assert Set server_name - empty - Idempotent check
   assert:
     that:
       - result is not changed
