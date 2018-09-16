@@ -1,0 +1,278 @@
+---
+
+- name: Issue 00899 - Create published policy
+  bigip_policy:
+    name: issue-00899
+
+- name: Issue 00899 - Create published rule with conditions
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+          - baz.cool.com
+  register: result
+
+- name: Issue 00899 - Create published rule with conditions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Create published rule with conditions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+          - baz.cool.com
+  register: result
+
+- name: Issue 00899 - Create published rule with conditions - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Add value to condition
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+          - baz.cool.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 00899 - Add value to condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Add value to condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+          - baz.cool.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 00899 - Add value to condition - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Remove value from condition
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 00899 - Remove value from condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Remove value from condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 00899 - Remove value from condition - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - One value in condition
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any: foo.bar.com
+  register: result
+
+- name: Issue 00899 - One value in condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - One value in condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any: foo.bar.com
+  register: result
+
+- name: Issue 00899 - One value in condition - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Change condition is_any
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any:
+          - foo.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 00899 - Change condition is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Change condition is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any:
+          - foo.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 00899 - Change condition is_any - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Add value condition is_any
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any:
+          - foo.bar.com
+          - baz.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 00899 - Add value condition is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Add value condition is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any:
+          - foo.bar.com
+          - baz.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 00899 - Add value condition is_any - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Remove value condition is_any
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any:
+          - foo.bar.com
+          - baz.bar.com
+  register: result
+
+- name: Issue 00899 - Remove value condition is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Remove value condition is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any:
+          - foo.bar.com
+          - baz.bar.com
+  register: result
+
+- name: Issue 00899 - Remove value condition is_any - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - One value condition is_any
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: foo.bar.com
+  register: result
+
+- name: Issue 00899 - One value condition is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - One value condition is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00899
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: foo.bar.com
+  register: result
+
+- name: Issue 00899 - One value condition is_any - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00899 - Remove published policy
+  bigip_policy:
+    name: issue-00899
+    state: absent

@@ -82,11 +82,19 @@ options:
           - When C(type) is C(all_traffic), will remove all existing conditions from
             this rule.
         required: True
-        choices: [ 'http_uri', 'all_traffic' ]
+        choices: [ 'http_uri', 'all_traffic', 'http_host' ]
       path_begins_with_any:
         description:
           - A list of strings of characters that the HTTP URI should start with.
           - This parameter is only valid with the C(http_uri) type.
+      host_is_any:
+        description:
+          - A list of strings of characters that the HTTP Host should match.
+          - This parameter is only valid with the C(http_host) type.
+      host_begins_with_any:
+        description:
+          - A list of strings of characters that the HTTP Host should start with.
+          - This parameter is only valid with the C(http_host) type.
   state:
     description:
       - When C(present), ensures that the key is uploaded to the device. When
@@ -312,6 +320,12 @@ class ApiParameters(Parameters):
                 # whatever the common stringiness is.
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
+            elif 'httpHost' in item:
+                action.update(item)
+                action['type'] = 'http_host'
+                del action['httpHost']
+                if 'values' in action:
+                    action['values'] = [str(x) for x in action['values']]
             result.append(action)
         # Names contains the index in which the rule is at.
         result = sorted(result, key=lambda x: x['name'])
@@ -353,11 +367,38 @@ class ModuleParameters(Parameters):
                 action['name'] = str(idx)
             if item['type'] == 'http_uri':
                 self._handle_http_uri_condition(action, item)
+            elif item['type'] == 'http_host':
+                self._handle_http_host_condition(action, item)
             elif item['type'] == 'all_traffic':
                 return [dict(type='all_traffic')]
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
+
+    def _handle_http_host_condition(self, action, item):
+        action['type'] = 'http_host'
+        if 'host_begins_with_any' in item:
+            if isinstance(item['host_begins_with_any'], list):
+                values = item['host_begins_with_any']
+            else:
+                values = [item['host_begins_with_any']]
+            action.update(dict(
+                host=True,
+                httpHost=True,
+                startsWith=True,
+                values=values
+            ))
+        elif 'host_is_any' in item:
+            if isinstance(item['host_is_any'], list):
+                values = item['host_is_any']
+            else:
+                values = [item['host_is_any']]
+            action.update(dict(
+                equals=True,
+                httpHost=True,
+                host=True,
+                values=values
+            ))
 
     def _handle_http_uri_condition(self, action, item):
         """Handle the nuances of the forwarding type
@@ -471,6 +512,10 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'http_uri'
                 del action['httpUri']
+            elif 'httpHost' in item:
+                action.update(item)
+                action['type'] = 'http_host'
+                del action['httpHost']
             result.append(action)
         # Names contains the index in which the rule is at.
         result = sorted(result, key=lambda x: x['name'])
@@ -508,6 +553,9 @@ class UsableChanges(Changes):
                 continue
             if condition['type'] == 'http_uri':
                 condition['httpUri'] = True
+                del condition['type']
+            elif condition['type'] == 'http_host':
+                condition['httpHost'] = True
                 del condition['type']
             elif condition['type'] == 'all_traffic':
                 result = []
@@ -831,11 +879,14 @@ class ArgumentSpec(object):
                     type=dict(
                         choices=[
                             'http_uri',
+                            'http_host',
                             'all_traffic'
                         ],
                         required=True
                     ),
-                    path_begins_with_any=dict()
+                    path_begins_with_any=dict(),
+                    host_begins_with_any=dict(),
+                    host_is_any=dict()
                 ),
             ),
             name=dict(required=True),
