@@ -151,7 +151,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -166,7 +166,7 @@ class ModuleManager(object):
             return True
         return False
 
-    def exec_module(self):
+    def exec_module(self):  # lgtm [py/similar-function]
         result = dict()
 
         try:
