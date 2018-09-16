@@ -1,0 +1,10 @@
+---
+
+- name: Create a DNS resolver
+  bigip_dns_resolver:
+    name: resolver1
+
+- name: Create a OCSP validator
+  bigip_ssl_ocsp:
+    name: ocsp1
+    dns_resolver: resolver1
