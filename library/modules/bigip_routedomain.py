@@ -180,6 +180,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.compare import cmp_simple_list
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -192,6 +193,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.compare import cmp_simple_list
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -383,33 +385,11 @@ class Difference(object):
 
     @property
     def routing_protocol(self):
-        if self.want.routing_protocol is None:
-            return None
-        if self.want.routing_protocol == '' and self.have.routing_protocol is None:
-            return None
-        if self.want.routing_protocol == '' and len(self.have.routing_protocol) > 0:
-            return []
-        if self.have.routing_protocol is None:
-            return self.want.routing_protocol
-        want = set(self.want.routing_protocol)
-        have = set(self.have.routing_protocol)
-        if want != have:
-            return list(want)
+        return cmp_simple_list(self.want.routing_protocol, self.have.routing_protocol)
 
     @property
     def vlans(self):
-        if self.want.vlans is None:
-            return None
-        if self.want.vlans == '' and self.have.vlans is None:
-            return None
-        if self.want.vlans == '' and len(self.have.vlans) > 0:
-            return []
-        if self.have.vlans is None:
-            return self.want.vlans
-        want = set(self.want.vlans)
-        have = set(self.have.vlans)
-        if want != have:
-            return list(want)
+        return cmp_simple_list(self.want.vlans, self.have.vlans)
 
 
 class ModuleManager(object):
