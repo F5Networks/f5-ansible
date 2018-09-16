@@ -172,7 +172,7 @@ class ModuleManager(object):
             return True
         return False
 
-    def exec_module(self):
+    def exec_module(self):  # lgtm [py/similar-function]
         changed = False
         result = dict()
         state = self.want.state
