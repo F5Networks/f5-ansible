@@ -881,6 +881,19 @@ class Parameters(AnsibleF5Parameters):
             )
 
     @property
+    def source(self):
+        if self._values['source'] is None:
+            return None
+        try:
+            addr = ip_interface(u'{0}'.format(self._values['source']))
+            result = '{0}/{1}'.format(str(addr.ip), addr.network.prefixlen)
+            return result
+        except ValueError:
+            raise F5ModuleError(
+                "The source IP address must be specified in CIDR format: address/prefix"
+            )
+
+    @property
     def has_message_routing_profiles(self):
         if self.profiles is None:
             return None
@@ -1054,19 +1067,6 @@ class ApiParameters(Parameters):
         destination = self.destination_tuple
         result = self._format_destination(destination.ip, destination.port, destination.route_domain)
         return result
-
-    @property
-    def source(self):
-        if self._values['source'] is None:
-            return None
-        try:
-            addr = ip_interface(u'{0}'.format(self._values['source']))
-            result = '{0}/{1}'.format(str(addr.ip), addr.network.prefixlen)
-            return result
-        except ValueError:
-            raise F5ModuleError(
-                "The source IP address must be specified in CIDR format: address/prefix"
-            )
 
     @property
     def destination_tuple(self):
@@ -1396,19 +1396,6 @@ class ModuleParameters(Parameters):
         addr = self._values['destination'].split("%")[0]
         result = Destination(ip=addr, port=self.port, route_domain=self.route_domain)
         return result
-
-    @property
-    def source(self):
-        if self._values['source'] is None:
-            return None
-        try:
-            addr = ip_interface(u'{0}'.format(self._values['source']))
-            result = '{0}/{1}'.format(str(addr.ip), addr.network.prefixlen)
-            return result
-        except ValueError:
-            raise F5ModuleError(
-                "The source IP address must be specified in CIDR format: address/prefix"
-            )
 
     @property
     def port(self):
