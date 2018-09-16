@@ -218,7 +218,7 @@ class ModuleManager(object):
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()

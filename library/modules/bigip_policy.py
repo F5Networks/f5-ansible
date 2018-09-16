@@ -375,7 +375,7 @@ class SimpleManager(BaseManager):
         if changed:
             self.changes = SimpleChanges(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         diff = Difference(self.want, self.have)
         updatables = SimpleParameters.updatables
         changed = dict()
@@ -508,7 +508,7 @@ class ComplexManager(BaseManager):
         if changed:
             self.changes = ComplexChanges(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         diff = Difference(self.want, self.have)
         updatables = ComplexParameters.updatables
         changed = dict()
