@@ -8,17 +8,13 @@ __metaclass__ = type
 
 
 import os
-import socket
-import sys
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
 
-from ansible.module_utils.urls import open_url, fetch_url
-from ansible.module_utils.parsing.convert_bool import BOOLEANS
-from ansible.module_utils.six import string_types
+from ansible.module_utils.urls import open_url
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.urls import urllib_error
 from ansible.module_utils.urls import urlparse
@@ -145,7 +141,6 @@ class PreparedRequest(object):
 
     def prepare_body(self, data, json=None):
         body = None
-        content_type = None
 
         if not data and json is not None:
             self.headers['Content-Type'] = 'application/json'
@@ -155,10 +150,6 @@ class PreparedRequest(object):
 
         if data:
             body = data
-            content_type = None
-
-        if content_type and 'content-type' not in self.headers:
-            self.headers['Content-Type'] = content_type
 
         self.body = body
 
