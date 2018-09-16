@@ -330,12 +330,7 @@ class ModuleParameters(Parameters):
     def parent(self):
         if self._values['parent'] is None:
             return None
-        if self._values['parent'].startswith('/'):
-            parent = os.path.basename(self._values['parent'])
-            result = '/{0}/{1}'.format(self.partition, parent)
-        else:
-            result = '/{0}/{1}'.format(self.partition, self._values['parent'])
-        return result
+        return fq_name(self.partition, self._values['parent'])
 
     @property
     def ip(self):
@@ -464,7 +459,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # lgtm [py/similar-function]
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -479,7 +474,7 @@ class ModuleManager(object):
             return True
         return False
 
-    def _announce_deprecations(self):
+    def _announce_deprecations(self):  # lgtm [py/similar-function]
         warnings = []
         if self.want:
             warnings += self.want._values.get('__warnings', [])
