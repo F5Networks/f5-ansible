@@ -465,7 +465,7 @@ class ModuleManager(object):
             return True
         raise F5ModuleError(resp.content)
 
-    def read_current_from_device(self):
+    def read_current_from_device(self):  # lgtm [py/similar-function]
         uri = "https://{0}:{1}/mgmt/tm/ltm/profile/http-compression/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],

@@ -596,7 +596,7 @@ class ModuleManager(object):
 
     def exists(self):
         if not self.pool_exist():
-            F5ModuleError('The specified pool does not exist')
+            raise F5ModuleError('The specified pool does not exist')
 
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members/{3}".format(
             self.client.provider['server'],
@@ -613,7 +613,7 @@ class ModuleManager(object):
             return False
         return True
 
-    def pool_exist(self):
+    def pool_exist(self):  # lgtm [py/similar-function]
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
