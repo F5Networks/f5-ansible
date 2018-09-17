@@ -470,12 +470,8 @@ class ModuleManager(object):
             return True
         return False
 
-    def _announce_deprecations(self):  # lgtm [py/similar-function]
-        warnings = []
-        if self.want:
-            warnings += self.want._values.get('__warnings', [])
-        if self.have:
-            warnings += self.have._values.get('__warnings', [])
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.module.deprecate(
                 msg=warning['msg'],
@@ -516,10 +512,11 @@ class ModuleManager(object):
         elif state == "absent":
             changed = self.absent()
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations()
+        self._announce_deprecations(result)
         return result
 
     def present(self):
