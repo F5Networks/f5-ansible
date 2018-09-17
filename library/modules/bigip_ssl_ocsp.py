@@ -124,20 +124,86 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
+cache_error_timeout:
+  description: The new Response Caching Error Timeout value.
   returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+  type: int
+  sample: 3600
+cache_timeout:
+  description: The new Response Caching Timeout value.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: indefinite
+clock_skew:
+  description: The new Response Validation Clock Skew value.
+  returned: changed
+  type: int
+  sample: 300
+connections_limit:
+  description: The new Concurrent Connections Limit value.
+  returned: changed
+  type: int
+  sample: 50
+dns_resolver:
+  description: The new DNS Resolver value.
+  returned: changed
+  type: string
+  sample: /Common/resolver1
+route_domain:
+  description: The new Route Domain value.
+  returned: changed
+  type: string
+  sample: /Common/0
+hash_algorithm:
+  description: The new Request Signing Hash Algorithm value.
+  returned: changed
+  type: string
+  sample: sha256
+certificate:
+  description: The new Request Signing Certificate value.
+  returned: changed
+  type: string
+  sample: /Common/cert1
+key:
+  description: The new Request Signing Key value.
+  returned: changed
+  type: string
+  sample: /Common/key1
+proxy_server_pool:
+  description: The new Proxy Server Pool value.
+  returned: changed
+  type: string
+  sample: /Common/pool1
+responder_url:
+  description: The new Connection Responder URL value.
+  returned: changed
+  type: string
+  sample: "http://responder.site.com"
+status_age:
+  description: The new Response Validation Status Age value.
+  returned: changed
+  type: int
+  sample: 0
+strict_responder_checking:
+  description: The new Response Validation Strict Responder Certificate Checking value.
+  returned: changed
+  type: bool
+  sample: yes
+connection_timeout:
+  description: The new Connection Timeout value.
+  returned: changed
+  type: int
+  sample: 8
+trusted_responders:
+  description: The new Response Validation Trusted Responders value.
+  returned: changed
+  type: int
+  sample: /Common/default
 '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from distutils.version import LooseVersion
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -150,6 +216,7 @@ try:
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.icontrol import tmos_version
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -161,6 +228,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import flatten_boolean
+    from ansible.module_utils.network.f5.icontrol import tmos_version
 
 
 class Parameters(AnsibleF5Parameters):
@@ -343,6 +411,10 @@ class ReportableChanges(Changes):
         result = flatten_boolean(self._values['strict_responder_checking'])
         return result
 
+    @property
+    def passphrase(self):
+        return None
+
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -443,6 +515,11 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        tmos = tmos_version(self.client)
+        if LooseVersion(tmos) < LooseVersion('13.0.0'):
+            raise F5ModuleError(
+                "BIG-IP v13 or greater is required to use this module."
+            )
         changed = False
         result = dict()
         state = self.want.state
@@ -620,7 +697,7 @@ class ArgumentSpec(object):
             ),
             certificate=dict(),
             key=dict(),
-            passphrase=dict(),
+            passphrase=dict(no_log=True),
             status_age=dict(type='int'),
             strict_responder_checking=dict(type='bool'),
             connection_timeout=dict(type='int'),

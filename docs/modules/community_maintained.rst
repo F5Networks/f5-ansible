@@ -26,6 +26,7 @@ Modules Maintained by the Ansible Community
   * :ref:`bigip_device_trust_module`
   * :ref:`bigip_dns_nameserver_module`
   * :ref:`bigip_dns_resolver_module`
+  * :ref:`bigip_dns_zone_module`
   * :ref:`bigip_facts_module` **(D)**
   * :ref:`bigip_firewall_address_list_module`
   * :ref:`bigip_firewall_dos_profile_module`
