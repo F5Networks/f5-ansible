@@ -185,8 +185,6 @@ probe_attempts:
   sample: 10
 '''
 
-import os
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
@@ -239,16 +237,6 @@ class Parameters(AnsibleF5Parameters):
         'destination', 'interval', 'timeout', 'transparent', 'probe_attempts',
         'probe_interval', 'probe_timeout', 'ignore_down_response',
     ]
-
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-            return result
-        except Exception:
-            return result
 
     @property
     def interval(self):
@@ -355,7 +343,15 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
-    pass
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+            return result
+        except Exception:
+            return result
 
 
 class UsableChanges(Changes):
@@ -474,46 +470,15 @@ class ModuleManager(object):
             return True
         return False
 
-    def _announce_deprecations(self):  # lgtm [py/similar-function]
-        warnings = []
-        if self.want:
-            warnings += self.want._values.get('__warnings', [])
-        if self.have:
-            warnings += self.have._values.get('__warnings', [])
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.module.deprecate(
                 msg=warning['msg'],
                 version=warning['version']
             )
 
-    def exec_module(self):
-        if not module_provisioned(self.client, 'gtm'):
-            raise F5ModuleError(
-                "GTM must be provisioned to use this module."
-            )
-        changed = False
-        result = dict()
-        state = self.want.state
-
-        if state == "present":
-            changed = self.present()
-        elif state == "absent":
-            changed = self.absent()
-
-        changes = self.changes.to_return()
-        result.update(**changes)
-        result.update(dict(changed=changed))
-        self._announce_deprecations()
-        return result
-
-    def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            return self.create()
-
-    def create(self):
-        self._set_changed_options()
+    def _set_default_creation_values(self):
         if self.want.timeout is None:
             self.want.update({'timeout': 120})
         if self.want.interval is None:
@@ -532,6 +497,37 @@ class ModuleManager(object):
             self.want.update({'ignore_down_response': False})
         if self.want.transparent is None:
             self.want.update({'transparent': False})
+
+    def exec_module(self):
+        if not module_provisioned(self.client, 'gtm'):
+            raise F5ModuleError(
+                "GTM must be provisioned to use this module."
+            )
+        changed = False
+        result = dict()
+        state = self.want.state
+
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
+
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        self._announce_deprecations(result)
+        return result
+
+    def present(self):
+        if self.exists():
+            return self.update()
+        else:
+            return self.create()
+
+    def create(self):
+        self._set_default_creation_values()
+        self._set_changed_options()
         if self.module.check_mode:
             return True
         self.create_on_device()

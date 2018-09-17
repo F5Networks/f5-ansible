@@ -76,6 +76,18 @@ options:
       - When creating a new resolver, if this parameter is not specified, the default
         is C(yes).
     type: bool
+  state:
+    description:
+      - When C(present), ensures that the resource exists.
+      - When C(absent), ensures the resource is removed.
+    default: present
+    choices:
+      - present
+      - absent
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
