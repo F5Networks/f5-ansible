@@ -185,8 +185,6 @@ probe_attempts:
   sample: 10
 '''
 
-import os
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
@@ -239,16 +237,6 @@ class Parameters(AnsibleF5Parameters):
         'destination', 'interval', 'timeout', 'transparent', 'probe_attempts',
         'probe_interval', 'probe_timeout', 'ignore_down_response',
     ]
-
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-            return result
-        except Exception:
-            return result
 
     @property
     def interval(self):
@@ -355,7 +343,15 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
-    pass
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+            return result
+        except Exception:
+            return result
 
 
 class UsableChanges(Changes):
@@ -486,6 +482,26 @@ class ModuleManager(object):
                 version=warning['version']
             )
 
+    def _set_default_creation_values(self):
+        if self.want.timeout is None:
+            self.want.update({'timeout': 120})
+        if self.want.interval is None:
+            self.want.update({'interval': 30})
+        if self.want.ip is None:
+            self.want.update({'ip': '*'})
+        if self.want.port is None:
+            self.want.update({'port': '*'})
+        if self.want.probe_interval is None:
+            self.want.update({'probe_interval': 1})
+        if self.want.probe_timeout is None:
+            self.want.update({'probe_timeout': 5})
+        if self.want.probe_attempts is None:
+            self.want.update({'probe_attempts': 3})
+        if self.want.ignore_down_response is None:
+            self.want.update({'ignore_down_response': False})
+        if self.want.transparent is None:
+            self.want.update({'transparent': False})
+
     def exec_module(self):
         if not module_provisioned(self.client, 'gtm'):
             raise F5ModuleError(
@@ -513,25 +529,8 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
+        self._set_default_creation_values()
         self._set_changed_options()
-        if self.want.timeout is None:
-            self.want.update({'timeout': 120})
-        if self.want.interval is None:
-            self.want.update({'interval': 30})
-        if self.want.ip is None:
-            self.want.update({'ip': '*'})
-        if self.want.port is None:
-            self.want.update({'port': '*'})
-        if self.want.probe_interval is None:
-            self.want.update({'probe_interval': 1})
-        if self.want.probe_timeout is None:
-            self.want.update({'probe_timeout': 5})
-        if self.want.probe_attempts is None:
-            self.want.update({'probe_attempts': 3})
-        if self.want.ignore_down_response is None:
-            self.want.update({'ignore_down_response': False})
-        if self.want.transparent is None:
-            self.want.update({'transparent': False})
         if self.module.check_mode:
             return True
         self.create_on_device()
