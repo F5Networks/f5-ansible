@@ -1,14 +1,14 @@
-:source: bigip_gtm_monitor_external.py
+:source: bigip_dns_zone.py
 
 :orphan:
 
-.. _bigip_gtm_monitor_external_module:
+.. _bigip_dns_zone_module:
 
 
-bigip_gtm_monitor_external - Manages external GTM monitors on a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_dns_zone - Manage DNS zones on BIG-IP
++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_gtm_monitor_external - Manages external GTM monitors on a BIG-IP
 
 Synopsis
 --------
-- Manages external GTM monitors on a BIG-IP.
+- Manage DNS zones on BIG-IP. The zones managed here are primarily used for configuring DNS Express on BIG-IP. This module does not configure zones that are found in BIG-IP ZoneRunner.
 
 
 
@@ -34,71 +34,130 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>arguments</b>
+                    <b>dns_express</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies any command-line arguments that the script requires.</div>
+                                                                        <div>DNS express related settings.</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>external_program</b>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>server</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the file for the monitor to use. In order to reference a file, you must first import it using options on the System &gt; File Management &gt; External Monitor Program File List &gt; Import screen. The BIG-IP system automatically places the file in the proper location on the file system.</div>
+                                                                        <div>Specifies the back-end authoritative DNS server from which the BIG-IP system receives AXFR zone transfers for the DNS Express zone.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>interval</b>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>enabled</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the current status of the DNS Express zone.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>notify_action</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>consume</li>
+                                                                                                                                                                                                <li>bypass</li>
+                                                                                                                                                                                                <li>repeat</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the action the system takes when a NOTIFY message is received for this DNS Express zone.</div>
+                                                    <div>If a TSIG key is configured for the zone, the signature is only validated for <code>consume</code> and <code>repeat</code> actions.</div>
+                                                    <div>When <code>consume</code>, the NOTIFY message is seen only by DNS Express.</div>
+                                                    <div>When <code>bypass</code>, the NOTIFY message does not go to DNS Express, but instead goes to a back-end DNS server (subject to the value of the Unhandled Query Action configured in the DNS profile applied to the listener that handles the DNS request).</div>
+                                                    <div>When <code>repeat</code>, the NOTIFY message goes to both DNS Express and any back-end DNS server.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>allow_notify_from</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The interval specifying how frequently the monitor instance of this template will run. If this parameter is not provided when creating a new monitor, then the default value will be 30. This value <b>must</b> be less than the <code>timeout</code> value.</div>
+                                                                        <div>Specifies the IP addresses from which the system accepts NOTIFY messages for this DNS Express zone.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>ip</b>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>verify_tsig</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>
+                                                                        <div>Specifies whether the system verifies the identity of the authoritative nameserver that sends updated information for this DNS Express zone.</div>
                                                                                 </td>
             </tr>
                                 <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>response_policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether this DNS Express zone is a DNS response policy zone (RPZ).</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the monitor.</div>
+                                                                        <div>Specifies the name of the DNS zone.</div>
+                                                    <div>The name must begin with a letter and contain only letters, numbers, and the underscore ( _ ) character.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>parent</b>
+                    <b>nameservers</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">/Common/external</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>http</code> parent on the <code>Common</code> partition.</div>
+                                                                        <div>Specifies the DNS nameservers to which the system sends NOTIFY messages.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -123,16 +182,6 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>port</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified.</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -285,18 +334,18 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the monitor exists.</div>
-                                                    <div>When <code>absent</code>, ensures the monitor is removed.</div>
+                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
+                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>timeout</b>
+                    <b>tsig_server_key</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 120.</div>
+                                                                        <div>Specifies the TSIG key the system uses to authenticate the back-end DNS authoritative server that sends AXFR zone transfers to the BIG-IP system.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -325,17 +374,6 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>variables</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies any variables that the script requires.</div>
-                                                    <div>Note that double quotes in values will be suppressed.</div>
-                                                                                </td>
-            </tr>
                         </table>
     <br/>
 
@@ -356,40 +394,21 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create an external monitor
-      bigip_gtm_monitor_external:
-        name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
-      delegate_to: localhost
-
-    - name: Create an external monitor with variables
-      bigip_gtm_monitor_external:
-        name: foo
-        timeout: 10
-        variables:
-          var1: foo
-          var2: bar
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
-      delegate_to: localhost
-
-    - name: Add a variable to an existing set
-      bigip_gtm_monitor_external:
-        name: foo
-        timeout: 10
-        variables:
-          var1: foo
-          var2: bar
-          cat: dog
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+    - name: Create a DNS zone for DNS express
+      bigip_dns_zone:
+        name: foo.bar.com
+        dns_express:
+          enabled: yes
+          server: dns-lab
+          allow_notify_from:
+            - 192.168.39.10
+          notify_action: consume
+          verify_tsig: no
+          response_policy: no
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -402,61 +421,35 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>interval</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>param1</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new interval in which to run the monitor check.</div>
+                                            <div>The new param1 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>ip</b>
+                    <b>param2</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new IP of IP/port definition.</div>
+                                            <div>The new param2 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.12.13.14</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>parent</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>New parent template of the monitor.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">external</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>timeout</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new timeout in which the remote system must respond to the monitor.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
                                     </td>
             </tr>
                         </table>
@@ -477,5 +470,4 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
-- Wojciech Wypior (@wojtek0806)
 
