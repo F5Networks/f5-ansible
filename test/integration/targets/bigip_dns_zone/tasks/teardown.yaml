@@ -1,0 +1,16 @@
+---
+
+- name: Remove TSIG key
+  bigip_command:
+    commands:
+      - delete ltm dns tsig-key key1
+
+- name: Remove nameserver
+  bigip_dns_nameserver:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - foo1.bar.com
+    - foo2.bar.com
+    - foo3.bar.com
+    - foo4.bar.com

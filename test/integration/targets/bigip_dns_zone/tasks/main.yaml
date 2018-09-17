@@ -1,0 +1,667 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create zone
+  bigip_dns_zone:
+    name: zone.foo.com
+  register: result
+
+- name: Create zone
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create zone - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+  register: result
+
+- name: Create zone - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change server
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      server: foo1.bar.com
+  register: result
+
+- name: Change server
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change server - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      server: foo1.bar.com
+  register: result
+
+- name: Change server - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change server - none
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      server: none
+  register: result
+
+- name: Change server - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change server - none - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      server: none
+  register: result
+
+- name: Change server - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change server - empty - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      server: ''
+  register: result
+
+- name: Change server - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change enabled - no
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      enabled: no
+  register: result
+
+- name: Change enabled - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change enabled - no - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      enabled: no
+  register: result
+
+- name: Change enabled - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change enabled - yes
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      enabled: yes
+  register: result
+
+- name: Change enabled - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change enabled - yes - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      enabled: yes
+  register: result
+
+- name: Change enabled - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change notify_action - bypass
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      notify_action: bypass
+  register: result
+
+- name: Change notify_action - bypass
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change notify_action - bypass - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      notify_action: bypass
+  register: result
+
+- name: Change notify_action - bypass - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change notify_action - consume
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      notify_action: consume
+  register: result
+
+- name: Change notify_action - consume
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change notify_action - consume - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      notify_action: consume
+  register: result
+
+- name: Change notify_action - consume - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change notify_action - repeat
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      notify_action: repeat
+  register: result
+
+- name: Change notify_action - repeat
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change notify_action - repeat - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      notify_action: repeat
+  register: result
+
+- name: Change notify_action - repeat - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change allow_notify_from
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from:
+        - 1.1.1.1
+        - 2.2.2.2
+        - 3.3.3.3
+  register: result
+
+- name: Change allow_notify_from
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change allow_notify_from - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from:
+        - 1.1.1.1
+        - 2.2.2.2
+        - 3.3.3.3
+  register: result
+
+- name: Change allow_notify_from - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change allow_notify_from - remove item
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from:
+        - 1.1.1.1
+        - 3.3.3.3
+  register: result
+
+- name: Change allow_notify_from - remove item
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change allow_notify_from - remove item - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from:
+        - 1.1.1.1
+        - 3.3.3.3
+  register: result
+
+- name: Change allow_notify_from - remove item - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change allow_notify_from - add item
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from:
+        - 4.4.4.4
+        - 1.1.1.1
+        - 3.3.3.3
+  register: result
+
+- name: Change allow_notify_from - add item
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change allow_notify_from - add item - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from:
+        - 4.4.4.4
+        - 1.1.1.1
+        - 3.3.3.3
+  register: result
+
+- name: Change allow_notify_from - add item - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change allow_notify_from - none
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from: none
+  register: result
+
+- name: Change allow_notify_from - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change allow_notify_from - none - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from: none
+  register: result
+
+- name: Change allow_notify_from - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change allow_notify_from - empty - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      allow_notify_from: ''
+  register: result
+
+- name: Change allow_notify_from - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change verify_tsig - no
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      verify_tsig: no
+  register: result
+
+- name: Change verify_tsig - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change verify_tsig - no - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      verify_tsig: no
+  register: result
+
+- name: Change verify_tsig - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change verify_tsig - yes
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      verify_tsig: yes
+  register: result
+
+- name: Change verify_tsig - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change verify_tsig - yes - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      verify_tsig: yes
+  register: result
+
+- name: Change verify_tsig - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change response_policy - yes
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      response_policy: yes
+  register: result
+
+- name: Change response_policy - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change response_policy - yes - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      response_policy: yes
+  register: result
+
+- name: Change response_policy - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change response_policy - no
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      response_policy: no
+  register: result
+
+- name: Change response_policy - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change response_policy - no - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      response_policy: no
+  register: result
+
+- name: Change response_policy - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change nameservers
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers:
+      - foo1.bar.com
+      - foo2.bar.com
+      - foo3.bar.com
+  register: result
+
+- name: Change nameservers
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change nameservers - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers:
+      - foo1.bar.com
+      - foo2.bar.com
+      - foo3.bar.com
+  register: result
+
+- name: Change nameservers - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change nameservers - remove
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers:
+      - foo1.bar.com
+      - foo2.bar.com
+  register: result
+
+- name: Change nameservers - remove
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change nameservers - remove - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers:
+      - foo1.bar.com
+      - foo2.bar.com
+  register: result
+
+- name: Change nameservers - remove - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change nameservers - add
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers:
+      - foo1.bar.com
+      - foo4.bar.com
+      - foo2.bar.com
+  register: result
+
+- name: Change nameservers - add
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change nameservers - add - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers:
+      - foo1.bar.com
+      - foo4.bar.com
+      - foo2.bar.com
+  register: result
+
+- name: Change nameservers - add - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change nameservers - none
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers: none
+  register: result
+
+- name: Change nameservers - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change nameservers - none - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers: none
+  register: result
+
+- name: Change nameservers - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change nameservers - empty - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers: ''
+  register: result
+
+- name: Change nameservers - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change tsig_server_key
+  bigip_dns_zone:
+    name: zone.foo.com
+    tsig_server_key: key1
+  register: result
+
+- name: Change tsig_server_key
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change tsig_server_key - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    tsig_server_key: key1
+  register: result
+
+- name: Change tsig_server_key - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change tsig_server_key - none
+  bigip_dns_zone:
+    name: zone.foo.com
+    tsig_server_key: none
+  register: result
+
+- name: Change tsig_server_key - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change tsig_server_key - none - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    tsig_server_key: none
+  register: result
+
+- name: Change tsig_server_key - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change tsig_server_key - empty - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    tsig_server_key: ''
+  register: result
+
+- name: Change tsig_server_key - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove zone
+  bigip_dns_zone:
+    name: zone.foo.com
+    state: absent
+  register: result
+
+- name: Remove zone
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove zone - Idempotent check
+  bigip_dns_zone:
+    name: zone.foo.com
+    state: absent
+  register: result
+
+- name: Remove zone - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- import_tasks: teardown.yaml
