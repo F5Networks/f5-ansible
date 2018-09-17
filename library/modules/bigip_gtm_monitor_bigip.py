@@ -461,6 +461,10 @@ class ModuleManager(object):
             self.want.update({'aggregate_dynamic_ratios': 'none'})
 
     def exec_module(self):
+        if not module_provisioned(self.client, 'gtm'):
+            raise F5ModuleError(
+                "GTM must be provisioned to use this module."
+            )
         changed = False
         result = dict()
         state = self.want.state
