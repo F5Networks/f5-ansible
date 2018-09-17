@@ -138,6 +138,7 @@ param2:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from distutils.version import LooseVersion
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -150,6 +151,7 @@ try:
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.icontrol import tmos_version
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -161,6 +163,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import flatten_boolean
+    from ansible.module_utils.network.f5.icontrol import tmos_version
 
 
 class Parameters(AnsibleF5Parameters):
@@ -443,6 +446,11 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        tmos = tmos_version(self.client)
+        if LooseVersion(tmos) < LooseVersion('13.0.0'):
+            raise F5ModuleError(
+                "BIG-IP v13 or greater is required to use this module."
+            )
         changed = False
         result = dict()
         state = self.want.state
