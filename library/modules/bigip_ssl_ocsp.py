@@ -105,6 +105,8 @@ options:
       - always
       - on_create
 extends_documentation_fragment: f5
+notes:
+  - Requires BIG-IP >= 13.x.
 author:
   - Tim Rupp (@caphrim007)
 '''
