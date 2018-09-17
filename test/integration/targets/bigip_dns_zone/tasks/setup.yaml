@@ -1,0 +1,15 @@
+---
+
+- name: Create a TSIG key
+  bigip_command:
+    commands:
+      - create ltm dns tsig-key key1 { secret foo }
+
+- name: Create a nameserver
+  bigip_dns_nameserver:
+    name: "{{ item }}"
+  loop:
+    - foo1.bar.com
+    - foo2.bar.com
+    - foo3.bar.com
+    - foo4.bar.com
