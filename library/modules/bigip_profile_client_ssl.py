@@ -182,13 +182,16 @@ options:
     description:
       - Specifies that the CAs that the system advertises to clients is being trusted
         by the profile.
+    version_added: 2.8
   client_auth_crl:
     description:
       - Specifies the name of a file containing a list of revoked client certificates.
+    version_added: 2.8
   allow_expired_crl:
     description:
       - Instructs the system to use the specified CRL file even if it has expired.
     type: bool
+    version_added: 2.8
   state:
     description:
       - When C(present), ensures that the profile exists.
