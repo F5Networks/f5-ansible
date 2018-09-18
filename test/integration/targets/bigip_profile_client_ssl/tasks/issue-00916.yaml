@@ -1,0 +1,370 @@
+---
+
+- name: Issue 00916 - Create a client SSL profile
+  bigip_profile_client_ssl:
+    name: issue-00916
+
+- name: Issue 00916 - Set client certificate - request
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_certificate: request
+  register: result
+
+- name: Issue 00916 - Assert Set client certificate - request
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set client certificate - request - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_certificate: request
+  register: result
+
+- name: Issue 00916 - Assert Set client certificate - request - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set client certificate - ignore
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_certificate: ignore
+  register: result
+
+- name: Issue 00916 - Assert Set client certificate - ignore
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set client certificate - ignore - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_certificate: ignore
+  register: result
+
+- name: Issue 00916 - Assert Set client certificate - ignore - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set client certificate - require
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_certificate: require
+  register: result
+
+- name: Issue 00916 - Assert Set client certificate - require
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set client certificate - require - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_certificate: require
+  register: result
+
+- name: Issue 00916 - Assert Set client certificate - require - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set client_auth_frequency - always
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_auth_frequency: always
+  register: result
+
+- name: Issue 00916 - Assert Set client_auth_frequency - always
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set client_auth_frequency - always - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_auth_frequency: always
+  register: result
+
+- name: Issue 00916 - Assert Set client_auth_frequency - always - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set client_auth_frequency - once
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_auth_frequency: once
+  register: result
+
+- name: Issue 00916 - Assert Set client_auth_frequency - once
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set client_auth_frequency - once - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    client_auth_frequency: once
+  register: result
+
+- name: Issue 00916 - Assert Set client_auth_frequency - once - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set retain_certificate - no
+  bigip_profile_client_ssl:
+    name: issue-00916
+    retain_certificate: no
+  register: result
+
+- name: Issue 00916 - Assert Set retain_certificate - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set retain_certificate - no - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    retain_certificate: no
+  register: result
+
+- name: Issue 00916 - Assert Set retain_certificate - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set retain_certificate - yes
+  bigip_profile_client_ssl:
+    name: issue-00916
+    retain_certificate: yes
+  register: result
+
+- name: Issue 00916 - Assert Set retain_certificate - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set retain_certificate - yes - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    retain_certificate: yes
+  register: result
+
+- name: Issue 00916 - Assert Set retain_certificate - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set cert_auth_depth
+  bigip_profile_client_ssl:
+    name: issue-00916
+    cert_auth_depth: 3
+  register: result
+
+- name: Issue 00916 - Assert Set cert_auth_depth
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set cert_auth_depth - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    cert_auth_depth: 3
+  register: result
+
+- name: Issue 00916 - Assert Set cert_auth_depth - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set trusted_cert_authority
+  bigip_profile_client_ssl:
+    name: issue-00916
+    trusted_cert_authority: default.crt
+  register: result
+
+- name: Issue 00916 - Assert Set trusted_cert_authority
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set trusted_cert_authority - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    trusted_cert_authority: default.crt
+  register: result
+
+- name: Issue 00916 - Assert Set trusted_cert_authority - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set trusted_cert_authority - none
+  bigip_profile_client_ssl:
+    name: issue-00916
+    trusted_cert_authority: none
+  register: result
+
+- name: Issue 00916 - Assert Set trusted_cert_authority - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set trusted_cert_authority - none - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    trusted_cert_authority: none
+  register: result
+
+- name: Issue 00916 - Assert Set trusted_cert_authority - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set trusted_cert_authority - empty - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    trusted_cert_authority: ''
+  register: result
+
+- name: Issue 00916 - Assert Set trusted_cert_authority - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set advertised_cert_authority
+  bigip_profile_client_ssl:
+    name: issue-00916
+    advertised_cert_authority: default.crt
+  register: result
+
+- name: Issue 00916 - Assert Set advertised_cert_authority
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set advertised_cert_authority - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    advertised_cert_authority: default.crt
+  register: result
+
+- name: Issue 00916 - Assert Set advertised_cert_authority - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set advertised_cert_authority - none
+  bigip_profile_client_ssl:
+    name: issue-00916
+    advertised_cert_authority: none
+  register: result
+
+- name: Issue 00916 - Assert Set advertised_cert_authority - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set advertised_cert_authority - none - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    advertised_cert_authority: none
+  register: result
+
+- name: Issue 00916 - Assert Set advertised_cert_authority - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set advertised_cert_authority - empty - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    advertised_cert_authority: ''
+  register: result
+
+- name: Issue 00916 - Assert Set advertised_cert_authority - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set allow_expired_crl - yes
+  bigip_profile_client_ssl:
+    name: issue-00916
+    allow_expired_crl: yes
+  register: result
+
+- name: Issue 00916 - Assert Set allow_expired_crl - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set allow_expired_crl - yes - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    allow_expired_crl: yes
+  register: result
+
+- name: Issue 00916 - Assert Set allow_expired_crl - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Set allow_expired_crl - no
+  bigip_profile_client_ssl:
+    name: issue-00916
+    allow_expired_crl: no
+  register: result
+
+- name: Issue 00916 - Assert Set allow_expired_crl - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00916 - Set allow_expired_crl - no - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00916
+    allow_expired_crl: no
+  register: result
+
+- name: Issue 00916 - Assert Set allow_expired_crl - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00916 - Remove profile
+  bigip_profile_client_ssl:
+    name: issue-00916
+    state: absent
