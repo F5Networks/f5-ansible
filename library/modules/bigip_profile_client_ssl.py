@@ -140,6 +140,55 @@ options:
         set to C(true). When creating a new profile, the setting is provided by the parent profile.
     type: bool
     version_added: 2.7
+  client_certificate:
+    description:
+      - Specifies the way the system handles client certificates.
+      - When C(ignore), specifies that the system ignores certificates from client
+        systems.
+      - When C(require), specifies that the system requires a client to present a
+        valid certificate.
+      - When C(request), specifies that the system requests a valid certificate from a
+        client but always authenticate the client.
+    choices:
+      - ignore
+      - require
+      - request
+    version_added: 2.8
+  client_auth_frequency:
+    description:
+      - Specifies the frequency of client authentication for an SSL session.
+      - When C(once), specifies that the system authenticates the client once for an
+        SSL session.
+      - When C(always), specifies that the system authenticates the client once for an
+        SSL session and also upon reuse of that session.
+    choices:
+      - once
+      - always
+    version_added: 2.8
+  retain_certificate:
+    description:
+      - When C(yes), client certificate is retained in SSL session.
+    type: bool
+  cert_auth_depth:
+    description:
+      - Specifies the maximum number of certificates to be traversed in a client
+        certificate chain.
+    version_added: 2.8
+  trusted_cert_authority:
+    description:
+      - Specifies a client CA that the system trusts.
+    version_added: 2.8
+  advertised_cert_authority:
+    description:
+      - Specifies that the CAs that the system advertises to clients is being trusted
+        by the profile.
+  client_auth_crl:
+    description:
+      - Specifies the name of a file containing a list of revoked client certificates.
+  allow_expired_crl:
+    description:
+      - Instructs the system to use the specified CRL file even if it has expired.
+    type: bool
   state:
     description:
       - When C(present), ensures that the profile exists.
@@ -278,6 +327,14 @@ class Parameters(AnsibleF5Parameters):
         'sniDefault': 'sni_default',
         'sniRequire': 'sni_require',
         'serverName': 'server_name',
+        'peerCertMode': 'client_certificate',
+        'authenticate': 'client_auth_frequency',
+        'retainCertificate': 'retain_certificate',
+        'authenticateDepth': 'cert_auth_depth',
+        'caFile': 'trusted_cert_authority',
+        'clientCertCa': 'advertised_cert_authority',
+        'crlFile': 'client_auth_crl',
+        'allowExpiredCrl': 'allow_expired_crl',
     }
 
     api_attributes = [
@@ -290,6 +347,14 @@ class Parameters(AnsibleF5Parameters):
         'sniDefault',
         'sniRequire',
         'serverName',
+        'peerCertMode',
+        'authenticate',
+        'retainCertificate',
+        'authenticateDepth',
+        'caFile',
+        'clientCertCa',
+        'crlFile',
+        'allowExpiredCrl',
     ]
 
     returnables = [
@@ -302,6 +367,14 @@ class Parameters(AnsibleF5Parameters):
         'sni_default',
         'sni_require',
         'server_name',
+        'client_certificate',
+        'client_auth_frequency',
+        'retain_certificate',
+        'cert_auth_depth',
+        'trusted_cert_authority',
+        'advertised_cert_authority',
+        'client_auth_crl',
+        'allow_expired_crl',
     ]
 
     updatables = [
@@ -313,7 +386,23 @@ class Parameters(AnsibleF5Parameters):
         'sni_default',
         'sni_require',
         'server_name',
+        'client_certificate',
+        'client_auth_frequency',
+        'retain_certificate',
+        'cert_auth_depth',
+        'trusted_cert_authority',
+        'advertised_cert_authority',
+        'client_auth_crl',
+        'allow_expired_crl',
     ]
+
+    @property
+    def retain_certificate(self):
+        return flatten_boolean(self._values['retain_certificate'])
+
+    @property
+    def allow_expired_crl(self):
+        return flatten_boolean(self._values['allow_expired_crl'])
 
 
 class ModuleParameters(Parameters):
@@ -409,6 +498,33 @@ class ModuleParameters(Parameters):
         else:
             return False
 
+    @property
+    def trusted_cert_authority(self):
+        if self._values['trusted_cert_authority'] is None:
+            return None
+        if self._values['trusted_cert_authority'] in ['', 'none']:
+            return ''
+        result = fq_name(self.partition, self._values['trusted_cert_authority'])
+        return result
+
+    @property
+    def advertised_cert_authority(self):
+        if self._values['advertised_cert_authority'] is None:
+            return None
+        if self._values['advertised_cert_authority'] in ['', 'none']:
+            return ''
+        result = fq_name(self.partition, self._values['advertised_cert_authority'])
+        return result
+
+    @property
+    def client_auth_crl(self):
+        if self._values['client_auth_crl'] is None:
+            return None
+        if self._values['client_auth_crl'] in ['', 'none']:
+            return ''
+        result = fq_name(self.partition, self._values['client_auth_crl'])
+        return result
+
 
 class ApiParameters(Parameters):
     @property
@@ -449,6 +565,24 @@ class ApiParameters(Parameters):
         else:
             return False
 
+    @property
+    def trusted_cert_authority(self):
+        if self._values['trusted_cert_authority'] in [None, 'none']:
+            return None
+        return self._values['trusted_cert_authority']
+
+    @property
+    def advertised_cert_authority(self):
+        if self._values['advertised_cert_authority'] in [None, 'none']:
+            return None
+        return self._values['advertised_cert_authority']
+
+    @property
+    def client_auth_crl(self):
+        if self._values['client_auth_crl'] in [None, 'none']:
+            return None
+        return self._values['client_auth_crl']
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -463,7 +597,21 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def retain_certificate(self):
+        if self._values['retain_certificate'] is None:
+            return None
+        elif self._values['retain_certificate'] == 'yes':
+            return 'true'
+        return 'false'
+
+    @property
+    def allow_expired_crl(self):
+        if self._values['allow_expired_crl'] is None:
+            return None
+        elif self._values['allow_expired_crl'] == 'yes':
+            return 'enabled'
+        return 'disabled'
 
 
 class ReportableChanges(Changes):
@@ -474,6 +622,14 @@ class ReportableChanges(Changes):
         elif self._values['allow_non_ssl'] == 'enabled':
             return 'yes'
         return 'no'
+
+    @property
+    def retain_certificate(self):
+        return flatten_boolean(self._values['retain_certificate'])
+
+    @property
+    def allow_expired_crl(self):
+        return flatten_boolean(self._values['allow_expired_crl'])
 
 
 class Difference(object):
@@ -558,6 +714,33 @@ class Difference(object):
         if self.want.sni_require == self.have.sni_require:
             return None
         return self.want.sni_require
+
+    @property
+    def trusted_cert_authority(self):
+        if self.want.trusted_cert_authority is None:
+            return None
+        if self.want.trusted_cert_authority == '' and self.have.trusted_cert_authority is None:
+            return None
+        if self.want.trusted_cert_authority != self.have.trusted_cert_authority:
+            return self.want.trusted_cert_authority
+
+    @property
+    def advertised_cert_authority(self):
+        if self.want.advertised_cert_authority is None:
+            return None
+        if self.want.advertised_cert_authority == '' and self.have.advertised_cert_authority is None:
+            return None
+        if self.want.advertised_cert_authority != self.have.advertised_cert_authority:
+            return self.want.advertised_cert_authority
+
+    @property
+    def client_auth_crl(self):
+        if self.want.client_auth_crl is None:
+            return None
+        if self.want.client_auth_crl == '' and self.have.client_auth_crl is None:
+            return None
+        if self.want.client_auth_crl != self.have.client_auth_crl:
+            return self.want.client_auth_crl
 
 
 class ModuleManager(object):
@@ -802,6 +985,18 @@ class ArgumentSpec(object):
             sni_default=dict(type='bool'),
             sni_require=dict(type='bool'),
             server_name=dict(),
+            client_certificate=dict(
+                choices=['require', 'ignore', 'request']
+            ),
+            client_auth_frequency=dict(
+                choices=['once', 'always']
+            ),
+            cert_auth_depth=dict(type='int'),
+            retain_certificate=dict(type='bool'),
+            trusted_cert_authority=dict(),
+            advertised_cert_authority=dict(),
+            client_auth_crl=dict(),
+            allow_expired_crl=dict(type='bool'),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
