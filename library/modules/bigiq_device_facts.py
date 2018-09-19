@@ -29,10 +29,12 @@ options:
     required: True
     choices:
       - all
+      - applications
       - managed-devices
       - system-info
       - vlans
       - "!all"
+      - "!applications"
       - "!managed-devices"
       - "!system-info"
       - "!vlans"
@@ -675,6 +677,94 @@ class BaseParameters(Parameters):
             result[returnable] = getattr(self, returnable)
         result = self._filter_params(result)
         return result
+
+
+class ApplicationsParameters(BaseParameters):
+    api_map = {
+        'protectionMode': 'protection_mode',
+        'transactionsPerSecond': 'transactions_per_second',
+        'newConnections': 'new_connections',
+        'responseTime': 'response_time',
+        'activeAlerts': 'active_alerts',
+        'badTraffic': 'bad_traffic',
+        'enhancedAnalytics': 'enhanced_analytics',
+        'badTrafficGrowth': 'bad_traffic_growth'
+    }
+
+    returnables = [
+        'protection_mode',
+        'id',
+        'name',
+        'status',
+        'transactions_per_second',
+        'connections',
+        'new_connections',
+        'response_time',
+        'health',
+        'active_alerts',
+        'bad_traffic',
+        'enhanced_analytics',
+        'bad_traffic_growth',
+    ]
+
+    @property
+    def enhanced_analytics(self):
+        return flatten_boolean(self._values['enhanced_analytics'])
+
+    @property
+    def bad_traffic_growth(self):
+        return flatten_boolean(self._values['bad_traffic_growth'])
+
+
+class ApplicationsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ApplicationsFactManager, self).__init__(**kwargs)
+        self.want = ApplicationsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(applications=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['hostname'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ApplicationsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/ap/query/v1/tenants/default/reports/AllApplicationsList".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        try:
+            return response['result']['items']
+        except KeyError:
+            return []
 
 
 class ManagedDevicesParameters(BaseParameters):
@@ -1473,6 +1563,10 @@ class ModuleManager(object):
         self.kwargs = kwargs
         self.want = Parameters(params=self.module.params)
         self.managers = {
+            'applications': dict(
+                manager=ApplicationsFactManager,
+                client=F5RestClient,
+            ),
             'managed-devices': dict(
                 manager=ManagedDevicesFactManager,
                 client=F5RestClient,
@@ -1584,6 +1678,7 @@ class ArgumentSpec(object):
                     'all',
 
                     # Non-meta choices
+                    'applications',
                     'managed-devices',
                     'system-info',
                     'vlans',
@@ -1592,6 +1687,7 @@ class ArgumentSpec(object):
                     '!all',
 
                     # Negations of non-meta-choices
+                    '!applications',
                     '!managed-devices',
                     '!system-info',
                     '!vlans',
