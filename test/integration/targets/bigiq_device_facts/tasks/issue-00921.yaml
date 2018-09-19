@@ -1,0 +1,15 @@
+---
+
+- name: Select applications facts
+  bigiq_device_facts:
+    gather_subset:
+      - applications
+  register: result
+
+- name: Assert Select applications facts
+  assert:
+    that:
+      - result is success
+      - result.applications | selectattr("name", "match", "site14https.example.com") | map(attribute='enhanced_analytics') | first == 'no'
+      - result.applications | json_query("[?name=='site14https.example.com'].enhanced_analytics") | first == 'no'
+  when: result.applications|length > 0
