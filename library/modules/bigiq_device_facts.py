@@ -78,6 +78,91 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+applications:
+  description: Application related facts
+  returned: When C(managed-devices) is specified in C(gather_subset).
+  type: complex
+  contains:
+    protection_mode:
+      description:
+        - The type of F5 Web Application Security Service protection on the application.
+      returned: changed
+      type: string
+      sample: Not Protected
+    id:
+      description:
+        - ID of the application as known to the BIG-IQ.
+      returned: changed
+      type: string
+      sample: 996baae8-5d1d-3662-8a2d-3612fa2aceae
+    name:
+      description:
+        - Name of the application.
+      returned: changed
+      type: string
+      sample: site12http.example.com
+    status:
+      description:
+        - Current state of the application.
+      returned: changed
+      type: string
+      sample: DEPLOYED
+    transactions_per_second:
+      description:
+        - Current measurement of Transactions Per second being handled by the application.
+      returned: changed
+      type: float
+      sample: 0.87
+    connections:
+      description:
+        - Current number of connections established to the application.
+      returned: changed
+      type: float
+      sample: 3.06
+    new_connections:
+      description:
+        - Number of new connections being established per second.
+      returned: changed
+      type: float
+      sample: 0.35
+    response_time:
+      description:
+        - Measured response time of the application in milliseconds.
+      returned: changed
+      type: float
+      sample: 0.02
+    health:
+      description:
+        - Health of the application.
+      returned: changed
+      type: string
+      sample: Good
+    active_alerts:
+      description:
+        - Number of alerts active on the application.
+      returned: changed
+      type: int
+      sample: 0
+    bad_traffic:
+      description:
+        - Percent of traffic to application that is determined to be 'bad'.
+        - This value is dependent on C(protection_mode) being enabled.
+      returned: changed
+      type: float
+      sample: 1.7498
+    enhanced_analytics:
+      description:
+        - Whether enhanced analytics is enabled for the application or not.
+      returned: changed
+      type: bool
+      sample: yes
+    bad_traffic_growth:
+      description:
+        -
+      returned: changed
+      type: bool
+      sample: no 
+  sample: hash/dictionary of values
 managed_devices:
   description: Managed device related facts.
   returned: When C(managed-devices) is specified in C(gather_subset).
@@ -85,133 +170,133 @@ managed_devices:
   contains:
     address:
       description:
-        - TODO("Write description")
+        - Address where the device was discovered.
       returned: changed
       type: string
       sample: 10.10.10.10
     build:
       description:
-        - TODO("Write description")
+        - Build of the version.
       returned: changed
       type: string
       sample: 0.0.4
     device_uri:
       description:
-        - TODO("Write description")
+        - URI to reach the management interface of the device.
       returned: changed
       type: string
       sample: "https://10.10.10.10:443"
     edition:
       description:
-        - TODO("Write description")
+        - Edition string of the product version.
       returned: changed
       type: string
       sample: Final
     group_name:
       description:
-        - TODO("Write description")
+        - BIG-IQ group that the device is a member of.
       returned: changed
       type: string
       sample: cm-bigip-allBigIpDevices
     hostname:
       description:
-        - TODO("Write description")
+        - Discovered hostname of the device.
       returned: changed
       type: string
       sample: tier2labB1.lab.fp.foo.com
     https_port:
       description:
-        - TODO("Write description")
+        - HTTPS port available on the management interface of the device.
       returned: changed
       type: int
       sample: 443
     is_clustered:
       description:
-        - TODO("Write description")
+        - Whether the device is clustered or not.
       returned: changed
       type: bool
       sample: no
     is_license_expired:
       description:
-        - TODO("Write description")
+        - Whether the license on the device is expired or not.
       returned: changed
       type: bool
       sample: yes
     is_virtual:
       description:
-        - TODO("Write description")
+        - Whether the device is a virtual edition or not.
       returned: changed
       type: bool
       sample: yes
     machine_id:
       description:
-        - TODO("Write description")
+        - Machine specific ID assigned to this device by BIG-IQ.
       returned: changed
       type: string
       sample: c141bc88-f734-4434-be64-a3e9ea98356e
     management_address:
       description:
-        - TODO("Write description")
+        - IP address of the management interface on the device.
       returned: changed
       type: string
       sample: 10.10.10.10
     mcp_device_name:
       description:
-        - TODO("Write description")
+        - Device name as known by MCPD on the BIG-IP.
       returned: changed
       type: string
       sample: /Common/tier2labB1.lab.fp.foo.com
     product:
       description:
-        - TODO("Write description")
+        - Product that the managed device is identified as.
       returned: changed
       type: string
       sample: BIG-IP
     rest_framework_version:
       description:
-        - TODO("Write description")
+        - REST framework version running on the device
       returned: changed
       type: string
       sample: 13.1.1-0.0.4
     self_link:
       description:
-        - TODO("Write description")
+        - Internal reference to the managed device in BIG-IQ.
       returned: changed
       type: string
       sample: "https://localhost/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/c141bc88-f734-4434-be64-a3e9ea98356e"
     slots:
       description:
-        - TODO("Write description")
+        - Volumes on the device and versions of software installed in those volumes.
       returned: changed
       type: complex
       sample: {"volume": "HD1.1", "product": "BIG-IP", "version": "13.1.1", "build": "0.0.4", "isActive": "yes"}
     state:
       description:
-        - TODO("Write description")
+        - State of the device.
       returned: changed
       type: string
       sample: ACTIVE
     tags:
       description:
-        - TODO("Write description")
+        - Misc tags that are assigned to the device.
       returned: changed
       type: complex
       sample: {'BIGIQ_tier_2_device': '2018-08-22T13:30:47.693-07:00', 'BIGIQ_SSG_name': 'tim-ssg'}
     trust_domain_guid:
       description:
-        - TODO("Write description")
+        - GUID of the trust domain the device is part of.
       returned: changed
       type: string
       sample: 40ddf541-e604-4905-bde3005056813e36
     uuid:
       description:
-        - TODO("Write description")
+        - UUID of the device in BIG-IQ.
       returned: changed
       type: string
       sample: c141bc88-f734-4434-be64-a3e9ea98356e
     version:
       description:
-        - Version of TMOS installed on the device
+        - Version of TMOS installed on the device.
       returned: changed
       type: string
       sample: 13.1.1
@@ -734,7 +819,7 @@ class ApplicationsFactManager(BaseManager):
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
-        results = sorted(results, key=lambda k: k['hostname'])
+        results = sorted(results, key=lambda k: k['name'])
         return results
 
     def read_facts(self):
