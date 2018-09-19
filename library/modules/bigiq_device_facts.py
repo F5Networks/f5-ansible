@@ -30,12 +30,12 @@ options:
     choices:
       - all
       - managed-devices
-      - system-db
       - system-info
+      - vlans
       - "!all"
       - "!managed-devices"
-      - "!system-db"
       - "!system-info"
+      - "!vlans"
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -627,10 +627,6 @@ class BaseManager(object):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.kwargs = kwargs
-
-    def read_stats_from_device(self, resource):
-        stats = Stats(resource.stats.load())
-        return stats.stat
 
     def exec_module(self):
         results = []
