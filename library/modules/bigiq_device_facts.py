@@ -158,7 +158,7 @@ applications:
       sample: yes
     bad_traffic_growth:
       description:
-        -
+        - Whether or not Bad Traffic Growth alerts are configured to be triggered or not.
       returned: changed
       type: bool
       sample: no 
