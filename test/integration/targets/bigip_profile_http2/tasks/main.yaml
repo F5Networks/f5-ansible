@@ -1,0 +1,378 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create HTTP profile
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+  register: result
+
+- name: Assert Create HTTP2 profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create HTTP2 profile - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+  register: result
+
+- name: Assert Create HTTP2 profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create HTTP2 profile with some parameters
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    description: "{{ description_1 }}"
+    enforce_tls_requirements: yes
+    insert_header: yes
+    insert_header_name: "{{ header_1 }}"
+    streams: 20
+    activation_modes:
+      - always
+  register: result
+
+- name: Assert Create HTTP2 profile with some parameters
+  assert:
+    that:
+      - result is changed
+      - result.description == description_1
+      - result.enforce_tls_requirements == 'yes'
+      - result.insert_header == 'yes'
+      - result.insert_header_name == header_1
+      - result.streams == 20
+      - result.activation_modes == ['always']
+
+- name: Create HTTP2 profile with some parameters - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    description: "{{ description_1 }}"
+    enforce_tls_requirements: yes
+    insert_header: yes
+    insert_header_name: "{{ header_1 }}"
+    streams: 20
+    activation_modes:
+      - always
+  register: result
+
+- name: Assert Create HTTP2 profile with some parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP2 profile Enforce TLS Requirements
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    enforce_tls_requirements: no
+  register: result
+
+- name: Assert Update HTTP2 profile Enforce TLS Requirements
+  assert:
+    that:
+      - result is changed
+      - result.enforce_tls_requirements == 'no'
+
+- name: Update HTTP2 profile Enforce TLS Requirements - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    enforce_tls_requirements: no
+  register: result
+
+- name: Assert Update HTTP2 profile Enforce TLS Requirements - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP2 profile activation modes
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    activation_modes:
+      - alpn
+  register: result
+
+- name: Assert Update HTTP2 profile activation modes
+  assert:
+    that:
+      - result is changed
+      - result.activation_modes == ['alpn']
+
+- name: Update HTTP2 profile activation modes - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    activation_modes:
+      - alpn
+  register: result
+
+- name: Assert Update HTTP2 profile activation modes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP2 profile empty activation modes - Expect failure
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    activation_modes: ""
+  register: result
+  ignore_errors: true
+
+- name: Update HTTP2 profile header name
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    insert_header_name: "{{ header_2 }}"
+  register: result
+
+- name: Assert Update HTTP2 profile header name
+  assert:
+    that:
+      - result is changed
+      - result.insert_header_name == header_2
+
+- name: Update HTTP2 profile header name - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    insert_header_name: "{{ header_2 }}"
+  register: result
+
+- name: Assert Update HTTP2 profile header name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP2 profile description
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    description: "{{ description_2 }}"
+  register: result
+
+- name: Assert Update HTTP2 profile description
+  assert:
+    that:
+      - result is changed
+      - result.description == description_2
+
+- name: Update HTTP2 profile description - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    description: "{{ description_2 }}"
+  register: result
+
+- name: Assert Update HTTP2 profile description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP2 profile empty description
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    description: "{{ description_3 }}"
+  register: result
+
+- name: Assert Update HTTP2 profile empty description
+  assert:
+    that:
+      - result is changed
+      - result.description == description_3
+
+- name: Update HTTP2 profile empty description - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    description: "{{ description_3 }}"
+  register: result
+
+- name: Assert Update HTTP2 profile empty description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP2 profile frame size, write_size, receive_window
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    frame_size: 1024
+    write_size: 4096
+    receive_window: 16
+  register: result
+
+- name: Assert Update HTTP2 profile frame size, write_size, receive_window
+  assert:
+    that:
+      - result is changed
+      - result.frame_size == 1024
+      - result.write_size == 4096
+      - result.receive_window == 16
+
+- name: Update HTTP2 profile frame size, write_size, receive_window - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    frame_size: 1024
+    write_size: 4096
+    receive_window: 16
+  register: result
+
+- name: Assert Update HTTP2 profile frame size, write_size, receive_window - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP2 profile streams, idle_timeout, header_table_size
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    header_table_size: 2048
+    streams: 50
+    idle_timeout: 600
+  register: result
+
+- name: Assert Update HTTP2 profile streams, idle_timeout, header_table_size
+  assert:
+    that:
+      - result is changed
+      - result.header_table_size == 2048
+      - result.streams == 50
+      - result.idle_timeout == 600
+
+- name: Update HTTP2 profile streams, idle_timeout, header_table_size - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_2 }}"
+    header_table_size: 2048
+    streams: 50
+    idle_timeout: 600
+  register: result
+
+- name: Assert Update HTTP2 profile streams, idle_timeout, header_table_size - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update HTTP2 profile invalid write size value - Expect failure
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+    write_size: 1026
+  register: result
+  ignore_errors: true
+
+- name: Update HTTP2 profile invalid streams value - Expect failure
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+    streams: 300
+  register: result
+  ignore_errors: true
+
+- name: Update HTTP2 profile invalid frame size value - Expect failure
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+    frame_size: 200
+  register: result
+  ignore_errors: true
+
+- name: Update HTTP2 profile invalid header table size value - Expect failure
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+    header_table_size: -1
+  register: result
+  ignore_errors: true
+
+- name: Update HTTP2 profile invalid receive window value - Expect failure
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+    receive_window: 10
+  register: result
+  ignore_errors: true
+
+- name: Create HTTP2 profile with all parameters
+  bigip_profile_http2:
+    name: "{{ profile_3 }}"
+    description: "{{ description_2 }}"
+    enforce_tls_requirements: yes
+    insert_header: yes
+    insert_header_name: "{{ header_1 }}"
+    streams: 20
+    idle_timeout: 150
+    frame_size: 1024
+    receive_window: 64
+    write_size: 4096
+    header_table_size: 3000
+    activation_modes:
+      - always
+  register: result
+
+- name: Assert Create HTTP2 profile with all parameters
+  assert:
+    that:
+      - result is changed
+      - result.description == description_2
+      - result.enforce_tls_requirements == 'yes'
+      - result.insert_header == 'yes'
+      - result.insert_header_name == header_1
+      - result.streams == 20
+      - result.idle_timeout == 150
+      - result.frame_size == 1024
+      - result.receive_window == 64
+      - result.write_size == 4096
+      - result.header_table_size == 3000
+      - result.activation_modes == ['always']
+
+- name: Create HTTP2 profile with all parameters - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_3 }}"
+    description: "{{ description_2 }}"
+    enforce_tls_requirements: yes
+    insert_header: yes
+    insert_header_name: "{{ header_1 }}"
+    streams: 20
+    idle_timeout: 150
+    frame_size: 1024
+    receive_window: 64
+    write_size: 4096
+    header_table_size: 3000
+    activation_modes:
+      - always
+  register: result
+
+- name: Assert Create HTTP2 profile with all parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete HTTP2 profile
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Delete HTTP2 profile
+  assert:
+    that:
+      - result is changed
+
+- name: Delete HTTP2 profile - Idempotent check
+  bigip_profile_http2:
+    name: "{{ profile_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Delete HTTP2 profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove profiles
+  bigip_profile_http:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ profile_2 }}"
+    - "{{ profile_3 }}"
+
+- import_tasks: teardown.yaml
