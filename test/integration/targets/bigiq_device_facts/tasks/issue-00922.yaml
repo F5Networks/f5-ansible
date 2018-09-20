@@ -1,0 +1,14 @@
+---
+
+- name: Select purchased-pool-licenses facts
+  bigiq_device_facts:
+    gather_subset:
+      - purchased-pool-licenses
+  register: result
+
+- name: Assert Select purchased-pool-licenses facts
+  assert:
+    that:
+      - result is success
+      - result.purchased_pool_licenses | selectattr("name", "match", "licensepool") | map(attribute='state') | first == 'LICENSED'
+      - result.purchased_pool_licenses | json_query("[?name=='licensepool'].state") | first == 'LICENSED'

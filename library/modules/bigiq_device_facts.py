@@ -301,6 +301,102 @@ managed_devices:
       type: string
       sample: 13.1.1
   sample: hash/dictionary of values
+purchased_pool_licenses:
+  description: Purchased Pool License related facts.
+  returned: When C(purchased-pool-licenses) is specified in C(gather_subset).
+  type: complex
+  contains:
+    base_reg_key:
+      description:
+        - Base registration key of the purchased pool
+      returned: changed
+      type: string
+      sample: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+    dossier:
+      description:
+        - Dossier of the purchased pool license
+      returned: changed
+      type: string
+      sample: d6bd4b8ba5...e9a1a1199b73af9932948a
+    free_device_licenses:
+      description:
+        - Number of free licenses remaining.
+      returned: changed
+      type: int
+      sample: 34
+    name:
+      description:
+        - Name of the purchased pool
+      returned: changed
+      type: string
+      sample: my-pool1
+    state:
+      description:
+        - State of the purchased pool license
+      returned: changed
+      type: string
+      sample: LICENSED
+    total_device_licenses:
+      description:
+        - Total number of licenses in the pool.
+      returned: changed
+      type: int
+      sample: 40
+    uuid:
+      description:
+        - UUID of the purchased pool license
+      returned: changed
+      type: string
+      sample: b2112329-cba7-4f1f-9a26-fab9be416d60
+    vendor:
+      description:
+        - Vendor who provided the license
+      returned: changed
+      type: string
+      sample: F5 Networks, Inc
+    licensed_date_time:
+      description:
+        - Timestamp that the pool was licensed.
+      returned: changed
+      type: string
+      sample: "2018-09-10T00:00:00-07:00"
+    licensed_version:
+      description:
+        - Version of BIG-IQ that is licensed.
+      returned: changed
+      type: string
+      sample: 6.0.1
+    evaluation_start_date_time:
+      description:
+        - Date that evaluation license starts.
+      returned: changed
+      type: string
+      sample: "2018-09-09T00:00:00-07:00"
+    evaluation_end_date_time:
+      description:
+        - Date that evaluation license ends.
+      returned: changed
+      type: string
+      sample: "2018-10-11T00:00:00-07:00"
+    license_end_date_time:
+      description:
+        - Date that the license expires.
+      returned: changed
+      type: string
+      sample: "2018-10-11T00:00:00-07:00"
+    license_start_date_time:
+      description:
+        - Date that the license starts.
+      returned: changed
+      type: string
+      sample: "2018-09-09T00:00:00-07:00"
+    registration_key:
+      description:
+        - Purchased pool license key.
+      returned: changed
+      type: string
+      sample: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+  sample: hash/dictionary of values
 system_info:
   description: System info related facts.
   returned: When C(system-info) is specified in C(gather_subset).
@@ -976,6 +1072,142 @@ class ManagedDevicesFactManager(BaseManager):
             return []
         result = response['items']
         return result
+
+
+class PurchasedPoolLicensesParameters(BaseParameters):
+    api_map = {
+        'baseRegKey': 'base_reg_key',
+        'freeDeviceLicenses': 'free_device_licenses',
+        'licenseState': 'license_state',
+        'totalDeviceLicenses': 'total_device_licenses',
+    }
+
+    returnables = [
+        'base_reg_key',
+        'dossier',
+        'free_device_licenses',
+        'name',
+        'state',
+        'total_device_licenses',
+        'uuid',
+
+        # license_state facts
+        'vendor',
+        'licensed_date_time',
+        'licensed_version',
+        'evaluation_start_date_time',
+        'evaluation_end_date_time',
+        'license_end_date_time',
+        'license_start_date_time',
+        'registration_key',
+    ]
+
+    @property
+    def registration_key(self):
+        try:
+            return self._values['license_state']['registrationKey']
+        except KeyError:
+            return None
+
+    @property
+    def license_start_date_time(self):
+        try:
+            return self._values['license_state']['licenseStartDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def license_end_date_time(self):
+        try:
+            return self._values['license_state']['licenseEndDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def evaluation_end_date_time(self):
+        try:
+            return self._values['license_state']['evaluationEndDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def evaluation_start_date_time(self):
+        try:
+            return self._values['license_state']['evaluationStartDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def licensed_version(self):
+        try:
+            return self._values['license_state']['licensedVersion']
+        except KeyError:
+            return None
+
+    @property
+    def licensed_date_time(self):
+        try:
+            return self._values['license_state']['licensedDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def vendor(self):
+        try:
+            return self._values['license_state']['vendor']
+        except KeyError:
+            return None
+
+
+class PurchasedPoolLicensesFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(PurchasedPoolLicensesFactManager, self).__init__(**kwargs)
+        self.want = PurchasedPoolLicensesParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(purchased_pool_licenses=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['name'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = PurchasedPoolLicensesParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/cm/device/licensing/pool/purchased-pool/licenses".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        try:
+            return response['items']
+        except KeyError:
+            return []
 
 
 class SystemInfoParameters(BaseParameters):
@@ -1656,6 +1888,10 @@ class ModuleManager(object):
                 manager=ManagedDevicesFactManager,
                 client=F5RestClient,
             ),
+            'purchased-pool-licenses': dict(
+                manager=PurchasedPoolLicensesFactManager,
+                client=F5RestClient,
+            ),
             'system-info': dict(
                 manager=SystemInfoFactManager,
                 client=F5RestClient,
@@ -1765,6 +2001,7 @@ class ArgumentSpec(object):
                     # Non-meta choices
                     'applications',
                     'managed-devices',
+                    'purchased-pool-licenses',
                     'system-info',
                     'vlans',
 
@@ -1774,6 +2011,7 @@ class ArgumentSpec(object):
                     # Negations of non-meta-choices
                     '!applications',
                     '!managed-devices',
+                    '!purchased-pool-licenses',
                     '!system-info',
                     '!vlans',
                 ]
