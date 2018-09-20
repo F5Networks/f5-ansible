@@ -31,11 +31,15 @@ options:
       - all
       - applications
       - managed-devices
+      - purchased-pool-licenses
+      - regkey-pools
       - system-info
       - vlans
       - "!all"
       - "!applications"
       - "!managed-devices"
+      - "!purchased-pool-licenses"
+      - "!regkey-pools"
       - "!system-info"
       - "!vlans"
 extends_documentation_fragment: f5
@@ -396,6 +400,95 @@ purchased_pool_licenses:
       returned: changed
       type: string
       sample: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+  sample: hash/dictionary of values
+regkey_pools:
+  description: Regkey Pool related facts.
+  returned: When C(regkey-pools) is specified in C(gather_subset).
+  type: complex
+  contains:
+    name:
+      description:
+        - Name of the regkey pool.
+      returned: changed
+      type: string
+      sample: pool1
+    id:
+      description:
+        - ID of the regkey pool.
+      returned: changed
+      type: string
+      sample: 4f9b565c-0831-4657-b6c2-6dde6182a502
+    total_offerings:
+      description:
+        - Total number of offerings in the pool
+      returned: changed
+      type: int
+      sample: 10
+    offerings:
+      description: List of the offerings in the pool.
+      type: complex
+      contains:
+        dossier:
+          description:
+            - Dossier of the license.
+          returned: changed
+          type: string
+          sample: d6bd4b8ba5...e9a1a1199b73af9932948a
+        name:
+          description:
+            - Name of the regkey.
+          returned: changed
+          type: string
+          sample: regkey1
+        state:
+          description:
+            - State of the regkey license
+          returned: changed
+          type: string
+          sample: LICENSED
+        licensed_date_time:
+          description:
+            - Timestamp that the regkey was licensed.
+          returned: changed
+          type: string
+          sample: "2018-09-10T00:00:00-07:00"
+        licensed_version:
+          description:
+            - Version of BIG-IQ that is licensed.
+          returned: changed
+          type: string
+          sample: 6.0.1
+        evaluation_start_date_time:
+          description:
+            - Date that evaluation license starts.
+          returned: changed
+          type: string
+          sample: "2018-09-09T00:00:00-07:00"
+        evaluation_end_date_time:
+          description:
+            - Date that evaluation license ends.
+          returned: changed
+          type: string
+          sample: "2018-10-11T00:00:00-07:00"
+        license_end_date_time:
+          description:
+            - Date that the license expires.
+          returned: changed
+          type: string
+          sample: "2018-10-11T00:00:00-07:00"
+        license_start_date_time:
+          description:
+            - Date that the license starts.
+          returned: changed
+          type: string
+          sample: "2018-09-09T00:00:00-07:00"
+        registration_key:
+          description:
+            - Registration license key.
+          returned: changed
+          type: string
+          sample: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+      sample: hash/dictionary of values
   sample: hash/dictionary of values
 system_info:
   description: System info related facts.
@@ -1210,6 +1303,177 @@ class PurchasedPoolLicensesFactManager(BaseManager):
             return []
 
 
+class RegkeyPoolsParameters(BaseParameters):
+    api_map = {
+
+    }
+
+    returnables = [
+        'name',
+        'id',
+        'offerings',
+        'total_offerings',
+    ]
+
+
+class RegkeyPoolsOfferingParameters(BaseParameters):
+    api_map = {
+        'regKey': 'registration_key',
+        'licenseState': 'license_state',
+        'status': 'state',
+    }
+
+    returnables = [
+        'name',
+        'dossier',
+        'state',
+
+        # license_state facts
+        'licensed_date_time',
+        'licensed_version',
+        'evaluation_start_date_time',
+        'evaluation_end_date_time',
+        'license_end_date_time',
+        'license_start_date_time',
+        'registration_key',
+    ]
+
+
+    @property
+    def registration_key(self):
+        try:
+            return self._values['license_state']['registrationKey']
+        except KeyError:
+            return None
+
+    @property
+    def license_start_date_time(self):
+        try:
+            return self._values['license_state']['licenseStartDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def license_end_date_time(self):
+        try:
+            return self._values['license_state']['licenseEndDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def evaluation_end_date_time(self):
+        try:
+            return self._values['license_state']['evaluationEndDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def evaluation_start_date_time(self):
+        try:
+            return self._values['license_state']['evaluationStartDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def licensed_version(self):
+        try:
+            return self._values['license_state']['licensedVersion']
+        except KeyError:
+            return None
+
+    @property
+    def licensed_date_time(self):
+        try:
+            return self._values['license_state']['licensedDateTime']
+        except KeyError:
+            return None
+
+    @property
+    def vendor(self):
+        try:
+            return self._values['license_state']['vendor']
+        except KeyError:
+            return None
+
+
+class RegkeyPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(RegkeyPoolsFactManager, self).__init__(**kwargs)
+        self.want = RegkeyPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(regkey_pools=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['name'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = RegkeyPoolsParameters(params=resource)
+            offerings = self.read_offerings_from_device(resource['id'])
+            params.update({'total_offerings': len(offerings)})
+            for offering in offerings:
+                params2 = RegkeyPoolsOfferingParameters(params=offering)
+                params.update({'offerings': params2.to_return()})
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        try:
+            return response['items']
+        except KeyError:
+            return []
+
+    def read_offerings_from_device(self, license):
+        uri = "https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses/{2}/offerings".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            license,
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        try:
+            return response['items']
+        except KeyError:
+            return []
+
+
 class SystemInfoParameters(BaseParameters):
     api_map = {
         'isSystemSetup': 'is_system_setup',
@@ -1892,6 +2156,10 @@ class ModuleManager(object):
                 manager=PurchasedPoolLicensesFactManager,
                 client=F5RestClient,
             ),
+            'regkey-pools': dict(
+                manager=RegkeyPoolsFactManager,
+                client=F5RestClient,
+            ),
             'system-info': dict(
                 manager=SystemInfoFactManager,
                 client=F5RestClient,
@@ -2002,6 +2270,7 @@ class ArgumentSpec(object):
                     'applications',
                     'managed-devices',
                     'purchased-pool-licenses',
+                    'regkey-pools',
                     'system-info',
                     'vlans',
 
@@ -2012,6 +2281,7 @@ class ArgumentSpec(object):
                     '!applications',
                     '!managed-devices',
                     '!purchased-pool-licenses',
+                    '!regkey-pools',
                     '!system-info',
                     '!vlans',
                 ]
