@@ -1,0 +1,117 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Change ip log level
+  bigip_sys_daemon_log_tmm:
+    ip_log_level: "{{ ip_log }}"
+  register: result
+
+- name: Assert Change ip log level
+  assert:
+    that:
+      - result is changed
+      - result.ip_log_level == ip_log
+
+- name: Change ip log level - Idempotent check
+  bigip_sys_daemon_log_tmm:
+    ip_log_level: "{{ ip_log }}"
+  register: result
+
+- name: Assert Change ip log level - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change ssl log level
+  bigip_sys_daemon_log_tmm:
+    ssl_log_level: "{{ ssl_log }}"
+  register: result
+
+- name: Assert Change ssl log level
+  assert:
+    that:
+      - result is changed
+      - result.ssl_log_level == ssl_log
+
+- name: Change ssl log level - Idempotent check
+  bigip_sys_daemon_log_tmm:
+    ssl_log_level: "{{ ssl_log }}"
+  register: result
+
+- name: Assert Change ssl log level - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change layer4 log level
+  bigip_sys_daemon_log_tmm:
+    layer4_log_level: "{{ layer4_log }}"
+  register: result
+
+- name: Assert Change layer4 log level
+  assert:
+    that:
+      - result is changed
+      - result.layer4_log_level == layer4_log
+
+- name: Change layer4 log level - Idempotent check
+  bigip_sys_daemon_log_tmm:
+    layer4_log_level: "{{ layer4_log }}"
+  register: result
+
+- name: Assert Change layer4 log level - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change multiple log levels
+  bigip_sys_daemon_log_tmm:
+    ssl_log_level: "{{ ssl_log_default }}"
+    ip_log_level: "{{ ip_log_default }}"
+    layer4_log_level: "{{ layer4_log_default }}"
+  register: result
+
+- name: Assert Change multiple log levels
+  assert:
+    that:
+      - result is changed
+      - result.ssl_log_level == ssl_log_default
+      - result.ip_log_level == ip_log_default
+      - result.layer4_log_level == layer4_log_default
+
+- name: Change multiple log levels - Idempotent check
+  bigip_sys_daemon_log_tmm:
+    ssl_log_level: "{{ ssl_log_default }}"
+    ip_log_level: "{{ ip_log_default }}"
+    layer4_log_level: "{{ layer4_log_default }}"
+  register: result
+
+- name: Assert Change multiple log levels - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update net log level invalid value - Expect failure
+  bigip_sys_daemon_log_tmm:
+    net_log_level: "alert"
+  register: result
+  ignore_errors: true
+
+- name: Update ip log level invalid value - Expect failure
+  bigip_sys_daemon_log_tmm:
+    ip_log_level: "alert"
+  register: result
+  ignore_errors: true
+
+- name: Update pva log level invalid value - Expect failure
+  bigip_sys_daemon_log_tmm:
+    pva_log_level: "alert"
+  register: result
+  ignore_errors: true
+
+- import_tasks: teardown.yaml
