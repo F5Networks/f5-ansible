@@ -368,7 +368,7 @@
       - result is not changed
 
 - name: Remove profiles
-  bigip_profile_http:
+  bigip_profile_http2:
     name: "{{ item }}"
     state: absent
   loop:
