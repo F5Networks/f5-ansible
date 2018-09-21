@@ -1,0 +1,8 @@
+---
+ip_log: notice
+ssl_log: alert
+layer4_log: informational
+
+layer4_log_default: notice
+ssl_log_default: warning
+ip_log_default: warning
