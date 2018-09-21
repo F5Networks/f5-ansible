@@ -1,0 +1,12 @@
+---
+datacenter: issue-00771-dc
+server_name: issue-00771
+server_name_2: issue-00771_2
+
+
+preference_1: inside-datacenter
+preference_2: outside-datacenter
+preference_3: pool
+
+prober_name_1: /Common/issue_00771
+prober_name_2: issue_00771

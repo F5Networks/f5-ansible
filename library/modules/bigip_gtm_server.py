@@ -166,6 +166,26 @@ options:
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
     version_added: 2.8
+  prober_preference:
+    description:
+      - Specifies the type of prober to use to monitor this server's resources. 
+      - This option is ignored in C(TMOS) version C(12.x).
+      - From C(TMOS) version C(13.x) and up, when prober_preference is set to C(pool) 
+        a C(prober_pool) parameter must be specified.
+    choices:
+      - inside-datacenter
+      - outside-datacenter
+      - inherit
+      - pool
+    version_added: 2.8
+  prober_pool:
+    description:
+      - Specifies the name of the prober pool to use to monitor this server's resources. 
+      - From C(TMOS) version C(13.x) and up, this parameter is mandatory when C(prober_preference) is set to C(pool).
+      - Format of the name can be either be prepended by partition (C(/Common/foo)), or specified
+        just as an object name (C(foo)).
+      - In C(TMOS) version C(12.x) prober_pool can be set to empty string to revert to default setting of inherit.
+    version_added: 2.8
 extends_documentation_fragment: f5
 author:
   - Robert Teller
@@ -302,6 +322,8 @@ class Parameters(AnsibleF5Parameters):
         'iqAllowServiceCheck': 'iquery_allow_service_check',
         'iqAllowSnmp': 'iquery_allow_snmp',
         'monitor': 'monitors',
+        'proberPreference': 'prober_preference',
+        'proberPool': 'prober_pool',
     }
 
     api_attributes = [
@@ -316,6 +338,8 @@ class Parameters(AnsibleF5Parameters):
         'iqAllowServiceCheck',
         'iqAllowSnmp',
         'monitor',
+        'proberPreference',
+        'proberPool',
     ]
 
     updatables = [
@@ -328,6 +352,8 @@ class Parameters(AnsibleF5Parameters):
         'iquery_allow_service_check',
         'iquery_allow_snmp',
         'monitors',
+        'prober_preference',
+        'prober_pool',
     ]
 
     returnables = [
@@ -342,6 +368,8 @@ class Parameters(AnsibleF5Parameters):
         'devices',
         'monitors',
         'availability_requirements',
+        'prober_preference',
+        'prober_pool',
     ]
 
 
@@ -651,6 +679,15 @@ class ModuleParameters(Parameters):
     @property
     def at_least(self):
         return self._get_availability_value('at_least')
+
+    @property
+    def prober_pool(self):
+        if self._values['prober_pool'] is None:
+            return None
+        if self._values['prober_pool'] == '':
+            return self._values['prober_pool']
+        result = fq_name(self.partition, self._values['prober_pool'])
+        return result
 
 
 class Changes(Parameters):
@@ -975,6 +1012,16 @@ class Difference(object):
         if self.have.monitors != self.want.monitors:
             return self.want.monitors
 
+    @property
+    def prober_pool(self):
+        if self.want.prober_pool is None:
+            return None
+        if self.have.prober_pool is None:
+            if self.want.prober_pool == '':
+                return None
+        if self.want.prober_pool != self.have.prober_pool:
+            return self.want.prober_pool
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
@@ -1052,7 +1099,6 @@ class BaseManager(object):
             changed = self.present()
         elif state == "absent":
             changed = self.absent()
-
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
@@ -1094,6 +1140,7 @@ class BaseManager(object):
                 "You must provide an initial device."
             )
         self._assign_creation_defaults()
+        self.handle_prober_preference()
         self._set_changed_options()
         if self.module.check_mode:
             return True
@@ -1126,6 +1173,7 @@ class BaseManager(object):
 
     def update(self):
         self.have = self.read_current_from_device()
+        self.handle_prober_preference()
         if not self.should_update():
             return False
         if self.module.check_mode:
@@ -1241,6 +1289,10 @@ class V1Manager(BaseManager):
         if len(self.want.devices) > 1 and self.want.server_type == 'bigip':
             self.want.update({'server_type': 'redundant-bigip'})
 
+    def handle_prober_preference(self):
+        if self.want.prober_preference is not None:
+            self.want._values.pop('prober_preference')
+
 
 class V2Manager(BaseManager):
     def _assign_creation_defaults(self):
@@ -1254,6 +1306,20 @@ class V2Manager(BaseManager):
 
     def adjust_server_type_by_version(self):
         pass
+
+    def handle_prober_preference(self):
+        if self.want.prober_preference != 'pool':
+            if self.have.prober_pool is not None and self.want.prober_pool != '':
+                raise F5ModuleError(
+                    "To change prober_preference from {0} to {1}, you need to set prober_pool to ''.".format(
+                        self.have.prober_preference,
+                        self.want.prober_preference
+                    )
+                )
+        if self.want.prober_preference == 'pool' and self.want.prober_pool is None:
+            raise F5ModuleError(
+                "A prober_pool needs to be set if prober_preference is set to 'pool'"
+            )
 
 
 class ArgumentSpec(object):
@@ -1331,6 +1397,10 @@ class ArgumentSpec(object):
                 ]
             ),
             monitors=dict(type='list'),
+            prober_preference=dict(
+                choices=['inside-datacenter', 'outside-datacenter', 'inherit', 'pool']
+            ),
+            prober_pool=dict()
 
         )
         self.argument_spec = {}
