@@ -1,0 +1,42 @@
+---
+
+- name: Issue 00957 - Include issue variables - Args
+  include_vars:
+    file: issue-00957.yaml
+
+- name: Issue 00957 - Create a pool
+  bigip_pool:
+    name: test
+    lb_method: round-robin
+    provider: "{{ provider }}"
+
+- name: Issue 00957 - Create monitoring virtuals
+  bigip_virtual_server:
+    name: "{{ item.0.name }}_{{ item.1 }}4_m1"
+    description: "{{ item.0.name }} {{ item.1|upper }} IPv4 Monitoring Prefix 1"
+    destination: "10.{{ site_front }}.255.{{ item.0.id }}"
+    ip_protocol: "{{ item.1 }}"
+    port: 53
+    pool: test
+    type: performance-l4
+    profiles:
+      - fastL4
+    provider: "{{ provider }}"
+  with_nested:
+    - "{{ zones }}"
+    - [ 'udp', 'tcp' ]
+
+- name: Issue 00957 - Remove virtuals
+  bigip_virtual_server:
+    name: "{{ item.0.name }}_{{ item.1 }}4_m1"
+    state: absent
+    provider: "{{ provider }}"
+  with_nested:
+    - "{{ zones }}"
+    - [ 'udp', 'tcp' ]
+
+- name: Issue 00957 - Remove pool
+  bigip_pool:
+    name: test
+    state: absent
+    provider: "{{ provider }}"
