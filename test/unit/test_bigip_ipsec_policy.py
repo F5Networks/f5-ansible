@@ -65,17 +65,17 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            name='ike1',
+            name='ipsec1',
         )
         p = ModuleParameters(params=args)
-        assert p.name == 'ike1'
+        assert p.name == 'ipsec1'
 
     def test_api_parameters(self):
         args = dict(
-            name='ike1',
+            name='ipsec1',
         )
         p = ApiParameters(params=args)
-        assert p.name == 'ike1'
+        assert p.name == 'ipsec1'
 
 
 class TestUntypedManager(unittest.TestCase):
@@ -85,8 +85,7 @@ class TestUntypedManager(unittest.TestCase):
 
     def test_create(self, *args):
         set_module_args(dict(
-            name='foo.baz.bar',
-            version=['v1'],
+            name='ipsec1',
             password='password',
             server='localhost',
             user='admin'
