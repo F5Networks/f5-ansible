@@ -1,0 +1,11 @@
+---
+
+- name: Import a certificate
+  bigip_ssl_certificate:
+    name: cert1
+    state: absent
+
+- name: Import a key, no passphrase on private key
+  bigip_ssl_key:
+    name: cert1
+    state: absent
