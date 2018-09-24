@@ -2,6 +2,972 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create new IKE peer
+  bigip_ike_peer:
+    name: ike1
+    remote_address: 1.2.3.4
+    version:
+      - v1
+  register: result
+
+- name: Assert Create new IKE peer
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create new IKE peer - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    remote_address: 1.2.3.4
+    version:
+      - v1
+  register: result
+
+- name: Assert Create new IKE peer - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change presented id type - asn1dn
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: asn1dn
+  register: result
+
+- name: Assert Change presented id type - asn1dn
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change presented id type - asn1dn - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: asn1dn
+  register: result
+
+- name: Assert Change presented id type - asn1dn - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change presented id type - address
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: address
+  register: result
+
+- name: Assert Change presented id type - address
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change presented id type - address - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: address
+  register: result
+
+- name: Assert Change presented id type - address - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change presented id type - fqdn
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: fqdn
+    presented_id_value: foo.bar.com
+  register: result
+
+- name: Assert Change presented id type - fqdn
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change presented id type - fqdn - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: fqdn
+    presented_id_value: foo.bar.com
+  register: result
+
+- name: Assert Change presented id type - fqdn - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change presented id type - keyid-tag
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: keyid-tag
+    presented_id_value: key1
+  register: result
+
+- name: Assert Change presented id type - keyid-tag
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change presented id type - keyid-tag - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: keyid-tag
+    presented_id_value: key1
+  register: result
+
+- name: Assert Change presented id type - keyid-tag - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change presented id type - user-fqdn
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: user-fqdn
+    presented_id_value: user@bar.com
+  register: result
+
+- name: Assert Change presented id type - user-fqdn
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change presented id type - user-fqdn - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    presented_id_type: user-fqdn
+    presented_id_value: user@bar.com
+  register: result
+
+- name: Assert Change presented id type - user-fqdn - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change verified id type - asn1dn
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: asn1dn
+  register: result
+
+- name: Assert Change verified id type - asn1dn
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change verified id type - asn1dn - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: asn1dn
+  register: result
+
+- name: Assert Change verified id type - asn1dn - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change verified id type - address
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: address
+  register: result
+
+- name: Assert Change verified id type - address
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change verified id type - address - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: address
+  register: result
+
+- name: Assert Change verified id type - address - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change verified id type - fqdn
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: fqdn
+    verified_id_value: foo.bar.com
+  register: result
+
+- name: Assert Change verified id type - fqdn
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change verified id type - fqdn - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: fqdn
+    verified_id_value: foo.bar.com
+  register: result
+
+- name: Assert Change verified id type - fqdn - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change verified id type - keyid-tag
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: keyid-tag
+    verified_id_value: key1
+  register: result
+
+- name: Assert Change verified id type - keyid-tag
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change verified id type - keyid-tag - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: keyid-tag
+    verified_id_value: key1
+  register: result
+
+- name: Assert Change verified id type - keyid-tag - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change verified id type - user-fqdn
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: user-fqdn
+    verified_id_value: user@bar.com
+  register: result
+
+- name: Assert Change verified id type - user-fqdn
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change verified id type - user-fqdn - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: user-fqdn
+    verified_id_value: user@bar.com
+  register: result
+
+- name: Assert Change verified id type - user-fqdn - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_perfect_forward_secrecy - modp768
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp768
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp768
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_perfect_forward_secrecy - modp768 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp768
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp768 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_perfect_forward_secrecy - modp1024
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp1024
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp1024
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_perfect_forward_secrecy - modp1024 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp1024
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp1024 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_perfect_forward_secrecy - modp1536
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp1536
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp1536
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_perfect_forward_secrecy - modp1536 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp1536
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp1536 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_perfect_forward_secrecy - modp2048
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp2048
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp2048
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_perfect_forward_secrecy - modp2048 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp2048
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp2048 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_perfect_forward_secrecy - modp3072
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp3072
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp3072
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_perfect_forward_secrecy - modp3072 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp3072
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp3072 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_perfect_forward_secrecy - modp4096
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp4096
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp4096
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_perfect_forward_secrecy - modp4096 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp4096
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp4096 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_perfect_forward_secrecy - modp6144
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp6144
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp6144
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_perfect_forward_secrecy - modp6144 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp6144
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp6144 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_perfect_forward_secrecy - modp8192
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp8192
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp8192
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_perfect_forward_secrecy - modp8192 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_perfect_forward_secrecy: modp8192
+  register: result
+
+- name: Assert Change phase1_perfect_forward_secrecy - modp8192 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_encryption_algorithm - des
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: des
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - des
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_encryption_algorithm - des - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: des
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - des - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_encryption_algorithm - 3des
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: 3des
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - 3des
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_encryption_algorithm - 3des - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: 3des
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - 3des - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_encryption_algorithm - blowfish
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: blowfish
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - blowfish
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_encryption_algorithm - blowfish - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: blowfish
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - blowfish - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_encryption_algorithm - cast128
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: cast128
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - cast128
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_encryption_algorithm - cast128 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: cast128
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - cast128 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_encryption_algorithm - aes128
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: aes128
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - aes128
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_encryption_algorithm - aes128 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: aes128
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - aes128 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_encryption_algorithm - aes192
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: aes192
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - aes192
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_encryption_algorithm - aes192 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: aes192
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - aes192 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_encryption_algorithm - aes256
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: aes256
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - aes256
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_encryption_algorithm - aes256 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: aes256
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - aes256 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_encryption_algorithm - camellia
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: camellia
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - camellia
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_encryption_algorithm - camellia - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_encryption_algorithm: camellia
+  register: result
+
+- name: Assert Change phase1_encryption_algorithm - camellia - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change remote_address
+  bigip_ike_peer:
+    name: ike1
+    remote_address: 10.10.10.10
+  register: result
+
+- name: Assert Change remote_address
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change remote_address - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    remote_address: 10.10.10.10
+  register: result
+
+- name: Assert Change remote_address - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_cert and phase1_key
+  bigip_ike_peer:
+    name: ike1
+    phase1_cert: cert1.crt
+    phase1_key: cert1.key
+  register: result
+
+- name: Assert Change phase1_cert and phase1_key
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_cert and phase1_key - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_cert: cert1.crt
+    phase1_key: cert1.key
+  register: result
+
+- name: Assert Change phase1_cert and phase1_key - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_verify_peer_cert - yes
+  bigip_ike_peer:
+    name: ike1
+    phase1_verify_peer_cert: yes
+  register: result
+
+- name: Assert Change phase1_verify_peer_cert - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_verify_peer_cert - yes - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_verify_peer_cert: yes
+  register: result
+
+- name: Assert Change phase1_verify_peer_cert - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_verify_peer_cert - no
+  bigip_ike_peer:
+    name: ike1
+    phase1_verify_peer_cert: no
+  register: result
+
+- name: Assert Change phase1_verify_peer_cert - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_verify_peer_cert - no - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_verify_peer_cert: no
+  register: result
+
+- name: Assert Change phase1_verify_peer_cert - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_hash_algorithm - sha1
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: sha1
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - sha1
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_hash_algorithm - sha1 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: sha1
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - sha1 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_hash_algorithm - md5
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: md5
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - md5
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_hash_algorithm - md5 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: md5
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - md5 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_hash_algorithm - sha256
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: sha256
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - sha256
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_hash_algorithm - sha256 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: sha256
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - sha256 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_hash_algorithm - sha384
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: sha384
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - sha384
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_hash_algorithm - sha384 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: sha384
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - sha384 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change phase1_hash_algorithm - sha512
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: sha512
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - sha512
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_hash_algorithm - sha512 - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_hash_algorithm: sha512
+  register: result
+
+- name: Assert Change phase1_hash_algorithm - sha512 - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Set verified id types to address - address
+  bigip_ike_peer:
+    name: ike1
+    verified_id_type: address
+    presented_id_type: address
+  register: result
+
+- name: Change phase1_auth_method without setting key - pre-shared-key - Expected failure
+  bigip_ike_peer:
+    name: ike1
+    phase1_auth_method: pre-shared-key
+  register: result
+  failed_when: result is success
+
+- name: Assert Change phase1_auth_method without setting key - pre-shared-key - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+      - "'Preshared key value cannot be empty if phase1' in result.msg"
+
+- name: Change phase1_auth_method - pre-shared-key
+  bigip_ike_peer:
+    name: ike1
+    phase1_auth_method: pre-shared-key
+    preshared_key: secretkey
+  register: result
+
+- name: Assert Change phase1_auth_method - pre-shared-key
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+# Expect it to change because update_password defaults to 'always'
+- name: Change phase1_auth_method - pre-shared-key - Idempotent check - Expected change
+  bigip_ike_peer:
+    name: ike1
+    phase1_auth_method: pre-shared-key
+    preshared_key: secretkey
+  register: result
+
+- name: Assert Change phase1_auth_method - pre-shared-key - Idempotent check - Expected change
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change phase1_auth_method - pre-shared-key - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    phase1_auth_method: pre-shared-key
+    preshared_key: secretkey
+    update_password: on_create
+  register: result
+
+- name: Assert Change phase1_auth_method - pre-shared-key - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove IKE peer
+  bigip_ike_peer:
+    name: ike1
+    state: absent
+  register: result
+
+- name: Assert Remove IKE peer
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove IKE peer - Idempotent check
+  bigip_ike_peer:
+    name: ike1
+    state: absent
+  register: result
+
+- name: Assert Remove IKE peer - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
 
 - import_tasks: teardown.yaml
