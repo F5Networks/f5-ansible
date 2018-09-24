@@ -1,5 +1,11 @@
 ---
 
+- name: Issue 00954 - Provision GTM
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
 - name: Issue 00954 - Collect BIG-IP facts
   bigip_device_facts:
     include: system-info
@@ -86,3 +92,11 @@
     provider: "{{ provider }}"
   register: result
   when: f.system_info.product_version < "12.0.0"
+
+- name: Issue 00954 - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
