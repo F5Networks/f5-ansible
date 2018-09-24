@@ -33,13 +33,10 @@
       tested_platforms:
         - NA
 
-- name: Test the bigip_gtm_wide_ip module
+- name: Test the bigip_gtm_wide_ip module - Environment
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
-
-  vars:
-    limit_to: '*'
 
   environment:
     F5_SERVER: "{{ ansible_host }}"
@@ -48,5 +45,46 @@
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
-  roles:
-    - bigip_gtm_wide_ip
+  tasks:
+    - name: Include role - Environment
+      import_role:
+        name: bigip_gtm_wide_ip
+        tasks_from: environment.yaml
+      tags:
+        - environment
+
+- name: Test the bigip_gtm_wide_ip module - Provider
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+    provider:
+      transport: rest
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+
+  tasks:
+    - name: Include role - Environment
+      import_role:
+        name: bigip_gtm_wide_ip
+        tasks_from: provider.yaml
+      tags:
+        - provider
+
+- name: Test the bigip_gtm_wide_ip module - Args
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Args
+      import_role:
+        name: bigip_gtm_wide_ip
+        tasks_from: args.yaml
+      tags:
+        - args
