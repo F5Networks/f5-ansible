@@ -85,7 +85,7 @@ class TestUntypedManager(unittest.TestCase):
 
     def test_create(self, *args):
         set_module_args(dict(
-            name='foo.baz.bar',
+            name='ike1',
             version=['v1'],
             password='password',
             server='localhost',
