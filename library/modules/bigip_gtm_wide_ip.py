@@ -274,7 +274,7 @@ class ApiParameters(Parameters):
     def pools(self):
         result = []
         if self._values['pools'] is None:
-            return None
+            return []
         pools = sorted(self._values['pools'], key=lambda x: x['order'])
         for item in pools:
             pool = dict()

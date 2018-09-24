@@ -1,0 +1,88 @@
+---
+
+- name: Issue 00954 - Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+    provider: "{{ provider }}"
+  register: f
+
+- name: Issue 00954 - Create pool, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    name: test-pool
+    type: a
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Create pool
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    name: test-pool
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version < "12.0.0"
+
+- name: Issue 00954 - Create wideip objects
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    pool_lb_method: round-robin
+    provider: "{{ provider }}"
+
+- name: Issue 00954 - Set pools
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    pool_lb_method: round-robin
+    pools:
+      - name: test-pool
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00954 - Assert Set pools
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00954 - Set pools - Idempotent check
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    pool_lb_method: round-robin
+    pools:
+      - name: test-pool
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00954 - Assert Set pools - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00954 - Remove wide ip
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00954 - Remove pool, type 'a'
+  bigip_gtm_pool:
+    name: test-pool
+    type: a
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Remove pool
+  bigip_gtm_pool:
+    name: test-pool
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version < "12.0.0"
