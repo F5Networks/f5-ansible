@@ -1,0 +1,193 @@
+---
+
+- name: Issue 00954 - Provision GTM
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 00954 - Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+    provider: "{{ provider }}"
+  register: f
+
+- name: Issue 00954 - Create pools
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    name: "{{ item }}"
+    type: a
+    provider: "{{ provider }}"
+  loop:
+    - test1
+    - test2
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Create wideip object
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    pool_lb_method: round-robin
+    provider: "{{ provider }}"
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Set last_resort_pool
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    last_resort_pool: test1
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Assert Set last_resort_pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Set last_resort_pool - Idempotent check
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    last_resort_pool: test1
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Assert Set last_resort_pool - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+  when: f.system_info.product_version >= "12.0.0"
+
+
+
+
+
+
+
+
+- name: Issue 00954 - Change last_resort_pool
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    last_resort_pool: test2
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Assert Change last_resort_pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Change last_resort_pool - Idempotent check
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    last_resort_pool: test2
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Assert Change last_resort_pool - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+  when: f.system_info.product_version >= "12.0.0"
+
+
+
+
+
+
+- name: Issue 00954 - Change last_resort_pool - none
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    last_resort_pool: none
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Assert Change last_resort_pool - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Change last_resort_pool - none - Idempotent check
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    last_resort_pool: none
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Assert Change last_resort_pool - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+  when: f.system_info.product_version >= "12.0.0"
+
+
+
+
+
+- name: Issue 00954 - Change last_resort_pool - empty - Idempotent check
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    last_resort_pool: ''
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Assert Change last_resort_pool - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+  when: f.system_info.product_version >= "12.0.0"
+
+
+
+
+
+- name: Issue 00954 - Remove wide ip
+  bigip_gtm_wide_ip:
+    name: test.com
+    type: a
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+  when: f.system_info.product_version >= "12.0.0"
+
+
+- name: Issue 00954 - Remove pool, type 'a'
+  bigip_gtm_pool:
+    name: "{{ item }}"
+    type: a
+    state: absent
+    provider: "{{ provider }}"
+  loop:
+    - test1
+    - test2
+  when: f.system_info.product_version >= "12.0.0"
+
+- name: Issue 00954 - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

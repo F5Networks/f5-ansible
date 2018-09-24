@@ -104,6 +104,13 @@ options:
       - You can use the same wildcard characters for aliases as you can for actual
         wide IP names.
     version_added: 2.7
+  last_resort_pool:
+    description:
+      - Specifies which GTM pool, for the system to use as the last resort pool for
+        the wide IP.
+      - The valid pools for this parameter are those with the C(type) specified in this
+        module.
+    version_added: 2.8
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -226,6 +233,7 @@ class Parameters(AnsibleF5Parameters):
     api_map = {
         'poolLbMode': 'pool_lb_method',
         'rules': 'irules',
+        'lastResortPool': 'last_resort_pool',
     }
 
     updatables = [
@@ -236,6 +244,7 @@ class Parameters(AnsibleF5Parameters):
         'enabled',
         'disabled',
         'aliases',
+        'last_resort_pool',
     ]
 
     returnables = [
@@ -245,6 +254,7 @@ class Parameters(AnsibleF5Parameters):
         'pools',
         'irules',
         'aliases',
+        'last_resort_pool',
     ]
 
     api_attributes = [
@@ -254,6 +264,7 @@ class Parameters(AnsibleF5Parameters):
         'pools',
         'rules',
         'aliases',
+        'lastResortPool',
     ]
 
 
@@ -288,8 +299,22 @@ class ApiParameters(Parameters):
             result.append(pool)
         return result
 
+    @property
+    def last_resort_pool(self):
+        if self._values['last_resort_pool'] in [None, '', 'none']:
+            return ''
+        return self._values['last_resort_pool']
+
 
 class ModuleParameters(Parameters):
+    @property
+    def last_resort_pool(self):
+        if self._values['last_resort_pool'] in [None, '', 'none']:
+            return ''
+        return '{0} {1}'.format(
+            self.type, fq_name(self.partition, self._values['last_resort_pool'])
+        )
+
     @property
     def pool_lb_method(self):
         if self._values['pool_lb_method'] is None:
@@ -431,6 +456,14 @@ class ReportableChanges(Changes):
         )
         return result
 
+    @property
+    def last_resort_pool(self):
+        if self._values['last_resort_pool'] is None:
+            return None
+        if self._values['last_resort_pool'] in ['', 'none']:
+            return 'none'
+        return self._values['last_resort_pool'].split(' ')[1]
+
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -471,6 +504,15 @@ class Difference(object):
             return None
         else:
             return want
+
+    @property
+    def last_resort_pool(self):
+        if self.want.last_resort_pool is None:
+            return None
+        if self.want.last_resort_pool == '' and self.have.last_resort_pool == '':
+            return None
+        if self.want.last_resort_pool != self.have.last_resort_pool:
+            return self.want.last_resort_pool
 
     @property
     def state(self):
@@ -875,7 +917,8 @@ class ArgumentSpec(object):
             ),
             aliases=dict(
                 type='list'
-            )
+            ),
+            last_resort_pool=dict(),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
