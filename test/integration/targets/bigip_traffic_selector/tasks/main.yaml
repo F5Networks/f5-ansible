@@ -2,6 +2,150 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create a traffic selector
+  bigip_traffic_selector:
+    name: selector1
+    destination_address: 1.2.2.1
+    source_address: 2.1.1.2
+  register: result
+
+- name: Assert Create a traffic selector
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a traffic selector - Idempotent check
+  bigip_traffic_selector:
+    name: selector1
+    destination_address: 1.2.2.1
+    source_address: 2.1.1.2
+  register: result
+
+- name: Assert Create a traffic selector - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change destination address
+  bigip_traffic_selector:
+    name: selector1
+    destination_address: 3.3.3.3
+  register: result
+
+- name: Assert Change destination address
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change destination address - Idempotent check
+  bigip_traffic_selector:
+    name: selector1
+    destination_address: 3.3.3.3
+  register: result
+
+- name: Assert Change destination address - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change source address
+  bigip_traffic_selector:
+    name: selector1
+    source_address: 5.5.5.5
+  register: result
+
+- name: Assert Change source address
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change source address - Idempotent check
+  bigip_traffic_selector:
+    name: selector1
+    source_address: 5.5.5.5
+  register: result
+
+- name: Assert Change source address - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ipsec policy
+  bigip_traffic_selector:
+    name: selector1
+    ipsec_policy: ipsec1
+  register: result
+
+- name: Assert Change ipsec policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ipsec policy - Idempotent check
+  bigip_traffic_selector:
+    name: selector1
+    ipsec_policy: ipsec1
+  register: result
+
+- name: Assert Change ipsec policy - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change order
+  bigip_traffic_selector:
+    name: selector1
+    order: 1
+  register: result
+
+- name: Assert Change order
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change order - Idempotent check
+  bigip_traffic_selector:
+    name: selector1
+    order: 1
+  register: result
+
+- name: Assert Change order - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove traffic selector
+  bigip_traffic_selector:
+    name: selector1
+    state: absent
+  register: result
+
+- name: Assert Remove traffic selector
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove traffic selector - Idempotent check
+  bigip_traffic_selector:
+    name: selector1
+    state: absent
+  register: result
+
+- name: Assert Remove traffic selector - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
 
 - import_tasks: teardown.yaml
