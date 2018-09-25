@@ -2,6 +2,1113 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create basic policy
+  bigip_ipsec_policy:
+    name: ipsec1
+  register: result
+
+- name: Assert Create basic policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create basic policy - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+  register: result
+
+- name: Assert Create basic policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+
+- name: Change lifetime
+  bigip_ipsec_policy:
+    name: ipsec1
+    lifetime: 100
+  register: result
+
+- name: Assert Change lifetime
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change lifetime - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    lifetime: 100
+  register: result
+
+- name: Assert Change lifetime - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+- name: Change kb_lifetime
+  bigip_ipsec_policy:
+    name: ipsec1
+    kb_lifetime: 100
+  register: result
+
+- name: Assert Change kb_lifetime
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kb_lifetime - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    kb_lifetime: 100
+  register: result
+
+- name: Assert Change kb_lifetime - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+
+
+
+- name: Change perfect_forward_secrecy - modp768
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp768
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp768
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - modp768 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp768
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp768 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change perfect_forward_secrecy - none
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: none
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - none - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: none
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change perfect_forward_secrecy - modp8192
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp8192
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp8192
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - modp8192 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp8192
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp8192 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+
+- name: Change perfect_forward_secrecy - modp6144
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp6144
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp6144
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - modp6144 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp6144
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp6144 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+- name: Change perfect_forward_secrecy - modp4096
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp4096
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp4096
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - modp4096 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp4096
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp4096 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+- name: Change perfect_forward_secrecy - modp3072
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp3072
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp3072
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - modp3072 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp3072
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp3072 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+- name: Change perfect_forward_secrecy - modp2048
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp2048
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp2048
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - modp2048 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp2048
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp2048 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change perfect_forward_secrecy - modp1536
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp1536
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp1536
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - modp1536 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp1536
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp1536 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+- name: Change perfect_forward_secrecy - modp1024
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp1024
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp1024
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change perfect_forward_secrecy - modp1024 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    perfect_forward_secrecy: modp1024
+  register: result
+
+- name: Assert Change perfect_forward_secrecy - modp1024 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+
+
+
+- name: Change ipcomp - deflate
+  bigip_ipsec_policy:
+    name: ipsec1
+    ipcomp: deflate
+  register: result
+
+- name: Assert Change ipcomp - deflate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ipcomp - deflate - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    ipcomp: deflate
+  register: result
+
+- name: Assert Change ipcomp - deflate - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+- name: Change ipcomp - none
+  bigip_ipsec_policy:
+    name: ipsec1
+    ipcomp: none
+  register: result
+
+- name: Assert Change ipcomp - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change ipcomp - none - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    ipcomp: none
+  register: result
+
+- name: Assert Change ipcomp - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+- name: Set algorithms for testing
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha1
+    encrypt_algorithm: none
+  register: result
+
+
+
+
+- name: Change auth_algorithm - sha512
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha512
+  register: result
+
+- name: Assert Change auth_algorithm - sha512
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - sha512 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha512
+  register: result
+
+- name: Assert Change auth_algorithm - sha512 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+- name: Change auth_algorithm - sha1
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha1
+  register: result
+
+- name: Assert Change auth_algorithm - sha1
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - sha1 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha1
+  register: result
+
+- name: Assert Change auth_algorithm - sha1 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Change auth_algorithm - sha384
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha384
+  register: result
+
+- name: Assert Change auth_algorithm - sha384
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - sha384 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha384
+  register: result
+
+- name: Assert Change auth_algorithm - sha384 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+- name: Change auth_algorithm - sha256
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha256
+  register: result
+
+- name: Assert Change auth_algorithm - sha256
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - sha256 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha256
+  register: result
+
+- name: Assert Change auth_algorithm - sha256 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change auth_algorithm - aes-gmac256
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gmac256
+    encrypt_algorithm: aes-gmac256
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gmac256
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - aes-gmac256 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gmac256
+    encrypt_algorithm: aes-gmac256
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gmac256 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change auth_algorithm - aes-gmac192
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gmac192
+    encrypt_algorithm: aes-gmac192
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gmac192
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - aes-gmac192 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gmac192
+    encrypt_algorithm: aes-gmac192
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gmac192 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change auth_algorithm - aes-gmac128
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gmac128
+    encrypt_algorithm: aes-gmac128
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gmac128
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - aes-gmac128 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gmac128
+    encrypt_algorithm: aes-gmac128
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gmac128 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+- name: Change auth_algorithm - aes-gcm256
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gcm256
+    encrypt_algorithm: aes-gcm256
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gcm256
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - aes-gcm256 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gcm256
+    encrypt_algorithm: aes-gcm256
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gcm256 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+- name: Change auth_algorithm - aes-gcm192
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gcm192
+    encrypt_algorithm: aes-gcm192
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gcm192
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - aes-gcm192 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gcm192
+    encrypt_algorithm: aes-gcm192
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gcm192 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+- name: Change auth_algorithm - aes-gcm128
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gcm128
+    encrypt_algorithm: aes-gcm128
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gcm128
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_algorithm - aes-gcm128 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: aes-gcm128
+    encrypt_algorithm: aes-gcm128
+  register: result
+
+- name: Assert Change auth_algorithm - aes-gcm128 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Change description
+  bigip_ipsec_policy:
+    name: ipsec1
+    description: foo description
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    description: foo description
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change description - none
+  bigip_ipsec_policy:
+    name: ipsec1
+    description: none
+  register: result
+
+- name: Assert Change description - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - none - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    description: none
+  register: result
+
+- name: Assert Change description - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+- name: Change description - empty - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    description: ''
+  register: result
+
+- name: Assert Change description - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+- name: Change auth_algorithm to test encrypt algorithm
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha1
+    encrypt_algorithm: none
+  register: result
+
+
+
+
+- name: Change encrypt_algorithm - aes256
+  bigip_ipsec_policy:
+    name: ipsec1
+    encrypt_algorithm: aes256
+  register: result
+
+- name: Assert Change encrypt_algorithm - aes256
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change encrypt_algorithm - aes256 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    encrypt_algorithm: aes256
+  register: result
+
+- name: Assert Change encrypt_algorithm - aes256 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+- name: Change encrypt_algorithm - aes192
+  bigip_ipsec_policy:
+    name: ipsec1
+    encrypt_algorithm: aes192
+  register: result
+
+- name: Assert Change encrypt_algorithm - aes192
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change encrypt_algorithm - aes192 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    encrypt_algorithm: aes192
+  register: result
+
+- name: Assert Change encrypt_algorithm - aes192 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+- name: Change encrypt_algorithm - aes128
+  bigip_ipsec_policy:
+    name: ipsec1
+    encrypt_algorithm: aes128
+  register: result
+
+- name: Assert Change encrypt_algorithm - aes128
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change encrypt_algorithm - aes128 - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    encrypt_algorithm: aes128
+  register: result
+
+- name: Assert Change encrypt_algorithm - aes128 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+- name: Change encrypt_algorithm - 3des
+  bigip_ipsec_policy:
+    name: ipsec1
+    encrypt_algorithm: 3des
+  register: result
+
+- name: Assert Change encrypt_algorithm - 3des
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change encrypt_algorithm - 3des - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    encrypt_algorithm: 3des
+  register: result
+
+- name: Assert Change encrypt_algorithm - 3des - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+- name: Change algorithms before testing protocol
+  bigip_ipsec_policy:
+    name: ipsec1
+    auth_algorithm: sha256
+    encrypt_algorithm: none
+  register: result
+
+
+
+
+- name: Change protocol - ah
+  bigip_ipsec_policy:
+    name: ipsec1
+    protocol: ah
+  register: result
+
+- name: Assert Change protocol - ah
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change protocol - ah - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    protocol: ah
+  register: result
+
+- name: Assert Change protocol - ah - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+- name: Change protocol - esp
+  bigip_ipsec_policy:
+    name: ipsec1
+    protocol: esp
+  register: result
+
+- name: Assert Change protocol - esp
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change protocol - esp - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    protocol: esp
+  register: result
+
+- name: Assert Change protocol - esp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+
+
+- name: Change mode - tunnel
+  bigip_ipsec_policy:
+    name: ipsec1
+    mode: tunnel
+    tunnel_local_address: 1.2.2.1
+    tunnel_remote_address: 2.3.3.2
+  register: result
+
+- name: Assert Change mode - tunnel
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mode - tunnel - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    mode: tunnel
+    tunnel_local_address: 1.2.2.1
+    tunnel_remote_address: 2.3.3.2
+  register: result
+
+- name: Assert Change mode - tunnel - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+
+- name: Change mode - interface
+  bigip_ipsec_policy:
+    name: ipsec1
+    mode: interface
+    route_domain: 0
+  register: result
+
+- name: Assert Change mode - interface
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mode - interface - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    mode: interface
+    route_domain: 0
+  register: result
+
+- name: Assert Change mode - interface - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
+
+- name: Change route domain
+  bigip_ipsec_policy:
+    name: ipsec1
+    route_domain: 2
+  register: result
+
+- name: Assert Change route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change route domain - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    route_domain: 2
+  register: result
+
+- name: Assert Change mode - interface - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+- name: Remove policy
+  bigip_ipsec_policy:
+    name: ipsec1
+    state: absent
+  register: result
+
+- name: Assert Remove policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove policy - Idempotent check
+  bigip_ipsec_policy:
+    name: ipsec1
+    state: absent
+  register: result
+
+- name: Assert Remove policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
 
 - import_tasks: teardown.yaml

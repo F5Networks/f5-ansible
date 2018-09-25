@@ -1,0 +1,6 @@
+---
+
+- name: Remove route domain
+  bigip_routedomain:
+    id: 2
+    state: absent
