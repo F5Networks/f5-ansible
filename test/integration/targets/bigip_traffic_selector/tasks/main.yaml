@@ -1,0 +1,7 @@
+---
+
+- import_tasks: setup.yaml
+
+# tests go here
+
+- import_tasks: teardown.yaml
