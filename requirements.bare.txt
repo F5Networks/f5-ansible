@@ -7,7 +7,5 @@ q
 nose
 mock
 pycodestyle
-netaddr
-click
 virtualenv
 invoke
