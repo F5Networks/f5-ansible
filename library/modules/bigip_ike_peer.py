@@ -188,16 +188,71 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+presented_id_type:
+  description: The new Presented ID Type value of the resource.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: address
+verified_id_type:
+  description: The new Verified ID Type value of the resource.
+  returned: changed
+  type: string
+  sample: address
+phase1_auth_method:
+  description: The new IKE Phase 1 Credentials Authentication Method value of the resource.
+  returned: changed
+  type: string
+  sample: rsa-signature
+remote_address:
+  description: The new Remote Address value of the resource.
+  returned: changed
+  type: string
+  sample: 1.2.2.1
+version:
+  description: The new list of IKE versions.
+  returned: changed
+  type: list
+  sample: ['v1', 'v2']
+phase1_encryption_algorithm:
+  description: The new IKE Phase 1 Encryption Algorithm.
+  returned: changed
+  type: string
+  sample: 3des
+phase1_hash_algorithm:
+  description: The new IKE Phase 1 Authentication Algorithm.
+  returned: changed
+  type: string
+  sample: sha256
+phase1_perfect_forward_secrecy:
+  description: The new IKE Phase 1 Perfect Forward Secrecy.
+  returned: changed
+  type: string
+  sample: modp1024
+phase1_cert:
+  description: The new IKE Phase 1 Certificate Credentials.
+  returned: changed
+  type: string
+  sample: /Common/cert1.crt
+phase1_key:
+  description: The new IKE Phase 1 Key Credentials.
+  returned: changed
+  type: string
+  sample: /Common/cert1.key
+phase1_verify_peer_cert:
+  description: The new IKE Phase 1 Key Verify Peer Certificate setting.
+  returned: changed
+  type: bool
+  sample: yes
+verified_id_value:
+  description: The new Verified ID Value setting for the Verified ID Type.
+  returned: changed
+  type: string
+  sample: 1.2.3.1
+presented_id_value:
+  description: The new Presented ID Value setting for the Presented ID Type.
+  returned: changed
+  type: string
+  sample: 1.2.3.1
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -350,6 +405,10 @@ class ReportableChanges(Changes):
     @property
     def phase1_verify_peer_cert(self):
         return flatten_boolean(self._values['phase1_verify_peer_cert'])
+
+    @property
+    def preshared_key(self):
+        return None
 
 
 class Difference(object):
