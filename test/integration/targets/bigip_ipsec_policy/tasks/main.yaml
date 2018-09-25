@@ -24,14 +24,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
-
-
-
 - name: Change lifetime
   bigip_ipsec_policy:
     name: ipsec1
@@ -55,9 +47,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
 
 - name: Change kb_lifetime
   bigip_ipsec_policy:
@@ -83,16 +72,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
-
-
-
-
-
 - name: Change perfect_forward_secrecy - modp768
   bigip_ipsec_policy:
     name: ipsec1
@@ -116,11 +95,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
 
 - name: Change perfect_forward_secrecy - none
   bigip_ipsec_policy:
@@ -146,11 +120,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
 - name: Change perfect_forward_secrecy - modp8192
   bigip_ipsec_policy:
     name: ipsec1
@@ -174,14 +143,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
-
-
-
 
 - name: Change perfect_forward_secrecy - modp6144
   bigip_ipsec_policy:
@@ -207,12 +168,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
-
 - name: Change perfect_forward_secrecy - modp4096
   bigip_ipsec_policy:
     name: ipsec1
@@ -236,12 +191,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
-
 
 - name: Change perfect_forward_secrecy - modp3072
   bigip_ipsec_policy:
@@ -267,12 +216,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
-
 - name: Change perfect_forward_secrecy - modp2048
   bigip_ipsec_policy:
     name: ipsec1
@@ -296,11 +239,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
 
 - name: Change perfect_forward_secrecy - modp1536
   bigip_ipsec_policy:
@@ -326,10 +264,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
 - name: Change perfect_forward_secrecy - modp1024
   bigip_ipsec_policy:
     name: ipsec1
@@ -353,16 +287,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
-
-
-
-
-
 
 - name: Change ipcomp - deflate
   bigip_ipsec_policy:
@@ -388,10 +312,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
 - name: Change ipcomp - none
   bigip_ipsec_policy:
     name: ipsec1
@@ -416,19 +336,12 @@
       - result is not changed
       - result is success
 
-
-
-
-
 - name: Set algorithms for testing
   bigip_ipsec_policy:
     name: ipsec1
     auth_algorithm: sha1
     encrypt_algorithm: none
   register: result
-
-
-
 
 - name: Change auth_algorithm - sha512
   bigip_ipsec_policy:
@@ -454,8 +367,6 @@
       - result is not changed
       - result is success
 
-
-
 - name: Change auth_algorithm - sha1
   bigip_ipsec_policy:
     name: ipsec1
@@ -479,17 +390,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
-
-
-
-
-
-
 
 - name: Change auth_algorithm - sha384
   bigip_ipsec_policy:
@@ -515,12 +415,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
-
 - name: Change auth_algorithm - sha256
   bigip_ipsec_policy:
     name: ipsec1
@@ -544,11 +438,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
 
 - name: Change auth_algorithm - aes-gmac256
   bigip_ipsec_policy:
@@ -576,11 +465,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
 - name: Change auth_algorithm - aes-gmac192
   bigip_ipsec_policy:
     name: ipsec1
@@ -606,11 +490,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
 
 - name: Change auth_algorithm - aes-gmac128
   bigip_ipsec_policy:
@@ -638,10 +517,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
 - name: Change auth_algorithm - aes-gcm256
   bigip_ipsec_policy:
     name: ipsec1
@@ -667,10 +542,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
 
 - name: Change auth_algorithm - aes-gcm192
   bigip_ipsec_policy:
@@ -698,10 +569,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
 - name: Change auth_algorithm - aes-gcm128
   bigip_ipsec_policy:
     name: ipsec1
@@ -728,18 +595,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Change description
   bigip_ipsec_policy:
     name: ipsec1
@@ -763,11 +618,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
 
 - name: Change description - none
   bigip_ipsec_policy:
@@ -793,8 +643,6 @@
       - result is not changed
       - result is success
 
-
-
 - name: Change description - empty - Idempotent check
   bigip_ipsec_policy:
     name: ipsec1
@@ -807,18 +655,12 @@
       - result is not changed
       - result is success
 
-
-
-
 - name: Change auth_algorithm to test encrypt algorithm
   bigip_ipsec_policy:
     name: ipsec1
     auth_algorithm: sha1
     encrypt_algorithm: none
   register: result
-
-
-
 
 - name: Change encrypt_algorithm - aes256
   bigip_ipsec_policy:
@@ -844,9 +686,6 @@
       - result is not changed
       - result is success
 
-
-
-
 - name: Change encrypt_algorithm - aes192
   bigip_ipsec_policy:
     name: ipsec1
@@ -870,9 +709,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
 
 - name: Change encrypt_algorithm - aes128
   bigip_ipsec_policy:
@@ -898,9 +734,6 @@
       - result is not changed
       - result is success
 
-
-
-
 - name: Change encrypt_algorithm - 3des
   bigip_ipsec_policy:
     name: ipsec1
@@ -925,19 +758,12 @@
       - result is not changed
       - result is success
 
-
-
-
-
 - name: Change algorithms before testing protocol
   bigip_ipsec_policy:
     name: ipsec1
     auth_algorithm: sha256
     encrypt_algorithm: none
   register: result
-
-
-
 
 - name: Change protocol - ah
   bigip_ipsec_policy:
@@ -963,8 +789,6 @@
       - result is not changed
       - result is success
 
-
-
 - name: Change protocol - esp
   bigip_ipsec_policy:
     name: ipsec1
@@ -988,13 +812,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
-
-
-
-
 
 - name: Change mode - tunnel
   bigip_ipsec_policy:
@@ -1024,11 +841,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
-
 - name: Change mode - interface
   bigip_ipsec_policy:
     name: ipsec1
@@ -1055,10 +867,6 @@
       - result is not changed
       - result is success
 
-
-
-
-
 - name: Change route domain
   bigip_ipsec_policy:
     name: ipsec1
@@ -1083,8 +891,6 @@
       - result is not changed
       - result is success
 
-
-
 - name: Remove policy
   bigip_ipsec_policy:
     name: ipsec1
@@ -1108,7 +914,5 @@
     that:
       - result is not changed
       - result is success
-
-
 
 - import_tasks: teardown.yaml
