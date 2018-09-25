@@ -1,0 +1,6 @@
+---
+
+- name: Remove basic policy
+  bigip_ipsec_policy:
+    name: ipsec1
+    state: absent

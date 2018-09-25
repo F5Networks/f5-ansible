@@ -1,0 +1,5 @@
+---
+
+- name: Create basic policy
+  bigip_ipsec_policy:
+    name: ipsec1
