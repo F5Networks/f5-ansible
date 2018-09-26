@@ -2,6 +2,224 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Set enforced policy
+  bigip_firewall_global_rules:
+    enforced_policy: enforced1
+  register: result
+
+- name: Assert Set enforced policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set enforced policy - Idempotent check
+  bigip_firewall_global_rules:
+    enforced_policy: enforced1
+  register: result
+
+- name: Assert Set enforced policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set enforced policy - none
+  bigip_firewall_global_rules:
+    enforced_policy: none
+  register: result
+
+- name: Assert Set enforced policy - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set enforced policy - none - Idempotent check
+  bigip_firewall_global_rules:
+    enforced_policy: none
+  register: result
+
+- name: Assert Set enforced policy - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set enforced policy - empty - Idempotent check
+  bigip_firewall_global_rules:
+    enforced_policy: ''
+  register: result
+
+- name: Assert Set enforced policy - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set staged policy
+  bigip_firewall_global_rules:
+    staged_policy: staged1
+  register: result
+
+- name: Assert Set staged policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set staged policy - Idempotent check
+  bigip_firewall_global_rules:
+    staged_policy: staged1
+  register: result
+
+- name: Assert Set staged policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set staged policy - none
+  bigip_firewall_global_rules:
+    staged_policy: none
+  register: result
+
+- name: Assert Set staged policy - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set staged policy - none - Idempotent check
+  bigip_firewall_global_rules:
+    staged_policy: none
+  register: result
+
+- name: Assert Set staged policy - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set staged policy - empty - Idempotent check
+  bigip_firewall_global_rules:
+    staged_policy: ''
+  register: result
+
+- name: Assert Set staged policy - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set service policy
+  bigip_firewall_global_rules:
+    service_policy: service1
+  register: result
+
+- name: Assert Set service policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set service policy - Idempotent check
+  bigip_firewall_global_rules:
+    service_policy: service1
+  register: result
+
+- name: Assert Set service policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set service policy - none
+  bigip_firewall_global_rules:
+    service_policy: none
+  register: result
+
+- name: Assert Set service policy - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set service policy - none - Idempotent check
+  bigip_firewall_global_rules:
+    service_policy: none
+  register: result
+
+- name: Assert Set service policy - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set service policy - empty - Idempotent check
+  bigip_firewall_global_rules:
+    service_policy: ''
+  register: result
+
+- name: Assert Set service policy - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set description
+  bigip_firewall_global_rules:
+    description: my description
+  register: result
+
+- name: Assert Set description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set description - Idempotent check
+  bigip_firewall_global_rules:
+    description: my description
+  register: result
+
+- name: Assert Set description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set description - none
+  bigip_firewall_global_rules:
+    description: none
+  register: result
+
+- name: Assert Set description - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set description - none - Idempotent check
+  bigip_firewall_global_rules:
+    description: none
+  register: result
+
+- name: Assert Set description - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Set description - empty - Idempotent check
+  bigip_firewall_global_rules:
+    description: ''
+  register: result
+
+- name: Assert Set description - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - import_tasks: teardown.yaml

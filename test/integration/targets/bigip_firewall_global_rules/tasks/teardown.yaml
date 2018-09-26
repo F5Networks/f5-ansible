@@ -1,0 +1,27 @@
+---
+
+- name: Remove service policies
+  bigip_service_policy:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - service1
+    - service2
+
+- name: Remove policies
+  bigip_firewall_policy:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - enforced1
+    - enforced2
+    - staged1
+    - staged2
+
+- name: Deprovision AFM
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

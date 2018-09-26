@@ -1,0 +1,23 @@
+---
+
+- name: Provision AFM
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Create policies
+  bigip_firewall_policy:
+    name: "{{ item }}"
+  loop:
+    - enforced1
+    - enforced2
+    - staged1
+    - staged2
+
+- name: Create service policies
+  bigip_service_policy:
+    name: "{{ item }}"
+  loop:
+    - service1
+    - service2
