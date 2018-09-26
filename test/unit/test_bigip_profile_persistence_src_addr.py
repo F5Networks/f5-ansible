@@ -78,20 +78,20 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
         assert p.name == 'foo'
         assert p.parent == '/Common/bar'
-        assert p.match_across_services == 'disabled'
-        assert p.match_across_virtuals == 'enabled'
-        assert p.match_across_pools == 'disabled'
+        assert p.match_across_services == 'no'
+        assert p.match_across_virtuals == 'yes'
+        assert p.match_across_pools == 'no'
         assert p.hash_algorithm == 'carp'
         assert p.entry_timeout == 100
-        assert p.override_connection_limit == 'enabled'
+        assert p.override_connection_limit == 'yes'
 
     def test_api_parameters(self):
         args = load_fixture('load_ltm_profile_persistence_src_addr_1.json')
         p = ApiParameters(params=args)
         assert p.name == 'source_addr'
-        assert p.match_across_pools == 'disabled'
-        assert p.match_across_services == 'disabled'
-        assert p.match_across_virtuals == 'disabled'
+        assert p.match_across_pools == 'no'
+        assert p.match_across_services == 'no'
+        assert p.match_across_virtuals == 'no'
 
 
 class TestManager(unittest.TestCase):
