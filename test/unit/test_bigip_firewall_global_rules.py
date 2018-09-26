@@ -86,7 +86,7 @@ class TestUntypedManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create(self, *args):
+    def test_update(self, *args):
         set_module_args(dict(
             enforced_policy='enforced1',
             staged_policy='staged1',
