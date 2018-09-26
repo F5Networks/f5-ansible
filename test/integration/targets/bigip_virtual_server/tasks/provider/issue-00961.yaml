@@ -1,0 +1,62 @@
+---
+
+- name: Issue 00961 - Create partition
+  bigip_partition:
+    name: Test
+    provider: "{{ provider }}"
+
+- name: Issue 00961 - Create HTTP to HTTPS Redirection Virtual Server
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: http_to_https_redirect_virtual
+    partition: Test
+    description: HTTP to HTTPS Redirection Virtual
+    destination: 10.10.10.10
+    port: 80
+    profiles:
+      - /Common/tcp
+      - /Common/http
+    irules:
+      - /Common/_sys_https_redirect
+    state: present
+  register: result
+
+- name: Issue 00961 - Assert Create HTTP to HTTPS Redirection Virtual Server
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00961 - Create HTTP to HTTPS Redirection Virtual Server - Idempotent check
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: http_to_https_redirect_virtual
+    partition: Test
+    description: HTTP to HTTPS Redirection Virtual
+    destination: 10.10.10.10
+    port: 80
+    profiles:
+      - /Common/tcp
+      - /Common/http
+    irules:
+      - /Common/_sys_https_redirect
+    state: present
+  register: result
+
+- name: Issue 00961 - Assert Create HTTP to HTTPS Redirection Virtual Server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00961 - Remove virtual
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: http_to_https_redirect_virtual
+    partition: Test
+    state: absent
+
+- name: Issue 00961 - Remove partition
+  bigip_partition:
+    name: Test
+    provider: "{{ provider }}"
