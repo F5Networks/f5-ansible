@@ -64,35 +64,59 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            name='foo',
+            parent='bar',
+            match_across_services=False,
+            match_across_virtuals=True,
+            match_across_pools=False,
+            override_connection_limit=True
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.parent == '/Common/bar'
+        assert p.match_across_services == 'no'
+        assert p.match_across_virtuals == 'yes'
+        assert p.match_across_pools == 'no'
+        assert p.override_connection_limit == 'yes'
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_ltm_profile_persistence_cookie_1.json')
+        p = ApiParameters(params=args)
+        assert p.name == 'cookie'
+        assert p.match_across_pools == 'no'
+        assert p.match_across_services == 'no'
+        assert p.match_across_virtuals == 'no'
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='foo',
+            match_across_virtuals='yes',
+            parent='bar',
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['match_across_virtuals'] == 'yes'
