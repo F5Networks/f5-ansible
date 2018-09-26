@@ -4,7 +4,8 @@
 
 - name: Create base profile
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create base profile
@@ -15,7 +16,8 @@
 
 - name: Create base profile - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create base profile - Idempotent check
@@ -26,11 +28,12 @@
 
 - name: Create profile with more params
   bigip_profile_persistence_cookie:
-    name: profile2
+    name: cookie2
     match_across_services: yes
     match_across_virtuals: yes
     match_across_pools: yes
     override_connection_limit: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create profile with more params
@@ -41,11 +44,12 @@
 
 - name: Create profile with more params - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile2
+    name: cookie2
     match_across_services: yes
     match_across_virtuals: yes
     match_across_pools: yes
     override_connection_limit: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create profile with more params - Idempotent check
@@ -54,10 +58,430 @@
       - result is not changed
       - result is success
 
+- name: Change cookie_name
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    cookie_name: foo1
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change cookie_name
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change cookie_name - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    cookie_name: foo1
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change cookie_name - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change description
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    description: desc 1
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change description - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    description: desc 1
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change description - none
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    description: none
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change description - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change description - none - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    description: none
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change description - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change description - empty - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    description: ''
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change description - empty - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change cookie_encryption - preferred
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    cookie_encryption: preferred
+    encryption_passphrase: secretkey
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change cookie_encryption - preferred
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change cookie_encryption - preferred - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    cookie_encryption: preferred
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change description - preferred - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change cookie_encryption - required
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    cookie_encryption: required
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change cookie_encryption - required
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change cookie_encryption - required - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    cookie_encryption: required
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change description - required - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change cookie_encryption - disabled
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    cookie_encryption: disabled
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change cookie_encryption - disabled
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change cookie_encryption - disabled - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    cookie_encryption: disabled
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change description - disabled - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change secure - no
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    secure: no
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change secure - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change secure - no - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    secure: no
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change secure - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change secure - yes
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    secure: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change secure - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change secure - yes - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    secure: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change secure - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change http_only - no
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    http_only: no
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change http_only - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change http_only - no - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    http_only: no
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change http_only - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change http_only - yes
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    http_only: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change http_only - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change http_only - yes - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    http_only: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change http_only - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change always_send - yes
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    always_send: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change always_send - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change always_send - yes - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    always_send: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change always_send - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change always_send - no
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    always_send: no
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change always_send - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change always_send - no - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    always_send: no
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change always_send - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change encrypt_cookie_pool_name - yes
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    encrypt_cookie_pool_name: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change encrypt_cookie_pool_name - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change encrypt_cookie_pool_name - yes - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    encrypt_cookie_pool_name: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change encrypt_cookie_pool_name - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change encrypt_cookie_pool_name - no
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    encrypt_cookie_pool_name: no
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change encrypt_cookie_pool_name - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change encrypt_cookie_pool_name - no - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    encrypt_cookie_pool_name: no
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change encrypt_cookie_pool_name - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change encryption_passphrase
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    encryption_passphrase: secretkey
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change encryption_passphrase
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+# Expect it to change because update_password defaults to 'always'
+- name: Change encryption_passphrase - Idempotent check - Expected change
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    encryption_passphrase: secretkey
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change encryption_passphrase - Idempotent check - Expected change
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change encryption_passphrase - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    encryption_passphrase: secretkey
+    update_password: on_create
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Change encryption_passphrase - - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
 - name: Change match_across_services - yes
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_services: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_services - yes
@@ -68,8 +492,9 @@
 
 - name: Change match_across_services - yes - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_services: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_services - yes - Idempotent check
@@ -80,8 +505,9 @@
 
 - name: Change match_across_services - no
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_services: no
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_services - no
@@ -92,8 +518,9 @@
 
 - name: Change match_across_services - no - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_services: no
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_services - no - Idempotent check
@@ -104,8 +531,9 @@
 
 - name: Change match_across_virtuals - yes
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_virtuals: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_virtuals - yes
@@ -116,8 +544,9 @@
 
 - name: Change match_across_virtuals - yes - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_virtuals: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_virtuals - yes - Idempotent check
@@ -128,8 +557,9 @@
 
 - name: Change match_across_virtuals - no
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_virtuals: no
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_virtuals - no
@@ -140,8 +570,9 @@
 
 - name: Change match_across_virtuals - no - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_virtuals: no
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_virtuals - no - Idempotent check
@@ -152,8 +583,9 @@
 
 - name: Change match_across_pools - yes
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_pools: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_pools - yes
@@ -164,8 +596,9 @@
 
 - name: Change match_across_pools - yes - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_pools: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_pools - yes - Idempotent check
@@ -176,8 +609,9 @@
 
 - name: Change match_across_pools - no
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_pools: no
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_pools - no
@@ -188,8 +622,9 @@
 
 - name: Change match_across_pools - no - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     match_across_pools: no
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change match_across_pools - no - Idempotent check
@@ -200,8 +635,9 @@
 
 - name: Change override_connection_limit - yes
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     override_connection_limit: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change override_connection_limit - yes
@@ -212,8 +648,9 @@
 
 - name: Change override_connection_limit - yes - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     override_connection_limit: yes
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change override_connection_limit - yes - Idempotent check
@@ -224,8 +661,9 @@
 
 - name: Change override_connection_limit - no
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     override_connection_limit: no
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change override_connection_limit - no
@@ -236,8 +674,9 @@
 
 - name: Change override_connection_limit - no - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     override_connection_limit: no
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Change override_connection_limit - no - Idempotent check
@@ -248,8 +687,9 @@
 
 - name: Remove profile
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     state: absent
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Remove profile
@@ -260,8 +700,9 @@
 
 - name: Remove profile - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
+    name: cookie1
     state: absent
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Remove profile - Idempotent check
@@ -272,8 +713,9 @@
 
 - name: Create profile from parent
   bigip_profile_persistence_cookie:
-    name: profile1
-    parent: profile2
+    name: cookie1
+    parent: cookie2
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create profile from parent
@@ -284,8 +726,9 @@
 
 - name: Create profile from parent - Idempotent check
   bigip_profile_persistence_cookie:
-    name: profile1
-    parent: profile2
+    name: cookie1
+    parent: cookie2
+    provider: "{{ provider }}"
   register: result
 
 - name: Assert Create profile from parent - Idempotent check
@@ -298,8 +741,9 @@
   bigip_profile_persistence_cookie:
     name: "{{ item }}"
     state: absent
+    provider: "{{ provider }}"
   loop:
-    - profile1
-    - profile2
+    - cookie1
+    - cookie2
 
 - import_tasks: teardown.yaml
