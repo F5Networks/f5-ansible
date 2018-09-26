@@ -64,35 +64,50 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            enforced_policy='enforced1',
+            staged_policy='staged1',
+            service_policy='service1',
+        )
+        p = ModuleParameters(params=args)
+        assert p.enforced_policy == '/Common/enforced1'
+        assert p.staged_policy == '/Common/staged1'
+        assert p.service_policy == '/Common/service1'
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        p = ApiParameters(params=load_fixture('load_security_firewall_global_rules_1.json'))
+        assert p.enforced_policy == '/Common/foo'
+        assert p.service_policy == '/Common/bar'
+        assert p.staged_policy == '/Common/baz'
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
-class TestManager(unittest.TestCase):
+class TestUntypedManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        set_module_args(dict(
+            enforced_policy='enforced1',
+            staged_policy='staged1',
+            service_policy='service1',
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        current = ApiParameters(params=load_fixture('load_security_firewall_global_rules_1.json'))
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
