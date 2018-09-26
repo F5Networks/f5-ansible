@@ -177,6 +177,11 @@ options:
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
     version_added: 2.6
+  max_answers_returned:
+    description:
+      - Specifies the maximum number of available virtual servers that the system lists in a response.
+      - The maximum is 500.
+    version_added: 2.8
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -222,6 +227,11 @@ members:
       description: The name of the virtual server portion of the member.
       returned: changed
       type: string
+max_answers_returned:
+  description: The new Maximum Answers Returned value.
+  returned: changed
+  type: int
+  sample: 25
 '''
 
 EXAMPLES = r'''
@@ -289,6 +299,7 @@ class Parameters(AnsibleF5Parameters):
         'fallbackIp': 'fallback_ip',
         'membersReference': 'members',
         'monitor': 'monitors',
+        'maxAnswersReturned': 'max_answers_returned',
     }
 
     updatables = [
@@ -299,6 +310,7 @@ class Parameters(AnsibleF5Parameters):
         'monitors',
         'preferred_lb_method',
         'state',
+        'max_answers_returned',
     ]
 
     returnables = [
@@ -311,6 +323,7 @@ class Parameters(AnsibleF5Parameters):
         'enabled',
         'disabled',
         'availability_requirements',
+        'max_answers_returned',
     ]
 
     api_attributes = [
@@ -325,6 +338,7 @@ class Parameters(AnsibleF5Parameters):
         'members',
         'verifyMemberAvailability',
         'monitor',
+        'maxAnswersReturned',
     ]
 
     @property
@@ -1191,6 +1205,7 @@ class ArgumentSpec(object):
                 ]
             ),
             monitors=dict(type='list'),
+            max_answers_returned=dict(type='int'),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
