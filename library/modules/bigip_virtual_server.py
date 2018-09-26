@@ -629,6 +629,7 @@ security_log_profiles:
   sample: ['/Common/profile1', '/Common/profile2']
 '''
 
+import os
 import re
 
 from ansible.module_utils.basic import AnsibleModule
@@ -1438,9 +1439,10 @@ class ModuleParameters(Parameters):
                 tmp['fullPath'] = fq_name(self.partition, tmp['name'])
                 self._handle_clientssl_profile_nuances(tmp)
             else:
-                tmp['name'] = profile
+                full_path = fq_name(self.partition, profile)
+                tmp['name'] = os.path.basename(profile)
                 tmp['context'] = 'all'
-                tmp['fullPath'] = fq_name(self.partition, tmp['name'])
+                tmp['fullPath'] = full_path
                 self._handle_clientssl_profile_nuances(tmp)
             result.append(tmp)
         mutually_exclusive = [x['name'] for x in result if x in self.profiles_mutex]
