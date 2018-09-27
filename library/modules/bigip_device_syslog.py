@@ -15,9 +15,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_device_syslog
-short_description: __SHORT_DESCRIPTION__
+short_description: Manage system-level syslog settings on BIG-IP
 description:
-  - __LONG DESCRIPTION__.
+  - Manage system-level syslog settings on BIG-IP.
 version_added: 2.8
 options:
   auth_priv_from:
@@ -191,8 +191,8 @@ options:
       - warning
   messages_from:
     description:
-      - Specifies the lowest level of messages about user authentication
-        to include in the system log.
+      - Specifies the lowest level of system messages to include in the
+        system log.
     choices:
       - alert
       - crit
@@ -258,20 +258,104 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+auth_priv_from:
+  description: The new lowest user authentication logging level
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: alert
+auth_priv_to:
+  description: The new highest user authentication logging level.
+  returned: changed
+  type: string
+  sample: emerg
+console_log:
+  description: Whether logging to console is enabled or not.
+  returned: changed
+  type: bool
+  sample: yes  
+iso_date:
+  description: Whether ISO date format in logs is enabled or not
+  returned: changed
+  type: bool
+  sample: no
+cron_from:
+  description: The new lowest time-based scheduling logging level.
+  returned: changed
+  type: string
+  sample: emerg
+cron_to:
+  description: The new highest time-based scheduling logging level.
+  returned: changed
+  type: string
+  sample: alert
+daemon_from:
+  description: The new lowest daemon performance logging level.
+  returned: changed
+  type: string
+  sample: alert
+daemon_to:
+  description: The new highest daemon performance logging level.
+  returned: changed
+  type: string
+  sample: alert
+include:
+  description: The new extra syslog-ng configuration to include in syslog config.
+  returned: changed
+  type: string
+  sample: "filter f_remote_syslog { not (facility(local6)) };"
+kern_from:
+  description: The new lowest kernel messages logging level.
+  returned: changed
+  type: string
+  sample: alert
+kern_to:
+  description: The new highest kernel messages logging level.
+  returned: changed
+  type: string
+  sample: alert
+local6_from:
+  description: The new lowest local6 facility logging level.
+  returned: changed
+  type: string
+  sample: alert
+local6_to:
+  description: The new highest local6 facility logging level.
+  returned: changed
+  type: string
+  sample: alert
+mail_from:
+  description: The new lowest mail log logging level.
+  returned: changed
+  type: string
+  sample: alert
+mail_to:
+  description: The new highest mail log logging level.
+  returned: changed
+  type: string
+  sample: alert
+messages_from:
+  description: The new lowest system logging level.
+  returned: changed
+  type: string
+  sample: alert
+messages_to:
+  description: The new highest system logging level.
+  returned: changed
+  type: string
+  sample: alert
+user_log_from:
+  description: The new lowest user account logging level.
+  returned: changed
+  type: string
+  sample: alert
+user_log_to:
+  description: The new highest user account logging level.
+  returned: changed
+  type: string
+  sample: alert
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
