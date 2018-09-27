@@ -3,23 +3,13 @@
 - name: Issue 00743 - Add some pools - Provider
   bigip_pool:
     pool: "{{ item }}"
-    provider:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+    provider: "{{ provider }}"
   loop:
     - abc_log
 
 - name: Issue 00743 - Create pool member - Provider
   bigip_pool_member:
-    provider:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+    provider: "{{ provider }}"
     pool: abc_log
     state: present
     host: 10.0.0.100
@@ -35,12 +25,7 @@
 
 - name: Issue 00743 - Create pool member - Idempotent check - Provider
   bigip_pool_member:
-    provider:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+    provider: "{{ provider }}"
     pool: abc_log
     state: present
     host: 10.0.0.100
@@ -85,12 +70,7 @@
 
 - name: Issue 00743 - Create HTTP monitors
   bigip_monitor_http:
-    provider:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+    provider: "{{ provider }}"
     name: "{{ item.name }}"
     state: "{{ item.state | default(omit) }}"
     interval: "{{ item.interval }}"
@@ -102,12 +82,7 @@
 
 - name: Issue 00743 - Create Pool
   bigip_pool:
-    provider:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+    provider: "{{ provider }}"
     name: "{{ item.name }}"
     state: "{{ item.state | default(omit) }}"
     lb_method: "{{ item.lb_method | default(omit)}}"
@@ -118,12 +93,7 @@
 
 - name: Issue 00743 - Create Pool members with_subelements
   bigip_pool_member:
-    provider:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+    provider: "{{ provider }}"
     pool: "{{ item.0.name }}"
     state: "{{ item.1.state | default(omit) }}"
     host: "{{ item.1.host }}"
@@ -137,12 +107,7 @@
   bigip_pool:
     pool: "{{ item }}"
     state: absent
-    provider:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+    provider: "{{ provider }}"
   loop:
     - abc_log
     - f
@@ -150,12 +115,7 @@
 
 - name: Issue 00743 - Remove HTTP monitors
   bigip_monitor_http:
-    provider:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+    provider: "{{ provider }}"
     name: "{{ item.name }}"
     state: absent
   loop: "{{ monitor_http }}"
