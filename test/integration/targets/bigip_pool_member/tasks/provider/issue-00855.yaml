@@ -1,0 +1,264 @@
+---
+
+- name: Issue 00855 - Add a pool - Provider
+  bigip_pool:
+    pool: pool1
+    provider: "{{ provider }}"
+
+- name: Issue 00855 - Add member to pool - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    provider: "{{ provider }}"
+
+- name: Issue 00855 - Set monitors - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    monitors:
+      - http
+      - https
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set monitors - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00855 - Set monitors - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    monitors:
+      - http
+      - https
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set monitors - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00855 - Set availability requirements - at_least - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    monitors:
+      - http
+      - https
+    availability_requirements:
+      type: at_least
+      at_least: 1
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set availability requirements - at_least - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00855 - Set availability requirements - at_least - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    monitors:
+      - http
+      - https
+    availability_requirements:
+      type: at_least
+      at_least: 1
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set availability requirements - at_least - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00855 - Set monitors - none - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    monitors: none
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set monitors - none - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00855 - Set monitors - none - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    monitors: none
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set monitors - none - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00855 - Set monitors - empty - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    monitors: ''
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set monitors - empty - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00855 - Set ip_encapsulation - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    ip_encapsulation: gre
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set ip_encapsulation - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00855 - Set ip_encapsulation - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    ip_encapsulation: gre
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set ip_encapsulation - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00855 - Set ip_encapsulation - inherit - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    ip_encapsulation: inherit
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set ip_encapsulation - inherit - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00855 - Set ip_encapsulation - inherit - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    ip_encapsulation: inherit
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set ip_encapsulation - inherit - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00855 - Set ip_encapsulation - none - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    ip_encapsulation: none
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set ip_encapsulation - none - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00855 - Set ip_encapsulation - none - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    ip_encapsulation: none
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set ip_encapsulation - none - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00855 - Set ip_encapsulation - empty - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    ip_encapsulation: ''
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set ip_encapsulation - empty - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00855 - Remove pool - Provider
+  bigip_pool:
+    pool: pool1
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 00855 - Remove node - Provider
+  bigip_node:
+    name: node1
+    state: absent
+    provider: "{{ provider }}"
