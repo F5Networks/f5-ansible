@@ -40,8 +40,9 @@ options:
             this rule.
           - When C(type) is C(ignore), will remove all existing actions from this
             rule.
+          - When C(type) is C(redirect), will redirect an HTTP request to a different URL.
         required: true
-        choices: ['forward', 'enable', 'ignore']
+        choices: ['forward', 'enable', 'ignore', 'redirect']
       pool:
         description:
           - Pool that you want to forward traffic to.
@@ -54,6 +55,10 @@ options:
         description:
           - ASM policy to enable.
           - This parameter is only valid with the C(enable) type.
+      location:
+        description:
+          - The new URL for which a redirect response will be sent.
+          - A Tcl command substitution can be used for this field.
   policy:
     description:
       - The name of the policy that you want to associate this rule with.
@@ -272,7 +277,9 @@ class Parameters(AnsibleF5Parameters):
 
 class ApiParameters(Parameters):
     def _remove_internal_keywords(self, resource):
-        items = ['kind', 'generation', 'selfLink', 'poolReference']
+        items = [
+            'kind', 'generation', 'selfLink', 'poolReference', 'offset',
+        ]
         for item in items:
             try:
                 del resource[item]
@@ -295,6 +302,10 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'enable'
                 del action['enable']
+            elif 'redirect' in item:
+                action.update(item)
+                action['type'] = 'redirect'
+                del action['redirect']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -323,7 +334,6 @@ class ApiParameters(Parameters):
             elif 'httpHost' in item:
                 action.update(item)
                 action['type'] = 'http_host'
-                del action['httpHost']
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
             result.append(action)
@@ -350,6 +360,8 @@ class ModuleParameters(Parameters):
                 self._handle_enable_action(action, item)
             elif item['type'] == 'ignore':
                 return [dict(type='ignore')]
+            elif item['type'] == 'redirect':
+                self._handle_redirect_action(action, item)
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -384,7 +396,6 @@ class ModuleParameters(Parameters):
                 values = [item['host_begins_with_any']]
             action.update(dict(
                 host=True,
-                httpHost=True,
                 startsWith=True,
                 values=values
             ))
@@ -395,7 +406,6 @@ class ModuleParameters(Parameters):
                 values = [item['host_is_any']]
             action.update(dict(
                 equals=True,
-                httpHost=True,
                 host=True,
                 values=values
             ))
@@ -464,6 +474,23 @@ class ModuleParameters(Parameters):
             asm=True
         ))
 
+    def _handle_redirect_action(self, action, item):
+        """Handle the nuances of the redirect type
+
+        :param action:
+        :param item:
+        :return:
+        """
+        action['type'] = 'redirect'
+        if 'location' not in item:
+            raise F5ModuleError(
+                "A 'location' must be specified when the 'redirect' type is used."
+            )
+        action.update(
+            location=item['location'],
+            httpReply=True,
+        )
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -497,6 +524,11 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'enable'
                 del action['enable']
+            elif 'redirect' in item:
+                action.update(item)
+                action['type'] = 'redirect'
+                del action['redirect']
+                del action['httpReply']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -540,6 +572,10 @@ class UsableChanges(Changes):
             elif action['type'] == 'ignore':
                 result = []
                 break
+            elif action['type'] == 'redirect':
+                action['httpReply'] = True
+                action['redirect'] = True
+                del action['type']
             result.append(action)
         return result
 
@@ -861,16 +897,18 @@ class ArgumentSpec(object):
                         choices=[
                             'forward',
                             'enable',
-                            'ignore'
+                            'ignore',
+                            'redirect',
                         ],
                         required=True
                     ),
                     pool=dict(),
                     asm_policy=dict(),
-                    virtual=dict()
+                    virtual=dict(),
+                    location=dict(),
                 ),
                 mutually_exclusive=[
-                    ['pool', 'asm_policy', 'virtual']
+                    ['pool', 'asm_policy', 'virtual', 'location']
                 ]
             ),
             conditions=dict(
