@@ -1,0 +1,41 @@
+---
+
+- name: Issue 00889 - Create published policy
+  bigip_policy:
+    name: issue-00889
+
+- name: Issue 00889 - Create published rule with actions
+  bigip_policy_rule:
+    policy: issue-00889
+    name: rule1
+    actions:
+      - type: redirect
+        location: tcl:https://[getfield [HTTP::host] \":\" 1][HTTP::uri]
+  register: result
+
+- name: Issue 00889 - Create published rule with actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00889 - Create published rule with actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-00889
+    name: rule1
+    actions:
+      - type: redirect
+        location: tcl:https://[getfield [HTTP::host] \":\" 1][HTTP::uri]
+  register: result
+
+- name: Issue 00889 - Create published rule with actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00889 - Remove policy
+  bigip_policy:
+    name: issue-00889
+    state: absent
+  register: result

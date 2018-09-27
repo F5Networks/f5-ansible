@@ -35,7 +35,7 @@
 - name: Issue 00899 - Create published rule with conditions - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 00899 - Add value to condition
@@ -71,7 +71,7 @@
 - name: Issue 00899 - Add value to condition - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 00899 - Remove value from condition
@@ -105,7 +105,7 @@
 - name: Issue 00899 - Remove value from condition - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 00899 - One value in condition
@@ -135,7 +135,7 @@
 - name: Issue 00899 - One value in condition - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 00899 - Change condition is_any
@@ -169,7 +169,7 @@
 - name: Issue 00899 - Change condition is_any - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 00899 - Add value condition is_any
@@ -205,7 +205,7 @@
 - name: Issue 00899 - Add value condition is_any - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 00899 - Remove value condition is_any
@@ -239,7 +239,7 @@
 - name: Issue 00899 - Remove value condition is_any - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 00899 - One value condition is_any
@@ -269,7 +269,7 @@
 - name: Issue 00899 - One value condition is_any - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 00899 - Remove published policy
