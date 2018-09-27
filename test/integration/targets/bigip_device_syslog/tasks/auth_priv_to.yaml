@@ -1,0 +1,177 @@
+---
+
+- name: Change auth_priv_to - alert
+  bigip_device_syslog:
+    auth_priv_to: alert
+  register: result
+
+- name: Assert Change auth_priv_to - alert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_to - alert - Idempotent check
+  bigip_device_syslog:
+    auth_priv_to: alert
+  register: result
+
+- name: Assert Change auth_priv_to - alert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_to - crit
+  bigip_device_syslog:
+    auth_priv_to: crit
+  register: result
+
+- name: Assert Change auth_priv_to - crit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_to - crit - Idempotent check
+  bigip_device_syslog:
+    auth_priv_to: crit
+  register: result
+
+- name: Assert Change auth_priv_to - crit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_to - debug
+  bigip_device_syslog:
+    auth_priv_to: debug
+  register: result
+
+- name: Assert Change auth_priv_to - debug
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_to - debug - Idempotent check
+  bigip_device_syslog:
+    auth_priv_to: debug
+  register: result
+
+- name: Assert Change auth_priv_to - debug - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_to - emerg
+  bigip_device_syslog:
+    auth_priv_to: emerg
+  register: result
+
+- name: Assert Change auth_priv_to - emerg
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_to - emerg - Idempotent check
+  bigip_device_syslog:
+    auth_priv_to: emerg
+  register: result
+
+- name: Assert Change auth_priv_to - emerg - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_to - err
+  bigip_device_syslog:
+    auth_priv_to: err
+  register: result
+
+- name: Assert Change auth_priv_to - err
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_to - err - Idempotent check
+  bigip_device_syslog:
+    auth_priv_to: err
+  register: result
+
+- name: Assert Change auth_priv_to - err - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_to - info
+  bigip_device_syslog:
+    auth_priv_to: info
+  register: result
+
+- name: Assert Change auth_priv_to - info
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_to - info - Idempotent check
+  bigip_device_syslog:
+    auth_priv_to: info
+  register: result
+
+- name: Assert Change auth_priv_to - info - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_to - notice
+  bigip_device_syslog:
+    auth_priv_to: notice
+  register: result
+
+- name: Assert Change auth_priv_to - notice
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_to - notice - Idempotent check
+  bigip_device_syslog:
+    auth_priv_to: notice
+  register: result
+
+- name: Assert Change auth_priv_to - notice - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_to - warning
+  bigip_device_syslog:
+    auth_priv_to: warning
+  register: result
+
+- name: Assert Change auth_priv_to - warning
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_to - warning - Idempotent check
+  bigip_device_syslog:
+    auth_priv_to: warning
+  register: result
+
+- name: Assert Change auth_priv_to - warning - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success

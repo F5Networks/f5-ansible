@@ -1,0 +1,177 @@
+---
+
+- name: Change messages_from - alert
+  bigip_device_syslog:
+    messages_from: alert
+  register: result
+
+- name: Assert Change messages_from - alert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change messages_from - alert - Idempotent check
+  bigip_device_syslog:
+    messages_from: alert
+  register: result
+
+- name: Assert Change messages_from - alert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change messages_from - crit
+  bigip_device_syslog:
+    messages_from: crit
+  register: result
+
+- name: Assert Change messages_from - crit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change messages_from - crit - Idempotent check
+  bigip_device_syslog:
+    messages_from: crit
+  register: result
+
+- name: Assert Change messages_from - crit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change messages_from - debug
+  bigip_device_syslog:
+    messages_from: debug
+  register: result
+
+- name: Assert Change messages_from - debug
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change messages_from - debug - Idempotent check
+  bigip_device_syslog:
+    messages_from: debug
+  register: result
+
+- name: Assert Change messages_from - debug - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change messages_from - emerg
+  bigip_device_syslog:
+    messages_from: emerg
+  register: result
+
+- name: Assert Change messages_from - emerg
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change messages_from - emerg - Idempotent check
+  bigip_device_syslog:
+    messages_from: emerg
+  register: result
+
+- name: Assert Change messages_from - emerg - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change messages_from - err
+  bigip_device_syslog:
+    messages_from: err
+  register: result
+
+- name: Assert Change messages_from - err
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change messages_from - err - Idempotent check
+  bigip_device_syslog:
+    messages_from: err
+  register: result
+
+- name: Assert Change messages_from - err - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change messages_from - info
+  bigip_device_syslog:
+    messages_from: info
+  register: result
+
+- name: Assert Change messages_from - info
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change messages_from - info - Idempotent check
+  bigip_device_syslog:
+    messages_from: info
+  register: result
+
+- name: Assert Change messages_from - info - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change messages_from - notice
+  bigip_device_syslog:
+    messages_from: notice
+  register: result
+
+- name: Assert Change messages_from - notice
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change messages_from - notice - Idempotent check
+  bigip_device_syslog:
+    messages_from: notice
+  register: result
+
+- name: Assert Change messages_from - notice - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change messages_from - warning
+  bigip_device_syslog:
+    messages_from: warning
+  register: result
+
+- name: Assert Change messages_from - warning
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change messages_from - warning - Idempotent check
+  bigip_device_syslog:
+    messages_from: warning
+  register: result
+
+- name: Assert Change messages_from - warning - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
