@@ -1,0 +1,177 @@
+---
+
+- name: Change user_log_to - alert
+  bigip_device_syslog:
+    user_log_to: alert
+  register: result
+
+- name: Assert Change user_log_to - alert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change user_log_to - alert - Idempotent check
+  bigip_device_syslog:
+    user_log_to: alert
+  register: result
+
+- name: Assert Change user_log_to - alert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change user_log_to - crit
+  bigip_device_syslog:
+    user_log_to: crit
+  register: result
+
+- name: Assert Change user_log_to - crit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change user_log_to - crit - Idempotent check
+  bigip_device_syslog:
+    user_log_to: crit
+  register: result
+
+- name: Assert Change user_log_to - crit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change user_log_to - debug
+  bigip_device_syslog:
+    user_log_to: debug
+  register: result
+
+- name: Assert Change user_log_to - debug
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change user_log_to - debug - Idempotent check
+  bigip_device_syslog:
+    user_log_to: debug
+  register: result
+
+- name: Assert Change user_log_to - debug - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change user_log_to - emerg
+  bigip_device_syslog:
+    user_log_to: emerg
+  register: result
+
+- name: Assert Change user_log_to - emerg
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change user_log_to - emerg - Idempotent check
+  bigip_device_syslog:
+    user_log_to: emerg
+  register: result
+
+- name: Assert Change user_log_to - emerg - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change user_log_to - err
+  bigip_device_syslog:
+    user_log_to: err
+  register: result
+
+- name: Assert Change user_log_to - err
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change user_log_to - err - Idempotent check
+  bigip_device_syslog:
+    user_log_to: err
+  register: result
+
+- name: Assert Change user_log_to - err - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change user_log_to - info
+  bigip_device_syslog:
+    user_log_to: info
+  register: result
+
+- name: Assert Change user_log_to - info
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change user_log_to - info - Idempotent check
+  bigip_device_syslog:
+    user_log_to: info
+  register: result
+
+- name: Assert Change user_log_to - info - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change user_log_to - notice
+  bigip_device_syslog:
+    user_log_to: notice
+  register: result
+
+- name: Assert Change user_log_to - notice
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change user_log_to - notice - Idempotent check
+  bigip_device_syslog:
+    user_log_to: notice
+  register: result
+
+- name: Assert Change user_log_to - notice - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change user_log_to - warning
+  bigip_device_syslog:
+    user_log_to: warning
+  register: result
+
+- name: Assert Change user_log_to - warning
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change user_log_to - warning - Idempotent check
+  bigip_device_syslog:
+    user_log_to: warning
+  register: result
+
+- name: Assert Change user_log_to - warning - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success

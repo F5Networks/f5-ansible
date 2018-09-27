@@ -1,0 +1,177 @@
+---
+
+- name: Change mail_to - alert
+  bigip_device_syslog:
+    mail_to: alert
+  register: result
+
+- name: Assert Change mail_to - alert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mail_to - alert - Idempotent check
+  bigip_device_syslog:
+    mail_to: alert
+  register: result
+
+- name: Assert Change mail_to - alert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mail_to - crit
+  bigip_device_syslog:
+    mail_to: crit
+  register: result
+
+- name: Assert Change mail_to - crit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mail_to - crit - Idempotent check
+  bigip_device_syslog:
+    mail_to: crit
+  register: result
+
+- name: Assert Change mail_to - crit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mail_to - debug
+  bigip_device_syslog:
+    mail_to: debug
+  register: result
+
+- name: Assert Change mail_to - debug
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mail_to - debug - Idempotent check
+  bigip_device_syslog:
+    mail_to: debug
+  register: result
+
+- name: Assert Change mail_to - debug - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mail_to - emerg
+  bigip_device_syslog:
+    mail_to: emerg
+  register: result
+
+- name: Assert Change mail_to - emerg
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mail_to - emerg - Idempotent check
+  bigip_device_syslog:
+    mail_to: emerg
+  register: result
+
+- name: Assert Change mail_to - emerg - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mail_to - err
+  bigip_device_syslog:
+    mail_to: err
+  register: result
+
+- name: Assert Change mail_to - err
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mail_to - err - Idempotent check
+  bigip_device_syslog:
+    mail_to: err
+  register: result
+
+- name: Assert Change mail_to - err - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mail_to - info
+  bigip_device_syslog:
+    mail_to: info
+  register: result
+
+- name: Assert Change mail_to - info
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mail_to - info - Idempotent check
+  bigip_device_syslog:
+    mail_to: info
+  register: result
+
+- name: Assert Change mail_to - info - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mail_to - notice
+  bigip_device_syslog:
+    mail_to: notice
+  register: result
+
+- name: Assert Change mail_to - notice
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mail_to - notice - Idempotent check
+  bigip_device_syslog:
+    mail_to: notice
+  register: result
+
+- name: Assert Change mail_to - notice - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mail_to - warning
+  bigip_device_syslog:
+    mail_to: warning
+  register: result
+
+- name: Assert Change mail_to - warning
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mail_to - warning - Idempotent check
+  bigip_device_syslog:
+    mail_to: warning
+  register: result
+
+- name: Assert Change mail_to - warning - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success

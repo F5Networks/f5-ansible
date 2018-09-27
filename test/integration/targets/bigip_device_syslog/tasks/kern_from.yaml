@@ -1,0 +1,177 @@
+---
+
+- name: Change kern_from - alert
+  bigip_device_syslog:
+    kern_from: alert
+  register: result
+
+- name: Assert Change kern_from - alert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kern_from - alert - Idempotent check
+  bigip_device_syslog:
+    kern_from: alert
+  register: result
+
+- name: Assert Change kern_from - alert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change kern_from - crit
+  bigip_device_syslog:
+    kern_from: crit
+  register: result
+
+- name: Assert Change kern_from - crit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kern_from - crit - Idempotent check
+  bigip_device_syslog:
+    kern_from: crit
+  register: result
+
+- name: Assert Change kern_from - crit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change kern_from - debug
+  bigip_device_syslog:
+    kern_from: debug
+  register: result
+
+- name: Assert Change kern_from - debug
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kern_from - debug - Idempotent check
+  bigip_device_syslog:
+    kern_from: debug
+  register: result
+
+- name: Assert Change kern_from - debug - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change kern_from - emerg
+  bigip_device_syslog:
+    kern_from: emerg
+  register: result
+
+- name: Assert Change kern_from - emerg
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kern_from - emerg - Idempotent check
+  bigip_device_syslog:
+    kern_from: emerg
+  register: result
+
+- name: Assert Change kern_from - emerg - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change kern_from - err
+  bigip_device_syslog:
+    kern_from: err
+  register: result
+
+- name: Assert Change kern_from - err
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kern_from - err - Idempotent check
+  bigip_device_syslog:
+    kern_from: err
+  register: result
+
+- name: Assert Change kern_from - err - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change kern_from - info
+  bigip_device_syslog:
+    kern_from: info
+  register: result
+
+- name: Assert Change kern_from - info
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kern_from - info - Idempotent check
+  bigip_device_syslog:
+    kern_from: info
+  register: result
+
+- name: Assert Change kern_from - info - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change kern_from - notice
+  bigip_device_syslog:
+    kern_from: notice
+  register: result
+
+- name: Assert Change kern_from - notice
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kern_from - notice - Idempotent check
+  bigip_device_syslog:
+    kern_from: notice
+  register: result
+
+- name: Assert Change kern_from - notice - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change kern_from - warning
+  bigip_device_syslog:
+    kern_from: warning
+  register: result
+
+- name: Assert Change kern_from - warning
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change kern_from - warning - Idempotent check
+  bigip_device_syslog:
+    kern_from: warning
+  register: result
+
+- name: Assert Change kern_from - warning - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success

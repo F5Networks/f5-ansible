@@ -2,32 +2,110 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- import_tasks: auth_priv_from.yaml
+- import_tasks: auth_priv_to.yaml
+- import_tasks: cron_from.yaml
+- import_tasks: cron_to.yaml
+- import_tasks: daemon_from.yaml
+- import_tasks: daemon_to.yaml
+- import_tasks: kern_from.yaml
+- import_tasks: kern_to.yaml
+- import_tasks: local6_from.yaml
+- import_tasks: local6_to.yaml
+- import_tasks: mail_from.yaml
+- import_tasks: mail_to.yaml
+- import_tasks: messages_from.yaml
+- import_tasks: messages_to.yaml
+- import_tasks: user_log_from.yaml
+- import_tasks: user_log_to.yaml
+- import_tasks: include.yaml
 
-filter f_remote_syslog {
-    not (facility(local6)
-    and level(info)
-    and match('[ssl_acc\]'))
-    and not (facility(local6)
-    and level(info)
-    and match('[ssl_req\]'))
-    and not match (create_if)
-    and not match (system_check)
-    and not match (diskmonitor)
-    and not match ('01060111');
-};
-destination d_remote_loghost {
-    udp("syslog-ng.pncint.net" port(514));
-};
-log {
-    source (local);
-    filter(f_remote_syslog);
-    destination(d_remote_loghost);
-};
-filter _audit {
-    facility(local0)
-    and match(AUDIT)
-    and not match (create_if);
-};
+- name: Change console_log - no
+  bigip_device_syslog:
+    console_log: no
+  register: result
+
+- name: Assert Change console_log - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change console_log - no - Idempotent check
+  bigip_device_syslog:
+    console_log: no
+  register: result
+
+- name: Assert Change console_log - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change console_log - yes
+  bigip_device_syslog:
+    console_log: yes
+  register: result
+
+- name: Assert Change console_log - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change console_log - yes - Idempotent check
+  bigip_device_syslog:
+    console_log: yes
+  register: result
+
+- name: Assert Change console_log - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change iso_date - yes
+  bigip_device_syslog:
+    iso_date: yes
+  register: result
+
+- name: Assert Change iso_date - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change iso_date - yes - Idempotent check
+  bigip_device_syslog:
+    iso_date: yes
+  register: result
+
+- name: Assert Change iso_date - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change iso_date - no
+  bigip_device_syslog:
+    iso_date: no
+  register: result
+
+- name: Assert Change iso_date - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change iso_date - no - Idempotent check
+  bigip_device_syslog:
+    iso_date: no
+  register: result
+
+- name: Assert Change iso_date - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - import_tasks: teardown.yaml

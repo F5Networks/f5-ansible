@@ -1,0 +1,177 @@
+---
+
+- name: Change auth_priv_from - alert
+  bigip_device_syslog:
+    auth_priv_from: alert
+  register: result
+
+- name: Assert Change auth_priv_from - alert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_from - alert - Idempotent check
+  bigip_device_syslog:
+    auth_priv_from: alert
+  register: result
+
+- name: Assert Change auth_priv_from - alert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_from - crit
+  bigip_device_syslog:
+    auth_priv_from: crit
+  register: result
+
+- name: Assert Change auth_priv_from - crit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_from - crit - Idempotent check
+  bigip_device_syslog:
+    auth_priv_from: crit
+  register: result
+
+- name: Assert Change auth_priv_from - crit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_from - debug
+  bigip_device_syslog:
+    auth_priv_from: debug
+  register: result
+
+- name: Assert Change auth_priv_from - debug
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_from - debug - Idempotent check
+  bigip_device_syslog:
+    auth_priv_from: debug
+  register: result
+
+- name: Assert Change auth_priv_from - debug - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_from - emerg
+  bigip_device_syslog:
+    auth_priv_from: emerg
+  register: result
+
+- name: Assert Change auth_priv_from - emerg
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_from - emerg - Idempotent check
+  bigip_device_syslog:
+    auth_priv_from: emerg
+  register: result
+
+- name: Assert Change auth_priv_from - emerg - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_from - err
+  bigip_device_syslog:
+    auth_priv_from: err
+  register: result
+
+- name: Assert Change auth_priv_from - err
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_from - err - Idempotent check
+  bigip_device_syslog:
+    auth_priv_from: err
+  register: result
+
+- name: Assert Change auth_priv_from - err - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_from - info
+  bigip_device_syslog:
+    auth_priv_from: info
+  register: result
+
+- name: Assert Change auth_priv_from - info
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_from - info - Idempotent check
+  bigip_device_syslog:
+    auth_priv_from: info
+  register: result
+
+- name: Assert Change auth_priv_from - info - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_from - notice
+  bigip_device_syslog:
+    auth_priv_from: notice
+  register: result
+
+- name: Assert Change auth_priv_from - notice
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_from - notice - Idempotent check
+  bigip_device_syslog:
+    auth_priv_from: notice
+  register: result
+
+- name: Assert Change auth_priv_from - notice - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auth_priv_from - warning
+  bigip_device_syslog:
+    auth_priv_from: warning
+  register: result
+
+- name: Assert Change auth_priv_from - warning
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auth_priv_from - warning - Idempotent check
+  bigip_device_syslog:
+    auth_priv_from: warning
+  register: result
+
+- name: Assert Change auth_priv_from - warning - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
