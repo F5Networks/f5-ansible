@@ -188,6 +188,25 @@ author:
   - Wojciech Wypior (@wojtek0806)
 '''
 
+EXAMPLES = r'''
+- name: Create a GTM pool
+  bigip_gtm_pool:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_pool
+  delegate_to: localhost
+
+- name: Disable pool
+  bigip_gtm_pool:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: disabled
+    name: my_pool
+  delegate_to: localhost
+'''
+
 RETURN = r'''
 preferred_lb_method:
   description: New preferred load balancing method for the pool.
@@ -232,25 +251,6 @@ max_answers_returned:
   returned: changed
   type: int
   sample: 25
-'''
-
-EXAMPLES = r'''
-- name: Create a GTM pool
-  bigip_gtm_pool:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
-    name: my_pool
-  delegate_to: localhost
-
-- name: Disable pool
-  bigip_gtm_pool:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
-    state: disabled
-    name: my_pool
-  delegate_to: localhost
 '''
 
 import copy
