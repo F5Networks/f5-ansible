@@ -146,27 +146,85 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Create a GTM pool member
   bigip_gtm_pool_member:
-    name: foo
-    password: secret
-    server: lb.mydomain.com
-    state: present
-    user: admin
+    pool: pool1
+    server_name: server1
+    virtual_server: vs1
+    type: a
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
+bits_enabled:
+  description: Whether the bits limit is enabled.
   returned: changed
   type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+  sample: yes
+bits_limit:
+  description: The new bits_enabled limit.
+  returned: changed
+  type: int
+  sample: 100
+connections_enabled:
+  description: Whether the connections limit is enabled.
+  returned: changed
+  type: bool
+  sample: yes
+connections_limit:
+  description: The new connections_limit limit.
+  returned: changed
+  type: int
+  sample: 100
+connections_limit:
+  description: The new connections_limit limit.
+  returned: changed
+  type: int
+  sample: 100
+disabled:
+  description: Whether the pool member is disabled or not.
+  returned: changed
+  type: bool
+  sample: yes
+enabled:
+  description: Whether the pool member is enabled or not.
+  returned: changed
+  type: bool
+  sample: yes
+member_order:
+  description: The new order in which the member appears in the pool.
+  returned: changed
+  type: int
+  sample: 2
+monitor:
+  description: The new monitor assigned to the pool member.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: /Common/monitor1
+packets_enabled:
+  description: Whether the packets limit is enabled.
+  returned: changed
+  type: bool
+  sample: yes
+packets_limit:
+  description: The new packets_limit limit.
+  returned: changed
+  type: int
+  sample: 100
+ratio:
+  description: The new weight of the member for load balancing.
+  returned: changed
+  type: int
+  sample: 10
+description:
+  description: The new description of the member.
+  returned: changed
+  type: string
+  sample: My description
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -183,6 +241,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.icontrol import module_provisioned
 except ImportError:
     from ansible.module_utils.compat.ipaddress import ip_address
@@ -195,6 +254,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.icontrol import module_provisioned
 
 
@@ -378,7 +438,13 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def disabled(self):
+        return flatten_boolean(self._values['disabled'])
+
+    @property
+    def enabled(self):
+        return flatten_boolean(self._values['enabled'])
 
 
 class Difference(object):
