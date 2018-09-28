@@ -1,12 +1,12 @@
-:source: bigip_dns_zone.py
+:source: bigip_sys_daemon_log_tmm.py
 
 :orphan:
 
-.. _bigip_dns_zone_module:
+.. _bigip_sys_daemon_log_tmm_module:
 
 
-bigip_dns_zone - Manage DNS zones on BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++
+bigip_sys_daemon_log_tmm - Manage BIG-IP tmm daemon log settings
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.8
 
@@ -17,7 +17,7 @@ bigip_dns_zone - Manage DNS zones on BIG-IP
 
 Synopsis
 --------
-- Manage DNS zones on BIG-IP. The zones managed here are primarily used for configuring DNS Express on BIG-IP. This module does not configure zones that are found in BIG-IP ZoneRunner.
+- Manage BIG-IP tmm log settings.
 
 
 
@@ -34,141 +34,147 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>dns_express</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>DNS express related settings.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>server</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the back-end authoritative DNS server from which the BIG-IP system receives AXFR zone transfers for the DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the current status of the DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>notify_action</b>
+                    <b>arp_log_level</b>
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>consume</li>
-                                                                                                                                                                                                <li>bypass</li>
-                                                                                                                                                                                                <li>repeat</li>
+                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>error</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                                                                                                                                <li>warning</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the action the system takes when a NOTIFY message is received for this DNS Express zone.</div>
-                                                    <div>If a TSIG key is configured for the zone, the signature is only validated for <code>consume</code> and <code>repeat</code> actions.</div>
-                                                    <div>When <code>consume</code>, the NOTIFY message is seen only by DNS Express.</div>
-                                                    <div>When <code>bypass</code>, the NOTIFY message does not go to DNS Express, but instead goes to a back-end DNS server (subject to the value of the Unhandled Query Action configured in the DNS profile applied to the listener that handles the DNS request).</div>
-                                                    <div>When <code>repeat</code>, the NOTIFY message goes to both DNS Express and any back-end DNS server.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>allow_notify_from</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the IP addresses from which the system accepts NOTIFY messages for this DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>verify_tsig</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether the system verifies the identity of the authoritative nameserver that sends updated information for this DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>response_policy</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether this DNS Express zone is a DNS response policy zone (RPZ).</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
-                                                                <td colspan="2">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of the DNS zone.</div>
-                                                    <div>The name must begin with a letter and contain only letters, numbers, and the underscore ( _ ) character.</div>
+                                                                        <div>Specifies the lowest level of ARP messages from the tmm daemon to include in the system log.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>nameservers</b>
+                    <b>http_compression_log_level</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>error</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                                                                                                                                <li>warning</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the DNS nameservers to which the system sends NOTIFY messages.</div>
+                                                                        <div>Specifies the lowest level of HTTP compression messages from the tmm daemon to include in the system log.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>partition</b>
+                    <b>http_log_level</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
-                                    </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>error</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                                                                                                                                <li>warning</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Device partition to manage resources on.</div>
+                                                                        <div>Specifies the lowest level of HTTP messages from the tmm daemon to include in the system log.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ip_log_level</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                                                                                                                                <li>warning</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the lowest level of IP address messages from the tmm daemon to include in the system log.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>irule_log_level</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>error</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                                                                                                                                <li>warning</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the lowest level of iRule messages from the tmm daemon to include in the system log.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>layer4_log_level</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the lowest level of Layer 4 messages from the tmm daemon to include in the system log.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>net_log_level</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>critical</li>
+                                                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>error</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                                                                                                                                <li>warning</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the lowest level of network messages from the tmm daemon to include in the system log.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>os_log_level</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>alert</li>
+                                                                                                                                                                                                <li>critical</li>
+                                                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>emergency</li>
+                                                                                                                                                                                                <li>error</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                                                                                                                                <li>warning</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the lowest level of operating system messages from the tmm daemon to include in the system log.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -302,6 +308,21 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>pva_log_level</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the lowest level of PVA messages from the tmm daemon to include in the system log.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -325,27 +346,35 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>ssl_log_level</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>alert</li>
+                                                                                                                                                                                                <li>critical</li>
+                                                                                                                                                                                                <li>debug</li>
+                                                                                                                                                                                                <li>emergency</li>
+                                                                                                                                                                                                <li>error</li>
+                                                                                                                                                                                                <li>informational</li>
+                                                                                                                                                                                                <li>notice</li>
+                                                                                                                                                                                                <li>warning</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the lowest level of SSL messages from the tmm daemon to include in the system log.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>absent</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
-                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>tsig_server_key</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the TSIG key the system uses to authenticate the back-end DNS authoritative server that sends AXFR zone transfers to the BIG-IP system.</div>
+                                                                        <div>The state of the log level on the system. When <code>present</code>, guarantees that an existing log level is set to <code>value</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -394,21 +423,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a DNS zone for DNS express
-      bigip_dns_zone:
-        name: foo.bar.com
-        dns_express:
-          enabled: yes
-          server: dns-lab
-          allow_notify_from:
-            - 192.168.39.10
-          notify_action: consume
-          verify_tsig: no
-          response_policy: no
+    - name: Set SSL log level to debug
+      bigip_sys_daemon_log_tmm:
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
+        ssl_log_level: debug
       delegate_to: localhost
 
 
@@ -421,111 +442,139 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>allow_notify_from</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new DNS Express Allow NOTIFY From value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;1.1.1.1&#x27;, &#x27;2.2.2.2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Whether the zone is enabled or not.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>express_server</b>
+                    <b>arp_log_level</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new DNS Express Server value.</div>
+                                            <div>Lowest level of ARP messages from the tmm daemon to log.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">server1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">error</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>nameservers</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new Zone Transfer Clients Nameservers value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/server1&#x27;, &#x27;/Common/server2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>notify_action</b>
+                    <b>http_compression_log_level</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new DNS Express Notify Action value.</div>
+                                            <div>Lowest level of HTTP compression messages from the tmm daemon to log.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">consume</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">debug</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>response_policy</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new DNS Express Response Policy value.</div>
-                                        <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>tsig_server_key</b>
+                    <b>http_log_level</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new TSIG Server Key value.</div>
+                                            <div>Lowest level of HTTP messages from the tmm daemon to log.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/key1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">notice</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>verify_tsig</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>ip_log_level</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new DNS Express Verify Notify TSIG value.</div>
+                                            <div>Lowest level of IP address messages from the tmm daemon to log.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">warning</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>irule_log_level</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Lowest level of iRule messages from the tmm daemon to log.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">error</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>layer4_log_level</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Lowest level of Layer 4 messages from the tmm daemon to log.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">notice</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>net_log_level</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Lowest level of network messages from the tmm daemon to log.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">critical</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>os_log_level</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Lowest level of operating system messages from the tmm daemon to log.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">critical</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>pva_log_level</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Lowest level of PVA messages from the tmm daemon to log.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">debug</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>ssl_log_level</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Lowest level of SSL messages from the tmm daemon to log.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">critical</div>
                                     </td>
             </tr>
                         </table>
@@ -545,5 +594,5 @@ This module is **preview** which means that it is not guaranteed to have a backw
 Author
 ~~~~~~
 
-- Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

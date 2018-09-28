@@ -35,7 +35,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
@@ -176,6 +176,17 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>The load balancing mode that the system tries if both the <code>preferred_lb_method</code> and <code>alternate_lb_method</code>s are unsuccessful in picking a pool.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>max_answers_returned</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the maximum number of available virtual servers that the system lists in a response.</div>
+                                                    <div>The maximum is 500.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -533,7 +544,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                            
                                                                                                             <tr>
             <th colspan="2">Key</th>
             <th>Returned</th>
@@ -576,6 +587,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">fewest-hops</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>max_answers_returned</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Maximum Answers Returned value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">25</div>
                                     </td>
             </tr>
                                 <tr>

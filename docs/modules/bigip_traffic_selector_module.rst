@@ -1,12 +1,12 @@
-:source: bigip_dns_zone.py
+:source: bigip_traffic_selector.py
 
 :orphan:
 
-.. _bigip_dns_zone_module:
+.. _bigip_traffic_selector_module:
 
 
-bigip_dns_zone - Manage DNS zones on BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++
+bigip_traffic_selector - Manage IPSec Traffic Selectors on BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.8
 
@@ -17,7 +17,7 @@ bigip_dns_zone - Manage DNS zones on BIG-IP
 
 Synopsis
 --------
-- Manage DNS zones on BIG-IP. The zones managed here are primarily used for configuring DNS Express on BIG-IP. This module does not configure zones that are found in BIG-IP ZoneRunner.
+- Manage IPSec Traffic Selectors on BIG-IP.
 
 
 
@@ -34,8 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -43,121 +42,46 @@ Parameters
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>dns_express</b>
+                    <b>destination_address</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>DNS express related settings.</div>
+                                                                        <div>Specifies the host or network IP address to which the application traffic is destined.</div>
+                                                    <div>When creating a new traffic selector, this parameter is required.</div>
                                                                                 </td>
             </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>server</b>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ipsec_policy</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the back-end authoritative DNS server from which the BIG-IP system receives AXFR zone transfers for the DNS Express zone.</div>
+                                                                        <div>Specifies the IPsec policy that tells the BIG-IP system how to handle the packets.</div>
+                                                    <div>When creating a new traffic selector, if this parameter is not specified, the default is <code>default-ipsec-policy</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the current status of the DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>notify_action</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>consume</li>
-                                                                                                                                                                                                <li>bypass</li>
-                                                                                                                                                                                                <li>repeat</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the action the system takes when a NOTIFY message is received for this DNS Express zone.</div>
-                                                    <div>If a TSIG key is configured for the zone, the signature is only validated for <code>consume</code> and <code>repeat</code> actions.</div>
-                                                    <div>When <code>consume</code>, the NOTIFY message is seen only by DNS Express.</div>
-                                                    <div>When <code>bypass</code>, the NOTIFY message does not go to DNS Express, but instead goes to a back-end DNS server (subject to the value of the Unhandled Query Action configured in the DNS profile applied to the listener that handles the DNS request).</div>
-                                                    <div>When <code>repeat</code>, the NOTIFY message goes to both DNS Express and any back-end DNS server.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>allow_notify_from</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the IP addresses from which the system accepts NOTIFY messages for this DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>verify_tsig</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether the system verifies the identity of the authoritative nameserver that sends updated information for this DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>response_policy</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether this DNS Express zone is a DNS response policy zone (RPZ).</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
                                                                 <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the DNS zone.</div>
-                                                    <div>The name must begin with a letter and contain only letters, numbers, and the underscore ( _ ) character.</div>
+                                                                        <div>Specifies the name of the traffic selector.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>nameservers</b>
+                    <b>order</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the DNS nameservers to which the system sends NOTIFY messages.</div>
+                                                                        <div>Specifies the order in which traffic is matched, if traffic can be matched to multiple traffic selectors.</div>
+                                                    <div>Traffic is matched to the traffic selector with the highest priority (lowest order number).</div>
+                                                    <div>When creating a new traffic selector, if this parameter is not specified, the default is <code>last</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -325,6 +249,17 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>source_address</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the host or network IP address from which the application traffic originates.</div>
+                                                    <div>When creating a new traffic selector, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
@@ -336,16 +271,6 @@ Parameters
                                                                 <td>
                                                                         <div>When <code>present</code>, ensures that the resource exists.</div>
                                                     <div>When <code>absent</code>, ensures the resource is removed.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>tsig_server_key</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the TSIG key the system uses to authenticate the back-end DNS authoritative server that sends AXFR zone transfers to the BIG-IP system.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -394,17 +319,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a DNS zone for DNS express
-      bigip_dns_zone:
-        name: foo.bar.com
-        dns_express:
-          enabled: yes
-          server: dns-lab
-          allow_notify_from:
-            - 192.168.39.10
-          notify_action: consume
-          verify_tsig: no
-          response_policy: no
+    - name: Create a traffic selector
+      bigip_traffic_selector:
+        name: selector1
+        destination_address: 1.1.1.1
+        ipsec_policy: policy1
+        order: 1
+        source_address: 2.2.2.2
         provider:
           password: secret
           server: lb.mydomain.com
@@ -421,111 +342,61 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>allow_notify_from</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new DNS Express Allow NOTIFY From value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;1.1.1.1&#x27;, &#x27;2.2.2.2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Whether the zone is enabled or not.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>express_server</b>
+                    <b>destination_address</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new DNS Express Server value.</div>
+                                            <div>The new Destination IP Address.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">server1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.2.3.4/32</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>nameservers</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new Zone Transfer Clients Nameservers value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/server1&#x27;, &#x27;/Common/server2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>notify_action</b>
+                    <b>ipsec_policy</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new DNS Express Notify Action value.</div>
+                                            <div>The new IPSec policy.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">consume</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/policy1</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>response_policy</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>order</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new DNS Express Response Policy value.</div>
+                                            <div>The new sort order.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>tsig_server_key</b>
+                    <b>source_address</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new TSIG Server Key value.</div>
+                                            <div>The new Source IP address.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/key1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>verify_tsig</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new DNS Express Verify Notify TSIG value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5/32</div>
                                     </td>
             </tr>
                         </table>

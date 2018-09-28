@@ -1,12 +1,12 @@
-:source: bigip_dns_zone.py
+:source: bigip_dns_cache.py
 
 :orphan:
 
-.. _bigip_dns_zone_module:
+.. _bigip_dns_cache_module:
 
 
-bigip_dns_zone - Manage DNS zones on BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++
+bigip_dns_cache - Manage DNS cache configurations on BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.8
 
@@ -17,7 +17,7 @@ bigip_dns_zone - Manage DNS zones on BIG-IP
 
 Synopsis
 --------
-- Manage DNS zones on BIG-IP. The zones managed here are primarily used for configuring DNS Express on BIG-IP. This module does not configure zones that are found in BIG-IP ZoneRunner.
+- Manage DNS cache configurations on BIG-IP. This module can manage different cache types. These types support different parameters, so be sure to refer to the documentation for which types support which parameters.
 
 
 
@@ -34,145 +34,99 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                    <tr>
-            <th colspan="2">Parameter</th>
+                                                                                                                                                                                                                                                                                
+                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                    <tr>
+            <th colspan="3">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
-                                                                <td colspan="2">
-                    <b>dns_express</b>
+                                                                <td colspan="3">
+                    <b>answer_default_zones</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the system answers DNS queries for the default zones localhost, reverse 127.0.0.1 and ::1, and AS112.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="3">
+                    <b>forward_zones</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>DNS express related settings.</div>
+                                                                        <div>Forward zones associated with the cache.</div>
                                                                                 </td>
             </tr>
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>server</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the back-end authoritative DNS server from which the BIG-IP system receives AXFR zone transfers for the DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the current status of the DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>notify_action</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>consume</li>
-                                                                                                                                                                                                <li>bypass</li>
-                                                                                                                                                                                                <li>repeat</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the action the system takes when a NOTIFY message is received for this DNS Express zone.</div>
-                                                    <div>If a TSIG key is configured for the zone, the signature is only validated for <code>consume</code> and <code>repeat</code> actions.</div>
-                                                    <div>When <code>consume</code>, the NOTIFY message is seen only by DNS Express.</div>
-                                                    <div>When <code>bypass</code>, the NOTIFY message does not go to DNS Express, but instead goes to a back-end DNS server (subject to the value of the Unhandled Query Action configured in the DNS profile applied to the listener that handles the DNS request).</div>
-                                                    <div>When <code>repeat</code>, the NOTIFY message goes to both DNS Express and any back-end DNS server.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>allow_notify_from</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the IP addresses from which the system accepts NOTIFY messages for this DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>verify_tsig</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether the system verifies the identity of the authoritative nameserver that sends updated information for this DNS Express zone.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>response_policy</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether this DNS Express zone is a DNS response policy zone (RPZ).</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
-                                                                <td colspan="2">
+                                                <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the DNS zone.</div>
-                                                    <div>The name must begin with a letter and contain only letters, numbers, and the underscore ( _ ) character.</div>
+                                                                        <div>Specifies a FQDN for the forward zone.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
                     <b>nameservers</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the DNS nameservers to which the system sends NOTIFY messages.</div>
+                                                                        <div>Specifies the IP address and service port of a recursive nameserver that answers DNS queries for the zone when the response cannot be found in the DNS cache.</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>partition</b>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>address</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>Device partition to manage resources on.</div>
+                                                                        <div>Address of recursive nameserver.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>port</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Port of recursive nameserver.</div>
+                                                    <div>When specifying new nameservers, if this value is not provided, the default is <code>53</code>.</div>
+                                                                                </td>
+            </tr>
+                    
+                                    
+                                                <tr>
+                                                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the cache.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="3">
                     <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -184,7 +138,7 @@ Parameters
                                     </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
+                                                                <td colspan="3">
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
@@ -196,7 +150,7 @@ Parameters
             </tr>
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                                <td colspan="2">
                     <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -209,7 +163,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -221,7 +175,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                                <td colspan="2">
                     <b>server_port</b>
                                                         </td>
                                 <td>
@@ -234,7 +188,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                                <td colspan="2">
                     <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -246,7 +200,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                                <td colspan="2">
                     <b>validate_certs</b>
                                                         </td>
                                 <td>
@@ -262,7 +216,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                                <td colspan="2">
                     <b>timeout</b>
                                                         </td>
                                 <td>
@@ -274,7 +228,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                                <td colspan="2">
                     <b>ssh_keyfile</b>
                                                         </td>
                                 <td>
@@ -286,7 +240,7 @@ Parameters
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                                <td colspan="2">
                     <b>transport</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -301,7 +255,7 @@ Parameters
             </tr>
                     
                                                 <tr>
-                                                                <td colspan="2">
+                                                                <td colspan="3">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -312,7 +266,7 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
+                                                                <td colspan="3">
                     <b>server_port</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
                                 <td>
@@ -324,32 +278,18 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>state</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>absent</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
-                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>tsig_server_key</b>
-                                                        </td>
+                                                                <td colspan="3">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the TSIG key the system uses to authenticate the back-end DNS authoritative server that sends AXFR zone transfers to the BIG-IP system.</div>
+                                                                        <div>Type of cache.</div>
+                                                    <div>This parameter cannot be changed after it is set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
+                                                                <td colspan="3">
                     <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -360,7 +300,7 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
+                                                                <td colspan="3">
                     <b>validate_certs</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
                                 <td>
@@ -394,17 +334,16 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a DNS zone for DNS express
-      bigip_dns_zone:
-        name: foo.bar.com
-        dns_express:
-          enabled: yes
-          server: dns-lab
-          allow_notify_from:
-            - 192.168.39.10
-          notify_action: consume
-          verify_tsig: no
-          response_policy: no
+    - name: Create a ...
+      bigip_dns_cache:
+        name: foo
+        answer_default_zones: yes
+        forward_zones:
+          - name: foo.bar.com
+            nameservers:
+              - address: 1.2.3.4
+                port: 53
+              - address: 5.6.7.8
         provider:
           password: secret
           server: lb.mydomain.com
@@ -421,32 +360,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>allow_notify_from</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new DNS Express Allow NOTIFY From value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;1.1.1.1&#x27;, &#x27;2.2.2.2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>enabled</b>
+                    <b>param1</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Whether the zone is enabled or not.</div>
+                                            <div>The new param1 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -454,78 +380,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>express_server</b>
+                    <b>param2</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new DNS Express Server value.</div>
+                                            <div>The new param2 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">server1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>nameservers</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new Zone Transfer Clients Nameservers value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/server1&#x27;, &#x27;/Common/server2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>notify_action</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new DNS Express Notify Action value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">consume</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>response_policy</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new DNS Express Response Policy value.</div>
-                                        <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>tsig_server_key</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new TSIG Server Key value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/key1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>verify_tsig</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new DNS Express Verify Notify TSIG value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
                                     </td>
             </tr>
                         </table>

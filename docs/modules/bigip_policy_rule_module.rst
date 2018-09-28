@@ -35,7 +35,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                     <tr>
@@ -65,6 +65,7 @@ Parameters
                                                                                                                                                                 <li>forward</li>
                                                                                                                                                                                                 <li>enable</li>
                                                                                                                                                                                                 <li>ignore</li>
+                                                                                                                                                                                                <li>redirect</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -72,6 +73,7 @@ Parameters
                                                     <div>When <code>type</code> is <code>forward</code>, will associate a given <code>pool</code>, or <code>virtual</code> with this rule.</div>
                                                     <div>When <code>type</code> is <code>enable</code>, will associate a given <code>asm_policy</code> with this rule.</div>
                                                     <div>When <code>type</code> is <code>ignore</code>, will remove all existing actions from this rule.</div>
+                                                    <div>When <code>type</code> is <code>redirect</code>, will redirect an HTTP request to a different URL.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -108,6 +110,18 @@ Parameters
                                                                 <td>
                                                                         <div>ASM policy to enable.</div>
                                                     <div>This parameter is only valid with the <code>enable</code> type.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>location</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The new URL for which a redirect response will be sent.</div>
+                                                    <div>A Tcl command substitution can be used for this field.</div>
                                                                                 </td>
             </tr>
                     

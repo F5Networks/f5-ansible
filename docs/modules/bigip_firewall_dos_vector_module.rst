@@ -8,7 +8,7 @@
 bigip_firewall_dos_vector - Manage attack vector configuration in an AFM DoS profile
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.7
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -46,10 +46,121 @@ Parameters
                     <b>name</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>ext-hdr-too-large</li>
+                                                                                                                                                                                                <li>hop-cnt-low</li>
+                                                                                                                                                                                                <li>host-unreachable</li>
+                                                                                                                                                                                                <li>icmp-frag</li>
+                                                                                                                                                                                                <li>icmpv4-flood</li>
+                                                                                                                                                                                                <li>icmpv6-flood</li>
+                                                                                                                                                                                                <li>ip-frag-flood</li>
+                                                                                                                                                                                                <li>ip-low-ttl</li>
+                                                                                                                                                                                                <li>ip-opt-frames</li>
+                                                                                                                                                                                                <li>ipv6-frag-flood</li>
+                                                                                                                                                                                                <li>opt-present-with-illegal-len</li>
+                                                                                                                                                                                                <li>sweep</li>
+                                                                                                                                                                                                <li>tcp-bad-urg</li>
+                                                                                                                                                                                                <li>tcp-half-open</li>
+                                                                                                                                                                                                <li>tcp-opt-overruns-tcp-hdr</li>
+                                                                                                                                                                                                <li>tcp-psh-flood</li>
+                                                                                                                                                                                                <li>tcp-rst-flood</li>
+                                                                                                                                                                                                <li>tcp-syn-flood</li>
+                                                                                                                                                                                                <li>tcp-syn-oversize</li>
+                                                                                                                                                                                                <li>tcp-synack-flood</li>
+                                                                                                                                                                                                <li>tcp-window-size</li>
+                                                                                                                                                                                                <li>tidcmp</li>
+                                                                                                                                                                                                <li>too-many-ext-hdrs</li>
+                                                                                                                                                                                                <li>udp-flood</li>
+                                                                                                                                                                                                <li>unk-tcp-opt-type</li>
+                                                                                                                                                                                                <li>a</li>
+                                                                                                                                                                                                <li>aaaa</li>
+                                                                                                                                                                                                <li>any</li>
+                                                                                                                                                                                                <li>axfr</li>
+                                                                                                                                                                                                <li>cname</li>
+                                                                                                                                                                                                <li>dns-malformed</li>
+                                                                                                                                                                                                <li>ixfr</li>
+                                                                                                                                                                                                <li>mx</li>
+                                                                                                                                                                                                <li>ns</li>
+                                                                                                                                                                                                <li>other</li>
+                                                                                                                                                                                                <li>ptr</li>
+                                                                                                                                                                                                <li>qdcount</li>
+                                                                                                                                                                                                <li>soa</li>
+                                                                                                                                                                                                <li>srv</li>
+                                                                                                                                                                                                <li>txt</li>
+                                                                                                                                                                                                <li>ack</li>
+                                                                                                                                                                                                <li>bye</li>
+                                                                                                                                                                                                <li>cancel</li>
+                                                                                                                                                                                                <li>invite</li>
+                                                                                                                                                                                                <li>message</li>
+                                                                                                                                                                                                <li>notify</li>
+                                                                                                                                                                                                <li>options</li>
+                                                                                                                                                                                                <li>other</li>
+                                                                                                                                                                                                <li>prack</li>
+                                                                                                                                                                                                <li>publish</li>
+                                                                                                                                                                                                <li>register</li>
+                                                                                                                                                                                                <li>sip-malformed</li>
+                                                                                                                                                                                                <li>subscribe</li>
+                                                                                                                                                                                                <li>uri-limit</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
                                                                         <div>Specifies the name of the vector to modify.</div>
                                                     <div>Vectors that ship with the device are &quot;hard-coded&quot; so-to-speak in that the list of vectors is known to the system and users cannot add new vectors. Users only manipulate the existing vectors; all of which are disabled by default.</div>
+                                                    <div>When <code>ext-hdr-too-large</code>, configures the &quot;IPv6 extension header too large&quot; Network Security vector.</div>
+                                                    <div>When <code>hop-cnt-low</code>, configures the &quot;IPv6 hop count &lt;= &lt;tunable&gt;&quot; Network Security vector.</div>
+                                                    <div>When <code>host-unreachable</code>, configures the &quot;Host Unreachable&quot; Network Security vector.</div>
+                                                    <div>When <code>icmp-frag</code>, configures the &quot;ICMP Fragment&quot; Network Security vector.</div>
+                                                    <div>When <code>icmpv4-flood</code>, configures the &quot;ICMPv4 flood&quot; Network Security vector.</div>
+                                                    <div>When <code>icmpv6-flood</code>, configures the &quot;ICMPv6 flood&quot; Network Security vector.</div>
+                                                    <div>When <code>ip-frag-flood</code>, configures the &quot;IP Fragment Flood&quot; Network Security vector.</div>
+                                                    <div>When <code>ip-low-ttl</code>, configures the &quot;TTL &lt;= &lt;tunable&gt;&quot; Network Security vector.</div>
+                                                    <div>When <code>ip-opt-frames</code>, configures the &quot;IP Option Frames&quot; Network Security vector.</div>
+                                                    <div>When <code>ipv6-ext-hdr-frames</code>, configures the &quot;IPv6 Extended Header Frames&quot; Network Security vector.</div>
+                                                    <div>When <code>ipv6-frag-flood</code>, configures the &quot;IPv6 Fragment Flood&quot; Network Security vector.</div>
+                                                    <div>When <code>opt-present-with-illegal-len</code>, configures the &quot;Option Present With Illegal Length&quot; Network Security vector.</div>
+                                                    <div>When <code>sweep</code>, configures the &quot;Sweep&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-bad-urg</code>, configures the &quot;TCP Flags-Bad URG&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-half-open</code>, configures the &quot;TCP Half Open&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-opt-overruns-tcp-hdr</code>, configures the &quot;TCP Option Overruns TCP Header&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-psh-flood</code>, configures the &quot;TCP PUSH Flood&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-rst-flood</code>, configures the &quot;TCP RST Flood&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-syn-flood</code>, configures the &quot;TCP SYN Flood&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-syn-oversize</code>, configures the &quot;TCP SYN Oversize&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-synack-flood</code>, configures the &quot;TCP SYN ACK Flood&quot; Network Security vector.</div>
+                                                    <div>When <code>tcp-window-size</code>, configures the &quot;TCP Window Size&quot; Network Security vector.</div>
+                                                    <div>When <code>tidcmp</code>, configures the &quot;TIDCMP&quot; Network Security vector.</div>
+                                                    <div>When <code>too-many-ext-hdrs</code>, configures the &quot;Too Many Extension Headers&quot; Network Security vector.</div>
+                                                    <div>When <code>udp-flood</code>, configures the &quot;UDP Flood&quot; Network Security vector.</div>
+                                                    <div>When <code>unk-tcp-opt-type</code>, configures the &quot;Unknown TCP Option Type&quot; Network Security vector.</div>
+                                                    <div>When <code>a</code>, configures the &quot;DNS A Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>aaaa</code>, configures the &quot;DNS AAAA Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>any</code>, configures the &quot;DNS ANY Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>axfr</code>, configures the &quot;DNS AXFR Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>cname</code>, configures the &quot;DNS CNAME Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>dns-malformed</code>, configures the &quot;dns-malformed&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>ixfr</code>, configures the &quot;DNS IXFR Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>mx</code>, configures the &quot;DNS MX Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>ns</code>, configures the &quot;DNS NS Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>other</code>, configures the &quot;DNS OTHER Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>ptr</code>, configures the &quot;DNS PTR Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>qdcount</code>, configures the &quot;DNS QDCOUNT Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>soa</code>, configures the &quot;DNS SOA Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>srv</code>, configures the &quot;DNS SRV Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>txt</code>, configures the &quot;DNS TXT Query&quot; DNS Protocol Security vector.</div>
+                                                    <div>When <code>ack</code>, configures the &quot;SIP ACK Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>bye</code>, configures the &quot;SIP BYE Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>cancel</code>, configures the &quot;SIP CANCEL Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>invite</code>, configures the &quot;SIP INVITE Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>message</code>, configures the &quot;SIP MESSAGE Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>notify</code>, configures the &quot;SIP NOTIFY Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>options</code>, configures the &quot;SIP OPTIONS Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>other</code>, configures the &quot;SIP OTHER Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>prack</code>, configures the &quot;SIP PRACK Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>publish</code>, configures the &quot;SIP PUBLISH Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>register</code>, configures the &quot;SIP REGISTER Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>sip-malformed</code>, configures the &quot;sip-malformed&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>subscribe</code>, configures the &quot;SIP SUBSCRIBE Method&quot; SIP Protocol Security vector.</div>
+                                                    <div>When <code>uri-limit</code>, configures the &quot;uri-limit&quot; SIP Protocol Security vector.</div>
                                                                                 </td>
             </tr>
                                 <tr>

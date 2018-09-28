@@ -1,14 +1,14 @@
-:source: bigip_pool_member.py
+:source: bigip_profile_persistence_cookie.py
 
 :orphan:
 
-.. _bigip_pool_member_module:
+.. _bigip_profile_persistence_cookie_module:
 
 
-bigip_pool_member - Manages F5 BIG-IP LTM pool members
-++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_persistence_cookie - Manage cookie persistence profiles on BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 1.4
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_pool_member - Manages F5 BIG-IP LTM pool members
 
 Synopsis
 --------
-- Manages F5 BIG-IP LTM pool members via iControl SOAP API.
+- Manage cookie persistence profiles on BIG-IP.
 
 
 
@@ -34,102 +34,16 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>address</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>IP address of the pool member. This can be either IPv4 or IPv6. When creating a new pool member, one of either <code>address</code> or <code>fqdn</code> must be provided. This parameter cannot be updated after it is set.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: ip, host</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>availability_requirements</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies, if you activate more than one health monitor, the number of health monitors that must receive successful responses in order for the link to be considered available.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>type</b>
+                    <b>always_send</b>
                                                         </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>all</li>
-                                                                                                                                                                                                <li>at_least</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Monitor rule type when <code>monitors</code> is specified.</div>
-                                                    <div>When creating a new pool, if this value is not specified, the default of &#x27;all&#x27; will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>at_least</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the minimum number of active health monitors that must be successful before the link is considered up.</div>
-                                                    <div>This parameter is only relevant when a <code>type</code> of <code>at_least</code> is used.</div>
-                                                    <div>This parameter will be ignored if a type of <code>all</code> is used.</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
-                                                                <td colspan="2">
-                    <b>connection_limit</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Pool member connection limit. Setting this to 0 disables the limit.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>description</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Pool member description.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>fqdn</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>FQDN name of the pool member. This can be any name that is a valid RFC 1123 DNS name. Therefore, the only characters that can be used are &quot;A&quot; to &quot;Z&quot;, &quot;a&quot; to &quot;z&quot;, &quot;0&quot; to &quot;9&quot;, the hyphen (&quot;-&quot;) and the period (&quot;.&quot;).</div>
-                                                    <div>FQDN names must include at lease one period; delineating the host from the domain. ex. <code>host.domain</code>.</div>
-                                                    <div>FQDN names must end with a letter or a number.</div>
-                                                    <div>When creating a new pool member, one of either <code>address</code> or <code>fqdn</code> must be provided. This parameter cannot be updated after it is set.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: hostname</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>fqdn_auto_populate</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
                                 <td>
                                                                                                                                                                         <ul><b>Choices:</b>
                                                                                                                                                                 <li>no</li>
@@ -137,46 +51,174 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies whether the system automatically creates ephemeral nodes using the IP addresses returned by the resolution of a DNS query for a node defined by an FQDN.</div>
-                                                    <div>When <code>yes</code>, the system generates an ephemeral node for each IP address returned in response to a DNS query for the FQDN of the node. Additionally, when a DNS response indicates the IP address of an ephemeral node no longer exists, the system deletes the ephemeral node.</div>
-                                                    <div>When <code>no</code>, the system resolves a DNS query for the FQDN of the node with the single IP address associated with the FQDN.</div>
-                                                    <div>When creating a new pool member, the default for this parameter is <code>yes</code>.</div>
-                                                    <div>This parameter is ignored when <code>reuse_nodes</code> is <code>yes</code>.</div>
+                                                                        <div>Send the cookie persistence entry on every reply, even if the entry has previously been supplied to the client.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>ip_encapsulation</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                    <b>cookie_encryption</b>
+                                                        </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>disabled</li>
+                                                                                                                                                                                                <li>preferred</li>
+                                                                                                                                                                                                <li>required</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the IP encapsulation using either IPIP (IP encapsulation within IP, RFC 2003) or GRE (Generic Router Encapsulation, RFC 2784) on outbound packets (from BIG-IP system to server-pool member).</div>
-                                                    <div>When <code>none</code>, disables IP encapsulation.</div>
-                                                    <div>When <code>inherit</code>, inherits IP encapsulation setting from the member&#x27;s pool.</div>
-                                                    <div>When any other value, Options are None, Inherit from Pool, and Member Specific.</div>
+                                                                        <div>Specifies the way in which the cookie encryption format is used.</div>
+                                                    <div>When <code>disabled</code>, generates the cookie format unencrypted.</div>
+                                                    <div>When <code>preferred</code>, generate an encrypted cookie, but accepts both encrypted and unencrypted formats.</div>
+                                                    <div>When <code>required</code>, cookie format must be encrypted.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>monitors</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                    <b>cookie_method</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>hash</li>
+                                                                                                                                                                                                <li>insert</li>
+                                                                                                                                                                                                <li>passive</li>
+                                                                                                                                                                                                <li>rewrite</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the type of cookie processing that the system uses.</div>
+                                                    <div>When <code>hash</code>, specifies that the server provides the cookie, which the system then maps consistently to a specific node. This persistence type requires a <code>cookie_name</code> value.</div>
+                                                    <div>When <code>insert</code>, specifies that the system inserts server information, in the form of a cookie, into the header of the server response.</div>
+                                                    <div>When <code>passive</code>, specifies that the server provides the cookie, formatted with the correct server information and timeout. This persistence type requires a <code>cookie_name</code> value.</div>
+                                                    <div>When <code>rewrite</code>, specifies that the system intercepts the BIGipCookie header, sent from the server, and overwrites the name and value of that cookie.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>cookie_name</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the health monitors that the system currently uses to monitor this resource.</div>
+                                                                        <div>Specifies a unique name for the cookie.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>encrypt_cookie_pool_name</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the pool-name in the inserted BIG-IP default cookie should be encrypted.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>encryption_passphrase</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a passphrase to be used for cookie encryption.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>http_only</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the httponly attribute should be enabled or disabled for the inserted cookies.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>match_across_pools</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code>, specifies that the system can use any pool that contains this persistence record.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>match_across_services</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code>, specifies that all persistent connections from a client IP address that go to the same virtual IP address also go to the same node.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>match_across_virtuals</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code>, specifies that all persistent connections from the same client IP address go to the same node.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
                     <b>name</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Name of the node to create, or re-use, when creating a new pool member.</div>
-                                                    <div>This parameter is optional and, if not specified, a node name will be created automatically from either the specified <code>address</code> or <code>fqdn</code>.</div>
-                                                    <div>The <code>enabled</code> state is an alias of <code>present</code>.</div>
+                                                                        <div>Specifies the name of the profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>override_connection_limit</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code>, specifies that the system allows you to specify that pool member connection limits will be overridden for persisted clients.</div>
+                                                    <div>Per-virtual connection limits remain hard limits and are not overridden.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>parent</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the profile from which this profile inherits settings.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>cookie</code> profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -187,7 +229,7 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
-                                                                        <div>Partition</div>
+                                                                        <div>Device partition to manage resources on.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -201,56 +243,6 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>pool</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Pool name. This pool must exist.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>port</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Pool member port.</div>
-                                                    <div>This value cannot be changed after it has been set.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>preserve_node</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.1)</div>                </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>When state is <code>absent</code> attempts to remove the node that the pool member references.</div>
-                                                    <div>The node will not be removed if it is still referenced by other pool members. If this happens, the module will not raise an error.</div>
-                                                    <div>Setting this to <code>yes</code> disables this behavior.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>priority_group</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a number representing the priority group for the pool member.</div>
-                                                    <div>When adding a new member, the default is 0, meaning that the member has no priority.</div>
-                                                    <div>To specify a priority, you must activate priority group usage when you create a new pool or when adding or removing pool members. When activated, the system load balances traffic according to the priority group number assigned to the pool member.</div>
-                                                    <div>The higher the number, the higher the priority, so a member with a priority of 3 has higher priority than a member with a priority of 1.</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -371,36 +363,16 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>rate_limit</b>
+                    <b>secure</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Pool member rate limit (connections-per-second). Setting this to 0 disables the limit.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>ratio</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Pool member ratio weight. Valid values range from 1 through 100. New pool members -- unless overridden with this value -- default to 1.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>reuse_nodes</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                        <ul><b>Choices:</b>
                                                                                                                                                                 <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Reuses node definitions if requested.</div>
+                                                                        <div>Specifies whether the secure attribute should be enabled or disabled for the inserted cookies.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -429,18 +401,30 @@ Parameters
                                 <tr>
                                                                 <td colspan="2">
                     <b>state</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                 <li>absent</li>
-                                                                                                                                                                                                <li>enabled</li>
-                                                                                                                                                                                                <li>disabled</li>
-                                                                                                                                                                                                <li>forced_offline</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Pool member state.</div>
+                                                                        <div>When <code>present</code>, ensures that the profile exists.</div>
+                                                    <div>When <code>absent</code>, ensures the profile is removed.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>update_password</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>on_create</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div><code>always</code> will allow to update passphrases if the user chooses to do so. <code>on_create</code> will only set the passphrase for newly created profiles.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -489,85 +473,14 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Add pool member
-      bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
-        pool: my-pool
-        partition: Common
-        host: "{{ ansible_default_ipv4['address'] }}"
-        port: 80
-        description: web server
-        connection_limit: 100
-        rate_limit: 50
-        ratio: 2
+    - name: Create a ...
+      bigip_profile_persistence_cookie:
+        name: foo
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
-
-    - name: Modify pool member ratio and description
-      bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
-        pool: my-pool
-        partition: Common
-        host: "{{ ansible_default_ipv4['address'] }}"
-        port: 80
-        ratio: 1
-        description: nginx server
-      delegate_to: localhost
-
-    - name: Remove pool member from pool
-      bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: absent
-        pool: my-pool
-        partition: Common
-        host: "{{ ansible_default_ipv4['address'] }}"
-        port: 80
-      delegate_to: localhost
-
-    - name: Force pool member offline
-      bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: forced_offline
-        pool: my-pool
-        partition: Common
-        host: "{{ ansible_default_ipv4['address'] }}"
-        port: 80
-      delegate_to: localhost
-
-    - name: Create members with priority groups
-      bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        pool: my-pool
-        partition: Common
-        host: "{{ item.address }}"
-        name: "{{ item.name }}"
-        priority_group: "{{ item.priority_group }}"
-        port: 80
-      delegate_to: localhost
-      loop:
-        - host: 1.1.1.1
-          name: web1
-          priority_group: 4
-        - host: 2.2.2.2
-          name: web2
-          priority_group: 3
-        - host: 3.3.3.3
-          name: web3
-          priority_group: 2
-        - host: 4.4.4.4
-          name: web4
-          priority_group: 1
 
 
 
@@ -579,35 +492,59 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>always_send</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The address of the pool member.</div>
+                                            <div>The new Always Send value.</div>
                                         <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.2.3.4</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>connection_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>cookie_encryption</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new connection limit of the pool member</div>
+                                            <div>The new Cookie Encryption type.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1000</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">preferred</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>cookie_method</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Cookie Method.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">insert</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>cookie_name</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Cookie Name value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">cookie1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -617,33 +554,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new description of pool member.</div>
+                                            <div>The new description.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My pool member</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My description</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>fqdn</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The FQDN of the pool member.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo.bar.com</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>fqdn_auto_populate</b>
+                    <b>encrypt_cookie_pool_name</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Whether FQDN auto population was set on the member or not.</div>
+                                            <div>The new Encrypt Cookie Pool Name value.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -651,54 +575,87 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>monitors</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>http_only</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new list of monitors for the resource.</div>
+                                            <div>The new HTTP Only value.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/monitor1&#x27;, &#x27;/Common/monitor2&#x27;]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>priority_group</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>match_across_pools</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new priority group.</div>
+                                            <div>The new Match Across Pools value.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>rate_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>match_across_services</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new rate limit, in connections per second, of the pool member.</div>
+                                            <div>The new Match Across Services value.</div>
                                         <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>ratio</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>match_across_virtuals</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new pool member ratio weight.</div>
+                                            <div>The new Match Across Virtuals value.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">50</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>override_connection_limit</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Override Connection Limit value.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The parent profile.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/cookie</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>secure</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Secure Cookie value.</div>
+                                        <br/>
                                     </td>
             </tr>
                         </table>

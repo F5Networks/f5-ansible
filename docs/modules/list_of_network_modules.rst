@@ -31,7 +31,9 @@ F5
   * :ref:`bigip_device_license_module`
   * :ref:`bigip_device_ntp_module`
   * :ref:`bigip_device_sshd_module`
+  * :ref:`bigip_device_syslog_module`
   * :ref:`bigip_device_trust_module`
+  * :ref:`bigip_dns_cache_module`
   * :ref:`bigip_dns_nameserver_module`
   * :ref:`bigip_dns_resolver_module`
   * :ref:`bigip_dns_zone_module`
@@ -39,6 +41,7 @@ F5
   * :ref:`bigip_firewall_address_list_module`
   * :ref:`bigip_firewall_dos_profile_module`
   * :ref:`bigip_firewall_dos_vector_module`
+  * :ref:`bigip_firewall_global_rules_module`
   * :ref:`bigip_firewall_policy_module`
   * :ref:`bigip_firewall_port_list_module`
   * :ref:`bigip_firewall_rule_module`
@@ -62,7 +65,9 @@ F5
   * :ref:`bigip_iapp_service_module`
   * :ref:`bigip_iapp_template_module`
   * :ref:`bigip_iapplx_package_module`
+  * :ref:`bigip_ike_peer_module`
   * :ref:`bigip_imish_config_module`
+  * :ref:`bigip_ipsec_policy_module`
   * :ref:`bigip_irule_module`
   * :ref:`bigip_log_destination_module`
   * :ref:`bigip_log_publisher_module`
@@ -86,8 +91,10 @@ F5
   * :ref:`bigip_profile_dns_module`
   * :ref:`bigip_profile_fastl4_module`
   * :ref:`bigip_profile_http_module`
+  * :ref:`bigip_profile_http2_module`
   * :ref:`bigip_profile_http_compression_module`
   * :ref:`bigip_profile_oneconnect_module`
+  * :ref:`bigip_profile_persistence_cookie_module`
   * :ref:`bigip_profile_persistence_src_addr_module`
   * :ref:`bigip_profile_server_ssl_module`
   * :ref:`bigip_profile_tcp_module`
@@ -113,10 +120,12 @@ F5
   * :ref:`bigip_ssl_key_module`
   * :ref:`bigip_ssl_ocsp_module`
   * :ref:`bigip_static_route_module`
+  * :ref:`bigip_sys_daemon_log_tmm_module`
   * :ref:`bigip_sys_db_module`
   * :ref:`bigip_sys_global_module`
   * :ref:`bigip_timer_policy_module`
   * :ref:`bigip_traffic_group_module`
+  * :ref:`bigip_traffic_selector_module`
   * :ref:`bigip_trunk_module`
   * :ref:`bigip_tunnel_module`
   * :ref:`bigip_ucs_module`
