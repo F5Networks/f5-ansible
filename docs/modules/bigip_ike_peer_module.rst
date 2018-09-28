@@ -1,14 +1,14 @@
-:source: bigip_gtm_pool_member.py
+:source: bigip_ike_peer.py
 
 :orphan:
 
-.. _bigip_gtm_pool_member_module:
+.. _bigip_ike_peer_module:
 
 
-bigip_gtm_pool_member - Manage GTM pool member settings
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_ike_peer - Manage IPSec IKE Peer configuration on BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_gtm_pool_member - Manage GTM pool member settings
 
 Synopsis
 --------
-- Manages a variety of settings on GTM pool members. The settings that can be adjusted with this module are much more broad that what can be done in the ``bigip_gtm_pool`` module. The pool module is intended to allow you to adjust the member order in the pool, not the various settings of the members. The ``bigip_gtm_pool_member`` module should be used to adjust all of the other settings.
+- Manage IPSec IKE Peer configuration on BIG-IP.
 
 
 
@@ -34,145 +34,20 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>description</b>
-                                                        </td>
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The description of the pool member.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>limits</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies resource thresholds or limit requirements at the pool member level.</div>
-                                                    <div>When you enable one or more limit settings, the system then uses that data to take members in and out of service.</div>
-                                                    <div>You can define limits for any or all of the limit settings. However, when a member does not meet the resource threshold limit requirement, the system marks the member as unavailable and directs load-balancing traffic to another resource.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>bits_enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Whether the bits limit it enabled or not.</div>
-                                                    <div>This parameter allows you to switch on or off the effect of the limit.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>packets_enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Whether the packets limit it enabled or not.</div>
-                                                    <div>This parameter allows you to switch on or off the effect of the limit.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>connections_enabled</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Whether the current connections limit it enabled or not.</div>
-                                                    <div>This parameter allows you to switch on or off the effect of the limit.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>bits_limit</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the maximum allowable data throughput rate, in bits per second, for the member.</div>
-                                                    <div>If the network traffic volume exceeds this limit, the system marks the member as unavailable.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>packets_limit</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the maximum allowable data transfer rate, in packets per second, for the member.</div>
-                                                    <div>If the network traffic volume exceeds this limit, the system marks the member as unavailable.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>connections_limit</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the maximum number of concurrent connections, combined, for all of the member.</div>
-                                                    <div>If the connections exceed this limit, the system marks the server as unavailable.</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
-                                                                <td colspan="2">
-                    <b>member_order</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the order in which the member will appear in the pool.</div>
-                                                    <div>The system uses this number with load balancing methods that involve prioritizing pool members, such as the Ratio load balancing method.</div>
-                                                    <div>When creating a new member using this module, if the <code>member_order</code> parameter is not specified, it will default to <code>0</code> (first member in the pool).</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>monitor</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the monitor assigned to this pool member.</div>
-                                                    <div>Pool members only support a single monitor.</div>
-                                                    <div>If the <code>port</code> of the <code>gtm_virtual_server</code> is <code>*</code>, the accepted values of this parameter will be affected.</div>
-                                                    <div>When creating a new pool member, if this parameter is not specified, the default of <code>default</code> will be used.</div>
-                                                    <div>To remove the monitor from the pool member, use the value <code>none</code>.</div>
-                                                    <div>For pool members created on different partitions, you can also specify the full path to the Common monitor. For example, <code>/Common/tcp</code>.</div>
+                                                                        <div>Specifies the name of the IKE peer.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -200,12 +75,160 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>pool</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>phase1_auth_method</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>pre-shared-key</li>
+                                                                                                                                                                                                <li>rsa-signature</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the authentication method for phase 1 negotiation.</div>
+                                                    <div>When creating a new IKE peer, if this value is not specified, the default is <code>rsa-signature</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>phase1_cert</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Name of the GTM pool.</div>
+                                                                        <div>Specifies the digital certificate to use for the RSA signature.</div>
+                                                    <div>When creating a new IKE peer, if this value is not specified, and <code>phase1_auth_method</code> is <code>rsa-signature</code>, the default is <code>default.crt</code>.</div>
+                                                    <div>This parameter is invalid when <code>phase1_auth_method</code> is <code>pre-shared-key</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>phase1_encryption_algorithm</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>3des</li>
+                                                                                                                                                                                                <li>des</li>
+                                                                                                                                                                                                <li>blowfish</li>
+                                                                                                                                                                                                <li>cast128</li>
+                                                                                                                                                                                                <li>aes128</li>
+                                                                                                                                                                                                <li>aes192</li>
+                                                                                                                                                                                                <li>aes256</li>
+                                                                                                                                                                                                <li>camellia</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the algorithm to use for IKE encryption.</div>
+                                                    <div>IKE <code>version</code> <code>v2</code> does not support <code>blowfish</code>, <code>camellia</code>, or <code>cast128</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>phase1_hash_algorithm</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>sha1</li>
+                                                                                                                                                                                                <li>md5</li>
+                                                                                                                                                                                                <li>sha256</li>
+                                                                                                                                                                                                <li>sha384</li>
+                                                                                                                                                                                                <li>sha512</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the algorithm to use for IKE authentication.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>phase1_key</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the public key that the digital certificate contains.</div>
+                                                    <div>When creating a new IKE peer, if this value is not specified, and <code>phase1_auth_method</code> is <code>rsa-signature</code>, the default is <code>default.key</code>.</div>
+                                                    <div>This parameter is invalid when <code>phase1_auth_method</code> is <code>pre-shared-key</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>phase1_perfect_forward_secrecy</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>ecp256</li>
+                                                                                                                                                                                                <li>ecp384</li>
+                                                                                                                                                                                                <li>ecp521</li>
+                                                                                                                                                                                                <li>modp768</li>
+                                                                                                                                                                                                <li>modp1024</li>
+                                                                                                                                                                                                <li>modp1536</li>
+                                                                                                                                                                                                <li>modp2048</li>
+                                                                                                                                                                                                <li>modp3072</li>
+                                                                                                                                                                                                <li>modp4096</li>
+                                                                                                                                                                                                <li>modp6144</li>
+                                                                                                                                                                                                <li>modp8192</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the Diffie-Hellman group to use for IKE Phase 1 and Phase 2 negotiations.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>phase1_verify_peer_cert</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>In IKEv2, specifies whether the certificate sent by the IKE peer is verified using the Trusted Certificate Authorities, a CRL, and/or a peer certificate.</div>
+                                                    <div>In IKEv1, specifies whether the identifier sent by the peer is verified with the credentials in the certificate, in the following manner - ASN1DN; specifies that the entire certificate subject name is compared with the identifier. Address, FQDN, or User FQDN; specifies that the certificate&#x27;s subjectAltName is compared with the identifier. If the two do not match, the negotiation fails.</div>
+                                                    <div>When creating a new IKE peer, if this value is not specified, and <code>phase1_auth_method</code> is <code>rsa-signature</code>, the default is <code>no</code>.</div>
+                                                    <div>This parameter is invalid when <code>phase1_auth_method</code> is <code>pre-shared-key</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>presented_id_type</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>address</li>
+                                                                                                                                                                                                <li>asn1dn</li>
+                                                                                                                                                                                                <li>fqdn</li>
+                                                                                                                                                                                                <li>keyid-tag</li>
+                                                                                                                                                                                                <li>user-fqdn</li>
+                                                                                                                                                                                                <li>override</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the identifier type that the local system uses to identify itself to the peer during IKE Phase 1 negotiations.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>presented_id_value</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>This is a required value when <code>version</code> includes (Cv2).</div>
+                                                    <div>Specifies a value for the identity when using a <code>presented_id_type</code> of <code>override</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>preshared_key</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a string that the IKE peers share for authenticating each other.</div>
+                                                    <div>This parameter is only relevant when <code>phase1_auth_method</code> is <code>pre-shared-key</code>.</div>
+                                                    <div>This parameter is invalid when <code>phase1_auth_method</code> is <code>rsa-signature</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -327,12 +350,12 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>ratio</b>
+                    <b>remote_address</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the weight of the pool member for load balancing purposes.</div>
+                                                                        <div>Displays the IP address of the BIG-IP system that is remote to the system you are configuring.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -344,16 +367,6 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>server_name</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the GTM server which contains the <code>virtual_server</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -376,32 +389,25 @@ Parameters
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                 <li>absent</li>
-                                                                                                                                                                                                <li>enabled</li>
-                                                                                                                                                                                                <li>disabled</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Pool member state. When <code>present</code>, ensures that the pool member is created and enabled. When <code>absent</code>, ensures that the pool member is removed from the system. When <code>enabled</code> or <code>disabled</code>, ensures that the pool member is enabled or disabled (respectively) on the remote device.</div>
-                                                    <div>It is recommended that you use the <code>members</code> parameter of the <code>bigip_gtm_pool</code> module when adding and removing members and it provides an easier way of specifying order. If this is not possible, then the <code>state</code> parameter here should be used.</div>
-                                                    <div>Remember that the order of the members will be affected if you add or remove them using this method. To some extent, this can be controlled using the <code>member_order</code> parameter.</div>
+                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
+                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>type</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>update_password</b>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>a</li>
-                                                                                                                                                                                                <li>aaaa</li>
-                                                                                                                                                                                                <li>cname</li>
-                                                                                                                                                                                                <li>mx</li>
-                                                                                                                                                                                                <li>naptr</li>
-                                                                                                                                                                                                <li>srv</li>
+                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>on_create</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>The type of GTM pool that the member is in.</div>
+                                                                        <div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created IKE peers.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -432,12 +438,50 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>virtual_server</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>verified_id_type</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>address</li>
+                                                                                                                                                                                                <li>asn1dn</li>
+                                                                                                                                                                                                <li>fqdn</li>
+                                                                                                                                                                                                <li>keyid-tag</li>
+                                                                                                                                                                                                <li>user-fqdn</li>
+                                                                                                                                                                                                <li>override</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the identifier type that the local system uses to identify the peer during IKE Phase 1 negotiation.</div>
+                                                    <div>This is a required value when <code>version</code> includes (Cv2).</div>
+                                                    <div>When <code>user-fqdn</code>, value of <code>verified_id_value</code> must be in the form of User @ DNS domain string.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>verified_id_value</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the GTM virtual server which is assigned to the specified <code>server</code>.</div>
+                                                                        <div>This is a required value when <code>version</code> includes (Cv2).</div>
+                                                    <div>Specifies a value for the identity when using a <code>verified_id_type</code> of <code>override</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>version</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>v1</li>
+                                                                                                                                                                                                <li>v2</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies which version of IKE is used.</div>
+                                                    <div>If the system you are configuring is the IPsec initiator, and you select both versions, the system tries using IKEv2 for negotiation. If the remote peer does not support IKEv2, the IPsec tunnel fails. To use IKEv1 in this case, you must deselect Version 2 and try again.</div>
+                                                    <div>If the system you are configuring is the IPsec responder, and you select both versions, the IPsec initiator system determines which IKE version to use.</div>
+                                                    <div>When creating a new IKE peer, this value is required.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -460,12 +504,9 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a GTM pool member
-      bigip_gtm_pool_member:
-        pool: pool1
-        server_name: server1
-        virtual_server: vs1
-        type: a
+    - name: Create a ...
+      bigip_ike_peer:
+        name: foo
         provider:
           password: secret
           server: lb.mydomain.com
@@ -482,136 +523,97 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>bits_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Whether the bits limit is enabled.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>bits_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new bits_enabled limit.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>connections_enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Whether the connections limit is enabled.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>connections_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new connections_limit limit.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>description</b>
+                    <b>phase1_auth_method</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new description of the member.</div>
+                                            <div>The new IKE Phase 1 Credentials Authentication Method value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My description</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">rsa-signature</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>disabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Whether the pool member is disabled or not.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>enabled</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Whether the pool member is enabled or not.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>member_order</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new order in which the member appears in the pool.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>monitor</b>
+                    <b>phase1_cert</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new monitor assigned to the pool member.</div>
+                                            <div>The new IKE Phase 1 Certificate Credentials.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/monitor1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/cert1.crt</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>packets_enabled</b>
+                    <b>phase1_encryption_algorithm</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new IKE Phase 1 Encryption Algorithm.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">3des</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>phase1_hash_algorithm</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new IKE Phase 1 Authentication Algorithm.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">sha256</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>phase1_key</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new IKE Phase 1 Key Credentials.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/cert1.key</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>phase1_perfect_forward_secrecy</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new IKE Phase 1 Perfect Forward Secrecy.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">modp1024</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>phase1_verify_peer_cert</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Whether the packets limit is enabled.</div>
+                                            <div>The new IKE Phase 1 Key Verify Peer Certificate setting.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -619,28 +621,80 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>packets_limit</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>presented_id_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new packets_limit limit.</div>
+                                            <div>The new Presented ID Type value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">address</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>ratio</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>presented_id_value</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new weight of the member for load balancing.</div>
+                                            <div>The new Presented ID Value setting for the Presented ID Type.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.2.3.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>remote_address</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Remote Address value of the resource.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.2.2.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>verified_id_type</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Verified ID Type value of the resource.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">address</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>verified_id_value</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Verified ID Value setting for the Verified ID Type.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.2.3.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>version</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new list of IKE versions.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;v1&#x27;, &#x27;v2&#x27;]</div>
                                     </td>
             </tr>
                         </table>
@@ -661,5 +715,4 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
-- Wojciech Wypior (@wojtek0806)
 

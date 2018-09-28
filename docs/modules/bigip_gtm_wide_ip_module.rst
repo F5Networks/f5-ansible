@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
@@ -61,6 +61,17 @@ Parameters
                                                                 <td>
                                                                         <div>List of rules to be applied.</div>
                                                     <div>If you want to remove all existing iRules, specify a single empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>last_resort_pool</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies which GTM pool, for the system to use as the last resort pool for the wide IP.</div>
+                                                    <div>The valid pools for this parameter are those with the <code>type</code> specified in this module.</div>
                                                                                 </td>
             </tr>
                                 <tr>

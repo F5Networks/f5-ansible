@@ -34,15 +34,27 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                
-                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>address</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the IP address that will receive messages from the specified local Log Destination.</div>
+                                                    <div>This parameter is only available when <code>type</code> is <code>management-port</code>.</div>
+                                                    <div>When creating a new log destination and <code>type</code> is <code>management-port</code>, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>description</b>
                                                         </td>
@@ -50,6 +62,37 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>The description of the log destination.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>distribution</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>adaptive</li>
+                                                                                                                                                                                                <li>balanced</li>
+                                                                                                                                                                                                <li>replicated</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the distribution method used by the Remote High Speed Log destination to send messages to pool members.</div>
+                                                    <div>When <code>adaptive</code>, connections to pool members will be added as required to provide enough logging bandwidth. This can have the undesirable effect of logs accumulating on only one pool member when it provides sufficient logging bandwidth on its own.</div>
+                                                    <div>When <code>balanced</code>, sends each successive log to a new pool member, balancing the logs among them according to the pool&#x27;s load balancing method.</div>
+                                                    <div>When <code>replicated</code>, replicates each log to all pool members, for redundancy.</div>
+                                                    <div>When creating a new log destination and <code>type</code> is <code>remote-high-speed-log</code>, if this parameter is not specified, the default is <code>adaptive</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>forward_to</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>type</code> is <code>remote-syslog</code>, specifies the management port log destination, which will be used to forward the logs to a single log server, or a remote high-speed log destination, which will be used to forward the logs to a pool of remote log servers.</div>
+                                                    <div>When <code>type</code> is <code>splunk</code> or <code>arcsight</code>, specifies the log destination to which logs are forwarded. This log destination may be a management port destination, a remote high-speed log destination, or a remote Syslog destination which is configured to send logs to an ArcSight or Splunk server.</div>
+                                                    <div>When creating a new log destination and <code>type</code> is <code>remote-syslog</code>, <code>splunk</code>, or <code>arcsight</code>, this parameter is required.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -87,12 +130,25 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>pool</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>type</code> is <code>remote-high-speed-log</code>, specifies the existing pool of remote high-speed log servers where logs will be sent.</div>
+                                                    <div>When <code>type</code> is <code>ipfix</code>, specifies the existing LTM pool of remote IPFIX collectors. Any BIG-IP application that uses this log destination sends its IP-traffic logs to this pool of collectors.</div>
+                                                    <div>When creating a new destination and <code>type</code> is <code>remote-high-speed-log</code> or <code>ipfix</code>, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>pool_settings</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>This parameter is only available when <code>type</code> is <code>remote-high-speed-log</code>.</div>
+                                                    <div>Deprecated. Use the equivalent top-level parameters instead.</div>
                                                                                 </td>
             </tr>
                                                             <tr>
@@ -145,6 +201,37 @@ Parameters
             </tr>
                     
                                                 <tr>
+                                                                <td colspan="2">
+                    <b>port</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the port of the IP address that will receive messages from the specified local Log Destination.</div>
+                                                    <div>This parameter is only available when <code>type</code> is <code>management-port</code>.</div>
+                                                    <div>When creating a new log destination and <code>type</code> is <code>management-port</code>, this parameter is required.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>protocol</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>tcp</li>
+                                                                                                                                                                                                <li>udp</li>
+                                                                                                                                                                                                <li>ipfix</li>
+                                                                                                                                                                                                <li>netflow-9</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>type</code> is <code>remote-high-speed-log</code>, specifies the protocol for the system to use to send logs to the pool of remote high-speed log servers, where the logs are stored.</div>
+                                                    <div>When <code>type</code> is <code>ipfix</code>, can be IPFIX or Netflow v9, depending on the type of collectors you have in the pool that you specify.</div>
+                                                    <div>When <code>type</code> is <code>management-port</code>, specifies the protocol used to send messages to the specified location.</div>
+                                                    <div>When <code>type</code> is <code>management-port</code>, only <code>tcp</code> and <code>udp</code> are valid values.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
@@ -286,6 +373,18 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>server_ssl_profile</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>If the <code>transport_profile</code> is a TCP profile, you can use this field to choose a Secure Socket Layer (SSL) profile for sending logs to the IPFIX collectors.</div>
+                                                    <div>An SSL server profile defines how to communicate securely over SSL or Transport Layer Security (TLS).</div>
+                                                    <div>This parameter is only available when <code>type</code> is <code>ipfix</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
@@ -301,12 +400,33 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>syslog_format</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>bsd-syslog</li>
+                                                                                                                                                                                                <li>syslog</li>
+                                                                                                                                                                                                <li>legacy-bigip</li>
+                                                                                                                                                                                                <li>rfc5424</li>
+                                                                                                                                                                                                <li>rfc3164</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the method to use to format the logs associated with the remote Syslog log destination.</div>
+                                                    <div>When creating a new log destination (and <code>type</code> is <code>remote-syslog</code>), if this parameter is not specified, the default is <code>bsd-syslog</code>.</div>
+                                                    <div>The <code>syslog</code> and <code>rfc5424</code> choices are two ways of saying the same thing.</div>
+                                                    <div>The <code>bsd-syslog</code> and <code>rfc3164</code> choices are two ways of saying the same thing.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>syslog_settings</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>This parameter is only available when <code>type</code> is <code>remote-syslog</code>.</div>
+                                                    <div>Deprecated. Use the equivalent top-level parameters instead.</div>
                                                                                 </td>
             </tr>
                                                             <tr>
@@ -345,12 +465,50 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>template_delete_delay</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Enter the time (in seconds) that the BIG-IP device should pause between deleting an obsolete IPFIX template and reusing its template ID.</div>
+                                                    <div>This feature is useful for systems where you use iRules to create customized IPFIX templates.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>template_retransmit_interval</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Enter the time (in seconds) between each transmission of IPFIX templates to the pool of IPFIX collectors.</div>
+                                                    <div>The logging destination periodically retransmits all of its IPFIX templates at the interval you set in this field. These retransmissions are helpful for UDP, a lossy transport mechanism.</div>
+                                                    <div>This parameter is only available when <code>type</code> is <code>ipfix</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>transport_profile</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Is a transport profile based on either TCP or UDP.</div>
+                                                    <div>This profile defines the TCP or UDP options used to send IP-traffic logs to the pool of collectors.</div>
+                                                    <div>This parameter is only available when <code>type</code> is <code>ipfix</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>type</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li>remote-high-speed-log</li>
                                                                                                                                                                                                 <li>remote-syslog</li>
+                                                                                                                                                                                                <li>arcsight</li>
+                                                                                                                                                                                                <li>splunk</li>
+                                                                                                                                                                                                <li>management-port</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -408,25 +566,23 @@ Examples
       bigip_log_destination:
         name: foo
         type: remote-high-speed-log
-        pool_settings:
-          pool: my-ltm-pool
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        pool: my-ltm-pool
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Create a remote-syslog logging destination
       bigip_log_destination:
         name: foo
         type: remote-syslog
-        syslog_settings:
-          syslog_format: rfc5424
-          forward_to: my-destination
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        syslog_format: rfc5424
+        forward_to: my-destination
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -439,35 +595,152 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>param1</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new param1 value of the resource.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>param2</b>
+                    <b>address</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param2 value of the resource.</div>
+                                            <div>The new Address value.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.2.3.2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>distribution</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Distribution Method value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">balanced</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>forward_to</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Forward To value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/dest1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>pool</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Pool value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Port value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2020</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>protocol</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Protocol value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tcp</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>server_ssl_profile</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Server SSL Profile value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/serverssl</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>syslog_format</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Syslog format value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">syslog</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>template_delete_delay</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Template Delete Delay value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">20</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>template_retransmit_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Template Retransmit Interval value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">200</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>transport_profile</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Transport Profile value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/tcp</div>
                                     </td>
             </tr>
                         </table>

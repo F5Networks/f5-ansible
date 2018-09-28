@@ -36,7 +36,7 @@ Parameters
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                     
                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -252,6 +252,37 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>prober_pool</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the prober pool to use to monitor this server&#x27;s resources.</div>
+                                                    <div>From <code>TMOS</code> version <code>13.x</code> and up, this parameter is mandatory when <code>prober_preference</code> is set to <code>pool</code>.</div>
+                                                    <div>Format of the name can be either be prepended by partition (<code>/Common/foo</code>), or specified just as an object name (<code>foo</code>).</div>
+                                                    <div>In <code>TMOS</code> version <code>12.x</code> prober_pool can be set to empty string to revert to default setting of inherit.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>prober_preference</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>inside-datacenter</li>
+                                                                                                                                                                                                <li>outside-datacenter</li>
+                                                                                                                                                                                                <li>inherit</li>
+                                                                                                                                                                                                <li>pool</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the type of prober to use to monitor this server&#x27;s resources.</div>
+                                                    <div>This option is ignored in <code>TMOS</code> version <code>12.x</code>.</div>
+                                                    <div>From <code>TMOS</code> version <code>13.x</code> and up, when prober_preference is set to <code>pool</code> a <code>prober_pool</code> parameter must be specified.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
