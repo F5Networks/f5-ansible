@@ -26,6 +26,11 @@
       - result is success
 
 - import_tasks: remote-high-speed-log.yaml
+- import_tasks: remote-high-speed-log-new.yaml
 - import_tasks: remote-syslog.yaml
+- import_tasks: remote-syslog-new.yaml
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-00824.yaml
+  tags: issue-00824

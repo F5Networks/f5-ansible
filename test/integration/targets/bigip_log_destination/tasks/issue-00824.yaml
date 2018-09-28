@@ -1,0 +1,427 @@
+---
+
+- name: Create a pool for testing settings
+  bigip_pool:
+    name: pool-test
+    lb_method: round-robin
+
+- name: Create a arcsight destination
+  bigip_log_destination:
+    name: arcsight1
+    type: arcsight
+    forward_to: local-db
+  register: result
+
+- name: Assert Create a arcsight destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a arcsight destination - Idempotent check
+  bigip_log_destination:
+    name: arcsight1
+    type: arcsight
+    forward_to: local-db
+  register: result
+
+- name: Assert Create a arcsight destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove arcsight destination
+  bigip_log_destination:
+    name: arcsight1
+    type: arcsight
+    state: absent
+  register: result
+
+- name: Assert Remove arcsight destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove arcsight destination - Idempotent check
+  bigip_log_destination:
+    name: arcsight1
+    type: arcsight
+    state: absent
+  register: result
+
+- name: Assert Remove arcsight destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a splunk destination
+  bigip_log_destination:
+    name: splunk1
+    type: splunk
+    forward_to: local-db
+  register: result
+
+- name: Assert Create a splunk destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a splunk destination - Idempotent check
+  bigip_log_destination:
+    name: splunk1
+    type: splunk
+    forward_to: local-db
+  register: result
+
+- name: Assert Create a splunk destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove splunk destination
+  bigip_log_destination:
+    name: splunk1
+    type: splunk
+    state: absent
+  register: result
+
+- name: Assert Remove splunk destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove splunk destination - Idempotent check
+  bigip_log_destination:
+    name: splunk1
+    type: splunk
+    state: absent
+  register: result
+
+- name: Assert Remove splunk destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a management-port destination
+  bigip_log_destination:
+    name: mgmt1
+    type: management-port
+    address: 1.2.3.4
+    port: 234
+  register: result
+
+- name: Assert Create a management-port destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a management-port destination - Idempotent check
+  bigip_log_destination:
+    name: mgmt1
+    type: management-port
+    address: 1.2.3.4
+    port: 234
+  register: result
+
+- name: Assert Create a management-port destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change management-port protocol - udp
+  bigip_log_destination:
+    name: mgmt1
+    type: management-port
+    protocol: udp
+  register: result
+
+- name: Assert Change management-port protocol - udp
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change management-port protocol - udp - Idempotent check
+  bigip_log_destination:
+    name: mgmt1
+    type: management-port
+    protocol: udp
+  register: result
+
+- name: Assert Change management-port protocol - udp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change management-port protocol - tcp
+  bigip_log_destination:
+    name: mgmt1
+    type: management-port
+    protocol: tcp
+  register: result
+
+- name: Assert Change management-port protocol - tcp
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change management-port protocol - tcp - Idempotent check
+  bigip_log_destination:
+    name: mgmt1
+    type: management-port
+    protocol: tcp
+  register: result
+
+- name: Assert Change management-port protocol - tcp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove management-port destination
+  bigip_log_destination:
+    name: mgmt1
+    type: management-port
+    state: absent
+  register: result
+
+- name: Assert Remove management-port destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove management-port destination - Idempotent check
+  bigip_log_destination:
+    name: mgmt1
+    type: management-port
+    state: absent
+  register: result
+
+- name: Assert Remove management-port destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a ipfix destination
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    protocol: ipfix
+    pool: pool-test
+    transport_profile: udp
+  register: result
+
+- name: Assert Create a ipfix destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a ipfix destination - Idempotent check
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    protocol: ipfix
+    pool: pool-test
+    transport_profile: udp
+  register: result
+
+- name: Assert Create a ipfix destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change template_retransmit_interval
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    template_retransmit_interval: 100
+  register: result
+
+- name: Assert Change template_retransmit_interval
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change template_retransmit_interval - Idempotent check
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    template_retransmit_interval: 100
+  register: result
+
+- name: Assert Change template_retransmit_interval - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change template_delete_delay
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    template_delete_delay: 50
+  register: result
+
+- name: Assert Change template_delete_delay
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change template_delete_delay - Idempotent check
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    template_delete_delay: 50
+  register: result
+
+- name: Assert Change template_delete_delay - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change transport_profile for testing server_ssl_profile
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    transport_profile: tcp
+  register: result
+
+- name: Change server_ssl_profile
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    server_ssl_profile: serverssl
+  register: result
+
+- name: Assert Change server_ssl_profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change server_ssl_profile - Idempotent check
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    server_ssl_profile: serverssl
+  register: result
+
+- name: Assert Change server_ssl_profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change server_ssl_profile - none
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    server_ssl_profile: none
+  register: result
+
+- name: Assert Change server_ssl_profile - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change server_ssl_profile - none - Idempotent check
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    server_ssl_profile: none
+  register: result
+
+- name: Assert Change server_ssl_profile - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change server_ssl_profile - empty - Idempotent check
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    server_ssl_profile: ''
+  register: result
+
+- name: Assert Change server_ssl_profile - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change protocol - netflow-9
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    protocol: netflow-9
+  register: result
+
+- name: Assert Change protocol - netflow-9
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change protocol - netflow-9 - Idempotent check
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    protocol: netflow-9
+  register: result
+
+- name: Assert Change protocol - netflow-9 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove ipfix destination
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    state: absent
+  register: result
+
+- name: Assert Remove ipfix destination
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove ipfix destination - Idempotent check
+  bigip_log_destination:
+    name: ipfix1
+    type: ipfix
+    state: absent
+  register: result
+
+- name: Assert Remove ipfix destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove pool
+  bigip_pool:
+    name: pool-test
+    state: absent
