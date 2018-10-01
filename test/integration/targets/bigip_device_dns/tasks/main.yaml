@@ -9,6 +9,7 @@
   assert:
     that:
       - result is changed
+      - result.cache == "enable"
 
 - name: Enable cache - Idempotent check
   bigip_device_dns:
@@ -29,6 +30,7 @@
   assert:
     that:
       - result is changed
+      - result.cache == "disable"
 
 - name: Disable cache - Idempotent check
   bigip_device_dns:
@@ -60,6 +62,7 @@
   assert:
     that:
       - result is changed
+      - result.ip_version == 6
 
 - name: Set IP version 6 - Idempotent check
   bigip_device_dns:
@@ -80,6 +83,7 @@
   assert:
     that:
       - result is changed
+      - result.ip_version == 4
 
 - name: Set IP version 4 - Idempotent check
   bigip_device_dns:
@@ -114,6 +118,7 @@
   assert:
     that:
       - result is changed
+      - result.name_servers == ['10.10.10.10']
 
 - name: Set a nameserver
   bigip_device_dns:
@@ -125,6 +130,7 @@
   assert:
     that:
       - result is changed
+      - result.name_servers == ['12.12.12.12']
 
 - name: Set a nameserver - Idempotent check
   bigip_device_dns:
@@ -147,6 +153,7 @@
   assert:
     that:
       - result is changed
+      - result.name_servers == []
 
 - name: Set an empty nameserver - Idempotent check
   bigip_device_dns:
@@ -157,7 +164,7 @@
 - name: Assert Set an empty nameserver - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
 
 - name: Set a list of name servers
   bigip_device_dns:
