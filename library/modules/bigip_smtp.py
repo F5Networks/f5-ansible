@@ -74,7 +74,6 @@ options:
     description:
       - When C(present), ensures that the SMTP configuration exists.
       - When C(absent), ensures that the SMTP configuration does not exist.
-    required: False
     default: present
     choices:
       - present
