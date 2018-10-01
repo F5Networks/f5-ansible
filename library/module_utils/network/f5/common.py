@@ -70,27 +70,22 @@ f5_argument_spec = {
 f5_top_spec = {
     'server': dict(
         removed_in_version=2.9,
-        fallback=(env_fallback, ['F5_SERVER'])
     ),
     'user': dict(
         removed_in_version=2.9,
-        fallback=(env_fallback, ['F5_USER', 'ANSIBLE_NET_USERNAME'])
     ),
     'password': dict(
         removed_in_version=2.9,
         no_log=True,
         aliases=['pass', 'pwd'],
-        fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD'])
     ),
     'validate_certs': dict(
         removed_in_version=2.9,
         type='bool',
-        fallback=(env_fallback, ['F5_VALIDATE_CERTS'])
     ),
     'server_port': dict(
         removed_in_version=2.9,
         type='int',
-        fallback=(env_fallback, ['F5_SERVER_PORT'])
     ),
     'transport': dict(
         removed_in_version=2.9,
