@@ -105,7 +105,6 @@ EXAMPLES = r'''
     user: admin
     password: secret
     name: my_tcp_monitor
-    type: tcp
     send: tcp string to send
     receive: tcp string to receive
   delegate_to: localhost
