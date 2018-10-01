@@ -1710,7 +1710,7 @@ class ArgumentSpec(object):
                     ),
                     forward_to=dict()
                 ),
-                removed_in_version = 2.12,
+                removed_in_version=2.12,
             ),
         )
         self.argument_spec = {}
