@@ -438,7 +438,6 @@ class ApiParameters(Parameters):
             result = 'require {0} from {1} {{ {2} }}'.format(self.number_of_probes, self.number_of_probers, monitors)
         else:
             result = ' and '.join(monitors).strip()
-
         return result
 
     @property
