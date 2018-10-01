@@ -265,25 +265,47 @@ class Difference(object):
 
     @property
     def name_servers(self):
+        state = self.want.state
         if self.want.name_servers is None:
             return None
-        if not self.want.name_servers and self.have.name_servers is None:
-            return None
-        if self.want.name_servers == self.have.name_servers:
-            return None
-        if self.want.name_servers != self.have.name_servers:
+        if state == 'absent':
+            if self.have.name_servers is None and self.want.name_servers:
+                return None
+            if set(self.want.name_servers) == set(self.have.name_servers):
+                return []
+            if set(self.want.name_servers) != set(self.have.name_servers):
+                return list(set(self.want.name_servers).difference(self.have.name_servers))
+        if not self.want.name_servers:
+            if self.have.name_servers is None:
+                return None
+            if self.have.name_servers is not None:
+                return self.want.name_servers
+        if self.have.name_servers is None:
             return self.want.name_servers
+        if set(self.want.name_servers) != set(self.have.name_servers):
+                return self.want.name_servers
 
     @property
     def search(self):
+        state = self.want.state
         if self.want.search is None:
             return None
-        if not self.want.search and self.have.search is None:
-            return None
-        if self.want.search == self.have.search:
-            return None
-        if self.want.search != self.have.search:
+        if not self.want.search:
+            if self.have.search is None:
+                return None
+            if self.have.search is not None:
+                return self.want.search
+        if state == 'absent':
+            if self.have.search is None and self.want.search:
+                return None
+            if set(self.want.search) == set(self.have.search):
+                return []
+            if set(self.want.search) != set(self.have.search):
+                return list(set(self.want.search).difference(self.have.search))
+        if self.have.search is None:
             return self.want.search
+        if set(self.want.search) != set(self.have.search):
+                return self.want.search
 
 
 class ModuleManager(object):
@@ -321,14 +343,18 @@ class ModuleManager(object):
         return False
 
     def _absent_changed_options(self):
-        changed = {}
-        for key in Parameters.absentables:
-            if getattr(self.want, key) is not None:
-                set_want = set(getattr(self.want, key))
-                set_have = set(getattr(self.have, key))
-                set_new = set_have - set_want
-                if set_new != set_have:
-                    changed[key] = list(set_new)
+        diff = Difference(self.want, self.have)
+        absentables = Parameters.absentables
+        changed = dict()
+        for k in absentables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
             self.changes = UsableChanges(params=changed)
             return True
