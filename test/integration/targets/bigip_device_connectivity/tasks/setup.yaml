@@ -9,14 +9,14 @@
 
 - name: Create self-IP_1
   bigip_selfip:
-      name: "{{ selfip_1_name }}"
-      address: "{{ selfip_1 }}"
-      netmask: "{{ selfip_netmask }}"
-      vlan: "{{ selfip_vlan }}"
+    name: "{{ selfip_1_name }}"
+    address: "{{ selfip_1 }}"
+    netmask: "{{ selfip_netmask }}"
+    vlan: "{{ selfip_vlan }}"
 
 - name: Create self-IP_2
   bigip_selfip:
-      name: "{{ selfip_2_name }}"
-      address: "{{ selfip_2 }}"
-      netmask: "{{ selfip_netmask2 }}"
-      vlan: "{{ selfip_vlan2 }}"
+    name: "{{ selfip_2_name }}"
+    address: "{{ selfip_2 }}"
+    netmask: "{{ selfip_netmask2 }}"
+    vlan: "{{ selfip_vlan2 }}"
