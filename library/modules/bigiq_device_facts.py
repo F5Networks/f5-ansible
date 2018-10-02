@@ -165,7 +165,7 @@ applications:
         - Whether or not Bad Traffic Growth alerts are configured to be triggered or not.
       returned: changed
       type: bool
-      sample: no 
+      sample: no
   sample: hash/dictionary of values
 managed_devices:
   description: Managed device related facts.
@@ -1337,7 +1337,6 @@ class RegkeyPoolsOfferingParameters(BaseParameters):
         'license_start_date_time',
         'registration_key',
     ]
-
 
     @property
     def registration_key(self):
