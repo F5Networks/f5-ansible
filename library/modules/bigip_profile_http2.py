@@ -41,12 +41,12 @@ options:
     type: int
   idle_timeout:
     description:
-      - Specifies the number of seconds that an HTTP/2 connection is idly left open before being shut down. 
+      - Specifies the number of seconds that an HTTP/2 connection is idly left open before being shut down.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: int
   insert_header:
     description:
-      - Specifies whether an HTTP header indicating the use of HTTP/2 should be inserted into the request 
+      - Specifies whether an HTTP header indicating the use of HTTP/2 should be inserted into the request
         that goes to the server.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
@@ -88,7 +88,7 @@ options:
     type: int
   header_table_size:
     description:
-      - Specifies the size of the header table, in bytes. 
+      - Specifies the size of the header table, in bytes.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
       - The valid value range in bytes is C(0 - 65535).
     type: int

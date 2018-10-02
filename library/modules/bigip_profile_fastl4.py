@@ -182,7 +182,7 @@ options:
   rtt_from_client:
     description:
       - When C(yes), specifies that the system uses TCP timestamp options to measure
-        the round-trip time to the client. 
+        the round-trip time to the client.
     type: bool
   server_sack:
     description:
@@ -1060,7 +1060,7 @@ class ReportableChanges(Changes):
         if self._values[key] == 65534:
             return 'mimic'
         try:
-            return  int(self._values[key])
+            return int(self._values[key])
         except ValueError:
             return self._values[key]
 
