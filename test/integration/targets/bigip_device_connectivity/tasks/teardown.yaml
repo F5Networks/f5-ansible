@@ -1,0 +1,17 @@
+---
+
+- name: Remove SelfIPs
+  bigip_selfip:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ selfip_1_name }}"
+    - "{{ selfip_2_name }}"
+
+- name: Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ selfip_vlan }}"
+    - "{{ selfip_vlan2 }}"
