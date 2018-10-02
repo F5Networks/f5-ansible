@@ -272,7 +272,7 @@ console_log:
   description: Whether logging to console is enabled or not.
   returned: changed
   type: bool
-  sample: yes  
+  sample: yes
 iso_date:
   description: Whether ISO date format in logs is enabled or not
   returned: changed

@@ -388,6 +388,7 @@ class ModuleManager(object):
         if 'commandResult' in response:
             return str(response['commandResult'])
 
+
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
