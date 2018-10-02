@@ -630,7 +630,7 @@ class V2Manager(BaseManager):
                 args = dict(
                     command='run',
                     utilCmdArgs='-c "{0}"'.format(item['command'])
-                    )
+                )
                 resp = self.client.api.post(uri, json=args)
                 response = resp.json()
                 if 'commandResult' in response:
