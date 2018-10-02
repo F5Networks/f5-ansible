@@ -168,9 +168,9 @@ options:
     version_added: 2.8
   prober_preference:
     description:
-      - Specifies the type of prober to use to monitor this server's resources. 
+      - Specifies the type of prober to use to monitor this server's resources.
       - This option is ignored in C(TMOS) version C(12.x).
-      - From C(TMOS) version C(13.x) and up, when prober_preference is set to C(pool) 
+      - From C(TMOS) version C(13.x) and up, when prober_preference is set to C(pool)
         a C(prober_pool) parameter must be specified.
     choices:
       - inside-datacenter
@@ -180,7 +180,7 @@ options:
     version_added: 2.8
   prober_pool:
     description:
-      - Specifies the name of the prober pool to use to monitor this server's resources. 
+      - Specifies the name of the prober pool to use to monitor this server's resources.
       - From C(TMOS) version C(13.x) and up, this parameter is mandatory when C(prober_preference) is set to C(pool).
       - Format of the name can be either be prepended by partition (C(/Common/foo)), or specified
         just as an object name (C(foo)).
