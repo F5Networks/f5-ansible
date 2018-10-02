@@ -3,3 +3,12 @@
 config_sync_ip: 10.2.2.2
 mirror_primary_address: 10.2.2.2
 mirror_secondary_address: 10.2.3.2
+
+selfip_1: 10.2.2.2
+selfip_2: 10.2.3.2
+selfip_1_name: first
+selfip_2_name: second
+selfip_netmask: 255.255.255.0
+selfip_netmask2: 255.255.255.0
+selfip_vlan: net_self1
+selfip_vlan2: net_self2
