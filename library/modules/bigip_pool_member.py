@@ -161,7 +161,7 @@ options:
         (from BIG-IP system to server-pool member).
       - When C(none), disables IP encapsulation.
       - When C(inherit), inherits IP encapsulation setting from the member's pool.
-      - When any other value, Options are None, Inherit from Pool, and Member Specific. 
+      - When any other value, Options are None, Inherit from Pool, and Member Specific.
     version_added: 2.8
 extends_documentation_fragment: f5
 author:
