@@ -994,7 +994,7 @@ class TypedManager(BaseManager):
         )
 
         query = '?expandSubcollections=true'
-        resp = self.client.api.get(uri+query)
+        resp = self.client.api.get(uri + query)
 
         try:
             response = resp.json()

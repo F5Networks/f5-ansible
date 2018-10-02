@@ -54,7 +54,7 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Change enforced policy in AFM global rules 
+- name: Change enforced policy in AFM global rules
   bigip_firewall_global_rules:
     enforced_policy: enforcing1
     provider:

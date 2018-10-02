@@ -128,7 +128,7 @@ notify_action:
   description: The new DNS Express Notify Action value.
   returned: changed
   type: string
-  sample: consume  
+  sample: consume
 verify_tsig:
   description: The new DNS Express Verify Notify TSIG value.
   returned: changed
