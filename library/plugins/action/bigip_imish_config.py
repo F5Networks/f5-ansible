@@ -24,10 +24,7 @@ import re
 import time
 import glob
 
-from ansible import constants as C
 from ansible.module_utils._text import to_text
-from ansible.module_utils.connection import Connection
-from ansible.module_utils.network.common.utils import load_provider
 from ansible.plugins.action.bigip import ActionModule as _ActionModule
 from ansible.module_utils.six.moves.urllib.parse import urlsplit
 
@@ -36,11 +33,8 @@ try:
 except:
     from ansible.module_utils.network.f5.common import f5_provider_spec
 
-try:
-    from __main__ import display
-except ImportError:
-    from ansible.utils.display import Display
-    display = Display()
+from ansible.utils.display import Display
+display = Display()
 
 
 PRIVATE_KEYS_RE = re.compile('__.+__')
