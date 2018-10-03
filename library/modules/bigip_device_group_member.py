@@ -34,11 +34,6 @@ options:
     description:
       - The device group that you want to add the member to.
     required: True
-  partition:
-    description:
-      - Device partition to manage resources on.
-    default: Common
-    version_added: 2.8
   state:
     description:
       - When C(present), ensures that the device group member exists.
@@ -82,14 +77,12 @@ RETURN = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
@@ -98,7 +91,6 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
@@ -221,8 +213,8 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}/devices/{3}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.device_group),
-            transform_name(self.want.partition, self.want.name)
+            self.want.device_group,
+            self.want.name
         )
         resp = self.client.api.get(uri)
         try:
@@ -240,7 +232,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}/devices/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.device_group),
+            self.want.device_group
         )
         resp = self.client.api.post(uri, json=params)
         try:
@@ -258,8 +250,8 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}/devices/{3}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.device_group),
-            transform_name(self.want.partition, self.want.name)
+            self.want.device_group,
+            self.want.name
         )
         response = self.client.api.delete(uri)
         if response.status == 200:
@@ -277,10 +269,6 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['absent', 'present']
             ),
-            partition=dict(
-                default='Common',
-                fallback=(env_fallback, ['F5_PARTITION'])
-            )
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
