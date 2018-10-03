@@ -92,11 +92,6 @@ options:
       - This parameter is only valid for C(type)'s that are C(sync-failover).
     type: bool
     version_added: 2.7
-  partition:
-    description:
-      - Device partition to manage resources on.
-    default: Common
-    version_added: 2.8
 notes:
   - This module is primarily used as a component of configuring HA pairs of
     BIG-IP devices.
@@ -167,7 +162,6 @@ network_failover:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 
 try:
@@ -178,7 +172,6 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
-    from library.module_utils.network.f5.common import transform_name
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -187,7 +180,6 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
-    from ansible.module_utils.network.f5.common import transform_name
 
 
 class Parameters(AnsibleF5Parameters):
@@ -473,7 +465,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
+            self.want.name
         )
         resp = self.client.api.get(uri)
         try:
@@ -488,7 +480,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}/devices/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
+            self.want.name
         )
         resp = self.client.api.get(uri)
         try:
@@ -503,9 +495,7 @@ class ModuleManager(object):
                 raise F5ModuleError(resp.content)
 
         for item in response['items']:
-            new_uri = uri + '{0}'.format(
-                transform_name(item['partition'], item['name'])
-            )
+            new_uri = uri + '{0}'.format(item['name'])
             response = self.client.api.delete(new_uri)
             if response.status == 200:
                 return True
@@ -537,7 +527,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
+            self.want.name
         )
         resp = self.client.api.patch(uri, json=params)
         try:
@@ -555,7 +545,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
+            self.want.name
         )
         response = self.client.api.delete(uri)
         if response.status == 200:
@@ -566,7 +556,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
+            self.want.name
         )
         resp = self.client.api.get(uri)
         try:
@@ -609,11 +599,6 @@ class ArgumentSpec(object):
                 choices=['absent', 'present']
             ),
             network_failover=dict(type='bool'),
-            partition=dict(
-                default='Common',
-                fallback=(env_fallback, ['F5_PARTITION'])
-            )
-
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
