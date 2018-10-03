@@ -1,0 +1,9 @@
+---
+
+- job:
+    name: base
+    parent: base-minimal
+    abstract: true
+    description: |
+      The base job for the F5-Ansible installation of Zuul.
+    pre-run: .zuul.d/playbooks/base/pre.yaml
