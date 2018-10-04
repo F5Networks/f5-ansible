@@ -245,19 +245,44 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'source', 'oidSubset', 'ipv6', 'communityName', 'access', 'authPassword',
-        'authProtocol', 'username', 'securityLevel', 'privacyProtocol', 'privacyPassword'
+        'source',
+        'oidSubset',
+        'ipv6',
+        'communityName',
+        'access',
+        'authPassword',
+        'authProtocol',
+        'username',
+        'securityLevel',
+        'privacyProtocol',
+        'privacyPassword',
     ]
 
     returnables = [
-        'community', 'oid', 'ip_version', 'snmp_auth_protocol', 'snmp_privacy_protocol',
-        'access', 'source', 'snmp_username', 'snmp_auth_password', 'snmp_privacy_password'
+        'community',
+        'oid',
+        'ip_version',
+        'snmp_auth_protocol',
+        'snmp_privacy_protocol',
+        'access',
+        'source',
+        'snmp_username',
+        'snmp_auth_password',
+        'snmp_privacy_password',
     ]
 
     updatables = [
-        'community', 'oid', 'ip_version', 'snmp_auth_protocol', 'snmp_privacy_protocol',
-        'access', 'source', 'snmp_auth_password', 'snmp_privacy_password', 'security_level',
-        'snmp_username'
+        'community',
+        'oid',
+        'ip_version',
+        'snmp_auth_protocol',
+        'snmp_privacy_protocol',
+        'access',
+        'source',
+        'snmp_auth_password',
+        'snmp_privacy_password',
+        'security_level',
+        'snmp_username',
     ]
 
     @property
