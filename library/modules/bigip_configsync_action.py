@@ -219,7 +219,7 @@ class ModuleManager(object):
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
         return result
-    
+
     def present(self):
         if not self._device_group_exists():
             raise F5ModuleError(
