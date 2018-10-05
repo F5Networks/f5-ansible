@@ -44,6 +44,7 @@ notes:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -108,27 +109,21 @@ description:
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
 
 
 class Parameters(AnsibleF5Parameters):
@@ -137,27 +132,23 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'description', 'defaultRouteDomain'
+        'description', 'defaultRouteDomain',
     ]
 
     returnables = [
-        'description', 'route_domain'
+        'description', 'route_domain',
     ]
 
     updatables = [
-        'description', 'route_domain'
+        'description', 'route_domain',
     ]
 
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-            return result
-        except Exception:
-            return result
 
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
     @property
     def partition(self):
         # Cannot create a partition in a partition, so nullify this
@@ -171,6 +162,22 @@ class Parameters(AnsibleF5Parameters):
 
 
 class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
     pass
 
 
@@ -201,30 +208,41 @@ class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-        self.have = None
-        self.want = Parameters(params=self.module.params)
-        self.changes = Changes()
+        self.want = ModuleParameters(params=self.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def _set_changed_options(self):
         changed = {}
-        for key in Parameters.returnables:
+        for key in ApiParameters.returnables:
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(params=changed)
+            self.changes = UsableChanges(params=changed)
 
-    def _update_changed_options(self):  # lgtm [py/similar-function]
+    def _update_changed_options(self):
         diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
+        updatables = ApiParameters.updatables
         changed = dict()
         for k in updatables:
             change = diff.compare(k)
             if change is None:
                 continue
             else:
-                changed[k] = change
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Parameters(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -233,17 +251,16 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
 
     def present(self):
@@ -289,38 +306,86 @@ class ModuleManager(object):
         return True
 
     def read_current_from_device(self):
-        resource = self.client.api.tm.auth.partitions.partition.load(
-            name=self.want.name
+        uri = "https://{0}:{1}/mgmt/tm/auth/partition/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.name
         )
-        result = resource.attrs
-        return Parameters(params=result)
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return ApiParameters(params=response)
 
     def exists(self):
-        result = self.client.api.tm.auth.partitions.partition.exists(
-            name=self.want.name
+        uri = "https://{0}:{1}/mgmt/tm/auth/partition/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.name
         )
-        return result
-
-    def update_on_device(self):
-        params = self.want.api_params()
-        result = self.client.api.tm.auth.partitions.partition.load(
-            name=self.want.name
-        )
-        result.modify(**params)
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
 
     def create_on_device(self):
-        params = self.want.api_params()
-        self.client.api.tm.auth.partitions.partition.create(
-            name=self.want.name,
-            **params
+        params = self.changes.api_params()
+        params['name'] = self.want.name
+        uri = "https://{0}:{1}/mgmt/tm/auth/partition/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403, 409]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+    def update_on_device(self):
+        params = self.changes.api_params()
+        uri = "https://{0}:{1}/mgmt/tm/auth/partition/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.name
+        )
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
-        result = self.client.api.tm.auth.partitions.partition.load(
-            name=self.want.name
+        uri = "https://{0}:{1}/mgmt/tm/auth/partition/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.name
         )
-        if result:
-            result.delete()
+        resp = self.client.api.delete(uri)
+        if resp.status == 200:
+            return True
 
 
 class ArgumentSpec(object):
@@ -348,20 +413,17 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
+
+    client = F5RestClient(**module.params)
 
     try:
-        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        module.exit_json(**results)
+        exit_json(module, results, client)
     except F5ModuleError as ex:
-        if client:
-            cleanup_tokens(client)
-        module.fail_json(msg=str(ex))
-
+        cleanup_tokens(client)
+        fail_json(module, ex, client)
 
 if __name__ == '__main__':
     main()
