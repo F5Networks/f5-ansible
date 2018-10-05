@@ -1,6 +1,12 @@
 ---
 
-- name: Create Address-List - IPs
+- name: Issue 00871 - Provision AFM
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Issue 00871 - Create Address-List - IPs
   bigip_firewall_address_list:
     name: "{{ item.name }}"
     addresses: "{{ item.address }}"
@@ -19,13 +25,13 @@
     name: ePDG-S2b-V6-ip
     address: '2606:ae00:2e10:104::5'
 
-- name: Assert Create Address-List - IPs
+- name: Issue 00871 - Assert Create Address-List - IPs
   assert:
     that:
         - result is changed
         - result is success
 
-- name: Create Address-List - IPs - Idempotent check
+- name: Issue 00871 - Create Address-List - IPs - Idempotent check
   bigip_firewall_address_list:
     name: "{{ item.name }}"
     addresses: "{{ item.address }}"
@@ -44,13 +50,13 @@
     name: ePDG-S2b-V6-ip
     address: '2606:ae00:2e10:104::5'
 
-- name: Assert Create Address-List - IPs - Idempotent check
+- name: Issue 00871 - Assert Create Address-List - IPs - Idempotent check
   assert:
     that:
         - result is not changed
         - result is success
 
-- name: Create Address-List - CIDRs
+- name: Issue 00871 - Create Address-List - CIDRs
   bigip_firewall_address_list:
     name: "{{ item.name }}"
     addresses: "{{ item.address }}"
@@ -69,13 +75,13 @@
       name: ePDG-S2b-V6-cidr
       address: '2606:ae00:2e10:104::5/128'
 
-- name: Assert Create Address-List - CIDRs
+- name: Issue 00871 - Assert Create Address-List - CIDRs
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Create Address-List - CIDRs - Idempotent check
+- name: Issue 00871 - Create Address-List - CIDRs - Idempotent check
   bigip_firewall_address_list:
     name: "{{ item.name }}"
     addresses: "{{ item.address }}"
@@ -94,13 +100,13 @@
       name: ePDG-S2b-V6-cidr
       address: '2606:ae00:2e10:104::5/128'
 
-- name: Assert Create Address-List - CIDRs - Idempotent check
+- name: Issue 00871 - Assert Create Address-List - CIDRs - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Remove address lists
+- name: Issue 00871 - Remove address lists
   bigip_firewall_address_list:
     name: "{{ item }}"
   register: result
@@ -113,3 +119,11 @@
   - ePDG-DNS-V4-cidr
   - ePDG-S2b-V4-cidr
   - ePDG-S2b-V6-cidr
+
+- name: Issue 00871 - Deprovision AFM
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
