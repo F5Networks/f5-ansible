@@ -7,7 +7,7 @@
 - import_tasks: v1-policy.yaml
 
 - import_tasks: v2-policy.yaml
-  when: system_info.product_information.product_version >= "13.0.0"
+  when: f.system_info.product_version >= "13.0.0"
 
 - import_tasks: common.yaml
 - import_tasks: teardown.yaml
