@@ -46,18 +46,20 @@ EXAMPLES = r'''
 - name: Enable automatic update checking
   bigip_software_update:
     auto_check: yes
-    password: secret
-    server: lb.mydomain.com
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Disable automatic update checking and phoning home
   bigip_software_update:
     auto_check: no
     auto_phone_home: no
-    password: secret
-    server: lb.mydomain.com
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
