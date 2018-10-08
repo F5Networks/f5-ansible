@@ -52,31 +52,32 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Add an iAppLX package
+- name: Install AS3
   bigip_iapplx_package:
-    package: MyApp-0.1.0-0001.noarch.rpm
-    password: secret
-    server: lb.mydomain.com
-    state: present
-    user: admin
+    package: f5-appsvcs-3.5.0-3.noarch.rpm
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Add an iAppLX package stored in a role
   bigip_iapplx_package:
     package: "{{ roles_path }}/files/MyApp-0.1.0-0001.noarch.rpm'"
-    password: secret
-    server: lb.mydomain.com
-    state: present
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Remove an iAppLX package
   bigip_iapplx_package:
     package: MyApp-0.1.0-0001.noarch.rpm
-    password: secret
-    server: lb.mydomain.com
     state: absent
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
