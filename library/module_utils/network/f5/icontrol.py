@@ -98,7 +98,7 @@ class Response(object):
 
     @property
     def content(self):
-        return self._content.decode('utf-8')
+        return self._content
 
     @property
     def raw_content(self):
