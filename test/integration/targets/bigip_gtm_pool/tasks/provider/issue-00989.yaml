@@ -1,0 +1,79 @@
+---
+
+- name: Issue 00989 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+    provider: "{{ provider }}"
+  tags:
+    - module-provisioning
+
+- name: Issue 00989 - Create pool, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    ttl: 60
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00989 - Assert Create pool, type 'a'
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00989 - Create pool, type 'a' - Idempotent check
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    ttl: 60
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00958 - Assert Create pool, 'a' - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00989 - Change ttl
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    ttl: 100
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00989 - Assert Change ttl
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00989 - Change ttl - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    ttl: 100
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00989 - Assert Change ttl - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00989 - Remove gtm pool
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    state: absent
+    type: a
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00989 - De-provision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
+    provider: "{{ provider }}"
+  tags:
+    - module-provisioning
+    - deprovision-module

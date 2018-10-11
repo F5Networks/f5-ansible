@@ -182,6 +182,10 @@ options:
       - Specifies the maximum number of available virtual servers that the system lists in a response.
       - The maximum is 500.
     version_added: 2.8
+  ttl:
+    description:
+      - Specifies the number of seconds that the IP address, once found, is valid.
+    version_added: 2.8
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -311,6 +315,7 @@ class Parameters(AnsibleF5Parameters):
         'preferred_lb_method',
         'state',
         'max_answers_returned',
+        'ttl',
     ]
 
     returnables = [
@@ -324,6 +329,7 @@ class Parameters(AnsibleF5Parameters):
         'disabled',
         'availability_requirements',
         'max_answers_returned',
+        'ttl',
     ]
 
     api_attributes = [
@@ -339,6 +345,7 @@ class Parameters(AnsibleF5Parameters):
         'verifyMemberAvailability',
         'monitor',
         'maxAnswersReturned',
+        'ttl',
     ]
 
     @property
@@ -1205,6 +1212,7 @@ class ArgumentSpec(object):
             ),
             monitors=dict(type='list'),
             max_answers_returned=dict(type='int'),
+            ttl=dict(type='int')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
