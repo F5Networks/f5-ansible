@@ -14,7 +14,6 @@ try:
 except ImportError:
     from io import StringIO
 
-from ansible.module_utils.urls import urllib_error
 from ansible.module_utils.urls import urlparse
 from ansible.module_utils.urls import generic_urlparse
 from ansible.module_utils._text import to_native
