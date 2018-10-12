@@ -286,7 +286,7 @@ class BaseManager(object):
         result = dict()
         state = self.want.state
 
-        if state in ["present", "disabled"]:
+        if state in ["present"]:
             changed = self.present()
         elif state == "absent":
             changed = self.absent()
