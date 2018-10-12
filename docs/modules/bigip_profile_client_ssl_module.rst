@@ -34,14 +34,38 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>advertised_cert_authority</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies that the CAs that the system advertises to clients is being trusted by the profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>allow_expired_crl</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Instructs the system to use the specified CRL file even if it has expired.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>allow_non_ssl</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
@@ -54,6 +78,16 @@ Parameters
                                                                 <td>
                                                                         <div>Enables or disables acceptance of non-SSL connections.</div>
                                                     <div>When creating a new profile, the setting is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>cert_auth_depth</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the maximum number of certificates to be traversed in a client certificate chain.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -122,6 +156,50 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the list of ciphers that the system supports. When creating a new profile, the default cipher list is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>client_auth_crl</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of a file containing a list of revoked client certificates.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>client_auth_frequency</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>once</li>
+                                                                                                                                                                                                <li>always</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the frequency of client authentication for an SSL session.</div>
+                                                    <div>When <code>once</code>, specifies that the system authenticates the client once for an SSL session.</div>
+                                                    <div>When <code>always</code>, specifies that the system authenticates the client once for an SSL session and also upon reuse of that session.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>client_certificate</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>ignore</li>
+                                                                                                                                                                                                <li>require</li>
+                                                                                                                                                                                                <li>request</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the way the system handles client certificates.</div>
+                                                    <div>When <code>ignore</code>, specifies that the system ignores certificates from client systems.</div>
+                                                    <div>When <code>require</code>, specifies that the system requires a client to present a valid certificate.</div>
+                                                    <div>When <code>request</code>, specifies that the system requests a valid certificate from a client but always authenticate the client.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -324,6 +402,20 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>retain_certificate</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code>, client certificate is retained in SSL session.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>secure_renegotiation</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
                                 <td>
@@ -417,6 +509,16 @@ Parameters
                                                                 <td>
                                                                         <div>When <code>present</code>, ensures that the profile exists.</div>
                                                     <div>When <code>absent</code>, ensures the profile is removed.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>trusted_cert_authority</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a client CA that the system trusts.</div>
                                                                                 </td>
             </tr>
                                 <tr>

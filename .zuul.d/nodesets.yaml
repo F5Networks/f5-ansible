@@ -1,0 +1,37 @@
+---
+
+- nodeset:
+    name: centos-7
+    nodes:
+      - name: centos-7
+        label: ansible-centos-7
+
+- nodeset:
+    name: centos-7-1vcpu
+    nodes:
+      - name: centos-7
+        label: ansible-centos-7-1vcpu
+
+- nodeset:
+    name: centos-7-4vcpu
+    nodes:
+      - name: centos-7
+        label: ansible-centos-7-4vcpu
+
+- nodeset:
+    name: fedora-latest
+    nodes:
+      - name: fedora-28
+        label: ansible-fedora-28
+
+- nodeset:
+    name: fedora-latest-1vcpu
+    nodes:
+      - name: fedora-28
+        label: ansible-fedora-28-1vcpu
+
+- nodeset:
+    name: fedora-latest-4vcpu
+    nodes:
+      - name: fedora-28
+        label: ansible-fedora-28-4vcpu

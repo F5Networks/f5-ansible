@@ -1,5 +1,7 @@
 ---
 
+- import_tasks: setup.yaml
+
 - name: Set initial device connectivity
   bigip_device_connectivity:
     config_sync_ip: "{{ config_sync_ip }}"
@@ -133,6 +135,8 @@
   assert:
     that:
       - result is not changed
+
+- import_tasks: teardown.yaml
 
 - import_tasks: issue-00801.yaml
   tags: issue-00801

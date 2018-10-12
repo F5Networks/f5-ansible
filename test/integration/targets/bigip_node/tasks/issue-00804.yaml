@@ -1,0 +1,146 @@
+---
+
+- name: Issue 00804 - Create a node
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors:
+      - icmp
+      - gateway_icmp
+  register: result
+
+- name: Issue 00804 - Create a node
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00804 - Create a node - Idempotent check
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors:
+      - icmp
+      - gateway_icmp
+  register: result
+
+- name: Issue 00804 - Create a node - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00804 - Change availability requirement
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors:
+      - icmp
+      - gateway_icmp
+    availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00804 - Change availability requirement
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00804 - Change availability requirement - Idempotent check
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors:
+      - icmp
+      - gateway_icmp
+    availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00804 - Change availability requirement - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00804 - Change availability requirement - all
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors:
+      - icmp
+      - gateway_icmp
+    availability_requirements:
+      type: all
+  register: result
+
+- name: Issue 00804 - Change availability requirement - all
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00804 - Change availability requirement - all - Idempotent check
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors:
+      - icmp
+      - gateway_icmp
+    availability_requirements:
+      type: all
+  register: result
+
+- name: Issue 00804 - Change availability requirement - all - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00804 - Change monitors - none
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors: none
+  register: result
+
+- name: Issue 00804 - Change monitors - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00804 - Change monitors - none - Idempotent check
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors: none
+  register: result
+
+- name: Issue 00804 - Change monitors - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00804 - Change monitors - empty - Idempotent check
+  bigip_node:
+    name: foo.bar.com
+    address: 2.3.4.5
+    monitors: ''
+  register: result
+
+- name: Issue 00804 - Change monitors - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00804 - Remove node
+  bigip_node:
+    name: foo.bar.com
+    state: absent
+  register: result

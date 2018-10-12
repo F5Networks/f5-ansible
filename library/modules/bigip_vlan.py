@@ -201,75 +201,84 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
 try:
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import transform_name
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'cmpHash': 'cmp_hash',
         'dagTunnel': 'dag_tunnel',
-        'dagRoundRobin': 'dag_round_robin'
+        'dagRoundRobin': 'dag_round_robin',
+        'interfacesReference': 'interfaces',
     }
 
     updatables = [
         'tagged_interfaces', 'untagged_interfaces', 'tag',
         'description', 'mtu', 'cmp_hash', 'dag_tunnel',
-        'dag_round_robin'
+        'dag_round_robin',
     ]
 
     returnables = [
         'description', 'partition', 'tag', 'interfaces',
         'tagged_interfaces', 'untagged_interfaces', 'mtu',
-        'cmp_hash', 'dag_tunnel', 'dag_round_robin'
+        'cmp_hash', 'dag_tunnel', 'dag_round_robin',
     ]
 
     api_attributes = [
         'description', 'interfaces', 'tag', 'mtu', 'cmpHash',
-        'dagTunnel', 'dagRoundRobin'
+        'dagTunnel', 'dagRoundRobin',
     ]
-
-    def to_return(self):
-        result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
-        return result
 
 
 class ApiParameters(Parameters):
     @property
-    def tagged_interfaces(self):
+    def interfaces(self):
         if self._values['interfaces'] is None:
             return None
-        result = [str(x.name) for x in self._values['interfaces'] if x.tagged is True]
+        if 'items' not in self._values['interfaces']:
+            return None
+        result = []
+        for item in self._values['interfaces']['items']:
+            name = item['name']
+            if 'tagged' in item:
+                tagged = item['tagged']
+                result.append(dict(name=name, tagged=tagged))
+            if 'untagged' in item:
+                untagged = item['untagged']
+                result.append(dict(name=name, untagged=untagged))
+        return result
+
+    @property
+    def tagged_interfaces(self):
+        if self.interfaces is None:
+            return None
+        result = [str(x['name']) for x in self.interfaces if 'tagged' in x and x['tagged'] is True]
         result = sorted(result)
         return result
 
     @property
     def untagged_interfaces(self):
-        if self._values['interfaces'] is None:
+        if self.interfaces is None:
             return None
-        result = [str(x.name) for x in self._values['interfaces'] if x.untagged is True]
+        result = [str(x['name']) for x in self.interfaces if 'untagged' in x and x['untagged'] is True]
         result = sorted(result)
         return result
 
@@ -347,17 +356,17 @@ class UsableChanges(Changes):
 class ReportableChanges(Changes):
     @property
     def tagged_interfaces(self):
-        if self._values['interfaces'] is None:
+        if self.interfaces is None:
             return None
-        result = [str(x['name']) for x in self._values['interfaces'] if 'tagged' in x and x['tagged'] is True]
+        result = [str(x['name']) for x in self.interfaces if 'tagged' in x and x['tagged'] is True]
         result = sorted(result)
         return result
 
     @property
     def untagged_interfaces(self):
-        if self._values['interfaces'] is None:
+        if self.interfaces is None:
             return None
-        result = [str(x['name']) for x in self._values['interfaces'] if 'untagged' in x and x['untagged'] is True]
+        result = [str(x['name']) for x in self.interfaces if 'untagged' in x and x['untagged'] is True]
         result = sorted(result)
         return result
 
@@ -449,14 +458,10 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
-
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
@@ -518,42 +523,88 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.changes.api_params()
-        self.client.api.tm.net.vlans.vlan.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        params['name'] = self.want.name
+        params['partition'] = self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
         )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return response['selfLink']
 
     def update_on_device(self):
         params = self.changes.api_params()
-        resource = self.client.api.tm.net.vlans.vlan.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        resource.modify(**params)
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def exists(self):
-        return self.client.api.tm.net.vlans.vlan.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
 
     def remove_from_device(self):
-        resource = self.client.api.tm.net.vlans.vlan.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        if resource:
-            resource.delete()
+        resp = self.client.api.delete(uri)
+        if resp.status == 200:
+            return True
 
     def read_current_from_device(self):
-        resource = self.client.api.tm.net.vlans.vlan.load(
-            name=self.want.name, partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        interfaces = resource.interfaces_s.get_collection()
-        result = resource.attrs
-        result['interfaces'] = interfaces
-        return ApiParameters(params=result)
+        query = '?expandSubcollections=true'
+        resp = self.client.api.get(uri + query)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return ApiParameters(params=response)
 
 
 class ArgumentSpec(object):
@@ -612,18 +663,16 @@ def main():
         supports_check_mode=spec.supports_check_mode,
         mutually_exclusive=spec.mutually_exclusive
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
+    client = F5RestClient(**module.params)
 
     try:
-        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        module.exit_json(**results)
-    except F5ModuleError as e:
+        exit_json(module, results, client)
+    except F5ModuleError as ex:
         cleanup_tokens(client)
-        module.fail_json(msg=str(e))
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':

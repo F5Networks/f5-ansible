@@ -60,7 +60,8 @@ f5_provider_spec = {
         default='rest'
     ),
     'timeout': dict(type='int'),
-    'auth_provider': dict()
+    'auth_provider': dict(),
+    'proxy_to': dict(),
 }
 
 f5_argument_spec = {
@@ -70,27 +71,22 @@ f5_argument_spec = {
 f5_top_spec = {
     'server': dict(
         removed_in_version=2.9,
-        fallback=(env_fallback, ['F5_SERVER'])
     ),
     'user': dict(
         removed_in_version=2.9,
-        fallback=(env_fallback, ['F5_USER', 'ANSIBLE_NET_USERNAME'])
     ),
     'password': dict(
         removed_in_version=2.9,
         no_log=True,
         aliases=['pass', 'pwd'],
-        fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD'])
     ),
     'validate_certs': dict(
         removed_in_version=2.9,
         type='bool',
-        fallback=(env_fallback, ['F5_VALIDATE_CERTS'])
     ),
     'server_port': dict(
         removed_in_version=2.9,
         type='int',
-        fallback=(env_fallback, ['F5_SERVER_PORT'])
     ),
     'transport': dict(
         removed_in_version=2.9,
@@ -222,6 +218,7 @@ def flatten_boolean(value):
 
 
 def cleanup_tokens(client=None):
+    # TODO(Remove this. No longer needed with iControlRestSession destructor)
     if client is None:
         return
     try:
@@ -394,12 +391,14 @@ def is_ansible_debug(module):
 
 
 def fail_json(module, ex, client=None):
+    # TODO(Remove this. No longer needed with iControlRestSession destructor)
     if is_ansible_debug(module) and client:
         module.fail_json(msg=str(ex), __f5debug__=client.api.debug_output)
     module.fail_json(msg=str(ex))
 
 
 def exit_json(module, results, client=None):
+    # TODO(Remove this. No longer needed with iControlRestSession destructor)
     if is_ansible_debug(module) and client:
         results['__f5debug__'] = client.api.debug_output
     module.exit_json(**results)

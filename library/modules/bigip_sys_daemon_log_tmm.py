@@ -22,7 +22,7 @@ version_added: 2.8
 options:
   arp_log_level:
     description:
-      - Specifies the lowest level of ARP messages from the tmm daemon 
+      - Specifies the lowest level of ARP messages from the tmm daemon
         to include in the system log.
     choices:
       - debug
@@ -32,7 +32,7 @@ options:
       - warning
   http_compression_log_level:
     description:
-      - Specifies the lowest level of HTTP compression messages from the tmm daemon 
+      - Specifies the lowest level of HTTP compression messages from the tmm daemon
         to include in the system log.
     choices:
       - debug
@@ -42,7 +42,7 @@ options:
       - warning
   http_log_level:
     description:
-      - Specifies the lowest level of HTTP messages from the tmm daemon 
+      - Specifies the lowest level of HTTP messages from the tmm daemon
         to include in the system log.
     choices:
       - debug
@@ -52,7 +52,7 @@ options:
       - warning
   ip_log_level:
     description:
-      - Specifies the lowest level of IP address messages from the tmm daemon 
+      - Specifies the lowest level of IP address messages from the tmm daemon
         to include in the system log.
     choices:
       - debug
@@ -61,7 +61,7 @@ options:
       - warning
   irule_log_level:
     description:
-      - Specifies the lowest level of iRule messages from the tmm daemon 
+      - Specifies the lowest level of iRule messages from the tmm daemon
         to include in the system log.
     choices:
       - debug
@@ -71,7 +71,7 @@ options:
       - warning
   layer4_log_level:
     description:
-      - Specifies the lowest level of Layer 4 messages from the tmm daemon 
+      - Specifies the lowest level of Layer 4 messages from the tmm daemon
         to include in the system log.
     choices:
       - debug
@@ -79,7 +79,7 @@ options:
       - notice
   net_log_level:
     description:
-      - Specifies the lowest level of network messages from the tmm daemon 
+      - Specifies the lowest level of network messages from the tmm daemon
         to include in the system log.
     choices:
       - critical
@@ -90,7 +90,7 @@ options:
       - warning
   os_log_level:
     description:
-      - Specifies the lowest level of operating system messages from the tmm daemon 
+      - Specifies the lowest level of operating system messages from the tmm daemon
         to include in the system log.
     choices:
       - alert
@@ -103,7 +103,7 @@ options:
       - warning
   pva_log_level:
     description:
-      - Specifies the lowest level of PVA messages from the tmm daemon 
+      - Specifies the lowest level of PVA messages from the tmm daemon
         to include in the system log.
     choices:
       - debug
@@ -111,7 +111,7 @@ options:
       - notice
   ssl_log_level:
     description:
-      - Specifies the lowest level of SSL messages from the tmm daemon 
+      - Specifies the lowest level of SSL messages from the tmm daemon
         to include in the system log.
     choices:
       - alert

@@ -92,6 +92,7 @@ RETURN = r'''
 import os
 import re
 import socket
+import ssl
 import time
 
 from ansible.module_utils.basic import AnsibleModule
@@ -455,7 +456,7 @@ class BaseManager(object):
         while True:
             try:
                 resp = self.client.api.get(uri, timeout=10)
-            except socket.timeout:
+            except (socket.timeout, ssl.SSLError):
                 continue
             response = resp.json()
             if response['_taskState'] == 'FAILED':

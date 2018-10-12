@@ -1,0 +1,6 @@
+---
+
+- project:
+    check:
+      jobs:
+        - noop

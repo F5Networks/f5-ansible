@@ -43,7 +43,7 @@ options:
         traffic selectors.
       - Traffic is matched to the traffic selector with the highest priority (lowest order number).
       - When creating a new traffic selector, if this parameter is not specified, the default
-        is C(last). 
+        is C(last).
   partition:
     description:
       - Device partition to manage resources on.

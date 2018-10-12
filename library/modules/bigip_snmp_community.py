@@ -157,10 +157,10 @@ EXAMPLES = r'''
     source: all
     oid: .1
     access: ro
-    password: secret
-    server: lb.mydomain.com
-    state: present
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Create an SMNP v3 read-write community
@@ -174,34 +174,75 @@ EXAMPLES = r'''
     snmp_privacy_password: secret
     oid: .1
     access: rw
-    password: secret
-    server: lb.mydomain.com
-    state: present
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Remove the default 'public' SNMP community
   bigip_snmp_community:
     name: public
     source: default
-    password: secret
-    server: lb.mydomain.com
     state: absent
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+community:
+  description: The new community value.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: community1
+oid:
+  description: The new OID value.
+  returned: changed
+  type: string
+  sample: .1
+ip_version:
+  description: The new IP version value.
+  returned: changed
+  type: string
+  sample: .1
+snmp_auth_protocol:
+  description: The new SNMP auth protocol.
+  returned: changed
+  type: string
+  sample: sha
+snmp_privacy_protocol:
+  description: The new SNMP privacy protocol.
+  returned: changed
+  type: string
+  sample: aes
+access:
+  description: The new access level for the MIB.
+  returned: changed
+  type: string
+  sample: ro
+source:
+  description: The new source address to access the MIB.
+  returned: changed
+  type: string
+  sample: 1.1.1.1
+snmp_username:
+  description: The new SNMP username.
+  returned: changed
+  type: string
+  sample: user1
+snmp_auth_password:
+  description: The new password of the given snmp_username.
+  returned: changed
+  type: string
+  sample: secret1
+snmp_privacy_password:
+  description: The new password of the given snmp_username.
+  returned: changed
+  type: string
+  sample: secret2
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -245,19 +286,44 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'source', 'oidSubset', 'ipv6', 'communityName', 'access', 'authPassword',
-        'authProtocol', 'username', 'securityLevel', 'privacyProtocol', 'privacyPassword'
+        'source',
+        'oidSubset',
+        'ipv6',
+        'communityName',
+        'access',
+        'authPassword',
+        'authProtocol',
+        'username',
+        'securityLevel',
+        'privacyProtocol',
+        'privacyPassword',
     ]
 
     returnables = [
-        'community', 'oid', 'ip_version', 'snmp_auth_protocol', 'snmp_privacy_protocol',
-        'access', 'source', 'snmp_username', 'snmp_auth_password', 'snmp_privacy_password'
+        'community',
+        'oid',
+        'ip_version',
+        'snmp_auth_protocol',
+        'snmp_privacy_protocol',
+        'access',
+        'source',
+        'snmp_username',
+        'snmp_auth_password',
+        'snmp_privacy_password',
     ]
 
     updatables = [
-        'community', 'oid', 'ip_version', 'snmp_auth_protocol', 'snmp_privacy_protocol',
-        'access', 'source', 'snmp_auth_password', 'snmp_privacy_password', 'security_level',
-        'snmp_username'
+        'community',
+        'oid',
+        'ip_version',
+        'snmp_auth_protocol',
+        'snmp_privacy_protocol',
+        'access',
+        'source',
+        'snmp_auth_password',
+        'snmp_privacy_password',
+        'security_level',
+        'snmp_username',
     ]
 
     @property

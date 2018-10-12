@@ -2,3 +2,6 @@
 
 - import_tasks: issue-00958.yaml
   tags: issue-00958
+
+- import_tasks: issue-00989.yaml
+  tags: issue-00989
