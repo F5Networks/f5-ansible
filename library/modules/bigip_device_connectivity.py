@@ -95,9 +95,10 @@ EXAMPLES = r'''
     unicast_failover:
       - address: management-ip
       - address: 10.1.30.1
-    server: lb.mydomain.com
-    user: admin
-    password: secret
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 '''
 

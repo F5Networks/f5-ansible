@@ -108,20 +108,20 @@ EXAMPLES = r'''
 - name: run show version on remote devices
   bigip_command:
     commands: show sys version
-    server: lb.mydomain.com
-    password: secret
-    user: admin
-    validate_certs: no
+    provider:
+      server: lb.mydomain.com
+      password: secret
+      user: admin
   delegate_to: localhost
 
 - name: run show version and check to see if output contains BIG-IP
   bigip_command:
     commands: show sys version
     wait_for: result[0] contains BIG-IP
-    server: lb.mydomain.com
-    password: secret
-    user: admin
-    validate_certs: no
+    provider:
+      server: lb.mydomain.com
+      password: secret
+      user: admin
   register: result
   delegate_to: localhost
 
@@ -130,10 +130,10 @@ EXAMPLES = r'''
     commands:
       - show sys version
       - list ltm virtual
-    server: lb.mydomain.com
-    password: secret
-    user: admin
-    validate_certs: no
+    provider:
+      server: lb.mydomain.com
+      password: secret
+      user: admin
   delegate_to: localhost
 
 - name: run multiple commands and evaluate the output
@@ -144,10 +144,10 @@ EXAMPLES = r'''
     wait_for:
       - result[0] contains BIG-IP
       - result[1] contains my-vs
-    server: lb.mydomain.com
-    password: secret
-    user: admin
-    validate_certs: no
+    provider:
+      server: lb.mydomain.com
+      password: secret
+      user: admin
   register: result
   delegate_to: localhost
 
@@ -156,10 +156,10 @@ EXAMPLES = r'''
     commands:
       - show sys version
       - tmsh list ltm virtual
-    server: lb.mydomain.com
-    password: secret
-    user: admin
-    validate_certs: no
+    provider:
+      server: lb.mydomain.com
+      password: secret
+      user: admin
   delegate_to: localhost
 
 - name: Delete all LTM nodes in Partition1, assuming no dependencies exist
@@ -167,10 +167,10 @@ EXAMPLES = r'''
     commands:
       - delete ltm node all
     chdir: Partition1
-    server: lb.mydomain.com
-    password: secret
-    user: admin
-    validate_certs: no
+    provider:
+      server: lb.mydomain.com
+      password: secret
+      user: admin
   delegate_to: localhost
 '''
 
