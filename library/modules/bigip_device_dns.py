@@ -67,10 +67,10 @@ EXAMPLES = r'''
     search:
       - localdomain
       - lab.local
-    password: secret
-    server: lb.mydomain.com
-    user: admin
-    validate_certs: no
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
