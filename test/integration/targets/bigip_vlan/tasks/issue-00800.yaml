@@ -159,6 +159,74 @@
     that:
       - result is not changed
 
+- name: Issue 00800 - Change sflow poll interval
+  bigip_vlan:
+    name: issue-00800
+    sflow_poll_interval: 10
+  register: result
+
+- name: Issue 00800 - Assert Change sflow poll interval
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change sflow poll interval - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    sflow_poll_interval: 10
+  register: result
+
+- name: Issue 00800 - Assert Change sflow poll interval - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00800 - Change sflow sampling rate
+  bigip_vlan:
+    name: issue-00800
+    sflow_sampling_rate: 10
+  register: result
+
+- name: Issue 00800 - Assert Change sflow sampling rate
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change sflow sampling rate - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    sflow_sampling_rate: 10
+  register: result
+
+- name: Issue 00800 - Assert Change sflow sampling rate - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00800 - Change both sflow settings
+  bigip_vlan:
+    name: issue-00800
+    sflow_sampling_rate: 20
+    sflow_poll_interval: 30
+  register: result
+
+- name: Issue 00800 - Assert Change both sflow settings
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change both sflow settings - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    sflow_sampling_rate: 20
+    sflow_poll_interval: 30
+  register: result
+
+- name: Issue 00800 - Assert Change both sflow settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Issue 00800 - Delete vlan
   bigip_vlan:
     name: issue-00800

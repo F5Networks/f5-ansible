@@ -136,7 +136,15 @@ options:
     choices:
       - reboot
       - restart-all
-    version_added: 2.8 
+    version_added: 2.8
+  sflow_poll_interval:
+    description:
+      - Specifies the maximum interval in seconds between two pollings.
+    version_added: 2.8
+  sflow_sampling_rate:
+    description:
+      - Specifies the ratio of packets observed to the samples generated.
+    version_added: 2.8
 notes:
   - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5
@@ -241,6 +249,16 @@ fail_safe_action:
   returned: changed
   type: string
   sample: reboot
+sflow_poll_interval:
+  description: The new sFlow Polling Interval setting.
+  returned: changed
+  type: int
+  sample: 10
+sflow_sampling_rate:
+  description: The new sFlow Sampling Rate setting.
+  returned: changed
+  type: int
+  sample: 20
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -294,6 +312,7 @@ class Parameters(AnsibleF5Parameters):
         'failsafe',
         'failsafeAction',
         'failsafeTimeout',
+        'sflow',
     ]
 
     updatables = [
@@ -309,6 +328,9 @@ class Parameters(AnsibleF5Parameters):
         'fail_safe',
         'fail_safe_action',
         'fail_safe_timeout',
+        'sflow_poll_interval',
+        'sflow_sampling_rate',
+        'sflow',
     ]
 
     returnables = [
@@ -326,6 +348,9 @@ class Parameters(AnsibleF5Parameters):
         'fail_safe',
         'fail_safe_action',
         'fail_safe_timeout',
+        'sflow_poll_interval',
+        'sflow_sampling_rate',
+        'sflow',
     ]
 
     @property
@@ -370,6 +395,20 @@ class ApiParameters(Parameters):
         result = [str(x['name']) for x in self.interfaces if 'untagged' in x and x['untagged'] is True]
         result = sorted(result)
         return result
+
+    @property
+    def sflow_poll_interval(self):
+        try:
+            return self._values['sflow']['pollInterval']
+        except (KeyError, TypeError):
+            return None
+
+    @property
+    def sflow_sampling_rate(self):
+        try:
+            return self._values['sflow']['samplingRate']
+        except (KeyError, TypeError):
+            return None
 
 
 class ModuleParameters(Parameters):
@@ -481,6 +520,24 @@ class ReportableChanges(Changes):
     def fail_safe(self):
         return flatten_boolean(self._values['fail_safe'])
 
+    @property
+    def sflow(self):
+        return None
+
+    @property
+    def sflow_poll_interval(self):
+        try:
+            return self._values['sflow']['pollInterval']
+        except (KeyError, TypeError):
+            return None
+
+    @property
+    def sflow_sampling_rate(self):
+        try:
+            return self._values['sflow']['samplingRate']
+        except (KeyError, TypeError):
+            return None
+
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -536,6 +593,38 @@ class Difference(object):
         else:
             return None
         return result
+
+    @property
+    def sflow(self):
+        result = {}
+        s = self.sflow_poll_interval
+        if s:
+            result.update(s)
+        s = self.sflow_sampling_rate
+        if s:
+            result.update(s)
+        if result:
+            return dict(
+                sflow=result
+            )
+
+    @property
+    def sflow_poll_interval(self):
+        if self.want.sflow_poll_interval is None:
+            return None
+        if self.want.sflow_poll_interval != self.have.sflow_poll_interval:
+            return dict(
+                pollInterval=self.want.sflow_poll_interval
+            )
+
+    @property
+    def sflow_sampling_rate(self):
+        if self.want.sflow_sampling_rate is None:
+            return None
+        if self.want.sflow_sampling_rate != self.have.sflow_sampling_rate:
+            return dict(
+                samplingRate=self.want.sflow_sampling_rate
+            )
 
 
 class ModuleManager(object):
@@ -755,6 +844,8 @@ class ArgumentSpec(object):
             fail_safe_action=dict(
                 choices=['reboot', 'restart-all']
             ),
+            sflow_poll_interval=dict(type='int'),
+            sflow_sampling_rate=dict(type='int'),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
