@@ -3,9 +3,10 @@
 - import_tasks: setup.yaml
 
 - name: Collect BIG-IP facts
-  bigip_facts:
-    include: system_info
-  register: result
+  bigip_device_facts:
+    include:
+      - system-info
+  register: f
   tags: issue-00783
 
 - name: Fail to create a trunk on VE with LACP - Expected failure
@@ -14,7 +15,7 @@
     lacp_enabled: yes
   register: result
   failed_when: result is success
-  when: system_info.system_information.product_category == "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Assert Fail to create a trunk on VE with LACP - Expected failure
   assert:
@@ -33,13 +34,13 @@
     lacp_mode: passive
     lacp_timeout: short
   register: result
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Assert Create a trunk on hardware
   assert:
     that:
       - result is changed
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Create a trunk on hardware - Idempotent check
   bigip_trunk:
@@ -53,13 +54,13 @@
     lacp_mode: passive
     lacp_timeout: short
   register: result
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Assert Create a trunk on hardware - Idempotent check
   assert:
     that:
       - result is not changed
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Create a trunk on VE
   bigip_trunk:
@@ -72,13 +73,13 @@
     lacp_mode: passive
     lacp_timeout: short
   register: result
-  when: system_info.system_information.product_category == "Virtual Edition"
+  when: "'Virtual Edition' in f.system_info.marketing_name"
 
 - name: Assert Create a trunk on VE
   assert:
     that:
       - result is changed
-  when: system_info.system_information.product_category == "Virtual Edition"
+  when: "'Virtual Edition' in f.system_info.marketing_name"
 
 - name: Create a trunk on VE - Idempotent check
   bigip_trunk:
@@ -91,13 +92,13 @@
     lacp_mode: passive
     lacp_timeout: short
   register: result
-  when: system_info.system_information.product_category == "Virtual Edition"
+  when: "'Virtual Edition' in f.system_info.marketing_name"
 
 - name: Assert Create a trunk on VE - Idempotent check
   assert:
     that:
       - result is not changed
-  when: system_info.system_information.product_category == "Virtual Edition"
+  when: "'Virtual Edition' in f.system_info.marketing_name"
 
 - name: Change link selection policy, auto
   bigip_trunk:
@@ -214,52 +215,52 @@
     name: trunk1
     lacp_enabled: no
   register: result
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Assert Change lacp enabled, no
   assert:
     that:
       - result is changed
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Change lacp enabled, no - Idempotent check
   bigip_trunk:
     name: trunk1
     lacp_enabled: no
   register: result
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Assert Change lacp enabled, no - Idempotent check
   assert:
     that:
       - result is not changed
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Change lacp enabled, yes
   bigip_trunk:
     name: trunk1
     lacp_enabled: yes
   register: result
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Assert Change lacp enabled, yes
   assert:
     that:
       - result is changed
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Change lacp enabled, yes - Idempotent check
   bigip_trunk:
     name: trunk1
     lacp_enabled: yes
   register: result
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Assert Change lacp enabled, yes - Idempotent check
   assert:
     that:
       - result is not changed
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
 
 - name: Change lacp mode, active
   bigip_trunk:
@@ -471,4 +472,4 @@
 
 - import_tasks: issue-00783.yaml
   tags: issue-00783
-  when: system_info.system_information.product_category != "Virtual Edition"
+  when: "'Virtual Edition' not in f.system_info.marketing_name"
