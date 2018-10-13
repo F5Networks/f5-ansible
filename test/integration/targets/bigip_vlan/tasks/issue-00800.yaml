@@ -1,0 +1,55 @@
+---
+
+- name: Issue 00800 - Create vlan
+  bigip_vlan:
+    name: issue-00800
+    mtu: 1600
+
+- name: Issue 00800 - Change source checking - yes
+  bigip_vlan:
+    name: issue-00800
+    source_check: yes
+  register: result
+
+- name: Issue 00800 - Assert Change source checking - yes
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change source checking - yes - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    source_check: yes
+  register: result
+
+- name: Issue 00800 - Assert Change source checking - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00800 - Change source checking - no
+  bigip_vlan:
+    name: issue-00800
+    source_check: no
+  register: result
+
+- name: Issue 00800 - Assert Change source checking - no
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change source checking - no - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    source_check: no
+  register: result
+
+- name: Issue 00800 - Assert Change source checking - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00800 - Delete vlan
+  bigip_vlan:
+    name: issue-00800
+    state: absent

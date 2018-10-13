@@ -111,6 +111,13 @@ options:
       - Device partition to manage resources on.
     default: Common
     version_added: 2.5
+  source_check:
+    description:
+      - When C(yes), specifies that the system verifies that the return route to an initial
+        packet is the same VLAN from which the packet originated.
+      - The system performs this verification only if the C(auto_last_hop) option is C(no).
+    type: bool
+    version_added: 2.8
 notes:
   - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5
@@ -122,45 +129,45 @@ author:
 EXAMPLES = r'''
 - name: Create VLAN
   bigip_vlan:
-      name: "net1"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
-      validate_certs: "no"
+    name: net1
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Set VLAN tag
   bigip_vlan:
-      name: "net1"
-      password: "secret"
-      server: "lb.mydomain.com"
-      tag: "2345"
-      user: "admin"
-      validate_certs: "no"
+    name: net1
+    tag: 2345
+    provider:
+      user: admin
+      password: secret
+      server: lb.mydomain.com
   delegate_to: localhost
 
 - name: Add VLAN 2345 as tagged to interface 1.1
   bigip_vlan:
-      tagged_interface: 1.1
-      name: "net1"
-      password: "secret"
-      server: "lb.mydomain.com"
-      tag: "2345"
-      user: "admin"
-      validate_certs: "no"
+    tagged_interface: 1.1
+    name: net1
+    tag: 2345
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Add VLAN 1234 as tagged to interfaces 1.1 and 1.2
   bigip_vlan:
-      tagged_interfaces:
-          - 1.1
-          - 1.2
-      name: "net1"
-      password: "secret"
-      server: "lb.mydomain.com"
-      tag: "1234"
-      user: "admin"
-      validate_certs: "no"
+    tagged_interfaces:
+      - 1.1
+      - 1.2
+    name: net1
+    tag: 1234
+    provider:
+      user: admin
+      password: secret
+      server: lb.mydomain.com
   delegate_to: localhost
 '''
 
@@ -195,6 +202,11 @@ dag_tunnel:
   returned: changed
   type: string
   sample: outer
+source_check:
+  description: The new Source Check setting.
+  returned: changed
+  type: bool
+  sample: yes
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -210,6 +222,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import flatten_boolean
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -220,6 +233,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import flatten_boolean
 
 
 class Parameters(AnsibleF5Parameters):
@@ -228,24 +242,49 @@ class Parameters(AnsibleF5Parameters):
         'dagTunnel': 'dag_tunnel',
         'dagRoundRobin': 'dag_round_robin',
         'interfacesReference': 'interfaces',
+        'sourceChecking': 'source_check',
     }
 
     updatables = [
-        'tagged_interfaces', 'untagged_interfaces', 'tag',
-        'description', 'mtu', 'cmp_hash', 'dag_tunnel',
+        'tagged_interfaces',
+        'untagged_interfaces',
+        'tag',
+        'description',
+        'mtu',
+        'cmp_hash',
+        'dag_tunnel',
         'dag_round_robin',
+        'source_check',
     ]
 
     returnables = [
-        'description', 'partition', 'tag', 'interfaces',
-        'tagged_interfaces', 'untagged_interfaces', 'mtu',
-        'cmp_hash', 'dag_tunnel', 'dag_round_robin',
+        'description',
+        'partition',
+        'tag',
+        'interfaces',
+        'tagged_interfaces',
+        'untagged_interfaces',
+        'mtu',
+        'cmp_hash',
+        'dag_tunnel',
+        'dag_round_robin',
+        'source_check',
     ]
 
     api_attributes = [
-        'description', 'interfaces', 'tag', 'mtu', 'cmpHash',
-        'dagTunnel', 'dagRoundRobin',
+        'description',
+        'interfaces',
+        'tag',
+        'mtu',
+        'cmpHash',
+        'dagTunnel',
+        'dagRoundRobin',
+        'sourceChecking',
     ]
+
+    @property
+    def source_check(self):
+        return flatten_boolean(self._values['source_check'])
 
 
 class ApiParameters(Parameters):
@@ -350,7 +389,13 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def source_check(self):
+        if self._values['source_check'] is None:
+            return None
+        if self._values['source_check'] == 'yes':
+            return 'enabled'
+        return 'disabled'
 
 
 class ReportableChanges(Changes):
@@ -369,6 +414,10 @@ class ReportableChanges(Changes):
         result = [str(x['name']) for x in self.interfaces if 'untagged' in x and x['untagged'] is True]
         result = sorted(result)
         return result
+
+    @property
+    def source_check(self):
+        return flatten_boolean(self._values['source_check'])
 
 
 class Difference(object):
@@ -638,6 +687,7 @@ class ArgumentSpec(object):
                 choices=['inner', 'outer']
             ),
             dag_round_robin=dict(type='bool'),
+            source_check=dict(type='bool'),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
@@ -645,7 +695,7 @@ class ArgumentSpec(object):
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
-            )
+            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
