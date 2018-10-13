@@ -49,6 +49,116 @@
     that:
       - result is not changed
 
+- name: Issue 00800 - Change fail safe - yes
+  bigip_vlan:
+    name: issue-00800
+    fail_safe: yes
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe - yes
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change fail safe - yes - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    fail_safe: yes
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00800 - Change fail safe - no
+  bigip_vlan:
+    name: issue-00800
+    fail_safe: no
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe - no
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change fail safe - no - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    fail_safe: no
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00800 - Change fail safe timeout
+  bigip_vlan:
+    name: issue-00800
+    fail_safe_timeout: 100
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe timeout
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change fail safe timeout - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    fail_safe_timeout: 100
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00800 - Change fail safe action - restart-all
+  bigip_vlan:
+    name: issue-00800
+    fail_safe_action: restart-all
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe action - restart-all
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change fail safe action - restart-all - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    fail_safe_action: restart-all
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe action - restart-all - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00800 - Change fail safe action - reboot
+  bigip_vlan:
+    name: issue-00800
+    fail_safe_action: reboot
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe action - reboot
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00800 - Change fail safe action - reboot - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    fail_safe_action: reboot
+  register: result
+
+- name: Issue 00800 - Assert Change fail safe action - reboot - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Issue 00800 - Delete vlan
   bigip_vlan:
     name: issue-00800
