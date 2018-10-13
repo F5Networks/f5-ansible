@@ -118,6 +118,25 @@ options:
       - The system performs this verification only if the C(auto_last_hop) option is C(no).
     type: bool
     version_added: 2.8
+  fail_safe:
+    description:
+      - When C(yes), specifies that the VLAN takes the specified C(fail_safe_action) if the
+        system detects a loss of traffic on this VLAN's interfaces.
+    type: bool
+    version_added: 2.8
+  fail_safe_timeout:
+    description:
+      - Specifies the number of seconds that a system can run without detecting network
+        traffic on this VLAN before it takes the C(fail_safe_action).
+    version_added: 2.8
+  fail_safe_action:
+    description:
+      - Specifies the action that the system takes when it does not detect any traffic on
+        this VLAN, and the C(fail_safe_timeout) has expired.
+    choices:
+      - reboot
+      - restart-all
+    version_added: 2.8 
 notes:
   - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5
@@ -207,6 +226,21 @@ source_check:
   returned: changed
   type: bool
   sample: yes
+fail_safe:
+  description: The new Fail Safe setting.
+  returned: changed
+  type: bool
+  sample: no
+fail_safe_timeout:
+  description: The new Fail Safe Timeout setting.
+  returned: changed
+  type: int
+  sample: 90
+fail_safe_action:
+  description: The new Fail Safe Action setting.
+  returned: changed
+  type: string
+  sample: reboot
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -243,7 +277,24 @@ class Parameters(AnsibleF5Parameters):
         'dagRoundRobin': 'dag_round_robin',
         'interfacesReference': 'interfaces',
         'sourceChecking': 'source_check',
+        'failsafe': 'fail_safe',
+        'failsafeAction': 'fail_safe_action',
+        'failsafeTimeout': 'fail_safe_timeout',
     }
+
+    api_attributes = [
+        'description',
+        'interfaces',
+        'tag',
+        'mtu',
+        'cmpHash',
+        'dagTunnel',
+        'dagRoundRobin',
+        'sourceChecking',
+        'failsafe',
+        'failsafeAction',
+        'failsafeTimeout',
+    ]
 
     updatables = [
         'tagged_interfaces',
@@ -255,6 +306,9 @@ class Parameters(AnsibleF5Parameters):
         'dag_tunnel',
         'dag_round_robin',
         'source_check',
+        'fail_safe',
+        'fail_safe_action',
+        'fail_safe_timeout',
     ]
 
     returnables = [
@@ -269,22 +323,18 @@ class Parameters(AnsibleF5Parameters):
         'dag_tunnel',
         'dag_round_robin',
         'source_check',
-    ]
-
-    api_attributes = [
-        'description',
-        'interfaces',
-        'tag',
-        'mtu',
-        'cmpHash',
-        'dagTunnel',
-        'dagRoundRobin',
-        'sourceChecking',
+        'fail_safe',
+        'fail_safe_action',
+        'fail_safe_timeout',
     ]
 
     @property
     def source_check(self):
         return flatten_boolean(self._values['source_check'])
+
+    @property
+    def fail_safe(self):
+        return flatten_boolean(self._values['fail_safe'])
 
 
 class ApiParameters(Parameters):
@@ -397,6 +447,14 @@ class UsableChanges(Changes):
             return 'enabled'
         return 'disabled'
 
+    @property
+    def fail_safe(self):
+        if self._values['fail_safe'] is None:
+            return None
+        if self._values['fail_safe'] == 'yes':
+            return 'enabled'
+        return 'disabled'
+
 
 class ReportableChanges(Changes):
     @property
@@ -418,6 +476,10 @@ class ReportableChanges(Changes):
     @property
     def source_check(self):
         return flatten_boolean(self._values['source_check'])
+
+    @property
+    def fail_safe(self):
+        return flatten_boolean(self._values['fail_safe'])
 
 
 class Difference(object):
@@ -688,6 +750,11 @@ class ArgumentSpec(object):
             ),
             dag_round_robin=dict(type='bool'),
             source_check=dict(type='bool'),
+            fail_safe=dict(type='bool'),
+            fail_safe_timeout=dict(type='int'),
+            fail_safe_action=dict(
+                choices=['reboot', 'restart-all']
+            ),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
