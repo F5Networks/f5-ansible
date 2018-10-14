@@ -10,3 +10,13 @@ vlan_interfaces1:
   - 1.2
 vlan_tag1: 1234
 vlan_tag2: 2345
+
+# latforms that support DAG tunnels
+dags:
+  - A109
+  - A112
+  - A113
+  - A108
+  - C109
+  - D110
+  - D113
