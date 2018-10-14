@@ -227,6 +227,72 @@
     that:
       - result is not changed
 
+- name: Issue 00800 - Collect BIG-IP facts
+  bigip_device_facts:
+    include:
+      - system-info
+  register: f
+
+- name: Issue 00800 - Change interfaces
+  bigip_vlan:
+    name: issue-00800
+    interfaces:
+      - interface: 1.1
+        tagging: tagged
+      - interface: 1.2
+        tagging: untagged
+  register: result
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+
+- name: Issue 00800 - Assert Change interfaces
+  assert:
+    that:
+      - result is changed
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+
+- name: Issue 00800 - Change interfaces - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    interfaces:
+      - interface: 1.1
+        tagging: tagged
+      - interface: 1.2
+        tagging: untagged
+  register: result
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+
+- name: Issue 00800 - Assert Change interfaces - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+
+- name: Issue 00800 - Change interfaces - none
+  bigip_vlan:
+    name: issue-00800
+    interfaces: none
+  register: result
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+
+- name: Issue 00800 - Assert Change interfaces - none
+  assert:
+    that:
+      - result is changed
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+
+- name: Issue 00800 - Change interfaces - none - Idempotent check
+  bigip_vlan:
+    name: issue-00800
+    interfaces: none
+  register: result
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+
+- name: Issue 00800 - Assert Change interfaces - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+
 - name: Issue 00800 - Delete vlan
   bigip_vlan:
     name: issue-00800

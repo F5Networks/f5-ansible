@@ -145,6 +145,21 @@ options:
     description:
       - Specifies the ratio of packets observed to the samples generated.
     version_added: 2.8
+  interfaces:
+    description:
+      - Interfaces that you want added to the VLAN. This can include both tagged
+        and untagged interfaces as the C(tagging) parameter specifies.
+    suboptions:
+      interface:
+        description:
+          - The name of the interface
+      tagging:
+        description:
+          - Whether the interface is C(tagged) or C(untagged).
+        choices:
+          - tagged
+          - untagged
+    version_added: 2.8
 notes:
   - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5
@@ -275,6 +290,7 @@ try:
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.common import compare_complex_list
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -286,6 +302,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.common import flatten_boolean
+    from ansible.module_utils.network.f5.common import compare_complex_list
 
 
 class Parameters(AnsibleF5Parameters):
@@ -316,6 +333,7 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     updatables = [
+        'interfaces',
         'tagged_interfaces',
         'untagged_interfaces',
         'tag',
@@ -412,6 +430,31 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
+    @property
+    def interfaces(self):
+        if self._values['interfaces'] is None:
+            return None
+        elif len(self._values['interfaces']) == 1 and self._values['interfaces'][0] in ['', 'none']:
+            return ''
+        result = []
+        for item in self._values['interfaces']:
+            if 'interface' not in item:
+                raise F5ModuleError(
+                    "An 'interface' key must be provided when specifying a list of interfaces."
+                )
+            if 'tagging' not in item:
+                raise F5ModuleError(
+                    "A 'tagging' key must be provided when specifying a list of interfaces."
+                )
+            name = str(item['interface'])
+            tagging = item['tagging']
+
+            if tagging == 'tagged':
+                result.append(dict(name=name, tagged=True))
+            else:
+                result.append(dict(name=name, untagged=True))
+        return result
+
     @property
     def untagged_interfaces(self):
         if self._values['untagged_interfaces'] is None:
@@ -559,6 +602,20 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def interfaces(self):
+        if self.want.interfaces is None:
+            return None
+        if self.have.interfaces is None and self.want.interfaces in ['', 'none']:
+            return None
+        if self.have.interfaces is not None and self.want.interfaces in ['', 'none']:
+            return []
+        if self.have.interfaces is None:
+            return dict(
+                interfaces=self.want.interfaces
+            )
+        return compare_complex_list(self.want.interfaces, self.have.interfaces)
 
     @property
     def untagged_interfaces(self):
@@ -822,6 +879,15 @@ class ArgumentSpec(object):
                 type='list',
                 aliases=['untagged_interface']
             ),
+            interfaces=dict(
+                type='list',
+                options=dict(
+                    interface=dict(),
+                    tagging=dict(
+                        choice=['tagged', 'untagged']
+                    )
+                )
+            ),
             description=dict(),
             tag=dict(
                 type='int'
@@ -859,7 +925,7 @@ class ArgumentSpec(object):
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.mutually_exclusive = [
-            ['tagged_interfaces', 'untagged_interfaces']
+            ['tagged_interfaces', 'untagged_interfaces', 'interfaces'],
         ]
 
 
