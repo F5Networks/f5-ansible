@@ -28,12 +28,16 @@ options:
       - Specifies a list of tagged interfaces and trunks that you want to
         configure for the VLAN. Use tagged interfaces or trunks when
         you want to assign a single interface or trunk to multiple VLANs.
+      - This parameter is mutually exclusive with the C(untagged_interfaces)
+        and C(interfaces) parameters.
     aliases:
       - tagged_interface
   untagged_interfaces:
     description:
       - Specifies a list of untagged interfaces and trunks that you want to
         configure for the VLAN.
+      - This parameter is mutually exclusive with the C(tagged_interfaces)
+        and C(interfaces) parameters.
     aliases:
       - untagged_interface
   name:
@@ -149,6 +153,8 @@ options:
     description:
       - Interfaces that you want added to the VLAN. This can include both tagged
         and untagged interfaces as the C(tagging) parameter specifies.
+      - This parameter is mutually exclusive with the C(untagged_interfaces) and
+        C(tagged_interfaces) parameters.
     suboptions:
       interface:
         description:
