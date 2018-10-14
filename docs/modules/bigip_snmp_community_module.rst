@@ -471,10 +471,10 @@ Examples
         source: all
         oid: .1
         access: ro
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Create an SMNP v3 read-write community
@@ -488,20 +488,21 @@ Examples
         snmp_privacy_password: secret
         oid: .1
         access: rw
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Remove the default 'public' SNMP community
       bigip_snmp_community:
         name: public
         source: default
-        password: secret
-        server: lb.mydomain.com
         state: absent
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -514,35 +515,139 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>param1</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new param1 value of the resource.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>param2</b>
+                    <b>access</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param2 value of the resource.</div>
+                                            <div>The new access level for the MIB.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ro</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>community</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new community value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">community1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>ip_version</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new IP version value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>oid</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new OID value.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>snmp_auth_password</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new password of the given snmp_username.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">secret1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>snmp_auth_protocol</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new SNMP auth protocol.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">sha</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>snmp_privacy_password</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new password of the given snmp_username.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">secret2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>snmp_privacy_protocol</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new SNMP privacy protocol.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">aes</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>snmp_username</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new SNMP username.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">user1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>source</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new source address to access the MIB.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.1.1.1</div>
                                     </td>
             </tr>
                         </table>

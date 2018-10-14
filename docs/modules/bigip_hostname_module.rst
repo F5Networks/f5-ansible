@@ -303,4 +303,5 @@ Author
 
 - Tim Rupp (@caphrim007)
 - Matthew Lam (@mryanlam)
+- Wojciech Wypior (@wojtek0806)
 

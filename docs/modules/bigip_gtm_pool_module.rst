@@ -37,7 +37,7 @@ Parameters
                                                                                                                                                                                                                                                     
                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -451,6 +451,16 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Pool state. When <code>present</code>, ensures that the pool is created and enabled. When <code>absent</code>, ensures that the pool is removed from the system. When <code>enabled</code> or <code>disabled</code>, ensures that the pool is enabled or disabled (respectively) on the remote device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ttl</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the number of seconds that the IP address, once found, is valid.</div>
                                                                                 </td>
             </tr>
                                 <tr>

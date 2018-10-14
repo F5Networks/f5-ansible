@@ -351,83 +351,91 @@ Examples
     
     - name: Import and activate ASM policy
       bigip_asm_policy:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: new_asm_policy
         file: /root/asm_policy.xml
         active: yes
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Import ASM policy from template
       bigip_asm_policy:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: new_sharepoint_policy
         template: SharePoint 2007 (http)
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Create blank ASM policy
       bigip_asm_policy:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: new_blank_policy
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Create blank ASM policy and activate
       bigip_asm_policy:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: new_blank_policy
         active: yes
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Activate ASM policy
       bigip_asm_policy:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: inactive_policy
         active: yes
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Deactivate ASM policy
       bigip_asm_policy:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: active_policy
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Import and activate ASM policy in Role
       bigip_asm_policy:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: new_asm_policy
         file: "{{ role_path }}/files/asm_policy.xml"
         active: yes
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Import ASM binary policy
       bigip_asm_policy:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: new_asm_policy
         file: "/root/asm_policy.plc"
         active: yes
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
 

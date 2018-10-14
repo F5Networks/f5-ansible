@@ -414,25 +414,21 @@ Examples
     - name: Create a data group of addresses
       bigip_data_group:
         name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
         records:
           - key: 0.0.0.0/32
             value: External_NAT
           - key: 10.10.10.10
             value: No_NAT
         type: address
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Create a data group of strings
       bigip_data_group:
         name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
         records:
           - key: caddy
             value: ""
@@ -441,27 +437,27 @@ Examples
           - key: cactus
             value: ""
         type: string
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Create a data group of IP addresses from a file
       bigip_data_group:
         name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
         records_src: /path/to/dg-file
         type: address
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Update an existing internal data group of strings
       bigip_data_group:
         name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
         internal: yes
-        user: admin
         records:
           - key: caddy
             value: ""
@@ -469,6 +465,10 @@ Examples
             value: ""
           - key: cactus
             value: ""
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Show the data format expected for records_content - address 1
@@ -537,4 +537,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 
