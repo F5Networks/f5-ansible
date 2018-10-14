@@ -10,52 +10,68 @@
     name: issue-00433
     dag_round_robin: yes
   register: result
-  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
+    - f.system_info.platform in dags
 
 - name: Issue 00373 - Assert Create vlan
   assert:
     that:
       - result is changed
-  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
+    - f.system_info.platform in dags
 
 - name: Issue 00373 - Create vlan - Idempotent check
   bigip_vlan:
     name: issue-00433
     dag_round_robin: yes
   register: result
-  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
+    - f.system_info.platform in dags
 
 - name: Issue 00373 - Assert Create vlan - Idempotent check
   assert:
     that:
       - result is not changed
-  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
+    - f.system_info.platform in dags
 
 - name: Issue 00373 - Change vlan
   bigip_vlan:
     name: issue-00433
     dag_round_robin: no
   register: result
-  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
+    - f.system_info.platform in dags
 
 - name: Issue 00373 - Assert Change vlan
   assert:
     that:
       - result is changed
-  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
+    - f.system_info.platform in dags
 
 - name: Issue 00373 - Change vlan - Idempotent check
   bigip_vlan:
     name: issue-00433
     dag_round_robin: no
   register: result
-  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
+    - f.system_info.platform in dags
 
 - name: Issue 00373 - Assert Change vlan - Idempotent check
   assert:
     that:
       - result is not changed
-  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
+    - f.system_info.platform in dags
 
 - name: Issue 00373 - Remove vlan
   bigip_vlan:
