@@ -295,30 +295,30 @@ Examples
       bigip_configsync_action:
         device_group: foo-group
         sync_device_to_group: yes
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        validate_certs: no
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Sync configuration from most recent device to the current host
       bigip_configsync_action:
         device_group: foo-group
         sync_most_recent_to_device: yes
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        validate_certs: no
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Perform an initial sync of a device to a new device group
       bigip_configsync_action:
         device_group: new-device-group
         sync_device_to_group: yes
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        validate_certs: no
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
 
@@ -339,4 +339,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

@@ -307,20 +307,21 @@ Examples
         regkey_pool: foo-pool
         license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
         accept_eula: yes
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Remove a registration key license from a pool
       bigiq_regkey_license:
         regkey_pool: foo-pool
         license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-        password: secret
-        server: lb.mydomain.com
         state: absent
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 

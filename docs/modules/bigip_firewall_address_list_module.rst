@@ -377,10 +377,10 @@ Examples
           - 3.3.3.3
           - 4.4.4.4
           - 5.5.5.5
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -522,4 +522,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

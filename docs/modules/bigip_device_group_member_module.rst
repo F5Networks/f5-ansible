@@ -277,20 +277,20 @@ Examples
       bigip_device_group_member:
         name: "{{ inventory_hostname }}"
         device_group: device_trust_group
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Add the hosts in the current scope to "device_trust_group"
       bigip_device_group_member:
         name: "{{ item }}"
         device_group: device_trust_group
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       with_items: "{{ hostvars.keys() }}"
       run_once: true
       delegate_to: localhost
@@ -313,4 +313,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

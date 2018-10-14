@@ -451,68 +451,64 @@ Examples
     
     - name: Add node
       bigip_node:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
-        partition: Common
         host: 10.20.30.40
         name: 10.20.30.40
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Add node with a single 'ping' monitor
       bigip_node:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
-        partition: Common
         host: 10.20.30.40
         name: mytestserver
         monitors:
           - /Common/icmp
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Modify node description
       bigip_node:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
-        partition: Common
         name: 10.20.30.40
         description: Our best server yet
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Delete node
       bigip_node:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         state: absent
-        partition: Common
         name: 10.20.30.40
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Force node offline
       bigip_node:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         state: disabled
-        partition: Common
         name: 10.20.30.40
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Add node by their FQDN
       bigip_node:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
-        partition: Common
         fqdn: foo.bar.com
         name: 10.20.30.40
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
 

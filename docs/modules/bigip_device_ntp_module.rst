@@ -276,19 +276,19 @@ Examples
       bigip_device_ntp:
         ntp_servers:
           - 192.0.2.23
-        password: secret
-        server: lb.mydomain.com
-        user: admin
-        validate_certs: no
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Set timezone
       bigip_device_ntp:
-        password: secret
-        server: lb.mydomain.com
         timezone: America/Los_Angeles
-        user: admin
-        validate_certs: no
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 

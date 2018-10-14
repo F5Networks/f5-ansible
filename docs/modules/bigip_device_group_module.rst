@@ -372,20 +372,20 @@ Examples
     - name: Create a sync-only device group
       bigip_device_group:
         name: foo-group
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Create a sync-only device group with auto-sync enabled
       bigip_device_group:
         name: foo-group
         auto_sync: yes
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -510,4 +510,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

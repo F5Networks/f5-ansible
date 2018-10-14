@@ -310,10 +310,10 @@ Examples
         search:
           - localdomain
           - lab.local
-        password: secret
-        server: lb.mydomain.com
-        user: admin
-        validate_certs: no
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -414,4 +414,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 
