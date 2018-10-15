@@ -199,18 +199,35 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'defaultsFrom', 'interval', 'timeout', 'destination', 'run', 'args',
+        'defaultsFrom',
+        'interval',
+        'timeout',
+        'destination',
+        'run',
+        'args',
         'description',
     ]
 
     returnables = [
-        'parent', 'ip', 'port', 'interval', 'timeout', 'variables', 'external_program',
-        'arguments', 'description',
+        'parent',
+        'ip',
+        'port',
+        'interval',
+        'timeout',
+        'variables',
+        'external_program',
+        'arguments',
+        'description',
     ]
 
     updatables = [
-        'destination', 'interval', 'timeout', 'variables', 'external_program',
-        'arguments', 'description',
+        'destination',
+        'interval',
+        'timeout',
+        'variables',
+        'external_program',
+        'arguments',
+        'description',
     ]
 
     @property
