@@ -135,20 +135,22 @@ author:
 EXAMPLES = r'''
 - name: Create SNMP DCS monitor
   bigip_monitor_snmp_dca:
-    state: present
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     name: my_monitor
+    state: present
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Remove TCP Echo Monitor
   bigip_monitor_snmp_dca:
-    state: absent
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     name: my_monitor
+    state: absent
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 '''
 
