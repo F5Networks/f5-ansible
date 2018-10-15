@@ -64,35 +64,47 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            parent='/Common/ldap',
+            interval=10,
+            time_until_up=0,
+            timeout=30,
+        )
 
-    def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        p = ApiParameters(params=args)
+        assert p.parent == '/Common/ldap'
+        assert p.interval == 10
+        assert p.time_until_up == 0
+        assert p.timeout == 30
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        set_module_args(dict(
+            name='foo',
+            parent='/Common/ldap',
+            interval=20,
+            timeout=30,
+            time_until_up=60,
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
