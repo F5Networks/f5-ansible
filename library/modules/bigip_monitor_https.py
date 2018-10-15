@@ -116,21 +116,23 @@ author:
 EXAMPLES = r'''
 - name: Create HTTPS Monitor
   bigip_monitor_https:
+    name: my_http_monitor
     state: present
     ip: 10.10.10.10
-    server: lb.mydomain.com
-    user: admin
-    password: secret
-    name: my_http_monitor
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Remove HTTPS Monitor
   bigip_monitor_https:
-    state: absent
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     name: my_http_monitor
+    state: absent
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 '''
 
