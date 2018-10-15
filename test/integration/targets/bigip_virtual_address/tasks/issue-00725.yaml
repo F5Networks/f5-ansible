@@ -1,9 +1,9 @@
 ---
 
-- name: Issue 00725 - Collect BIG-IP facts
-  bigip_facts:
-    include: system_info
-  register: result
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
 
 - name: Issue 00725 - Add virtual address - disabled
   bigip_virtual_address:
@@ -150,10 +150,10 @@
       - result is not changed
 
 - import_tasks: issue-00725/v1.yaml
-  when: system_info.product_information.product_version <= "13.0.0"
+  when: f.system_info.product_version <= "13.0.0"
 
 - import_tasks: issue-00725/v2.yaml
-  when: system_info.product_information.product_version > "13.0.0"
+  when: f.system_info.product_version > "13.0.0"
 
 - name: Issue 00725 - Remove virtual addresses
   bigip_virtual_address:
