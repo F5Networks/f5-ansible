@@ -1,9 +1,9 @@
 ---
 
 - name: Get facts from device
-  bigip_facts:
-    include: system_info
-  register: result
+  bigip_device_facts:
+    include: system-info
+  register: f
 
 - name: Set the banner text
   bigip_sys_global:
@@ -109,25 +109,29 @@
   bigip_sys_global:
     net_reboot: "{{ net_reboot }}"
   register: result
-  when: "'Virtual Edition' not in system_info['marketing_name']"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
 
 - name: Assert Set the net reboot
   assert:
     that:
       - result is changed
-  when: "'Virtual Edition' not in system_info['marketing_name']"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
 
 - name: Set the net reboot - Idempotent check
   bigip_sys_global:
     net_reboot: "{{ net_reboot }}"
   register: result
-  when: "'Virtual Edition' not in system_info['marketing_name']"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
 
 - name: Assert the net reboot - Idempotent check
   assert:
     that:
       - result is not changed
-  when: "'Virtual Edition' not in system_info['marketing_name']"
+  when:
+    - f.system_info.marketing_name != "BIG-IP Virtual Edition"
 
 - name: Set the quiet boot
   bigip_sys_global:
