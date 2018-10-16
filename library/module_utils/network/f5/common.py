@@ -207,8 +207,8 @@ def run_commands(module, commands, check_rc=True):
 
 
 def flatten_boolean(value):
-    truthy = list(BOOLEANS_TRUE) + ['enabled']
-    falsey = list(BOOLEANS_FALSE) + ['disabled']
+    truthy = list(BOOLEANS_TRUE) + ['enabled', 'True']
+    falsey = list(BOOLEANS_FALSE) + ['disabled', 'False']
     if value is None:
         return None
     elif value in truthy:
