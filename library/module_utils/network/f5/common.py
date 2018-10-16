@@ -539,6 +539,7 @@ class F5BaseClient(object):
         self.merge_provider_auth_provider_param(result, provider)
         self.merge_provider_user_param(result, provider)
         self.merge_provider_password_param(result, provider)
+        self.merge_proxy_to_param(result, provider)
 
         return result
 
@@ -624,6 +625,12 @@ class F5BaseClient(object):
             result['password'] = os.environ.get('ANSIBLE_NET_PASSWORD')
         else:
             result['password'] = None
+
+    def merge_proxy_to_param(self, result, provider):
+        if self.validate_params('proxy_to', provider):
+            result['proxy_to'] = provider['proxy_to']
+        else:
+            result['proxy_to'] = None
 
 
 class AnsibleF5Parameters(object):
