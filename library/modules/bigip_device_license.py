@@ -170,10 +170,17 @@ class LicenseXmlParser(object):
     def get_fault(self):
         result = dict()
 
+        self.set_result_for_license_fault(result)
+        self.set_result_for_general_fault(result)
+
+        if 'faultNumber' not in result:
+            result['faultNumber'] = None
+        return result
+
+    def set_result_for_license_fault(self, result):
         root = self.find_element('LicensingFault')
         if root is None:
             return result
-
         for elem in root:
             if elem.tag == 'faultNumber':
                 result['faultNumber'] = int(elem.text)
@@ -183,9 +190,17 @@ class LicenseXmlParser(object):
                     result['faultText'] = None
                 else:
                     result['faultText'] = elem.text
-        if 'faultNumber' not in result:
-            result['faultNumber'] = None
-        return result
+
+    def set_result_for_general_fault(self, result):
+        namespaces = {
+            'ns2': 'http://schemas.xmlsoap.org/soap/envelope/'
+        }
+        root = self.content.findall('.//ns2:Fault', namespaces)
+        if len(root) == 0:
+            return None
+        for elem in root[0]:
+            if elem.tag == 'faultstring':
+                result['faultText'] = elem.text
 
     def json(self):
         result = dict(
@@ -426,16 +441,20 @@ class ModuleManager(object):
             return None
 
     def generate_license_from_remote(self):
-        mgmt = iControlRestSession()
-        mgmt.verify = False
-        mgmt.headers = {
-            'SOAPAction': '""',
-            'Content-Type': 'text/xml; charset=utf-8',
-        }
+        mgmt = iControlRestSession(
+            validate_certs=False,
+            headers={
+                'SOAPAction': '""',
+                'Content-Type': 'text/xml; charset=utf-8',
+            }
+        )
 
         for x in range(0, 10):
             try:
-                resp = mgmt.post(self.want.license_url, data=self.want.license_envelope)
+                resp = mgmt.post(
+                    self.want.license_url,
+                    data=self.want.license_envelope,
+                )
             except Exception as ex:
                 continue
 
