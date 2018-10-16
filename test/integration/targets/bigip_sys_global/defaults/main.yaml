@@ -2,9 +2,9 @@
 
 banner_text: This is a corporate device. Do not touch.
 console_timeout: 1200
-gui_setup: enabled
-lcd_display: disabled
-mgmt_dhcp: disabled
-net_reboot: enabled
-quiet_boot: disabled
-security_banner: disabled
+gui_setup: yes
+lcd_display: no
+mgmt_dhcp: no
+net_reboot: yes
+quiet_boot: no
+security_banner: no
