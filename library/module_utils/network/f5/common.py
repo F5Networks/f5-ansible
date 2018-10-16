@@ -207,8 +207,8 @@ def run_commands(module, commands, check_rc=True):
 
 
 def flatten_boolean(value):
-    truthy = list(BOOLEANS_TRUE) + ['enabled']
-    falsey = list(BOOLEANS_FALSE) + ['disabled']
+    truthy = list(BOOLEANS_TRUE) + ['enabled', 'True']
+    falsey = list(BOOLEANS_FALSE) + ['disabled', 'False']
     if value is None:
         return None
     elif value in truthy:
@@ -643,6 +643,16 @@ class AnsibleF5Parameters(object):
         if params:
             self._params.update(params)
             for k, v in iteritems(params):
+                # Adding this here because ``username`` is a connection parameter
+                # and in cases where it is also an API parameter, we run the risk
+                # of overriding the specified parameter with the connection parameter.
+                #
+                # Since this is a problem, and since "username" is never a valid
+                # parameter outside its usage in connection params (where we do not
+                # use the ApiParameter or ModuleParameters classes) it is safe to
+                # skip over it if it is provided.
+                if k == 'password':
+                    continue
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:

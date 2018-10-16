@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2017 F5 Networks Inc.
+# Copyright: (c) 2018, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -14,10 +14,11 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_monitor_https
-short_description: Manages F5 BIG-IP LTM https monitors
-description: Manages F5 BIG-IP LTM https monitors.
-version_added: 2.5
+module: bigip_monitor_ldap
+short_description: Manages BIG-IP LDAP monitors
+description:
+  - Manages BIG-IP LDAP monitors.
+version_added: 2.8
 options:
   name:
     description:
@@ -25,27 +26,13 @@ options:
     required: True
   description:
     description:
-      - The description of the monitor.
-    version_added: 2.7
+      - Specifies descriptive text that identifies the monitor.
   parent:
     description:
       - The parent template of this monitor template. Once this value has
-        been set, it cannot be changed. By default, this value is the C(https)
-        parent on the C(Common) partition.
-    default: /Common/https
-  send:
-    description:
-      - The send string for the monitor call. When creating a new monitor, if
-        this value is not provided, the default C(GET /\\r\\n) will be used.
-  receive:
-    description:
-      - The receive string for the monitor call.
-  receive_disable:
-    description:
-      - This setting works like C(receive), except that the system marks the node
-        or pool member disabled when its response matches the C(receive_disable)
-        string but not C(receive). To use this setting, you must specify both
-        C(receive_disable) and C(receive).
+        been set, it cannot be changed.
+      - By default, this value is the C(ldap) parent on the C(Common) partition.
+    default: "/Common/ldap"
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
@@ -55,43 +42,94 @@ options:
     description:
       - Port address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
-        '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified
+        '*'.
+      - Note that if specifying an IP address, a value between 1 and 65535
+        must be specified.
   interval:
     description:
-      - The interval specifying how frequently the monitor instance of this
-        template will run. If this parameter is not provided when creating
-        a new monitor, then the default value will be 5. This value B(must)
-        be less than the C(timeout) value.
+      - Specifies, in seconds, the frequency at which the system issues the
+        monitor check when either the resource is down or the status of the
+        resource is unknown.
   timeout:
     description:
-      - The number of seconds in which the node or service must respond to
-        the monitor request. If the target responds within the set time
-        period, it is considered up. If the target does not respond within
-        the set time period, it is considered down. You can change this
-        number to any number you want, however, it should be 3 times the
-        interval number of seconds plus 1 second. If this parameter is not
-        provided when creating a new monitor, then the default value will be 16.
+      - Specifies the number of seconds the target has in which to respond to
+        the monitor request.
+      - If the target responds within the set time period, it is considered 'up'.
+        If the target does not respond within the set time period, it is considered
+        'down'. When this value is set to 0 (zero), the system uses the interval
+        from the parent monitor.
+      - Note that C(timeout) and C(time_until_up) combine to control when a
+        resource is set to up.
   time_until_up:
     description:
-      - Specifies the amount of time in seconds after the first successful
-        response before a node will be marked up. A value of 0 will cause a
-        node to be marked up immediately after a valid response is received
-        from the node. If this parameter is not provided when creating
-        a new monitor, then the default value will be 0.
+      - Specifies the number of seconds to wait after a resource first responds
+        correctly to the monitor before setting the resource to 'up'.
+      - During the interval, all responses from the resource must be correct.
+      - When the interval expires, the resource is marked 'up'.
+      - A value of 0, means that the resource is marked up immediately upon
+        receipt of the first correct response.
+  up_interval:
+    description:
+      - Specifies the interval for the system to use to perform the health check
+        when a resource is up.
+      - When C(0), specifies that the system uses the interval specified in
+        C(interval) to check the health of the resource.
+      - When any other number, enables specification of a different interval to
+        use when checking the health of a resource that is up.
+  manual_resume:
+    description:
+      - Specifies whether the system automatically changes the status of a resource
+        to B(enabled) at the next successful monitor check.
+      - If you set this option to C(yes), you must manually re-enable the resource
+        before the system can use it for load balancing connections.
+      - When C(yes), specifies that you must manually re-enable the resource after an
+        unsuccessful monitor check.
+      - When C(no), specifies that the system automatically changes the status of a
+        resource to B(enabled) at the next successful monitor check.
+    type: bool
   target_username:
     description:
       - Specifies the user name, if the monitored target requires authentication.
   target_password:
     description:
       - Specifies the password, if the monitored target requires authentication.
-  ssl_profile:
+  base:
     description:
-      - Specifies the SSL profile to use for the HTTPS monitor.
-      - Defining SSL profiles enables refined customization of the SSL attributes
-        for an HTTPS monitor.
-      - This parameter is only supported on BIG-IP versions 13.x and later.
-    version_added: 2.8
+      - Specifies the location in the LDAP tree from which the monitor starts the
+        health check.
+  filter:
+    description:
+      - Specifies an LDAP key for which the monitor searches.
+  security:
+    description:
+      - Specifies the secure protocol type for communications with the target.
+    choices:
+      - none
+      - ssl
+      - tls
+  mandatory_attributes:
+    description:
+      - Specifies whether the target must include attributes in its response to be
+        considered up.
+    type: bool
+  chase_referrals:
+    description:
+      - Specifies whether, upon receipt of an LDAP referral entry, the target
+        follows (or chases) that referral.
+    type: bool
+  debug:
+    description:
+      - Specifies whether the monitor sends error messages and additional information
+        to a log file created and labeled specifically for this monitor.
+    type: bool
+  update_password:
+    description:
+      - C(always) will update passwords if the C(target_password) is specified.
+      - C(on_create) will only set the password for newly created monitors.
+    default: always
+    choices:
+      - always
+      - on_create
   partition:
     description:
       - Device partition to manage resources on.
@@ -104,35 +142,19 @@ options:
     choices:
       - present
       - absent
-    version_added: 2.5
-notes:
-  - Requires BIG-IP software version >= 12
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
-  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
-- name: Create HTTPS Monitor
-  bigip_monitor_https:
-    name: my_http_monitor
-    state: present
-    ip: 10.10.10.10
+- name: Create a LDAP monitor
+  bigip_monitor_ldap:
+    name: foo
     provider:
+      password: secret
       server: lb.mydomain.com
       user: admin
-      password: secret
-  delegate_to: localhost
-
-- name: Remove HTTPS Monitor
-  bigip_monitor_https:
-    name: my_http_monitor
-    state: absent
-    provider:
-      server: lb.mydomain.com
-      user: admin
-      password: secret
   delegate_to: localhost
 '''
 
@@ -141,7 +163,12 @@ parent:
   description: New parent template of the monitor.
   returned: changed
   type: string
-  sample: https
+  sample: ldap
+description:
+  description: The description of the monitor.
+  returned: changed
+  type: str
+  sample: Important_Monitor
 ip:
   description: The new IP of IP/port definition.
   returned: changed
@@ -152,11 +179,6 @@ interval:
   returned: changed
   type: int
   sample: 2
-description:
-  description: The description of the monitor.
-  returned: changed
-  type: str
-  sample: Important Monitor
 timeout:
   description: The new timeout in which the remote system must respond to the monitor.
   returned: changed
@@ -167,6 +189,41 @@ time_until_up:
   returned: changed
   type: int
   sample: 2
+security:
+  description: The new Security setting of the resource.
+  returned: changed
+  type: string
+  sample: ssl
+debug:
+  description: The new Debug setting of the resource.
+  returned: changed
+  type: bool
+  sample: yes
+mandatory_attributes:
+  description: The new Mandatory Attributes setting of the resource.
+  returned: changed
+  type: bool
+  sample: no
+chase_referrals:
+  description: The new Chase Referrals setting of the resource.
+  returned: changed
+  type: bool
+  sample: yes
+manual_resume:
+  description: The new Manual Resume setting of the resource.
+  returned: changed
+  type: bool
+  sample: no
+filter:
+  description: The new LDAP Filter setting of the resource.
+  returned: changed
+  type: string
+  sample: filter1
+base:
+  description: The new LDAP Base setting of the resource.
+  returned: changed
+  type: string
+  sample: base
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -179,11 +236,11 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
-    from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.ipaddress import is_valid_ip
-
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -191,10 +248,10 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
-    from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import transform_name
+    from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
 
 
@@ -202,9 +259,11 @@ class Parameters(AnsibleF5Parameters):
     api_map = {
         'timeUntilUp': 'time_until_up',
         'defaultsFrom': 'parent',
-        'recv': 'receive',
-        'recvDisable': 'receive_disable',
-        'sslProfile': 'ssl_profile',
+        'mandatoryAttributes': 'mandatory_attributes',
+        'chaseReferrals': 'chase_referrals',
+        'manualResume': 'manual_resume',
+        'username': 'target_username',
+        'password': 'target_password',
     }
 
     api_attributes = [
@@ -212,51 +271,132 @@ class Parameters(AnsibleF5Parameters):
         'defaultsFrom',
         'interval',
         'timeout',
-        'recv',
-        'send',
         'destination',
+        'description',
+        'security',
+        'mandatoryAttributes',
+        'chaseReferrals',
+        'debug',
+        'manualResume',
         'username',
         'password',
-        'recvDisable',
-        'description',
-        'sslProfile',
+        'filter',
+        'base',
     ]
 
     returnables = [
         'parent',
-        'send',
-        'receive',
         'ip',
+        'destination',
         'port',
         'interval',
         'timeout',
         'time_until_up',
-        'receive_disable',
         'description',
-        'ssl_profile',
+        'security',
+        'debug',
+        'mandatory_attributes',
+        'chase_referrals',
+        'manual_resume',
+        'filter',
+        'base',
     ]
 
     updatables = [
         'destination',
-        'send',
-        'receive',
         'interval',
         'timeout',
         'time_until_up',
+        'description',
+        'security',
+        'debug',
+        'mandatory_attributes',
+        'chase_referrals',
+        'manual_resume',
         'target_username',
         'target_password',
-        'receive_disable',
-        'description',
-        'ssl_profile',
+        'filter',
+        'base',
     ]
 
     @property
-    def username(self):
-        return self._values['target_username']
+    def timeout(self):
+        if self._values['timeout'] is None:
+            return None
+        return int(self._values['timeout'])
 
     @property
-    def password(self):
-        return self._values['target_password']
+    def time_until_up(self):
+        if self._values['time_until_up'] is None:
+            return None
+        return int(self._values['time_until_up'])
+
+    @property
+    def mandatory_attributes(self):
+        return flatten_boolean(self._values['mandatory_attributes'])
+
+    @property
+    def chase_referrals(self):
+        return flatten_boolean(self._values['chase_referrals'])
+
+    @property
+    def debug(self):
+        return flatten_boolean(self._values['debug'])
+
+    @property
+    def manual_resume(self):
+        return flatten_boolean(self._values['manual_resume'])
+
+    @property
+    def security(self):
+        if self._values['security'] in ['none', None]:
+            return ''
+        return self._values['security']
+
+
+class ApiParameters(Parameters):
+    @property
+    def ip(self):
+        ip, port = self._values['destination'].split(':')
+        return ip
+
+    @property
+    def port(self):
+        ip, port = self._values['destination'].split(':')
+        try:
+            return int(port)
+        except ValueError:
+            return port
+
+
+class ModuleParameters(Parameters):
+    @property
+    def ip(self):
+        if self._values['ip'] is None:
+            return None
+        if self._values['ip'] in ['*', '0.0.0.0']:
+            return '*'
+        elif is_valid_ip(self._values['ip']):
+            return self._values['ip']
+        else:
+            raise F5ModuleError(
+                "The provided 'ip' parameter is not an IP address."
+            )
+
+    @property
+    def parent(self):
+        if self._values['parent'] is None:
+            return None
+        result = fq_name(self.partition, self._values['parent'])
+        return result
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        elif self._values['port'] == '*':
+            return '*'
+        return int(self._values['port'])
 
     @property
     def destination(self):
@@ -275,9 +415,6 @@ class Parameters(AnsibleF5Parameters):
     def interval(self):
         if self._values['interval'] is None:
             return None
-
-        # Per BZ617284, the BIG-IP UI does not raise a warning about this.
-        # So I do
         if 1 > int(self._values['interval']) > 86400:
             raise F5ModuleError(
                 "Interval value must be between 1 and 86400"
@@ -285,62 +422,8 @@ class Parameters(AnsibleF5Parameters):
         return int(self._values['interval'])
 
     @property
-    def timeout(self):
-        if self._values['timeout'] is None:
-            return None
-        return int(self._values['timeout'])
-
-    @property
-    def ip(self):
-        if self._values['ip'] is None:
-            return None
-        elif self._values['ip'] in ['*', '0.0.0.0']:
-            return '*'
-        elif is_valid_ip(self._values['ip']):
-            return self._values['ip']
-        raise F5ModuleError(
-            "The provided 'ip' parameter is not an IP address."
-        )
-
-    @property
-    def port(self):
-        if self._values['port'] is None:
-            return None
-        elif self._values['port'] == '*':
-            return '*'
-        return int(self._values['port'])
-
-    @property
-    def time_until_up(self):
-        if self._values['time_until_up'] is None:
-            return None
-        return int(self._values['time_until_up'])
-
-    @property
-    def parent(self):
-        if self._values['parent'] is None:
-            return None
-        result = fq_name(self.partition, self._values['parent'])
-        return result
-
-    @property
     def type(self):
-        return 'https'
-
-
-class ApiParameters(Parameters):
-    pass
-
-
-class ModuleParameters(Parameters):
-    @property
-    def ssl_profile(self):
-        if self._values['ssl_profile'] is None:
-            return None
-        if self._values['ssl_profile'] in ['', 'none']:
-            return ''
-        result = fq_name(self.partition, self._values['ssl_profile'])
-        return result
+        return 'ldap'
 
 
 class Changes(Parameters):
@@ -356,11 +439,29 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def manual_resume(self):
+        if self._values['manual_resume'] is None:
+            return None
+        if self._values['manual_resume'] == 'yes':
+            return 'enabled'
+        return 'disabled'
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def manual_resume(self):
+        return flatten_boolean(self._values['manual_resume'])
+
+    @property
+    def ip(self):
+        ip, port = self._values['destination'].split(':')
+        return ip
+
+    @property
+    def port(self):
+        ip, port = self._values['destination'].split(':')
+        return int(port)
 
 
 class Difference(object):
@@ -373,8 +474,7 @@ class Difference(object):
             result = getattr(self, param)
             return result
         except AttributeError:
-            result = self.__default(param)
-            return result
+            return self.__default(param)
 
     @property
     def parent(self):
@@ -401,6 +501,13 @@ class Difference(object):
             return self.want.destination
 
     @property
+    def target_password(self):
+        if self.want.target_password != self.have.target_password:
+            if self.want.update_password == 'always':
+                result = self.want.target_password
+                return result
+
+    @property
     def interval(self):
         if self.want.timeout is not None and self.want.interval is not None:
             if self.want.interval >= self.want.timeout:
@@ -419,15 +526,6 @@ class Difference(object):
                 )
         if self.want.interval != self.have.interval:
             return self.want.interval
-
-    @property
-    def ssl_profile(self):
-        if self.want.ssl_profile is None:
-            return None
-        if self.want.ssl_profile == '' and self.have.ssl_profile is None:
-            return None
-        if self.want.ssl_profile != self.have.ssl_profile:
-            return self.want.ssl_profile
 
     def __default(self, param):
         attr1 = getattr(self.want, param)
@@ -510,8 +608,14 @@ class ModuleManager(object):
         else:
             return self.create()
 
+    def _set_default_creation_values(self):
+        if self.want.ip is None:
+            self.want.update({'ip': '*'})
+        if self.want.port is None:
+            self.want.update({'port': '*'})
+
     def exists(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/https/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/ldap/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -550,25 +654,11 @@ class ModuleManager(object):
         self.create_on_device()
         return True
 
-    def _set_default_creation_values(self):
-        if self.want.timeout is None:
-            self.want.update({'timeout': 16})
-        if self.want.interval is None:
-            self.want.update({'interval': 5})
-        if self.want.time_until_up is None:
-            self.want.update({'time_until_up': 0})
-        if self.want.ip is None:
-            self.want.update({'ip': '*'})
-        if self.want.port is None:
-            self.want.update({'port': '*'})
-        if self.want.send is None:
-            self.want.update({'send': 'GET /\r\n'})
-
     def create_on_device(self):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
-        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/https/".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/ldap/".format(
             self.client.provider['server'],
             self.client.provider['server_port']
         )
@@ -586,7 +676,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/https/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/ldap/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -609,7 +699,7 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/https/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/ldap/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -619,7 +709,7 @@ class ModuleManager(object):
             return True
 
     def read_current_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/https/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/monitor/ldap/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -643,19 +733,29 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            parent=dict(default='/Common/https'),
-            description=dict(),
-            send=dict(),
-            receive=dict(),
-            receive_disable=dict(required=False),
+            parent=dict(default='/Common/ldap'),
             ip=dict(),
+            description=dict(),
             port=dict(type='int'),
             interval=dict(type='int'),
             timeout=dict(type='int'),
-            time_until_up=dict(type='int'),
             target_username=dict(),
             target_password=dict(no_log=True),
-            ssl_profile=dict(),
+            debug=dict(type='bool'),
+            security=dict(
+                choices=['none', 'ssl', 'tls']
+            ),
+            manual_resume=dict(type='bool'),
+            time_until_up=dict(type='int'),
+            up_interval=dict(type='int'),
+            filter=dict(),
+            base=dict(),
+            mandatory_attributes=dict(type='bool'),
+            chase_referrals=dict(type='bool'),
+            update_password=dict(
+                default='always',
+                choices=['always', 'on_create']
+            ),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
@@ -677,6 +777,7 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
     )
+
     client = F5RestClient(**module.params)
 
     try:
