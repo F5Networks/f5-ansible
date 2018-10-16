@@ -48,25 +48,28 @@ author:
 EXAMPLES = r'''
 - name: Wait for BIG-IP to be ready to take configuration
   bigip_wait:
-    password: secret
-    server: lb.mydomain.com
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Wait a maximum of 300 seconds for BIG-IP to be ready to take configuration
   bigip_wait:
     timeout: 300
-    password: secret
-    server: lb.mydomain.com
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 
 - name: Wait for BIG-IP to be ready, don't start checking for 10 seconds
   bigip_wait:
     delay: 10
-    password: secret
-    server: lb.mydomain.com
-    user: admin
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
