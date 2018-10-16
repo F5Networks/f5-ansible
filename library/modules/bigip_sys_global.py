@@ -78,10 +78,10 @@ EXAMPLES = r'''
 - name: Disable the setup utility
   bigip_sys_global:
     gui_setup: no
-    password: secret
-    server: lb.mydomain.com
-    user: admin
-    state: present
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
@@ -135,8 +135,6 @@ security_banner:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
-from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -171,19 +169,61 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'guiSecurityBanner', 'guiSecurityBannerText', 'guiSetup', 'lcdDisplay',
-        'mgmtDhcp', 'netReboot', 'quietBoot', 'consoleInactivityTimeout',
+        'guiSecurityBanner',
+        'guiSecurityBannerText',
+        'guiSetup',
+        'lcdDisplay',
+        'mgmtDhcp',
+        'netReboot',
+        'quietBoot',
+        'consoleInactivityTimeout',
     ]
 
     returnables = [
-        'security_banner', 'banner_text', 'gui_setup', 'lcd_display',
-        'mgmt_dhcp', 'net_reboot', 'quiet_boot', 'console_timeout',
+        'security_banner',
+        'banner_text',
+        'gui_setup',
+        'lcd_display',
+        'mgmt_dhcp',
+        'net_reboot',
+        'quiet_boot',
+        'console_timeout',
     ]
 
     updatables = [
-        'security_banner', 'banner_text', 'gui_setup', 'lcd_display',
-        'mgmt_dhcp', 'net_reboot', 'quiet_boot', 'console_timeout',
+        'security_banner',
+        'banner_text',
+        'gui_setup',
+        'lcd_display',
+        'mgmt_dhcp',
+        'net_reboot',
+        'quiet_boot',
+        'console_timeout',
     ]
+
+    @property
+    def security_banner(self):
+        return flatten_boolean(self._values['security_banner'])
+
+    @property
+    def gui_setup(self):
+        return flatten_boolean(self._values['gui_setup'])
+
+    @property
+    def lcd_display(self):
+        return flatten_boolean(self._values['lcd_display'])
+
+    @property
+    def mgmt_dhcp(self):
+        return flatten_boolean(self._values['mgmt_dhcp'])
+
+    @property
+    def net_reboot(self):
+        return flatten_boolean(self._values['net_reboot'])
+
+    @property
+    def quiet_boot(self):
+        return flatten_boolean(self._values['quiet_boot'])
 
 
 class ApiParameters(Parameters):
@@ -191,65 +231,7 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    @property
-    def security_banner(self):
-        result = flatten_boolean(self._values['security_banner'])
-        if result == 'yes':
-            return 'enabled'
-        if result == 'no':
-            return 'disabled'
-        else:
-            return result
-
-    @property
-    def gui_setup(self):
-        result = flatten_boolean(self._values['gui_setup'])
-        if result == 'yes':
-            return 'enabled'
-        if result == 'no':
-            return 'disabled'
-        else:
-            return result
-
-    @property
-    def lcd_display(self):
-        result = flatten_boolean(self._values['lcd_display'])
-        if result == 'yes':
-            return 'enabled'
-        if result == 'no':
-            return 'disabled'
-        else:
-            return result
-
-    @property
-    def mgmt_dhcp(self):
-        result = flatten_boolean(self._values['mgmt_dhcp'])
-        if result == 'yes':
-            return 'enabled'
-        if result == 'no':
-            return 'disabled'
-        else:
-            return result
-
-    @property
-    def net_reboot(self):
-        result = flatten_boolean(self._values['net_reboot'])
-        if result == 'yes':
-            return 'enabled'
-        if result == 'no':
-            return 'disabled'
-        else:
-            return result
-
-    @property
-    def quiet_boot(self):
-        result = flatten_boolean(self._values['quiet_boot'])
-        if result == 'yes':
-            return 'enabled'
-        if result == 'no':
-            return 'disabled'
-        else:
-            return result
+    pass
 
 
 class Changes(Parameters):
@@ -265,11 +247,79 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def security_banner(self):
+        if self._values['security_banner'] is None:
+            return None
+        if self._values['security_banner'] == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def gui_setup(self):
+        if self._values['gui_setup'] is None:
+            return None
+        if self._values['gui_setup'] == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def lcd_display(self):
+        if self._values['lcd_display'] is None:
+            return None
+        if self._values['lcd_display'] == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def mgmt_dhcp(self):
+        if self._values['mgmt_dhcp'] is None:
+            return None
+        if self._values['mgmt_dhcp'] == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def net_reboot(self):
+        if self._values['net_reboot'] is None:
+            return None
+        if self._values['net_reboot'] == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def quiet_boot(self):
+        if self._values['quiet_boot'] is None:
+            return None
+        if self._values['quiet_boot'] == 'yes':
+            return 'enabled'
+        return 'disabled'
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def security_banner(self):
+        return flatten_boolean(self._values['security_banner'])
+
+    @property
+    def gui_setup(self):
+        return flatten_boolean(self._values['gui_setup'])
+
+    @property
+    def lcd_display(self):
+        return flatten_boolean(self._values['lcd_display'])
+
+    @property
+    def mgmt_dhcp(self):
+        return flatten_boolean(self._values['mgmt_dhcp'])
+
+    @property
+    def net_reboot(self):
+        return flatten_boolean(self._values['net_reboot'])
+
+    @property
+    def quiet_boot(self):
+        return flatten_boolean(self._values['quiet_boot'])
 
 
 class Difference(object):
@@ -285,13 +335,14 @@ class Difference(object):
             return self.__default(param)
 
     def __default(self, param):
-        attr1 = getattr(self.want, param)
+        want = getattr(self.want, param)
         try:
-            attr2 = getattr(self.have, param)
-            if attr1 != attr2:
-                return attr1
+            have = getattr(self.have, param)
+            import q; q.q(param, want, have)
+            if want != have:
+                return want
         except AttributeError:
-            return attr1
+            return want
 
 
 class ModuleManager(object):
@@ -427,8 +478,12 @@ class ArgumentSpec(object):
             quiet_boot=dict(
                 type='bool'
             ),
-            console_timeout=dict(required=False, type='int', default=None),
-            state=dict(default='present', choices=['present'])
+            console_timeout=dict(
+                type='int'
+            ),
+            state=dict(
+                default='present', choices=['present']
+            )
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
