@@ -35,14 +35,11 @@ class F5RestClient(F5BaseClient):
     def api(self):
         if self._client:
             return self._client
-        session = self.connect_via_token_auth()
-        if session:
-            self._client = session
-            return session
-        error = 'Unable to connect to {0} on port {1}.'.format(
-            self.provider['server'], self.provider['server_port']
-        )
-        raise F5ModuleError(error)
+        session, err = self.connect_via_token_auth()
+        if err:
+            raise F5ModuleError(err)
+        self._client = session
+        return session
 
     def connect_via_token_auth(self):
         provider = self.provider['auth_provider'] or 'local'
@@ -72,10 +69,10 @@ class F5RestClient(F5BaseClient):
         )
 
         if response.status not in [200]:
-            return None
+            return None, response.content
 
         session.request.headers['X-F5-Auth-Token'] = response.json()['token']['token']
-        return session
+        return session, None
 
     def get_login_ref(self, provider):
         info = self.read_provider_info_from_device()

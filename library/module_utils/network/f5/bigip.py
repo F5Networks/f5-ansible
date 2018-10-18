@@ -7,6 +7,8 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
+import re
+
 try:
     from f5.bigip import ManagementRoot
     from icontrol.exceptions import iControlUnexpectedHTTPError
@@ -64,18 +66,13 @@ class F5RestClient(F5BaseClient):
     def api(self):
         if self._client:
             return self._client
-        session = self.connect_via_token_auth()
-        if session:
-            self._client = session
-            return session
-        session = self.connect_via_basic_auth()
-        if session:
-            self._client = session
-            return session
-        error = 'Unable to connect to {0} on port {1}.'.format(
-            self.provider['server'], self.provider['server_port']
-        )
-        raise F5ModuleError(error)
+        session, err = self.connect_via_token_auth()
+        if err:
+            session, err = self.connect_via_basic_auth()
+            if err:
+                raise F5ModuleError(err)
+        self._client = session
+        return session
 
     def connect_via_token_auth(self):
         url = "https://{0}:{1}/mgmt/shared/authn/login".format(
@@ -97,10 +94,10 @@ class F5RestClient(F5BaseClient):
         )
 
         if response.status not in [200]:
-            return None
+            return None, response.content
 
         session.request.headers['X-F5-Auth-Token'] = response.json()['token']['token']
-        return session
+        return session, None
 
     def connect_via_basic_auth(self):
         url = "https://{0}:{1}/mgmt/tm/sys".format(
@@ -118,35 +115,38 @@ class F5RestClient(F5BaseClient):
         )
 
         if response.status not in [200]:
-            return None
-        return session
+            return None, response.content
+        return session, None
 
-    def get_identifier(mgmt, proxy_to):
-        if proxy_to is None:
-            raise F5SDKError(
-                "An identifier to a device to proxy to must be provided."
-            )
-
+    def get_identifier(self, proxy_to):
         if re.search(r'([0-9-a-z]+\-){4}[0-9-a-z]+', proxy_to, re.I):
             return proxy_to
-        return ManagementProxy._get_device_uuid(mgmt, proxy_to)
+        return self.get_device_uuid(proxy_to)
 
-    def get_device_uuid(mgmt, proxy_to):
-        dg = mgmt.shared.resolver.device_groups
-        collection = dg.cm_cloud_managed_devices.devices_s.get_collection(
-            requests_params=dict(
-                params="$filter=hostname+eq+'{0}'&$select=uuid".format(
-                    proxy_to
-                )
-            )
+    def get_device_uuid(self, proxy_to):
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-cloud-managed-devices/devices/?$filter=hostname+eq+'{2}'&$select=uuid".format(
+            self.provider['server'], self.provider['server_port'], proxy_to
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return ApiParameters(params=response)
+
         if len(collection) > 1:
-            raise F5SDKError(
+            raise F5ModuleError(
                 "More that one managed device was found with this hostname. "
-                "Proxied devices must be unique."
+                "'proxy_to' devices must be unique. Consider specifying the UUID of the device."
             )
         elif len(collection) == 0:
-            raise F5SDKError(
+            raise F5ModuleError(
                 "No device was found with that hostname"
             )
         else:
