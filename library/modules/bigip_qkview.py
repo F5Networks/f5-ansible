@@ -82,6 +82,10 @@ EXAMPLES = r'''
       - audit
       - secure
     dest: /tmp/localhost.localdomain.qkview
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
   delegate_to: localhost
 '''
 
@@ -273,7 +277,11 @@ class BaseManager(object):
     def present(self):
         if os.path.exists(self.want.dest) and not self.want.force:
             raise F5ModuleError(
-                "The specified 'dest' file already exists"
+                "The specified 'dest' file already exists."
+            )
+        if not os.path.exists(os.path.dirname(self.want.dest)):
+            raise F5ModuleError(
+                "The directory of your 'dest' file does not exist."
             )
         if self.want.exclude:
             choices = ['all', 'audit', 'secure', 'bash_history']
@@ -458,7 +466,12 @@ class BaseManager(object):
                 resp = self.client.api.get(uri, timeout=10)
             except (socket.timeout, ssl.SSLError):
                 continue
-            response = resp.json()
+            try:
+                response = resp.json()
+            except ValueError:
+                # It is possible that the API call can return invalid JSON.
+                # This invalid JSON appears to be just empty strings.
+                continue
             if response['_taskState'] == 'FAILED':
                 raise F5ModuleError(
                     "qkview creation task failed unexpectedly."

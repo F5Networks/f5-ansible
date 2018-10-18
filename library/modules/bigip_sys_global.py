@@ -338,7 +338,6 @@ class Difference(object):
         want = getattr(self.want, param)
         try:
             have = getattr(self.have, param)
-            import q; q.q(param, want, have)
             if want != have:
                 return want
         except AttributeError:
