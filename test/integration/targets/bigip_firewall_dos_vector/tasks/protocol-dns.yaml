@@ -1,0 +1,47 @@
+---
+
+- import_tasks: protocol-dns/a.yaml
+  tags:
+    - a
+- import_tasks: protocol-dns/aaaa.yaml
+  tags:
+    - aaaa
+- import_tasks: protocol-dns/any.yaml
+  tags:
+    - any
+- import_tasks: protocol-dns/axfr.yaml
+  tags:
+    - axfr
+- import_tasks: protocol-dns/cname.yaml
+  tags:
+    - cname
+- import_tasks: protocol-dns/dns-malformed.yaml
+  tags:
+    - dns-malformed
+- import_tasks: protocol-dns/ixfr.yaml
+  tags:
+    - ixfr
+- import_tasks: protocol-dns/mx.yaml
+  tags:
+    - mx
+- import_tasks: protocol-dns/ns.yaml
+  tags:
+    - ns
+- import_tasks: protocol-dns/other.yaml
+  tags:
+    - other
+- import_tasks: protocol-dns/ptr.yaml
+  tags:
+    - ptr
+- import_tasks: protocol-dns/qdcount.yaml
+  tags:
+    - qdcount
+- import_tasks: protocol-dns/soa.yaml
+  tags:
+    - soa
+- import_tasks: protocol-dns/srv.yaml
+  tags:
+    - srv
+- import_tasks: protocol-dns/txt.yaml
+  tags:
+    - txt
