@@ -7,8 +7,6 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-import time
-
 try:
     from f5.bigip import ManagementRoot
     from icontrol.exceptions import iControlUnexpectedHTTPError
@@ -122,12 +120,6 @@ class F5RestClient(F5BaseClient):
         if response.status not in [200]:
             return None
         return session
-
-
-
-
-
-
 
     def get_identifier(mgmt, proxy_to):
         if proxy_to is None:
