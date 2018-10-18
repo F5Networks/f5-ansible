@@ -170,6 +170,7 @@ class iControlRestSession(object):
 
         try:
             result = self.request.open(method, url, **kwargs)
+            response.headers = dict(result.getheaders())
             response._content = result.read()
             response.status = result.getcode()
             response.url = result.geturl()
@@ -257,7 +258,7 @@ def download_file(client, url, dest):
             # the loop
             if end == size:
                 break
-            crange = response.headers['content-range']
+            crange = response.headers['Content-Range']
             # Determine the total number of bytes to read.
             if size == 0:
                 size = int(crange.split('/')[-1]) - 1
