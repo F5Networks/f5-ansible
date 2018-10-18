@@ -136,6 +136,7 @@ class ApiParameters(Parameters):
 class ModuleParameters(Parameters):
     pass
 
+
 class Changes(Parameters):
     def to_return(self):
         result = {}
