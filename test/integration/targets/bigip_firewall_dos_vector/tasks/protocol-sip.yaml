@@ -1,0 +1,44 @@
+---
+
+- import_tasks: protocol-sip/ack.yaml
+  tags:
+    - ack
+- import_tasks: protocol-sip/bye.yaml
+  tags:
+    - bye
+- import_tasks: protocol-sip/cancel.yaml
+  tags:
+    - cancel
+- import_tasks: protocol-sip/invite.yaml
+  tags:
+    - invite
+- import_tasks: protocol-sip/message.yaml
+  tags:
+    - message
+- import_tasks: protocol-sip/notify.yaml
+  tags:
+    - notify
+- import_tasks: protocol-sip/options.yaml
+  tags:
+    - options
+- import_tasks: protocol-sip/other.yaml
+  tags:
+    - other
+- import_tasks: protocol-sip/prack.yaml
+  tags:
+    - prack
+- import_tasks: protocol-sip/publish.yaml
+  tags:
+    - publish
+- import_tasks: protocol-sip/register.yaml
+  tags:
+    - register
+- import_tasks: protocol-sip/sip-malformed.yaml
+  tags:
+    - sip-malformed
+- import_tasks: protocol-sip/subscribe.yaml
+  tags:
+    - subscribe
+- import_tasks: protocol-sip/uri-limit.yaml
+  tags:
+    - uri-limit
