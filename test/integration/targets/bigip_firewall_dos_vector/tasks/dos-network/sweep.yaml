@@ -191,53 +191,15 @@
       - result is not changed
       - result is success
 
-- name: Change simulate_auto_threshold - yes - Network Security Sweep
+- name: Change simulate_auto_threshold - yes - Network Security Sweep - Expected failure
   bigip_firewall_dos_vector:
     name: sweep
     profile: profile1
     simulate_auto_threshold: yes
   register: result
+  failed_when: result is success
 
-- name: Assert Change simulate_auto_threshold - yes - Network Security Sweep
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change simulate_auto_threshold - yes - Network Security Sweep - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sweep
-    profile: profile1
-    simulate_auto_threshold: yes
-  register: result
-
-- name: Assert Change simulate_auto_threshold - yes - Network Security Sweep - Idempotent check
-  assert:
-    that:
-      - result is not changed
-      - result is success
-
-- name: Change simulate_auto_threshold - no - Network Security Sweep
-  bigip_firewall_dos_vector:
-    name: sweep
-    profile: profile1
-    simulate_auto_threshold: no
-  register: result
-
-- name: Assert Change simulate_auto_threshold - no - Network Security Sweep
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change simulate_auto_threshold - no - Network Security Sweep - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sweep
-    profile: profile1
-    simulate_auto_threshold: no
-  register: result
-
-- name: Assert Change simulate_auto_threshold - no - Network Security Sweep - Idempotent check
+- name: Assert Change simulate_auto_threshold - yes - Network Security Sweep - Expected failure
   assert:
     that:
       - result is not changed
