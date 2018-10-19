@@ -3,7 +3,12 @@
 - import_tasks: setup.yaml
 
 - import_tasks: protocol-dns.yaml
+  tags:
+    - protocol-dns
 - import_tasks: protocol-sip.yaml
+  tags:
+    - protocol-sip
 - import_tasks: dos-network.yaml
-
+  tags:
+    - dos-network
 - import_tasks: teardown.yaml
