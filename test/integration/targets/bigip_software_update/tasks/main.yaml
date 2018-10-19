@@ -48,51 +48,51 @@
   bigip_software_update:
     auto_phone_home: no
   register: result
-  when: system_info.product_information.product_version >= "12.1.0"
+  when: f.system_info.product_version >= "12.1.0"
 
 - name: Assert Set auto phone home to disabled
   assert:
     that:
       - result is changed
       - not result['auto_phone_home']|bool
-  when: system_info.product_information.product_version >= "12.1.0"
+  when: f.system_info.product_version >= "12.1.0"
 
 - name: Set auto phone home to disabled - Idempotent check
   bigip_software_update:
     auto_phone_home: no
   register: result
-  when: system_info.product_information.product_version >= "12.1.0"
+  when: f.system_info.product_version >= "12.1.0"
 
 - name: Assert Set auto phone home to disabled - Idempotent check
   assert:
     that:
       - result is not changed
-  when: system_info.product_information.product_version >= "12.1.0"
+  when: f.system_info.product_version >= "12.1.0"
 
 - name: Set auto phone home to enabled
   bigip_software_update:
     auto_phone_home: yes
   register: result
-  when: system_info.product_information.product_version >= "12.1.0"
+  when: f.system_info.product_version >= "12.1.0"
 
 - name: Assert Set auto phone home to enabled
   assert:
     that:
       - result is changed
       - result['auto_phone_home']|bool
-  when: system_info.product_information.product_version >= "12.1.0"
+  when: f.system_info.product_version >= "12.1.0"
 
 - name: Set auto phone home to enabled - Idempotent check
   bigip_software_update:
     auto_phone_home: yes
   register: result
-  when: system_info.product_information.product_version >= "12.1.0"
+  when: f.system_info.product_version >= "12.1.0"
 
 - name: Assert Set auto phone home to enabled - Idempotent check
   assert:
     that:
       - result is not changed
-  when: system_info.product_information.product_version >= "12.1.0"
+  when: f.system_info.product_version >= "12.1.0"
 
 - name: Set frequency to daily
   bigip_software_update:
