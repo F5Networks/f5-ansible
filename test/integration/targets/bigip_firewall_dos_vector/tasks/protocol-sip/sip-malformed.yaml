@@ -1,768 +1,642 @@
 ---
 
-- name: Add vector for protocol-dns - mitigate - SIP sip-malformed
+- name: Add vector for protocol-dns - mitigate - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: mitigate
   register: result
 
-- name: Assert Add vector for protocol-dns - mitigate - SIP sip-malformed
+- name: Assert Add vector for protocol-dns - mitigate - SIP dns-malformed
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - mitigate - SIP sip-malformed - Idempotent check
+- name: Add vector for protocol-dns - mitigate - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: mitigate
   register: result
 
-- name: Assert Add vector for protocol-dns - mitigate - SIP sip-malformed - Idempotent check
+- name: Assert Add vector for protocol-dns - mitigate - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - detect-only - SIP sip-malformed
+- name: Add vector for protocol-dns - detect-only - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - SIP sip-malformed
+- name: Assert Add vector for protocol-dns - detect-only - SIP dns-malformed
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - detect-only - SIP sip-malformed - Idempotent check
+- name: Add vector for protocol-dns - detect-only - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - SIP sip-malformed - Idempotent check
+- name: Assert Add vector for protocol-dns - detect-only - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - learn-only - SIP sip-malformed
+- name: Add vector for protocol-dns - learn-only - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: learn-only
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - SIP sip-malformed
+- name: Assert Add vector for protocol-dns - learn-only - SIP dns-malformed
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - learn-only - SIP sip-malformed - Idempotent check
+- name: Add vector for protocol-dns - learn-only - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: learn-only
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - SIP sip-malformed - Idempotent check
+- name: Assert Add vector for protocol-dns - learn-only - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - disabled - SIP sip-malformed
+- name: Add vector for protocol-dns - disabled - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: disabled
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - SIP sip-malformed
+- name: Assert Add vector for protocol-dns - disabled - SIP dns-malformed
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - disabled - SIP sip-malformed - Idempotent check
+- name: Add vector for protocol-dns - disabled - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: disabled
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - SIP sip-malformed - Idempotent check
+- name: Assert Add vector for protocol-dns - disabled - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Change state to mitigate - SIP sip-malformed
+- name: Change state to mitigate - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: mitigate
   register: result
 
-- name: Change allow_advertisement - yes - SIP sip-malformed
+- name: Change allow_advertisement - yes - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     allow_advertisement: yes
   register: result
 
-- name: Assert Change allow_advertisement - yes - SIP sip-malformed
+- name: Assert Change allow_advertisement - yes - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change allow_advertisement - yes - SIP sip-malformed - Idempotent check
+- name: Change allow_advertisement - yes - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     allow_advertisement: yes
   register: result
 
-- name: Assert Change allow_advertisement - yes - SIP sip-malformed - Idempotent check
+- name: Assert Change allow_advertisement - yes - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change allow_advertisement - no - SIP sip-malformed
+- name: Change allow_advertisement - no - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     allow_advertisement: no
   register: result
 
-- name: Assert Change allow_advertisement - no - SIP sip-malformed
+- name: Assert Change allow_advertisement - no - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change allow_advertisement - no - SIP sip-malformed - Idempotent check
+- name: Change allow_advertisement - no - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     allow_advertisement: no
   register: result
 
-- name: Assert Change allow_advertisement - no - SIP sip-malformed - Idempotent check
+- name: Assert Change allow_advertisement - no - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change bad_actor_detection - yes - SIP sip-malformed
+- name: Change bad_actor_detection - yes - SIP dns-malformed - Expected failure
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     bad_actor_detection: yes
   register: result
+  failed_when: result is success
 
-- name: Assert Change bad_actor_detection - yes - SIP sip-malformed
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change bad_actor_detection - yes - SIP sip-malformed - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    bad_actor_detection: yes
-  register: result
-
-- name: Assert Change bad_actor_detection - yes - SIP sip-malformed - Idempotent check
+- name: Assert Change bad_actor_detection - yes - SIP dns-malformed - Expected failure
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change auto_blacklist - yes - SIP sip-malformed
+- name: Change auto_blacklist - yes - SIP dns-malformed - Expected failure
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: cname
     profile: profile1
     auto_blacklist: yes
   register: result
+  failed_when: result is success
 
-- name: Assert Change auto_blacklist - yes - SIP sip-malformed
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change auto_blacklist - yes - SIP sip-malformed - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    auto_blacklist: yes
-  register: result
-
-- name: Assert Change auto_blacklist - yes - SIP sip-malformed - Idempotent check
+- name: Assert Change auto_blacklist - yes - SIP dns-malformed - Expected failure
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change auto_blacklist - no - SIP sip-malformed
+- name: Change simulate_auto_threshold - yes - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    auto_blacklist: no
-  register: result
-
-- name: Assert Change auto_blacklist - no - SIP sip-malformed
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change auto_blacklist - no - SIP sip-malformed - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    auto_blacklist: no
-  register: result
-
-- name: Assert Change auto_blacklist - no - SIP sip-malformed - Idempotent check
-  assert:
-    that:
-      - result is not changed
-      - result is success
-
-- name: Change bad_actor_detection - no - SIP sip-malformed
-  bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    bad_actor_detection: no
-  register: result
-
-- name: Assert Change bad_actor_detection - no - SIP sip-malformed
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change bad_actor_detection - no - SIP sip-malformed - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    bad_actor_detection: no
-  register: result
-
-- name: Assert Change bad_actor_detection - no - SIP sip-malformed - Idempotent check
-  assert:
-    that:
-      - result is not changed
-      - result is success
-
-- name: Change simulate_auto_threshold - yes - SIP sip-malformed
-  bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     simulate_auto_threshold: yes
   register: result
 
-- name: Assert Change simulate_auto_threshold - yes - SIP sip-malformed
+- name: Assert Change simulate_auto_threshold - yes - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change simulate_auto_threshold - yes - SIP sip-malformed - Idempotent check
+- name: Change simulate_auto_threshold - yes - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     simulate_auto_threshold: yes
   register: result
 
-- name: Assert Change simulate_auto_threshold - yes - SIP sip-malformed - Idempotent check
+- name: Assert Change simulate_auto_threshold - yes - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change simulate_auto_threshold - no - SIP sip-malformed
+- name: Change simulate_auto_threshold - no - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     simulate_auto_threshold: no
   register: result
 
-- name: Assert Change simulate_auto_threshold - no - SIP sip-malformed
+- name: Assert Change simulate_auto_threshold - no - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change simulate_auto_threshold - no - SIP sip-malformed - Idempotent check
+- name: Change simulate_auto_threshold - no - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     simulate_auto_threshold: no
   register: result
 
-- name: Assert Change simulate_auto_threshold - no - SIP sip-malformed - Idempotent check
+- name: Assert Change simulate_auto_threshold - no - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change blacklist_detection_seconds - SIP sip-malformed
+- name: Change blacklist_detection_seconds - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     blacklist_detection_seconds: 90
   register: result
 
-- name: Assert Change blacklist_detection_seconds - SIP sip-malformed
+- name: Assert Change blacklist_detection_seconds - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change blacklist_detection_seconds - SIP sip-malformed - Idempotent check
+- name: Change blacklist_detection_seconds - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     blacklist_detection_seconds: 90
   register: result
 
-- name: Assert Change blacklist_detection_seconds - SIP sip-malformed - Idempotent check
+- name: Assert Change blacklist_detection_seconds - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change blacklist_duration - SIP sip-malformed
+- name: Change blacklist_duration - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     blacklist_duration: 10000
   register: result
 
-- name: Assert Change blacklist_duration - SIP sip-malformed
+- name: Assert Change blacklist_duration - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change blacklist_duration - SIP sip-malformed - Idempotent check
+- name: Change blacklist_duration - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     blacklist_duration: 10000
   register: result
 
-- name: Assert Change blacklist_duration - SIP sip-malformed - Idempotent check
+- name: Assert Change blacklist_duration - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change attack_floor - number - SIP sip-malformed
+- name: Change attack_floor - number - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     attack_floor: 20
   register: result
 
-- name: Assert Change attack_floor - number - SIP sip-malformed
+- name: Assert Change attack_floor - number - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change attack_floor - number - SIP sip-malformed - Idempotent check
+- name: Change attack_floor - number - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     attack_floor: 20
   register: result
 
-- name: Assert Change attack_floor - number - SIP sip-malformed - Idempotent check
+- name: Assert Change attack_floor - number - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change attack_ceiling - number - SIP sip-malformed
+- name: Change attack_ceiling - number - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     attack_ceiling: 50
   register: result
 
-- name: Assert Change attack_ceiling - number - SIP sip-malformed
+- name: Assert Change attack_ceiling - number - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change attack_ceiling - number - SIP sip-malformed - Idempotent check
+- name: Change attack_ceiling - number - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     attack_ceiling: 50
   register: result
 
-- name: Assert Change attack_ceiling - number - SIP sip-malformed - Idempotent check
+- name: Assert Change attack_ceiling - number - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change attack_ceiling - infinite - SIP sip-malformed
+- name: Change attack_ceiling - infinite - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     attack_ceiling: infinite
   register: result
 
-- name: Assert Change attack_ceiling - infinite - SIP sip-malformed
+- name: Assert Change attack_ceiling - infinite - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change attack_ceiling - infinite - SIP sip-malformed - Idempotent check
+- name: Change attack_ceiling - infinite - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     attack_ceiling: infinite
   register: result
 
-- name: Assert Change attack_ceiling - infinite - SIP sip-malformed - Idempotent check
+- name: Assert Change attack_ceiling - infinite - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change per_source_ip_detection_threshold - number - SIP sip-malformed
+- name: Change per_source_ip_detection_threshold - number - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     per_source_ip_detection_threshold: 50
   register: result
 
-- name: Assert Change per_source_ip_detection_threshold - number - SIP sip-malformed
+- name: Assert Change per_source_ip_detection_threshold - number - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change per_source_ip_detection_threshold - number - SIP sip-malformed - Idempotent check
+- name: Change per_source_ip_detection_threshold - number - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     per_source_ip_detection_threshold: 50
   register: result
 
-- name: Assert Change per_source_ip_detection_threshold - number - SIP sip-malformed - Idempotent check
+- name: Assert Change per_source_ip_detection_threshold - number - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change per_source_ip_detection_threshold - infinite - SIP sip-malformed
+- name: Change per_source_ip_detection_threshold - infinite - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     per_source_ip_detection_threshold: infinite
   register: result
 
-- name: Assert Change per_source_ip_detection_threshold - infinite - SIP sip-malformed
+- name: Assert Change per_source_ip_detection_threshold - infinite - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change per_source_ip_detection_threshold - infinite - SIP sip-malformed - Idempotent check
+- name: Change per_source_ip_detection_threshold - infinite - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     per_source_ip_detection_threshold: infinite
   register: result
 
-- name: Assert Change per_source_ip_detection_threshold - infinite - SIP sip-malformed - Idempotent check
+- name: Assert Change per_source_ip_detection_threshold - infinite - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change per_source_ip_mitigation_threshold - number - SIP sip-malformed
+- name: Change per_source_ip_mitigation_threshold - number - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     per_source_ip_mitigation_threshold: 20
   register: result
 
-- name: Assert Change per_source_ip_mitigation_threshold - number - SIP sip-malformed
+- name: Assert Change per_source_ip_mitigation_threshold - number - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change per_source_ip_mitigation_threshold - number - SIP sip-malformed - Idempotent check
+- name: Change per_source_ip_mitigation_threshold - number - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     per_source_ip_mitigation_threshold: 20
   register: result
 
-- name: Assert Change per_source_ip_mitigation_threshold - number - SIP sip-malformed - Idempotent check
+- name: Assert Change per_source_ip_mitigation_threshold - number - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change per_source_ip_mitigation_threshold - infinite - SIP sip-malformed
+- name: Change per_source_ip_mitigation_threshold - infinite - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     per_source_ip_mitigation_threshold: infinite
   register: result
 
-- name: Assert Change per_source_ip_mitigation_threshold - infinite - SIP sip-malformed
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change per_source_ip_mitigation_threshold - infinite - SIP sip-malformed - Idempotent check
+- name: Change per_source_ip_mitigation_threshold - infinite - SIP dns-malformed- Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     per_source_ip_mitigation_threshold: infinite
   register: result
 
-- name: Assert Change per_source_ip_mitigation_threshold - infinite - SIP sip-malformed - Idempotent check
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change detection_threshold_percent - SIP sip-malformed
+- name: Change detection_threshold_percent - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     detection_threshold_percent: 200
   register: result
 
-- name: Assert Change detection_threshold_percent - SIP sip-malformed
+- name: Assert Change detection_threshold_percent - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change detection_threshold_percent - SIP sip-malformed - Idempotent check
+- name: Change detection_threshold_percent - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     detection_threshold_percent: 200
   register: result
 
-- name: Assert Change detection_threshold_percent - SIP sip-malformed - Idempotent check
+- name: Assert Change detection_threshold_percent - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change detection_threshold_eps - number - SIP sip-malformed
+- name: Change detection_threshold_eps - number - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     detection_threshold_eps: 80
   register: result
 
-- name: Assert Change detection_threshold_eps - number - SIP sip-malformed
+- name: Assert Change detection_threshold_eps - number - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change detection_threshold_eps - number - SIP sip-malformed - Idempotent check
+- name: Change detection_threshold_eps - number - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     detection_threshold_eps: 80
   register: result
 
-- name: Assert Change detection_threshold_eps - number - SIP sip-malformed - Idempotent check
+- name: Assert Change detection_threshold_eps - number - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change detection_threshold_eps - infinite - SIP sip-malformed
+- name: Change detection_threshold_eps - infinite - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     detection_threshold_eps: infinite
   register: result
 
-- name: Assert Change detection_threshold_eps - infinite - SIP sip-malformed
+- name: Assert Change detection_threshold_eps - infinite - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change detection_threshold_eps - infinite - SIP sip-malformed - Idempotent check
+- name: Change detection_threshold_eps - infinite - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     detection_threshold_eps: infinite
   register: result
 
-- name: Assert Change detection_threshold_eps - infinite - SIP sip-malformed - Idempotent check
+- name: Assert Change detection_threshold_eps - infinite - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change mitigation_threshold_eps - number - SIP sip-malformed
+- name: Change mitigation_threshold_eps - number - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     mitigation_threshold_eps: 90
   register: result
 
-- name: Assert Change mitigation_threshold_eps - number - SIP sip-malformed
+- name: Assert Change mitigation_threshold_eps - number - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change mitigation_threshold_eps - number - SIP sip-malformed - Idempotent check
+- name: Change mitigation_threshold_eps - number - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     mitigation_threshold_eps: 90
   register: result
 
-- name: Assert Change mitigation_threshold_eps - number - SIP sip-malformed - Idempotent check
+- name: Assert Change mitigation_threshold_eps - number - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change mitigation_threshold_eps - infinite - SIP sip-malformed
+- name: Change mitigation_threshold_eps - infinite - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     mitigation_threshold_eps: infinite
   register: result
 
-- name: Assert Change mitigation_threshold_eps - infinite - SIP sip-malformed
+- name: Assert Change mitigation_threshold_eps - infinite - SIP dns-malformed
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change mitigation_threshold_eps - infinite - SIP sip-malformed - Idempotent check
+- name: Change mitigation_threshold_eps - infinite - SIP dns-malformed - Idempotent check
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     mitigation_threshold_eps: infinite
   register: result
 
-- name: Assert Change mitigation_threshold_eps - infinite - SIP sip-malformed - Idempotent check
+- name: Assert Change mitigation_threshold_eps - infinite - SIP dns-malformed - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change threshold_mode - stress-based-mitigation - SIP sip-malformed
+- name: Change threshold_mode - stress-based-mitigation - SIP dns-malformed - Expected failure
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     threshold_mode: stress-based-mitigation
   register: result
+  failed_when: result is success
 
-- name: Assert Change threshold_mode - stress-based-mitigation - SIP sip-malformed
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change threshold_mode - stress-based-mitigation - SIP sip-malformed - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    threshold_mode: stress-based-mitigation
-  register: result
-
-- name: Assert Change threshold_mode - stress-based-mitigation - SIP sip-malformed - Idempotent check
+- name: Assert Change threshold_mode - stress-based-mitigation - SIP dns-malformed - Expected failure
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change threshold_mode - fully-automatic - SIP sip-malformed
+- name: Change threshold_mode - fully-automatic - SIP dns-malformed - Expected failure
   bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     threshold_mode: fully-automatic
   register: result
+  failed_when: result is success
 
-- name: Assert Change threshold_mode - fully-automatic - SIP sip-malformed
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change threshold_mode - fully-automatic - SIP sip-malformed - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    threshold_mode: fully-automatic
-  register: result
-
-- name: Assert Change threshold_mode - fully-automatic - SIP sip-malformed - Idempotent check
+- name: Assert Change threshold_mode - fully-automatic - SIP dns-malformed - Expected failure
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change threshold_mode - manual - SIP sip-malformed
+- name: Remove vector from protocol-dns - SIP dns-malformed
   bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    threshold_mode: manual
-  register: result
-
-- name: Assert Change threshold_mode - manual - SIP sip-malformed
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change threshold_mode - manual - SIP sip-malformed - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sip-malformed
-    profile: profile1
-    threshold_mode: manual
-  register: result
-
-- name: Assert Change threshold_mode - manual - SIP sip-malformed - Idempotent check
-  assert:
-    that:
-      - result is not changed
-      - result is success
-
-- name: Remove vector from protocol-dns - SIP sip-malformed
-  bigip_firewall_dos_vector:
-    name: sip-malformed
+    name: dns-malformed
     profile: profile1
     state: disabled
