@@ -67,7 +67,7 @@ EXAMPLES = r'''
       password: secret
       server: lb.mydomain.com
       user: admin
-  with_items: "{{ hostvars.keys() }}"
+  loop: "{{ hostvars.keys() }}"
   run_once: true
   delegate_to: localhost
 '''
