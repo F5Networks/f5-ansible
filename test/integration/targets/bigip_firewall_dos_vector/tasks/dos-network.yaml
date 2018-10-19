@@ -1,0 +1,80 @@
+---
+
+- import_tasks: dos-network/ext-hdr-too-large.yaml
+  tags:
+    - ext-hdr-too-large
+- import_tasks: dos-network/hop-cnt-low.yaml
+  tags:
+    - hop-cnt-low
+- import_tasks: dos-network/host-unreachable.yaml
+  tags:
+    - host-unreachable
+- import_tasks: dos-network/icmp-frag.yaml
+  tags:
+    - icmp-frag
+- import_tasks: dos-network/icmpv4-flood.yaml
+  tags:
+    - icmpv4-flood
+- import_tasks: dos-network/icmpv6-flood.yaml
+  tags:
+    - icmpv6-flood
+- import_tasks: dos-network/ip-frag-flood.yaml
+  tags:
+    - ip-frag-flood
+- import_tasks: dos-network/ip-low-ttl.yaml
+  tags:
+    - ip-low-ttl
+- import_tasks: dos-network/ip-opt-frames.yaml
+  tags:
+    - ip-opt-frames
+- import_tasks: dos-network/ipv6-ext-hdr-frames.yaml
+  tags:
+    - ipv6-ext-hdr-frames
+- import_tasks: dos-network/ipv6-frag-flood.yaml
+  tags:
+    - ipv6-frag-flood
+- import_tasks: dos-network/opt-present-with-illegal-len.yaml
+  tags:
+    - opt-present-with-illegal-len
+- import_tasks: dos-network/sweep.yaml
+  tags:
+    - sweep
+- import_tasks: dos-network/tcp-bad-urg.yaml
+  tags:
+    - tcp-bad-urg
+- import_tasks: dos-network/tcp-half-open.yaml
+  tags:
+    - tcp-half-open
+- import_tasks: dos-network/tcp-opt-overruns-tcp-hdr.yaml
+  tags:
+    - tcp-opt-overruns-tcp-hdr
+- import_tasks: dos-network/tcp-psh-flood.yaml
+  tags:
+    - tcp-psh-flood
+- import_tasks: dos-network/tcp-rst-flood.yaml
+  tags:
+    - tcp-rst-flood
+- import_tasks: dos-network/tcp-syn-flood.yaml
+  tags:
+    - tcp-syn-flood
+- import_tasks: dos-network/tcp-syn-oversize.yaml
+  tags:
+    - tcp-syn-oversize
+- import_tasks: dos-network/tcp-synack-flood.yaml
+  tags:
+    - tcp-synack-flood
+- import_tasks: dos-network/tcp-window-size.yaml
+  tags:
+    - tcp-window-size
+- import_tasks: dos-network/tidcmp.yaml
+  tags:
+    - tidcmp
+- import_tasks: dos-network/too-many-ext-hdrs.yaml
+  tags:
+    - too-many-ext-hdrs
+- import_tasks: dos-network/udp-flood.yaml
+  tags:
+    - udp-flood
+- import_tasks: dos-network/unk-tcp-opt-type.yaml
+  tags:
+    - unk-tcp-opt-type
