@@ -92,8 +92,6 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
-    from library.module_utils.network.f5.common import transform_name
-    from library.module_utils.network.f5.icontrol import upload_file
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -102,8 +100,6 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.icontrol import upload_file
 
 
 class Parameters(AnsibleF5Parameters):
