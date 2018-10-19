@@ -507,7 +507,8 @@ class ModuleManager(object):
         )
 
         query = '?expandSubcollections=true'
-        resp = self.client.api.get(uri+query)
+        resp = self.client.api.get(uri + query)
+
         try:
             response = resp.json()
         except ValueError as ex:
