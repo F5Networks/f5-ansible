@@ -477,27 +477,15 @@
       - result is not changed
       - result is success
 
-- name: Change detection_threshold_percent - Network Security TCP Half Open
+- name: Change detection_threshold_percent - Network Security TCP Half Open - Expected failure
   bigip_firewall_dos_vector:
     name: tcp-half-open
     profile: profile1
     detection_threshold_percent: 200
   register: result
+  failed_when: result is success
 
-- name: Assert Change detection_threshold_percent - Network Security TCP Half Open
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Change detection_threshold_percent - Network Security TCP Half Open - Idempotent check
-  bigip_firewall_dos_vector:
-    name: tcp-half-open
-    profile: profile1
-    detection_threshold_percent: 200
-  register: result
-
-- name: Assert Change detection_threshold_percent - Network Security TCP Half Open - Idempotent check
+- name: Assert Change detection_threshold_percent - Network Security TCP Half Open - Expected failure
   assert:
     that:
       - result is not changed
@@ -607,29 +595,79 @@
       - result is not changed
       - result is success
 
-- name: Change threshold_mode - stress-based-mitigation - Network Security TCP Half Open - Expected failure
+- name: Change threshold_mode - stress-based-mitigation - Network Security IPv6 Fragment Flood
   bigip_firewall_dos_vector:
     name: tcp-half-open
     profile: profile1
     threshold_mode: stress-based-mitigation
   register: result
-  failed_when: result is success
 
-- name: Assert Change threshold_mode - stress-based-mitigation - Network Security TCP Half Open - Expected failure
+- name: Assert Change threshold_mode - stress-based-mitigation - Network Security IPv6 Fragment Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - stress-based-mitigation - Network Security IPv6 Fragment Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: tcp-half-open
+    profile: profile1
+    threshold_mode: stress-based-mitigation
+  register: result
+
+- name: Assert Change threshold_mode - stress-based-mitigation - Network Security IPv6 Fragment Flood - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change threshold_mode - fully-automatic - Network Security TCP Half Open - Expected failure
+- name: Change threshold_mode - fully-automatic - Network Security IPv6 Fragment Flood
   bigip_firewall_dos_vector:
     name: tcp-half-open
     profile: profile1
     threshold_mode: fully-automatic
   register: result
-  failed_when: result is success
 
-- name: Assert Change threshold_mode - fully-automatic - Network Security TCP Half Open - Expected failure
+- name: Assert Change threshold_mode - fully-automatic - Network Security IPv6 Fragment Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - fully-automatic - Network Security IPv6 Fragment Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: tcp-half-open
+    profile: profile1
+    threshold_mode: fully-automatic
+  register: result
+
+- name: Assert Change threshold_mode - fully-automatic - Network Security IPv6 Fragment Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - manual - Network Security IPv6 Fragment Flood
+  bigip_firewall_dos_vector:
+    name: tcp-half-open
+    profile: profile1
+    threshold_mode: manual
+  register: result
+
+- name: Assert Change threshold_mode - manual - Network Security IPv6 Fragment Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - manual - Network Security IPv6 Fragment Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: tcp-half-open
+    profile: profile1
+    threshold_mode: manual
+  register: result
+
+- name: Assert Change threshold_mode - manual - Network Security IPv6 Fragment Flood - Idempotent check
   assert:
     that:
       - result is not changed
