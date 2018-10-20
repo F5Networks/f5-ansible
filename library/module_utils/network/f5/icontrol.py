@@ -170,7 +170,10 @@ class iControlRestSession(object):
 
         try:
             result = self.request.open(method, url, **kwargs)
-            response.headers = dict(result.getheaders())
+            try:
+                response.headers = dict(result.getheaders())
+            except AttributeError:
+                response.headers = result.headers
             response._content = result.read()
             response.status = result.getcode()
             response.url = result.geturl()
