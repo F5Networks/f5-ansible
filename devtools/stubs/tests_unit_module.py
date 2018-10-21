@@ -25,17 +25,25 @@ try:
     from library.modules.{{ module }} import ModuleParameters
     from library.modules.{{ module }} import ModuleManager
     from library.modules.{{ module }} import ArgumentSpec
-    from library.module_utils.network.f5.common import F5ModuleError
-    from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    from test.unit.modules.utils import set_module_args
+
+    # In Ansible 2.8, Ansible changed import paths.
+    from test.units.compat import unittest
+    from test.units.compat.mock import Mock
+    from test.units.compat.mock import patch
+
+    from test.units.modules.utils import set_module_args
 except ImportError:
     try:
         from ansible.modules.network.f5.{{ module }} import ApiParameters
         from ansible.modules.network.f5.{{ module }} import ModuleParameters
         from ansible.modules.network.f5.{{ module }} import ModuleManager
         from ansible.modules.network.f5.{{ module }} import ArgumentSpec
-        from ansible.module_utils.network.f5.common import F5ModuleError
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+
+        # Ansible 2.8 imports
+        from units.compat import unittest
+        from units.compat.mock import Mock
+        from units.compat.mock import patch
+
         from units.modules.utils import set_module_args
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
