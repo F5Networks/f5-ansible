@@ -727,8 +727,9 @@ def main():
         add_file_common_args=spec.add_file_common_args,
     )
 
+    client = F5RestClient(**module.params)
+
     try:
-        client = F5RestClient(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         exit_json(module, results, client)
