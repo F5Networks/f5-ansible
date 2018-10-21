@@ -1,14 +1,14 @@
-:source: bigip_monitor_snmp_dca.py
+:source: bigip_monitor_ldap.py
 
 :orphan:
 
-.. _bigip_monitor_snmp_dca_module:
+.. _bigip_monitor_ldap_module:
 
 
-bigip_monitor_snmp_dca - Manages BIG-IP SNMP data collecting agent (DCA) monitors
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_ldap - Manages BIG-IP LDAP monitors
++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_monitor_snmp_dca - Manages BIG-IP SNMP data collecting agent (DCA) monitor
 
 Synopsis
 --------
-- The BIG-IP has an SNMP data collecting agent (DCA) that can query remote SNMP agents of various types, including the UC Davis agent (UCD) and the Windows 2000 Server agent (WIN2000).
+- Manages BIG-IP LDAP monitors.
 
 
 
@@ -35,54 +35,47 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>agent_type</b>
+                    <b>base</b>
                                                         </td>
                                 <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>UCD</li>
-                                                                                                                                                                                                <li>WIN2000</li>
-                                                                                                                                                                                                <li>GENERIC</li>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the location in the LDAP tree from which the monitor starts the health check.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>chase_referrals</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the SNMP agent running on the monitored server. When creating a new monitor, the default is <code>UCD</code> (UC-Davis).</div>
+                                                                        <div>Specifies whether, upon receipt of an LDAP referral entry, the target follows (or chases) that referral.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>community</b>
+                    <b>debug</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the community name that the system must use to authenticate with the host server through SNMP. When creating a new monitor, the default value is <code>public</code>. Note that this value is case sensitive.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>cpu_coefficient</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the coefficient that the system uses to calculate the weight of the CPU threshold in the dynamic ratio load balancing algorithm. When creating a new monitor, the default is <code>1.5</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>cpu_threshold</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the maximum acceptable CPU usage on the target server. When creating a new monitor, the default is <code>80</code> percent.</div>
+                                                                        <div>Specifies whether the monitor sends error messages and additional information to a log file created and labeled specifically for this monitor.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -97,22 +90,12 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>disk_coefficient</b>
+                    <b>filter</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the coefficient that the system uses to calculate the weight of the disk threshold in the dynamic ratio load balancing algorithm. When creating a new monitor, the default is <code>2.0</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>disk_threshold</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the maximum acceptable disk usage on the target server. When creating a new monitor, the default is <code>90</code> percent.</div>
+                                                                        <div>Specifies an LDAP key for which the monitor searches.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -122,27 +105,48 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown. When creating a new monitor, the default is <code>10</code>.</div>
+                                                                        <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>memory_coefficient</b>
+                    <b>ip</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the coefficient that the system uses to calculate the weight of the memory threshold in the dynamic ratio load balancing algorithm. When creating a new monitor, the default is <code>1.0</code>.</div>
+                                                                        <div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>memory_threshold</b>
+                    <b>mandatory_attributes</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the maximum acceptable memory usage on the target server. When creating a new monitor, the default is <code>70</code> percent.</div>
+                                                                        <div>Specifies whether the target must include attributes in its response to be considered up.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>manual_resume</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the system automatically changes the status of a resource to <b>enabled</b> at the next successful monitor check.</div>
+                                                    <div>If you set this option to <code>yes</code>, you must manually re-enable the resource before the system can use it for load balancing connections.</div>
+                                                    <div>When <code>yes</code>, specifies that you must manually re-enable the resource after an unsuccessful monitor check.</div>
+                                                    <div>When <code>no</code>, specifies that the system automatically changes the status of a resource to <b>enabled</b> at the next successful monitor check.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -160,10 +164,11 @@ Parameters
                     <b>parent</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">/Common/snmp_dca</div>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">/Common/ldap</div>
                                     </td>
                                                                 <td>
-                                                                        <div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>snmp_dca</code> parent on the <code>Common</code> partition.</div>
+                                                                        <div>The parent template of this monitor template. Once this value has been set, it cannot be changed.</div>
+                                                    <div>By default, this value is the <code>ldap</code> parent on the <code>Common</code> partition.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -188,6 +193,17 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>port</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>
+                                                    <div>Note that if specifying an IP address, a value between 1 and 65535 must be specified.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -308,6 +324,21 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>security</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>none</li>
+                                                                                                                                                                                                <li>ssl</li>
+                                                                                                                                                                                                <li>tls</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the secure protocol type for communications with the target.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -332,7 +363,7 @@ Parameters
                                 <tr>
                                                                 <td colspan="2">
                     <b>state</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
@@ -346,12 +377,35 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>target_password</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the password, if the monitored target requires authentication.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>target_username</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the user name, if the monitored target requires authentication.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>time_until_up</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the number of seconds to wait after a resource first responds correctly to the monitor before setting the resource to &#x27;up&#x27;. During the interval, all responses from the resource must be correct. When the interval expires, the resource is marked &#x27;up&#x27;. A value of 0, means that the resource is marked up immediately upon receipt of the first correct response. When creating a new monitor, the default is <code>0</code>.</div>
+                                                                        <div>Specifies the number of seconds to wait after a resource first responds correctly to the monitor before setting the resource to &#x27;up&#x27;.</div>
+                                                    <div>During the interval, all responses from the resource must be correct.</div>
+                                                    <div>When the interval expires, the resource is marked &#x27;up&#x27;.</div>
+                                                    <div>A value of 0, means that the resource is marked up immediately upon receipt of the first correct response.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -361,7 +415,36 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the number of seconds the target has in which to respond to the monitor request. When creating a new monitor, the default is <code>30</code> seconds. If the target responds within the set time period, it is considered &#x27;up&#x27;. If the target does not respond within the set time period, it is considered &#x27;down&#x27;. When this value is set to 0 (zero), the system uses the interval from the parent monitor. Note that <code>timeout</code> and <code>time_until_up</code> combine to control when a resource is set to up.</div>
+                                                                        <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
+                                                    <div>If the target responds within the set time period, it is considered &#x27;up&#x27;. If the target does not respond within the set time period, it is considered &#x27;down&#x27;. When this value is set to 0 (zero), the system uses the interval from the parent monitor.</div>
+                                                    <div>Note that <code>timeout</code> and <code>time_until_up</code> combine to control when a resource is set to up.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>up_interval</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the interval for the system to use to perform the health check when a resource is up.</div>
+                                                    <div>When <code>0</code>, specifies that the system uses the interval specified in <code>interval</code> to check the health of the resource.</div>
+                                                    <div>When any other number, enables specification of a different interval to use when checking the health of a resource that is up.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>update_password</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>on_create</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div><code>always</code> will update passwords if the <code>target_password</code> is specified.</div>
+                                                    <div><code>on_create</code> will only set the password for newly created monitors.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -390,20 +473,6 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>version</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>v1</li>
-                                                                                                                                                                                                <li>v2c</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the version of SNMP that the host server uses. When creating a new monitor, the default is <code>v1</code>. When <code>v1</code>, specifies that the host server uses SNMP version 1. When <code>v2c</code>, specifies that the host server uses SNMP version 2c.</div>
-                                                                                </td>
-            </tr>
                         </table>
     <br/>
 
@@ -412,8 +481,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 12
-    - This module does not support the ``variables`` option because this option is broken in the REST API and does not function correctly in ``tmsh``; for example you cannot remove user-defined params. Therefore, there is no way to automatically configure it.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
@@ -426,24 +493,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create SNMP DCS monitor
-      bigip_monitor_snmp_dca:
-        name: my_monitor
-        state: present
+    - name: Create a LDAP monitor
+      bigip_monitor_ldap:
+        name: foo
         provider:
+          password: secret
           server: lb.mydomain.com
           user: admin
-          password: secret
-      delegate_to: localhost
-
-    - name: Remove TCP Echo Monitor
-      bigip_monitor_snmp_dca:
-        name: my_monitor
-        state: absent
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
 
@@ -456,61 +512,48 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>agent_type</b>
+                    <b>base</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new agent type to be used by the monitor.</div>
+                                            <div>The new LDAP Base setting of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">UCD</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">base</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>community</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>chase_referrals</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new community for the monitor.</div>
+                                            <div>The new Chase Referrals setting of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foobar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>cpu_coefficient</b>
-                    <br/><div style="font-size: small; color: red">float</div>
+                    <b>debug</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new CPU coefficient.</div>
+                                            <div>The new Debug setting of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.4</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>cpu_threshold</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new CPU threshold.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">85</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
@@ -523,33 +566,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                             <div>The description of the monitor.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Important Monitor</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Important_Monitor</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>disk_coefficient</b>
-                    <br/><div style="font-size: small; color: red">float</div>
+                    <b>filter</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new disk coefficient.</div>
+                                            <div>The new LDAP Filter setting of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>disk_threshold</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new disk threshold.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">34</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">filter1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -567,28 +597,37 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>memory_coefficient</b>
-                    <br/><div style="font-size: small; color: red">float</div>
+                    <b>ip</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new memory coefficient.</div>
+                                            <div>The new IP of IP/port definition.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">6.4</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.12.13.14</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>memory_threshold</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>mandatory_attributes</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new memory threshold.</div>
+                                            <div>The new Mandatory Attributes setting of the resource.</div>
                                         <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">50</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>manual_resume</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Manual Resume setting of the resource.</div>
+                                        <br/>
                                     </td>
             </tr>
                                 <tr>
@@ -601,7 +640,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                             <div>New parent template of the monitor.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">snmp_dca</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ldap</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>security</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Security setting of the resource.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ssl</div>
                                     </td>
             </tr>
                                 <tr>
@@ -630,19 +682,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
                                     </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>version</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new new SNMP version to be used by the monitor.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">v2c</div>
-                                    </td>
-            </tr>
                         </table>
     <br/><br/>
 
@@ -661,5 +700,4 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
-- Wojciech Wypior (@wojtek0806)
 

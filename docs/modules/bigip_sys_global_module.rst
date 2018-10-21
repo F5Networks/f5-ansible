@@ -25,7 +25,6 @@ Requirements
 ~~~~~~~~~~~~
 The below requirements are needed on the host that executes this module.
 
-- f5-sdk
 - f5-sdk >= 3.0.16
 
 
@@ -72,7 +71,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div><code>enable</code> or <code>disabled</code> the Setup utility in the browser-based Configuration utility.</div>
+                                                                        <div><code>yes</code> or <code>no</code> the Setup utility in the browser-based Configuration utility.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -86,7 +85,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies, when <code>enabled</code>, that the system menu displays on the LCD screen on the front of the unit. This setting has no effect when used on the VE platform.</div>
+                                                                        <div>Specifies, when <code>yes</code>, that the system menu displays on the LCD screen on the front of the unit. This setting has no effect when used on the VE platform.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -114,7 +113,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies, when <code>enabled</code>, that the next time you reboot the system, the system boots to an ISO image on the network, rather than an internal media drive.</div>
+                                                                        <div>Specifies, when <code>yes</code>, that the next time you reboot the system, the system boots to an ISO image on the network, rather than an internal media drive.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -257,7 +256,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies, when <code>enabled</code>, that the system suppresses informational text on the console during the boot cycle. When <code>disabled</code>, the system presents messages and informational text on the console during the boot cycle.</div>
+                                                                        <div>Specifies, when <code>yes</code>, that the system suppresses informational text on the console during the boot cycle. When <code>no</code>, the system presents messages and informational text on the console during the boot cycle.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -359,10 +358,10 @@ Examples
     - name: Disable the setup utility
       bigip_sys_global:
         gui_setup: no
-        password: secret
-        server: lb.mydomain.com
-        user: admin
-        state: present
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -409,7 +408,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>gui_setup</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -422,7 +421,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>lcd_display</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -435,7 +434,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>mgmt_dhcp</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -448,7 +447,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>net_reboot</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -461,7 +460,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>quiet_boot</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -474,7 +473,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>security_banner</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -502,4 +501,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

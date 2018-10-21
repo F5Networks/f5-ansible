@@ -350,6 +350,10 @@ Examples
           - audit
           - secure
         dest: /tmp/localhost.localdomain.qkview
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 

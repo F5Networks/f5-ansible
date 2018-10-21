@@ -68,6 +68,7 @@ All modules
   * :ref:`bigip_monitor_external_module`
   * :ref:`bigip_monitor_http_module`
   * :ref:`bigip_monitor_https_module`
+  * :ref:`bigip_monitor_ldap_module`
   * :ref:`bigip_monitor_snmp_dca_module`
   * :ref:`bigip_monitor_tcp_module`
   * :ref:`bigip_monitor_tcp_echo_module`

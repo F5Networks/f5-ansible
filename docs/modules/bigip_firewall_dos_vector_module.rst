@@ -35,13 +35,141 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>allow_advertisement</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies that addresses that are identified for blacklisting are advertised to BGP routers</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>attack_ceiling</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the absolute maximum allowable for packets of this type.</div>
+                                                    <div>This setting rate limits packets to the packets per second setting, when specified.</div>
+                                                    <div>To set no hard limit and allow automatic thresholds to manage all rate limiting, set this to <code>infinite</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>attack_floor</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies packets per second to identify an attack.</div>
+                                                    <div>These settings provide an absolute minimum of packets to allow before the attack is identified.</div>
+                                                    <div>As the automatic detection thresholds adjust to traffic and CPU usage on the system over time, this attack floor becomes less relevant.</div>
+                                                    <div>This value may not exceed the value in <code>attack_floor</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>auto_blacklist</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Automatically blacklists detected bad actors.</div>
+                                                    <div>To enable this parameter, the <code>bad_actor_detection</code> must also be enabled.</div>
+                                                    <div>This parameter is not supported by the <code>dns-malformed</code> vector.</div>
+                                                    <div>This parameter is not supported by the <code>qdcount</code> vector.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>bad_actor_detection</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Whether Bad Actor detection is enabled or disabled for a vector, if available.</div>
+                                                    <div>This parameter must be enabled to enable the <code>auto_blacklist</code> parameter.</div>
+                                                    <div>This parameter is not supported by the <code>dns-malformed</code> vector.</div>
+                                                    <div>This parameter is not supported by the <code>qdcount</code> vector.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>blacklist_detection_seconds</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Detection, in seconds, before blacklisting occurs.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>blacklist_duration</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Duration, in seconds, that the blacklist will last.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>detection_threshold_eps</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Lists how many packets per second the system must discover in traffic in order to detect this attack.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: rate_threshold</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>detection_threshold_percent</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Lists the threshold percent increase over time that the system must detect in traffic in order to detect this attack.</div>
+                                                    <div>The <code>tcp-half-open</code> vector does not support this parameter.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: rate_increase</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>mitigation_threshold_eps</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specify the maximum number of this type of packet per second the system allows for a vector.</div>
+                                                    <div>The system drops packets once the traffic level exceeds the rate limit.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: rate_limit</div>
+                                    </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>name</b>
                                                         </td>
@@ -165,6 +293,17 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>partition</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Device partition to manage resources on.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>password</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -174,6 +313,26 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>per_source_ip_detection_threshold</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the number of packets per second to identify an IP address as a bad actor.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>per_source_ip_mitigation_threshold</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the rate limit applied to a source IP that is identified as a bad actor.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -328,6 +487,58 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>simulate_auto_threshold</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies that results of the current automatic thresholds are logged, though manual thresholds are enforced, and no action is taken on automatic thresholds.</div>
+                                                    <div>The <code>sweep</code> vector does not support this parameter.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>state</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>mitigate</li>
+                                                                                                                                                                                                <li>detect-only</li>
+                                                                                                                                                                                                <li>learn-only</li>
+                                                                                                                                                                                                <li>disabled</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>state</code> is <code>mitigate</code>, ensures that the vector enforces limits and thresholds.</div>
+                                                    <div>When <code>state</code> is <code>detect-only</code>, ensures that the vector does not enforce limits and thresholds (rate limiting, dopping, etc), but is still tracked in logs and statistics.</div>
+                                                    <div>When <code>state</code> is <code>disabled</code>, ensures that the vector does not enforce limits and thresholds, but is still tracked in logs and statistics.</div>
+                                                    <div>When <code>state</code> is <code>learn-only</code>, ensures that the vector does not &quot;detect&quot; any attacks. Only learning and stat collecting is performed.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>threshold_mode</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>manual</li>
+                                                                                                                                                                                                <li>stress-based-mitigation</li>
+                                                                                                                                                                                                <li>fully-automatic</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether</div>
+                                                    <div>The <code>dns-malformed</code> vector does not support <code>fully-automatic</code>, or <code>stress-based-mitigation</code> for this parameter.</div>
+                                                    <div>The <code>qdcount</code> vector does not support <code>fully-automatic</code>, or <code>stress-based-mitigation</code> for this parameter.</div>
+                                                    <div>The <code>sip-malformed</code> vector does not support <code>fully-automatic</code>, or <code>stress-based-mitigation</code> for this parameter.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -372,13 +583,14 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Enable DNS AAAA vector mitigation
       bigip_firewall_dos_vector:
-        name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        name: aaaa
+        state: mitigate
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -391,19 +603,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>param1</b>
+                    <b>allow_advertisement</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param1 value of the resource.</div>
+                                            <div>The new Allow External Advertisement setting.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -411,15 +623,191 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>param2</b>
+                    <b>attack_ceiling</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param2 value of the resource.</div>
+                                            <div>The new Attack Ceiling EPS setting.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">infinite</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>attack_floor</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Attack Floor EPS setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">infinite</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>auto_blacklist</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Auto Blacklist setting.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>bad_actor_detection</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Bad Actor Detection setting.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>blacklist_category</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Category Name setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/cloud_provider_networks</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>blacklist_detection_seconds</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Sustained Attack Detection Time setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">60</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>blacklist_duration</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Category Duration Time setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">14400</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>detection_threshold_eps</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Detection Threshold EPS setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">infinite</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>detection_threshold_percent</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Detection Threshold Percent setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">infinite</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>mitigation_threshold_eps</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Mitigation Threshold EPS setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">infinite</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>per_source_ip_detection_threshold</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Per Source IP Detection Threshold EPS setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">23</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>per_source_ip_mitigation_threshold</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Per Source IP Mitigation Threshold EPS setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">infinite</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>simulate_auto_threshold</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Simulate Auto Threshold setting.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>state</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new state of the vector.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">mitigate</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>threshold_mode</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new Mitigation Threshold EPS setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">infinite</div>
                                     </td>
             </tr>
                         </table>
