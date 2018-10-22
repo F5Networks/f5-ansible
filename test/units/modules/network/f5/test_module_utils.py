@@ -7,7 +7,8 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from ansible.compat.tests import unittest
+from test.units.compat import unittest
+
 from library.module_utils.network.f5.common import AnsibleF5Parameters
 
 
