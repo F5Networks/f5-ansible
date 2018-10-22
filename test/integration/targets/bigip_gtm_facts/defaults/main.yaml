@@ -1,7 +1,0 @@
----
-
-pool_name: foo.pool
-pool_lb_method: round-robin
-pool_filter: name.*
-pool_filter_bad: baz.*
-wide_ip_name: foo.bar.baz
