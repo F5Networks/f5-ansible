@@ -1,0 +1,126 @@
+---
+
+- name: Issue 00996 - Include issue variables
+  include_vars:
+    file: issue-00996.yaml
+
+- name: Issue 00996 - Create Syslog, no syslog on device
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    remote_port: "{{ remote_port1 }}"
+    local_ip: "{{ local_ip1 }}"
+  register: result
+
+- name: Assert Issue 00996 - Create Syslog, no syslog on device
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00996 - Create Syslog, no syslog on device - Idempotent check
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    remote_port: "{{ remote_port1 }}"
+    local_ip: "{{ local_ip1 }}"
+  register: result
+
+- name: Assert Issue 00996 - Create Syslog, no syslog on device - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00996 - Create Syslog, with syslog on device
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host2 }}"
+    remote_port: "{{ remote_port2 }}"
+  register: result
+
+- name: Assert Issue 00996 - Create Syslog, with syslog on device
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00996 - Create Syslog, with syslog on device - Idempotent check
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host2 }}"
+    remote_port: "{{ remote_port2 }}"
+  register: result
+
+- name: Assert Issue 00996 - Create Syslog, with syslog on device - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00996 - Create Syslog, with duplicate hostname using tmsh
+  bigip_command:
+    commands:
+      - "tmsh modify sys syslog remote-servers add { ansible_set_it { host foo.bar.com remote-port 9999}}"
+
+- name: Issue 00996 - Change Syslog, with duplicate hostname, no name provided - Expect Failure
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    remote_port: "{{ remote_port2 }}"
+  register: result
+  failed_when: result is success
+
+- name: Issue 00996 - Change Syslog, with duplicate hostname, name provided
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    remote_port: "{{ remote_port2 }}"
+    local_ip: "{{ local_ip2 }}"
+    name: "{{ name1 }}"
+  register: result
+
+- name: Assert Issue 00996 - Change Syslog, with duplicate hostname, name provided
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00996 - Change Syslog, with duplicate hostname, name provided - Idempotent check
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    remote_port: "{{ remote_port2 }}"
+    local_ip: "{{ local_ip2 }}"
+    name: "{{ name1 }}"
+  register: result
+
+- name: Assert Issue 00996 - Change Syslog, with duplicate hostname, name provided - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00996 - Remove Syslog, with duplicate hostname, name provided
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    name: "{{ name2 }}"
+    state: absent
+  register: result
+
+- name: Assert Issue 00996 - Remove Syslog, with duplicate hostname, name provided
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00996 - Remove Syslog, with duplicate hostname, name provided - Idempotent check
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    name: "{{ name2 }}"
+    state: absent
+  register: result
+
+- name: Assert Issue 00996 - Remove Syslog, with duplicate hostname, name provided - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00996 - Remove rest of Syslogs
+  bigip_remote_syslog:
+    remote_host: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ remote_host2 }}"
+  register: result
+
+- name: Issue 00996 - Remove rest of Syslogs - verify removal
+  assert:
+    that:
+      - result is changed
