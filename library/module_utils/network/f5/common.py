@@ -531,7 +531,9 @@ class F5BaseClient(object):
 
     def merge_provider_params(self):
         result = dict()
-        provider = self.params.get('provider', {})
+        provider = self.params.get('provider', None)
+        if not provider:
+            provider = {}
 
         self.merge_provider_server_param(result, provider)
         self.merge_provider_server_port_param(result, provider)
