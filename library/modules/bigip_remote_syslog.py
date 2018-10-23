@@ -7,7 +7,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['stableinterface'],
                     'supported_by': 'community'}
@@ -25,6 +24,12 @@ options:
       - Specifies the IP address, or hostname, for the remote system to
         which the system sends log messages.
     required: True
+  name:
+    description:
+      - Specifies the name of the syslog object.
+      - The option is required when multiple C(remote_host) with the same IP or hostname are present on the device.
+      - If C(name) is not provided C(remote_host) is used by default.
+  version_added: 2.8
   remote_port:
     description:
       - Specifies the port that the system uses to send messages to the
@@ -98,6 +103,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import compare_dictionary
     from library.module_utils.network.f5.ipaddress import is_valid_ip
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
@@ -107,16 +113,21 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import compare_dictionary
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'remoteServers': 'remote_servers',
+    }
+
     updatables = [
-        'remote_port', 'local_ip', 'remoteServers',
+        'remote_port', 'local_ip', 'remote_servers',
     ]
 
     returnables = [
-        'remote_port', 'local_ip',
+        'remote_port', 'local_ip', 'remote_servers',
     ]
 
     api_attributes = [
@@ -125,7 +136,21 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def remote_servers(self):
+        if self._values['remote_servers'] is None:
+            return None
+        remote = [self._handle_none(d) for d in self._values['remote_servers']]
+        current_hosts = dict((d['name'], d) for (i, d) in enumerate(remote))
+        return current_hosts
+
+    def _handle_none(self, d):
+        result = {}
+        for k, v in d.items():
+            if v == 'none':
+                v = None
+            result[k] = v
+        return result
 
 
 class ModuleParameters(Parameters):
@@ -164,7 +189,7 @@ class ModuleParameters(Parameters):
 
     @property
     def remote_port(self):
-        if self._values['remote_port'] is None:
+        if self._values['remote_port'] in [None, 'none']:
             return None
         if self._values['remote_port'] == 0:
             raise F5ModuleError(
@@ -182,6 +207,30 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(
                 "The provided 'local_ip' is not a valid IP address"
             )
+
+    @property
+    def name(self):
+        if self._values['remote_host'] is None:
+            return None
+        if self._values['name'] is None:
+            return None
+        name = '/{0}/{1}'.format(self.partition, self._values['name'])
+        return name
+
+    @property
+    def remote_servers(self):
+        if self.remote_host is None:
+            return None
+        if self.remote_port is None:
+            remote_port = 514
+        else:
+            remote_port = self.remote_port
+        details = dict(host=self.remote_host,
+                       name=self.name,
+                       localIp=self.local_ip,
+                       remotePort=remote_port)
+        want_servers = {self.name: details}
+        return want_servers
 
 
 class Changes(Parameters):
@@ -237,8 +286,21 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    def _hosts_diff(self, want_hosts, have_hosts):
+        try:
+            have = have_hosts[self.want.name]
+            diff = compare_dictionary(want_hosts, have)
+            return diff, self.want.name
+        except KeyError:
+            pass
+        for item in have_hosts:
+            if have_hosts[item]['host'] == self.want.remote_host:
+                diff = compare_dictionary(want_hosts, have_hosts[item])
+                return diff, have_hosts[item]['name']
+        return want_hosts, want_hosts['name']
+
     @property
-    def remoteServers(self):
+    def remote_servers(self):
         """Return changed list of remote servers
 
         The order of this list does not matter as BIG-IP will send to all the
@@ -246,63 +308,59 @@ class Difference(object):
 
         :return:
         """
-
         changed = False
-        if self.want.remote_host is None:
-            return None
-        if self.have.remoteServers is None:
-            remote = dict()
-        else:
-            remote = self.have.remoteServers
-        current_hosts = dict((d['host'], d) for (i, d) in enumerate(remote))
 
-        if self.want.state == 'absent':
-            del current_hosts[self.want.remote_host]
-            result = [v for (k, v) in iteritems(current_hosts)]
+        if self.want.remote_servers is None:
+            return None
+
+        if self.have.remote_servers is None:
+            result = list()
+            result.append(self.want.remote_servers[self.want.name])
             return result
 
-        if self.want.remote_host in current_hosts:
-            item = current_hosts[self.want.remote_host]
-            if self.want.remote_port is not None:
-                if int(item['remotePort']) != self.want.remote_port:
-                    item['remotePort'] = self.want.remote_port
-                    self._remote_port = self.want.remote_port
-                    changed = True
-            if self.want.local_ip is not None:
-                if item['localIp'] != self.want.local_ip:
-                    item['localIp'] = self.want.local_ip
-                    self._local_ip = self.want.local_ip
-                    changed = True
-        else:
+        want_hosts = self.want.remote_servers[self.want.name]
+        have_hosts = self.have.remote_servers
+
+        if self.want.state == 'absent':
+            try:
+                del have_hosts[self.want.name]
+            except KeyError:
+                pass
+            for item in have_hosts:
+                if have_hosts[item]['host'] == self.want.remote_host:
+                    del have_hosts[item]
+                    break
+            result = [v for (k, v) in iteritems(have_hosts)]
+            return result
+
+        diff, name = self._hosts_diff(want_hosts, have_hosts)
+        if diff:
+            have_hosts[name] = diff
             changed = True
-            count = len(current_hosts.keys()) + 1
-            host = self.want.remote_host
-            current_hosts[self.want.remote_host] = dict(
-                name="/Common/remotesyslog{0}".format(count),
-                host=host
-            )
-            if self.want.remote_port is not None:
-                current_hosts[host]['remotePort'] = self.want.remote_port
-                self._remote_port = self.want.remote_port
-            if self.want.local_ip is not None:
-                current_hosts[host]['localIp'] = self.want.local_ip
-                self._local_ip = self.want.local_ip
         if changed:
-            result = [v for (k, v) in iteritems(current_hosts)]
+            result = [v for (k, v) in iteritems(have_hosts)]
             return result
         return None
 
     @property
     def remote_port(self):
-        _ = self.remoteServers
-        if self._remote_port:
-            return self._remote_port
+        if self.have.remote_servers is None:
+            return self.want.remote_port
+        result, _ = self._hosts_diff(self.want.remote_servers[self.want.name], self.have.remote_servers)
+        if result:
+            if result['remotePort'] == self.want.remote_port:
+                return result['remotePort']
+        return None
 
     @property
     def local_ip(self):
-        _ = self.remoteServers
-        if self._local_ip:
-            return self._local_ip
+        if self.have.remote_servers is None:
+            return self.want.local_ip
+        result, _ = self._hosts_diff(self.want.remote_servers[self.want.name], self.have.remote_servers)
+        if result:
+            if result['localIp'] == self.want.local_ip:
+                return result['localIp']
+        return None
 
 
 class ModuleManager(object):
@@ -321,15 +379,6 @@ class ModuleManager(object):
                 version=warning['version']
             )
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = UsableChanges(params=changed)
-            self.changes.update({'remote_host': self.want.remote_host})
-
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
@@ -345,7 +394,6 @@ class ModuleManager(object):
                     changed[k] = change
         if changed:
             self.changes = UsableChanges(params=changed)
-            self.changes.update({'remote_host': self.want.remote_host})
             return True
         return False
 
@@ -355,7 +403,7 @@ class ModuleManager(object):
         state = self.want.state
 
         if state == "present":
-            changed = self.update()
+            changed = self.present()
         elif state == "absent":
             changed = self.absent()
 
@@ -386,7 +434,7 @@ class ModuleManager(object):
         return True
 
     def create(self):
-        self._set_valid_defaults()
+        self._set_valid_name()
         self._update_changed_options()
         if self.module.check_mode:
             return True
@@ -395,22 +443,8 @@ class ModuleManager(object):
         self.update_on_device()
         return True
 
-    def _set_valid_defaults(self):
-        if self.changes.local_ip is None:
-            self.changes.update({'local_ip': None})
-        if self.changes.remote_port is None:
-            self.changes.update({'remote_port': 514})
-        remote_servers = [
-            dict(
-                name='/{0}/remotesyslog1'.format(self.want.partition),
-                host=self.want.remote_host,
-                localIp=self.changes.local_ip,
-                remotePort=self.changes.remote_port
-            )
-        ]
-        self.changes.update({'remoteServers': remote_servers})
-
     def should_update(self):
+        self._set_valid_name()
         result = self._update_changed_options()
         if result:
             return True
@@ -425,14 +459,33 @@ class ModuleManager(object):
         self.update_on_device()
         return True
 
+    def _set_valid_name(self):
+        if self.want.name is None:
+            self.want._values['name'] = self.want.remote_host
+
+    def _check_for_duplicate_syslog(self):
+        count = 0
+        for item in self.have.remote_servers:
+            if self.have.remote_servers[item]['host'] == self.want.remote_host:
+                count += 1
+        return count
+
     def exists(self):
         self.have = self.read_current_from_device()
-        if self.have.remoteServers is None:
+        if self.have.remote_servers is None:
             return False
-
-        for server in self.have.remoteServers:
-            if server['host'] == self.want.remote_host:
-                return True
+        count = self._check_for_duplicate_syslog()
+        if count == 1:
+            return True
+        if count > 1:
+            try:
+                if self.have.remote_servers[self.want.name]:
+                    return True
+            except KeyError:
+                raise F5ModuleError(
+                    "Multiple occurrences of hostname: {0} detected, please specify 'name' parameter". format(
+                        self.want.remote_host))
+        return False
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -446,7 +499,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] in [400, 409]:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -499,6 +552,7 @@ class ArgumentSpec(object):
             ),
             remote_port=dict(),
             local_ip=dict(),
+            name=dict(),
             state=dict(
                 default='present',
                 choices=['absent', 'present']

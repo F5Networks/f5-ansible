@@ -1,0 +1,14 @@
+---
+
+remote_host1: foo.bar.com
+remote_port1: 1516
+local_ip1: "10.10.10.10"
+
+remote_host2: foo.baz.com
+remote_port2: 1517
+
+remote_port3: 514
+local_ip2: '20.10.10.10'
+
+name1: "foo.bar.com"
+name2: "ansible_set_it"
