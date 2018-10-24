@@ -2,7 +2,7 @@
 
 - name: Remove AS3 rpm
   bigip_iapplx_package:
-    package: /tmp/as3.rpm
+    package: f5-appsvcs
     state: absent
 
 - name: Remove old AS3 RPM
