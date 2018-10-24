@@ -384,9 +384,11 @@ class ModuleManager(object):
     def upsert_on_device(self):
         params = self.changes.api_params()
         uri = 'https://{0}:{1}/mgmt/shared/appsvcs/declare/'.format(
-            self.want.server, self.want.server_port,
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
         resp = self.client.api.post(uri, json=params)
+
         if resp.status != 200:
             result = resp.json()
             errors = self._get_errors_from_response(result)
@@ -464,15 +466,14 @@ class ModuleManager(object):
 
     def remove_from_device(self):
         uri = 'https://{0}:{1}/mgmt/shared/appsvcs/declare/{2}'.format(
-            self.want.server, self.want.server_port,
+            self.client.provider['server'],
+            self.client.provider['server_port'],
             self.want.tenants
         )
-        resp = self.client.api.delete(uri)
-        if resp.status != 200:
-            result = resp.json()
-            raise F5ModuleError(
-                "{0}: {1}. {2}".format(resp.status, result['message'], '. '.join(result['errors']))
-            )
+        response = self.client.api.delete(uri)
+        if response.status == 200:
+            return True
+        raise F5ModuleError(response.content)
 
 
 class ArgumentSpec(object):
@@ -507,8 +508,9 @@ def main():
         required_if=spec.required_if
     )
 
+    client = F5RestClient(**module.params)
+
     try:
-        client = F5RestClient(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)

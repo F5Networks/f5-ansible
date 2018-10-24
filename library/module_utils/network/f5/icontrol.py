@@ -104,7 +104,7 @@ class Response(object):
         return self._content
 
     def json(self):
-        return _json.loads(self._content)
+        return _json.loads(self._content or 'null')
 
     @property
     def ok(self):
@@ -125,7 +125,7 @@ class iControlRestSession(object):
     This acts as a loose wrapper around Ansible's ``Request`` class. We're doing
     this as interim work until we move to the httpapi connector.
     """
-    def __init__(self, headers=None, use_proxy=True, force=False, timeout=10,
+    def __init__(self, headers=None, use_proxy=True, force=False, timeout=120,
                  validate_certs=True, url_username=None, url_password=None,
                  http_agent=None, force_basic_auth=False, follow_redirects='urllib2',
                  client_cert=None, client_key=None, cookies=None):
@@ -166,8 +166,8 @@ class iControlRestSession(object):
                 body = body.encode('utf-8')
         if data:
             body = data
-        kwargs['data'] = body
-
+        if body:
+            kwargs['data'] = body
         try:
             result = self.request.open(method, url, **kwargs)
             try:
@@ -210,11 +210,14 @@ class iControlRestSession(object):
         token = self.request.headers.get('X-F5-Auth-Token', None)
         if not token:
             return
-        p = generic_urlparse(urlparse(self.last_url))
-        uri = "https://{0}:{1}/mgmt/shared/authz/tokens/{2}".format(
-            p['hostname'], p['port'], token
-        )
-        self.delete(uri)
+        try:
+            p = generic_urlparse(urlparse(self.last_url))
+            uri = "https://{0}:{1}/mgmt/shared/authz/tokens/{2}".format(
+                p['hostname'], p['port'], token
+            )
+            self.delete(uri)
+        except ValueError:
+            pass
 
 
 def download_file(client, url, dest):
