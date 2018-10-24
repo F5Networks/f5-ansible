@@ -107,6 +107,7 @@ action:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
+from ansible.module_utils.six import string_types
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -122,6 +123,12 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 
 class Parameters(AnsibleF5Parameters):
@@ -215,6 +222,15 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
+    @property
+    def content(self):
+        if self._values['content'] is None:
+            return None
+        if isinstance(self._values['content'], string_types):
+            return json.loads(self._values['content'] or 'null')
+        else:
+            return self._values['content']
+
     @property
     def class_name(self):
         return self._values['content'].get('class', None)
@@ -322,12 +338,6 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
-
     def exec_module(self):
         changed = False
         result = dict()
@@ -382,12 +392,11 @@ class ModuleManager(object):
         return results
 
     def upsert_on_device(self):
-        params = self.changes.api_params()
         uri = 'https://{0}:{1}/mgmt/shared/appsvcs/declare/'.format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.post(uri, json=params)
+        resp = self.client.api.post(uri, json=self.want.content)
 
         if resp.status != 200:
             result = resp.json()
@@ -415,6 +424,10 @@ class ModuleManager(object):
 
     def exists(self):
         declaration = {}
+        if self.want.content is None:
+            raise F5ModuleError(
+                "Empty content cannot be specified when 'state' is 'present'."
+            )
         declaration.update(self.want.content)
         declaration['action'] = 'dry-run'
 

@@ -1,0 +1,46 @@
+---
+
+- name: Issue 01021 - Download AS3
+  get_url:
+    url: "{{ as3_url }}"
+    dest: /tmp/as3.rpm
+
+- name: Issue 01021 - Install AS3 rpm
+  bigip_iapplx_package:
+    package: /tmp/as3.rpm
+
+- name: Issue 01021 - Simple HTTP application with RR pool
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'issue-01021.json') }}"
+  register: result
+
+- name: Issue 01021 - Assert Simple HTTP application with RR pool
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01021 - Simple HTTP application with RR pool - Idempotent check
+  bigip_appsvcs_extension:
+    content: "{{ lookup('file', 'issue-01021.json') }}"
+  register: result
+
+- name: Issue 01021 - Assert Simple HTTP application with RR pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01021 - Remove all declarations
+  bigip_appsvcs_extension:
+    tenants: all
+    state: absent
+  register: result
+
+- name: Issue 01021 - Remove AS3 rpm
+  bigip_iapplx_package:
+    package: f5-appsvcs
+    state: absent
+
+- name: Issue 01021 - Remove old AS3 RPM
+  file:
+    path: /tmp/as3.rpm
+    state: absent
