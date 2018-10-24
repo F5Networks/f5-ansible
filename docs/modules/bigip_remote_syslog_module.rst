@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -48,6 +48,18 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the local IP address of the system that is logging. To provide no local IP, specify the value <code>none</code>. When creating a remote syslog, if this parameter is not specified, the default value <code>none</code> is used.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>name</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the syslog object.</div>
+                                                    <div>The option is required when multiple <code>remote_host</code> with the same IP or hostname are present on the device.</div>
+                                                    <div>If <code>name</code> is not provided <code>remote_host</code> is used by default.</div>
                                                                                 </td>
             </tr>
                                 <tr>

@@ -102,7 +102,6 @@ F5
   * :ref:`bigip_profile_udp_module`
   * :ref:`bigip_provision_module`
   * :ref:`bigip_qkview_module`
-  * :ref:`bigip_raw_module`
   * :ref:`bigip_remote_role_module`
   * :ref:`bigip_remote_syslog_module`
   * :ref:`bigip_routedomain_module`
