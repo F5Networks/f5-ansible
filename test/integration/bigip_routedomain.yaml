@@ -31,7 +31,7 @@
 - name: Metadata of bigip_routedomain
   hosts: localhost
   connection: local
-  any_errors_fatal: true
+  gather_facts: false
 
   vars:
     __metadata__:
