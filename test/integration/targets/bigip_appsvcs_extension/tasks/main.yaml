@@ -98,3 +98,7 @@
     state: absent
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01021.yaml
+  tags:
+    - issue-01021
