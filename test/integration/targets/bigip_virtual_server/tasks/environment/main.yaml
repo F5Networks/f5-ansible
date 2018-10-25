@@ -10,6 +10,8 @@
 - import_tasks: type-message-routing.yaml
 - import_tasks: type-performance-http.yaml
 - import_tasks: type-performance-l4.yaml
+  tags:
+    - fastl4
 - import_tasks: type-reject.yaml
 - import_tasks: type-stateless.yaml
 
