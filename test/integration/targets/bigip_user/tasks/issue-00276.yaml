@@ -31,3 +31,14 @@
   assert:
     that:
       - result is not changed
+
+- name: Issue 00276 - Turn off tmsh shell for admin user
+  bigip_user:
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+    username_credential: admin
+    shell: tmsh
+  register: result
