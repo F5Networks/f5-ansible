@@ -227,13 +227,13 @@
       - result is not changed
 
 - name: Collect BIG-IP facts
-  bigip_facts:
-    include: system_info
-  register: result
+  bigip_device_facts:
+    include: system-info
+  register: f
 
 - name: Include version 13 (Daytona) checks
   import_tasks: test-post-version-12-specific.yaml
-  when: system_info.product_information.product_version >= "13.0.0"
+  when: f.system_info.product_version >= "13.0.0"
 
 - import_tasks: teardown.yaml
 
