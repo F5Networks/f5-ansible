@@ -1,0 +1,12 @@
+---
+
+profile_1: ansible_http_test_issue_01022
+profile_2: ansible_http_test_issue_01022_2
+
+invalid_header_1: ":foo"
+invalid_header_2: "bar:foo:baz"
+header_1: "FOO:BAR"
+header_2: "BAR:"
+agent_1: "MR-ANSIBLE"
+agent_2: "MS-DOS"
+
