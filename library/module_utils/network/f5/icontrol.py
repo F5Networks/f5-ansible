@@ -85,6 +85,8 @@ print(resp.json())
 ```
 """
 
+from ansible.module_utils.six.moves.urllib.error import HTTPError
+
 
 class Response(object):
     def __init__(self):
@@ -94,6 +96,7 @@ class Response(object):
         self.url = None
         self.reason = None
         self.request = None
+        self.msg = None
 
     @property
     def content(self):
@@ -146,6 +149,19 @@ class iControlRestSession(object):
         )
         self.last_url = None
 
+    def get_headers(self, result):
+        try:
+            return dict(result.getheaders())
+        except AttributeError:
+            return result.headers
+
+    def update_response(self, response, result):
+        response.headers = self.get_headers(result)
+        response._content = result.read()
+        response.status = result.getcode()
+        response.url = result.geturl()
+        response.msg = "OK (%s bytes)" % response.headers.get('Content-Length', 'unknown')
+
     def send(self, method, url, **kwargs):
         response = Response()
 
@@ -168,27 +184,41 @@ class iControlRestSession(object):
             body = data
         if body:
             kwargs['data'] = body
+
         try:
             result = self.request.open(method, url, **kwargs)
-            try:
-                response.headers = dict(result.getheaders())
-            except AttributeError:
-                response.headers = result.headers
-            response._content = result.read()
-            response.status = result.getcode()
-            response.url = result.geturl()
-            response.msg = "OK (%s bytes)" % result.headers.get('Content-Length', 'unknown')
-        except Exception as e:
-            try:
-                response._content = str(e)
-            except AttributeError:
-                response._content = 'An unknown error occurred when connecting to the remote device'
-            try:
-                response.status_code = e.code
-            except AttributeError:
-                response.status_code = '-1'
+        except HTTPError as e:
+            # Catch HTTPError delivered from Ansible
+            #
+            # The structure of this object, in Ansible 2.8 is
+            #
+            # HttpError {
+            #   args
+            #   characters_written
+            #   close
+            #   code
+            #   delete
+            #   errno
+            #   file
+            #   filename
+            #   filename2
+            #   fp
+            #   getcode
+            #   geturl
+            #   hdrs
+            #   headers
+            #   info
+            #   msg
+            #   name
+            #   reason
+            #   strerror
+            #   url
+            #   with_traceback
+            # }
+            self.update_response(response, e)
+            return response
 
-            response.reason = to_native(e)
+        self.update_response(response, result)
         return response
 
     def delete(self, url, **kwargs):
