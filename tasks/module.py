@@ -74,6 +74,9 @@ def unstub(c, module=None):
 
 @task
 def upstream(c, module):
+    """Copy specified module, and its dependencies, to the local/ansible/ directory
+    """
+
     root_dest = '{0}/local/ansible/'.format(BASE_DIR)
     if not os.path.exists(root_dest):
         print("The specified upstream directory does not exist")
@@ -95,10 +98,10 @@ def upstream(c, module):
             continue
 
         print("Upstreaming {0}".format(module))
-        if os.path.exists('{0}/test/unit/test_{1}.py'.format(BASE_DIR, module)):
+        if os.path.exists('{0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module)):
             # - upstream unit test file
             cmd = [
-                'cp', '{0}/test/unit/test_{1}.py'.format(BASE_DIR, module),
+                'cp', '{0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module),
                 '{0}/local/ansible/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module)
             ]
             c.run(' '.join(cmd))
@@ -110,7 +113,7 @@ def upstream(c, module):
         fixtures = get_fixtures(c, module)
         for fixture in fixtures:
             cmd = [
-                'cp', '{0}/test/unit/fixtures/{1}'.format(BASE_DIR, fixture),
+                'cp', '{0}/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture),
                 '{0}/local/ansible/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture)
             ]
             c.run(' '.join(cmd))
@@ -128,6 +131,8 @@ def upstream(c, module):
 
 @task
 def md5_update(c, branch=None):
+    """Update known MD5 hashes of released F5 Ansible modules
+    """
     branches = [
         '2.4.0.0',
         '2.4.1.0',
@@ -149,6 +154,7 @@ def md5_update(c, branch=None):
         '2.6.1',
         '2.6.2',
         '2.6.3',
+        '2.7.0',
     ]
 
     work_dir = '{0}/tmp/ansible-hashes'.format(BASE_DIR)

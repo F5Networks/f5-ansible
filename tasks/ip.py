@@ -14,6 +14,8 @@ from invoke import task
 
 @task
 def create(c):
+    """Create loopback alias for the docker bridge to access the host machine
+    """
     result = c.run('uname -s', hide='out')
     if result.failed:
         print(result.stderr)
@@ -29,6 +31,8 @@ def create(c):
 
 @task
 def delete(c):
+    """Delete loopback alias for the docker bridge
+    """
     result = c.run('uname -s')
     if result.failed:
         print(result.stderr)
