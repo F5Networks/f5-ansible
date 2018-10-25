@@ -167,6 +167,7 @@ try:
     from library.module_utils.network.f5.ipaddress import ipv6_netmask_to_cidr
     from library.module_utils.compat.ipaddress import ip_address
     from library.module_utils.compat.ipaddress import ip_network
+    from library.module_utils.compat.ipaddress import ip_interface
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -181,6 +182,7 @@ except ImportError:
     from ansible.module_utils.network.f5.ipaddress import ipv6_netmask_to_cidr
     from ansible.module_utils.compat.ipaddress import ip_address
     from ansible.module_utils.compat.ipaddress import ip_network
+    from ansible.module_utils.compat.ipaddress import ip_interface
 
 
 class Parameters(AnsibleF5Parameters):
@@ -250,8 +252,12 @@ class ModuleParameters(Parameters):
         if self._values['gateway_address'] is None:
             return None
         try:
-            ip = ip_network(u'%s' % str(self._values['gateway_address']))
-            return str(ip.network_address)
+            if '%' in self._values['gateway_address']:
+                addr = self._values['gateway_address'].split('%')[0]
+            else:
+                addr = self._values['gateway_address']
+            ip_interface(u'%s' % str(addr))
+            return str(self._values['gateway_address'])
         except ValueError:
             raise F5ModuleError(
                 "The provided gateway_address is not an IP address"
@@ -275,7 +281,7 @@ class ModuleParameters(Parameters):
         try:
             ip = ip_network(u'%s' % str(self.destination_ip))
             if self.route_domain:
-                return '{0}%{2}/{1}'.format(str(ip.network_address), ip.prefixlen, self.route_domain)
+                return '{0}%{1}/{2}'.format(str(ip.network_address), self.route_domain, ip.prefixlen)
             else:
                 return '{0}/{1}'.format(str(ip.network_address), ip.prefixlen)
         except ValueError:
