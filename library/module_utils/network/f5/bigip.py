@@ -67,9 +67,9 @@ class F5RestClient(F5BaseClient):
         if self._client:
             return self._client
         session, err = self.connect_via_token_auth()
-        if err:
+        if err or session is None:
             session, err = self.connect_via_basic_auth()
-            if err:
+            if err or session is None:
                 raise F5ModuleError(err)
         self._client = session
         return session

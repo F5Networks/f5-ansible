@@ -180,10 +180,12 @@ class iControlRestSession(object):
             response.msg = "OK (%s bytes)" % result.headers.get('Content-Length', 'unknown')
         except Exception as e:
             try:
-                response._content = e.read()
+                response._content = str(e)
+            except AttributeError:
+                response._content = 'An unknown error occurred when connecting to the remote device'
+            try:
                 response.status_code = e.code
             except AttributeError:
-                response._content = ''
                 response.status_code = '-1'
 
             response.reason = to_native(e)
