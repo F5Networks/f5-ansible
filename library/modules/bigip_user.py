@@ -88,56 +88,61 @@ author:
 EXAMPLES = r'''
 - name: Add the user 'johnd' as an admin
   bigip_user:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     username_credential: johnd
     password_credential: password
     full_name: John Doe
     partition_access: all:admin
     update_password: on_create
     state: present
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Change the user "johnd's" role and shell
   bigip_user:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     username_credential: johnd
     partition_access: NewPartition:manager
     shell: tmsh
     state: present
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Make the user 'johnd' an admin and set to advanced shell
   bigip_user:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     name: johnd
     partition_access: all:admin
     shell: bash
     state: present
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Remove the user 'johnd'
   bigip_user:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     name: johnd
     state: absent
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Update password
   bigip_user:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     state: present
     username_credential: johnd
     password_credential: newsupersecretpassword
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 # Note that the second time this task runs, it would fail because
@@ -149,22 +154,24 @@ EXAMPLES = r'''
 #   * Include `ignore_errors` on this task
 - name: Change the Admin password
   bigip_user:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     state: present
     username_credential: admin
     password_credential: NewSecretPassword
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Change the root user's password
   bigip_user:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     username_credential: root
     password_credential: secret
     state: present
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 '''
 
@@ -541,7 +548,7 @@ class BaseManager(object):
             return True
         self.remove_from_device()
         if self.exists():
-            raise F5ModuleError("Failed to delete the user")
+            raise F5ModuleError("Failed to delete the user.")
         return True
 
     def create(self):
@@ -567,7 +574,7 @@ class BaseManager(object):
         """
 
         err = "Shell access is only available to " \
-              "'admin' or 'resource-admin' roles"
+              "'admin' or 'resource-admin' roles."
         permit = ['admin', 'resource-admin']
 
         if self.want.partition_access is not None:
@@ -722,7 +729,7 @@ class PartitionedManager(BaseManager):
             return ApiParameters(params=user)
         elif len(collection) == 0:
             raise F5ModuleError(
-                "No accounts with the provided name were found"
+                "No accounts with the provided name were found."
             )
         else:
             raise F5ModuleError(
@@ -814,9 +821,10 @@ class RootUserManager(BaseManager):
         command = re.sub(escape_patterns, r'\\\1', content)
         cmd = '-c "printf \\\"{0}\\\" | tmsh modify auth password root"'.format(command)
 
-        params = dict(command='run',
-                      utilCmdArgs=cmd
-                      )
+        params = dict(
+            command='run',
+            utilCmdArgs=cmd
+        )
         uri = "https://{0}:{1}/mgmt/tm/util/bash".format(
             self.client.provider['server'],
             self.client.provider['server_port']
