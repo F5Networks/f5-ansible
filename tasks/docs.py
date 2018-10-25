@@ -17,6 +17,8 @@ from .lib.common import BASE_DIR
 
 @task(name='module')
 def module_(c):
+    """Create module RST documentation only
+    """
     excludes = ['__init__.py']
     files = os.listdir('{0}/library/modules'.format(BASE_DIR))
     files = [os.path.splitext(x)[0] for x in files if x not in excludes]
@@ -37,6 +39,8 @@ def module_(c):
 
 @task
 def build(c):
+    """Create full HTML documentation
+    """
     with c.cd("{0}/docs".format(BASE_DIR)):
         c.run("rm -rf _build")
         c.run("make html")
@@ -44,4 +48,6 @@ def build(c):
 
 @task(module_, build)
 def make(c):
+    """Create the module RST docs and then build the full HTML documentation
+    """
     print("done")

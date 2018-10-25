@@ -19,6 +19,8 @@ from .lib.common import AVAILABLE_PYTHON
 
 @task
 def prune(c):
+    """Remove all containers, images and volumes to reclaim space
+    """
     print("Reclaiming container space")
     c.run("docker container prune -f")
     print("\n")
@@ -34,6 +36,8 @@ def prune(c):
 
 @task
 def df(c):
+    """View the amount of space that images, containers, etc consume on the host machine
+    """
     c.run("docker system df")
 
 

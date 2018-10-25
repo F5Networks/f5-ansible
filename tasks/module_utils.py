@@ -17,6 +17,8 @@ from invoke import task
 
 @task
 def upstream(c):
+    """Copy all module utils, to the local/ansible/ directory
+    """
     root_dest = '{0}/local/ansible/'.format(BASE_DIR)
     if not os.path.exists(root_dest):
         print("The specified upstream directory does not exist")
