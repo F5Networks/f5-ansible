@@ -171,10 +171,6 @@ author:
 EXAMPLES = '''
 - name: Add pool member
   bigip_pool_member:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
-    state: present
     pool: my-pool
     partition: Common
     host: "{{ ansible_default_ipv4['address'] }}"
@@ -183,57 +179,64 @@ EXAMPLES = '''
     connection_limit: 100
     rate_limit: 50
     ratio: 2
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Modify pool member ratio and description
   bigip_pool_member:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
-    state: present
     pool: my-pool
     partition: Common
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     ratio: 1
     description: nginx server
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Remove pool member from pool
   bigip_pool_member:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     state: absent
     pool: my-pool
     partition: Common
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Force pool member offline
   bigip_pool_member:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     state: forced_offline
     pool: my-pool
     partition: Common
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 
 - name: Create members with priority groups
   bigip_pool_member:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
     pool: my-pool
     partition: Common
     host: "{{ item.address }}"
     name: "{{ item.name }}"
     priority_group: "{{ item.priority_group }}"
     port: 80
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
   loop:
     - host: 1.1.1.1
@@ -940,7 +943,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members/{3}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(name=fq_name(self.want.partition, self.want.pool)),
             transform_name(self.want.partition, self.want.full_name)
         )
         resp = self.client.api.get(uri)
@@ -956,7 +959,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.pool)
+            transform_name(name=fq_name(self.want.partition, self.want.pool))
         )
         resp = self.client.api.get(uri)
         try:
@@ -1091,7 +1094,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(name=fq_name(self.want.partition, self.want.pool)),
 
         )
         resp = self.client.api.post(uri, json=params)
@@ -1112,7 +1115,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members/{3}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(name=fq_name(self.want.partition, self.want.pool)),
             transform_name(self.want.partition, self.want.full_name)
 
         )
@@ -1139,7 +1142,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members/{3}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(name=fq_name(self.want.partition, self.want.pool)),
             transform_name(self.want.partition, self.want.full_name)
 
         )
@@ -1163,7 +1166,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members/{3}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(name=fq_name(self.want.partition, self.want.pool)),
             transform_name(self.want.partition, self.want.full_name)
 
         )
