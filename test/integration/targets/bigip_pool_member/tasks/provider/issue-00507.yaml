@@ -1,11 +1,11 @@
 ---
 
-- name: Issue 00703 - Add a pool - Provider
+- name: Issue 00507 - Add a pool - Provider
   bigip_pool:
     pool: pool1
     provider: "{{ provider }}"
 
-- name: Issue 00703 - Add members to pool in aggregate - Provider
+- name: Issue 00507 - Add members to pool in aggregate - Provider
   bigip_pool_member:
     pool: pool1
     state: present
@@ -25,13 +25,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00703 - Assert Add member to pool - Provider
+- name: Issue 00507 - Assert Add member to pool - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 00703 - Add member to pool - Idempotent check - Provider
+- name: Issue 00507 - Add member to pool - Idempotent check - Provider
   bigip_pool_member:
     pool: pool1
     name: node1
@@ -41,19 +41,19 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00703 - Assert Add member to pool - Idempotent check - Provider
+- name: Issue 00507 - Assert Add member to pool - Idempotent check - Provider
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 00703 - Remove pool - Provider
+- name: Issue 00507 - Remove pool - Provider
   bigip_pool:
     pool: pool1
     state: absent
     provider: "{{ provider }}"
 
-- name: Issue 00703 - Remove node - Provider
+- name: Issue 00507 - Remove node - Provider
   bigip_node:
     name: node1
     state: absent
