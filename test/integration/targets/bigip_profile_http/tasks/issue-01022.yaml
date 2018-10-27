@@ -1,0 +1,179 @@
+---
+
+- name: Issue 01022 - Include issue variables
+  include_vars:
+    file: issue-01022.yaml
+
+- name: Issue 01022 - Create HTTP profile with HSTS
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    hsts_mode: yes
+    include_subdomains: no
+    maximum_age: "indefinite"
+  register: result
+
+- name: Issue 01022 - Assert Create HTTP profile with HSTS
+  assert:
+    that:
+      - result is changed
+      - result.hsts_mode == 'yes'
+      - result.include_subdomains == 'no'
+      - result.maximum_age == 'indefinite'
+
+- name: Issue 01022 - Create HTTP profile with HSTS - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    hsts_mode: yes
+    include_subdomains: no
+    maximum_age: "indefinite"
+  register: result
+
+- name: Issue 01022 - Assert Create HTTP profile with HSTS - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01022 - Change HTTP profile, HSTS settings
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    include_subdomains: yes
+    maximum_age: 9000
+  register: result
+
+- name: Issue 01022 - Assert Change HTTP profile, HSTS settings
+  assert:
+    that:
+      - result is changed
+      - result.include_subdomains == 'yes'
+      - result.maximum_age == 9000
+
+- name: Issue 01022 - Change HTTP profile, HSTS settings - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    include_subdomains: yes
+    maximum_age: 9000
+  register: result
+
+- name: Issue 01022 - Assert Change HTTP profile, HSTS settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01022 - Create HTTP profile with header and user agent
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    header_insert: "{{ header_1 }}"
+    server_agent_name: "{{ agent_1 }}"
+  register: result
+
+- name: Issue 01022 - Assert Create HTTP profile with header and server agent name
+  assert:
+    that:
+      - result is changed
+      - result.header_insert == header_1
+      - result.server_agent_name == agent_1
+
+- name: Issue 01022 - Create HTTP profile with header and server agent name - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    header_insert: "{{ header_1 }}"
+    server_agent_name: "{{ agent_1 }}"
+  register: result
+
+- name: Issue 01022 - Assert Create HTTP profile with header and server agent name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01022 - Change HTTP profile , remove insert_header and change server agent name
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    header_insert: "none"
+    server_agent_name: "{{ agent_2 }}"
+  register: result
+
+- name: Issue 01022 - Assert Change HTTP profile , remove insert_header and change server agent name
+  assert:
+    that:
+      - result is changed
+      - result.header_insert == "none"
+      - result.server_agent_name == agent_2
+
+- name: Issue 01022 - Change HTTP profile, remove insert_header and change server agent name - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    header_insert: "none"
+    server_agent_name: "{{ agent_2 }}"
+  register: result
+
+- name: Issue 01022 - Assert Change HTTP profile, remove insert_header and change server agent name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01022 - Change HTTP profile , add erase_header and remove server agent name
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    header_erase: "{{ header_2 }}"
+    server_agent_name: ""
+  register: result
+
+- name: Issue 01022 - Assert Change HTTP profile , add erase_header and remove server agent name
+  assert:
+    that:
+      - result is changed
+      - result.header_erase == header_2
+      - result.server_agent_name == ""
+
+- name: Issue 01022 - Change HTTP profile , add erase_header and remove server agent name - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    header_erase: "{{ header_2 }}"
+    server_agent_name: ""
+  register: result
+
+- name: Issue 01022 - Assert Change HTTP profile , add erase_header and remove server agent name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01022 - Change HTTP profile , change erase_header invalid value - Expect Failure
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    header_erase: "{{ invalid_header_1 }}"
+  register: result
+  failed_when: result is success
+
+- name: Issue 01022 - Change HTTP profile , change insert_header invalid value - Expect Failure
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    header_insert: "{{ invalid_header_2 }}"
+  register: result
+  failed_when: result is success
+
+- name: Issue 01022 - Change HTTP profile , remove erase_header readd server agent name
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    header_erase: "none"
+    server_agent_name: "{{ agent_2 }}"
+  register: result
+
+- name: Issue 01022 - Assert Change HTTP profile , remove erase_header readd server agent name
+  assert:
+    that:
+      - result is changed
+      - result.header_erase == "none"
+      - result.server_agent_name == agent_2
+
+- name: Issue 01022 - Remove profiles
+  bigip_profile_http:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ profile_1 }}"
+    - "{{ profile_2 }}"
