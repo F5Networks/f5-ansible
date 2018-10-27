@@ -66,7 +66,7 @@
       - result is success
       - result is not changed
 
-- name: Remove pool member
+- name: Issue 00881 - Remove pool member
   bigip_pool_member:
     pool: pool1
     name: google.com
