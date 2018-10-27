@@ -118,6 +118,7 @@ requirements:
   - BIG-IP >= v12.1.0
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -218,46 +219,46 @@ from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.six import iteritems
 
 try:
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import transform_name
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'actionsReference': 'actions',
-        'conditionsReference': 'conditions'
+        'conditionsReference': 'conditions',
     }
     api_attributes = [
-        'description', 'actions', 'conditions'
+        'description',
+        'actions',
+        'conditions',
     ]
 
     updatables = [
-        'actions', 'conditions', 'description'
+        'actions',
+        'conditions',
+        'description',
     ]
 
     returnable = [
-        'description'
+        'description',
     ]
 
     @property
@@ -711,13 +712,10 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
@@ -740,46 +738,10 @@ class ModuleManager(object):
         else:
             return self.create()
 
-    def exists(self):
-        args = dict(
-            name=self.want.policy,
-            partition=self.want.partition,
-        )
-        if self.draft_exists():
-            args['subPath'] = 'Drafts'
-
-        policy = self.client.api.tm.ltm.policys.policy.load(**args)
-        result = policy.rules_s.rules.exists(
-            name=self.want.name
-        )
-        return result
-
-    def draft_exists(self):
-        params = dict(
-            name=self.want.policy,
-            partition=self.want.partition,
-            subPath='Drafts'
-        )
-        result = self.client.api.tm.ltm.policys.policy.exists(**params)
-        return result
-
-    def _create_existing_policy_draft_on_device(self):
-        params = dict(
-            name=self.want.policy,
-            partition=self.want.partition,
-        )
-        resource = self.client.api.tm.ltm.policys.policy.load(**params)
-        resource.draft()
-        return True
-
-    def publish_on_device(self):
-        resource = self.client.api.tm.ltm.policys.policy.load(
-            name=self.want.policy,
-            partition=self.want.partition,
-            subPath='Drafts'
-        )
-        resource.publish()
-        return True
+    def absent(self):
+        if self.exists():
+            return self.remove()
+        return False
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -826,62 +788,172 @@ class ModuleManager(object):
             self.publish_on_device()
         return True
 
+    def exists(self):
+        if self.draft_exists():
+            uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.want.partition, self.want.policy, sub_path='Drafts'),
+                self.want.name
+            )
+        else:
+            uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.want.partition, self.want.policy),
+                self.want.name
+            )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
+
+    def draft_exists(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.policy, sub_path='Drafts')
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
+
+    def _create_existing_policy_draft_on_device(self):
+        params = dict(createDraft=True)
+        uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.policy)
+        )
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return True
+
+    def publish_on_device(self):
+        params = dict(
+            name=fq_name(self.want.partition,
+                         self.want.name,
+                         sub_path='Drafts'
+                         ),
+            command="publish"
+
+        )
+        uri = "https://{0}:{1}/mgmt/tm/ltm/policy/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return True
+
     def create_on_device(self):
         params = self.changes.api_params()
-        policy = self.client.api.tm.ltm.policys.policy.load(
-            name=self.want.policy,
-            partition=self.want.partition,
-            subPath='Drafts'
+        params['name'] = self.want.name
+        uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.policy, sub_path='Drafts'),
         )
-        policy.rules_s.rules.create(
-            name=self.want.name,
-            **params
-        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return response['selfLink']
 
     def update_on_device(self):
         params = self.changes.api_params()
-        policy = self.client.api.tm.ltm.policys.policy.load(
-            name=self.want.policy,
-            partition=self.want.partition,
-            subPath='Drafts'
+        uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.policy, sub_path='Drafts'),
+            self.want.name
         )
-        resource = policy.rules_s.rules.load(
-            name=self.want.name
-        )
-        resource.modify(**params)
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
 
-    def absent(self):
-        if self.exists():
-            return self.remove()
-        return False
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
-        policy = self.client.api.tm.ltm.policys.policy.load(
-            name=self.want.policy,
-            partition=self.want.partition,
-            subPath='Drafts'
+        uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.policy, sub_path='Drafts'),
+            self.want.name
         )
-        resource = policy.rules_s.rules.load(
-            name=self.want.name
-        )
-        if resource:
-            resource.delete()
+        response = self.client.api.delete(uri)
+        if response.status == 200:
+            return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
-        args = dict(
-            name=self.want.policy,
-            partition=self.want.partition,
-        )
         if self.draft_exists():
-            args['subPath'] = 'Drafts'
-        policy = self.client.api.tm.ltm.policys.policy.load(**args)
-        resource = policy.rules_s.rules.load(
-            name=self.want.name,
-            requests_params=dict(
-                params='expandSubcollections=true'
+            uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.want.partition, self.want.policy, sub_path='Drafts'),
+                self.want.name
             )
-        )
-        return ApiParameters(params=resource.attrs)
+        else:
+            uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.want.partition, self.want.policy),
+                self.want.name
+            )
+        query = "?expandSubcollections=true"
+        resp = self.client.api.get(uri + query)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return ApiParameters(params=response)
 
 
 class ArgumentSpec(object):
@@ -950,18 +1022,17 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
+
+    client = F5RestClient(**module.params)
 
     try:
-        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        module.exit_json(**results)
+        exit_json(module, results, client)
     except F5ModuleError as ex:
         cleanup_tokens(client)
-        module.fail_json(msg=str(ex))
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':

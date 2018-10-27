@@ -131,7 +131,7 @@ def fqdn_name(partition, value):
     return fq_name(partition, value)
 
 
-def fq_name(partition, value):
+def fq_name(partition, value, sub_path=''):
     """Returns a 'Fully Qualified' name
 
     A BIG-IP expects most names of resources to be in a fully-qualified
@@ -163,16 +163,29 @@ def fq_name(partition, value):
         value (string): The name that you want to attach a partition to.
             This value will be returned unchanged if it has a partition
             attached to it already.
+        sub_path (string): The sub path element. If defined the sub_path
+            will be inserted between partition and value.
+            This will also work on FQ names.
     Returns:
         string: The fully qualified name, given the input parameters.
     """
-    if value is not None:
+    if value is not None and sub_path == '':
         try:
             int(value)
             return '/{0}/{1}'.format(partition, value)
         except (ValueError, TypeError):
             if not value.startswith('/'):
                 return '/{0}/{1}'.format(partition, value)
+    if value is not None and sub_path != '':
+        try:
+            int(value)
+            return '/{0}/{1}/{2}'.format(partition, sub_path, value)
+        except (ValueError, TypeError):
+            if value.startswith('/'):
+                _, partition, name = value.split('/')
+                return '/{0}/{1}/{2}'.format(partition, sub_path, name)
+            if not value.startswith('/'):
+                return '/{0}/{1}/{2}'.format(partition, sub_path, value)
     return value
 
 
