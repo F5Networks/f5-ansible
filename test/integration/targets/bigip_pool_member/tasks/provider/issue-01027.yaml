@@ -5,7 +5,7 @@
     name: p1027
     provider: "{{ provider }}"
 
-- name: Create a pool in partition
+- name: Issue 01027 - Create a pool in partition
   bigip_pool:
     name: pool1
     lb_method: round-robin
@@ -13,13 +13,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Create node
+- name: Issue 01027 - Create node
   bigip_node:
     host: 1.1.1.1
     name: 1.1.1.1
     provider: "{{ provider }}"
 
-- name: Add member, existing node, node in Common partition, pool is different partition
+- name: Issue 01027 - Add member, existing node, node in Common partition, pool is different partition
   bigip_pool_member:
     pool: /p1027/pool1
     name: 1.1.1.1
@@ -28,13 +28,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Add member, existing node, node in Common partition, pool is different partition
+- name: Issue 01027 - Assert Add member, existing node, node in Common partition, pool is different partition
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Add member, existing node, node in Common partition, pool is different partition - Idempotent check
+- name: Issue 01027 - Add member, existing node, node in Common partition, pool is different partition - Idempotent check
   bigip_pool_member:
     pool: /p1027/pool1
     name: 1.1.1.1
@@ -43,13 +43,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Assert Add member, existing node, node in Common partition, pool is different partition - Idempotent check
+- name: Issue 01027 - Assert Add member, existing node, node in Common partition, pool is different partition - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Remove pool
+- name: Issue 01027 - Remove pool
   bigip_pool:
     name: pool1
     lb_method: round-robin
@@ -58,7 +58,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Remove node
+- name: Issue 01027 - Remove node
   bigip_node:
     name: 1.1.1.1
     state: absent
