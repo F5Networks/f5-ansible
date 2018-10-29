@@ -58,8 +58,13 @@
     state: absent
   delegate_to: localhost
 
-- name: Issue 00089 - Remove HTTP iApp template
+- name: Issue 00089 - Remove web_frontends iApp template
   bigip_iapp_template:
-    name: tests
+    name: web_frontends
     state: absent
   register: result
+
+- name: Issue 00089 - Remove web_frontends iApp template
+  assert:
+    that:
+      - result is changed

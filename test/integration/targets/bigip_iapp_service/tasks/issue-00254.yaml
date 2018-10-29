@@ -50,6 +50,17 @@
     that:
       - result is changed
 
+- name: Issue 00254 - Remove f5.http.v1.2.0rc4 iApp template
+  bigip_iapp_template:
+    name: f5.http.v1.2.0rc4
+    state: absent
+  register: result
+
+- name: Issue 00254 - Assert Remove f5.http.v1.2.0rc4 iApp template
+  assert:
+    that:
+      - result is changed
+
 - name: Issue 00254 - Remove partition
   bigip_partition:
     name: issue-254
