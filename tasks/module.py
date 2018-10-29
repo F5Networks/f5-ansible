@@ -126,7 +126,10 @@ def upstream(c, module):
             ]
             c.run(' '.join(cmd))
 
-    print("Copy complete")
+    if not deprecated and not should_upstream_module(module):
+        print("This module is either deprecated or not marked for upstreaming in the YAML playbook metadata.")
+    else:
+        print("Copy complete")
 
 
 @task
