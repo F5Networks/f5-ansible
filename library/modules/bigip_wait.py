@@ -206,6 +206,9 @@ class ModuleManager(object):
                     self._wait_for_module_provisioning()
                 break
             except Exception as ex:
+                if 'Failed to validate the SSL' in str(ex):
+                    raise F5ModuleError(str(ex))
+
                 # The types of exception's we're handling here are "REST API is not
                 # ready" exceptions.
                 #
