@@ -182,7 +182,7 @@ def fq_name(partition, value, sub_path=''):
             return '/{0}/{1}/{2}'.format(partition, sub_path, value)
         except (ValueError, TypeError):
             if value.startswith('/'):
-                _, partition, name = value.split('/')
+                dummy, partition, name = value.split('/')
                 return '/{0}/{1}/{2}'.format(partition, sub_path, name)
             if not value.startswith('/'):
                 return '/{0}/{1}/{2}'.format(partition, sub_path, value)
