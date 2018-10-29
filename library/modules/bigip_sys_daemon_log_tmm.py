@@ -181,11 +181,6 @@ net_log_level:
   returned: changed
   type: string
   sample: critical
-net_log_level:
-  description: Lowest level of network messages from the tmm daemon to log.
-  returned: changed
-  type: string
-  sample: critical
 os_log_level:
   description: Lowest level of operating system messages from the tmm daemon to log.
   returned: changed
