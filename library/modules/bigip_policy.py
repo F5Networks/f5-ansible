@@ -163,7 +163,6 @@ rules:
   type: list
   sample: ['/Common/rule1', '/Common/rule2']
 '''
-import q
 import re
 
 from ansible.module_utils.basic import AnsibleModule
