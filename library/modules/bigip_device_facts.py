@@ -9118,12 +9118,26 @@ class InterfacesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = InterfacesParameters(params=resource.attrs)
+            params = InterfacesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.interfaces.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/interface".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -9165,12 +9179,26 @@ class InternalDataGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = InternalDataGroupsParameters(params=resource.attrs)
+            params = InternalDataGroupsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.data_group.internals.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/internal".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -13261,10 +13289,12 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'interfaces': dict(
-                manager=InterfacesFactManager
+                manager=InterfacesFactManager,
+                client=F5RestClient
             ),
             'internal-data-groups': dict(
-                manager=InternalDataGroupsFactManager
+                manager=InternalDataGroupsFactManager,
+                client=F5RestClient
             ),
             'irules': dict(
                 manager=IrulesFactManager,
