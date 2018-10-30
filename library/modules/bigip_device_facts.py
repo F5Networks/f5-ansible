@@ -13236,226 +13236,61 @@ class ModuleManager(object):
         self.kwargs = kwargs
         self.want = Parameters(params=self.module.params)
         self.managers = {
-            'asm-policy-stats': dict(
-                manager=AsmPolicyStatsFactManager,
-                client=F5RestClient,
-            ),
-            'client-ssl-profiles': dict(
-                manager=ClientSslProfilesFactManager,
-                client=F5RestClient
-            ),
-            'devices': dict(
-                manager=DevicesFactManager,
-                client=F5RestClient
-            ),
-            'device-groups': dict(
-                manager=DeviceGroupsFactManager,
-                client=F5RestClient
-            ),
-            'external-monitors': dict(
-                manager=ExternalMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'fasthttp-profiles': dict(
-                manager=FastHttpProfilesFactManager,
-                client=F5RestClient
-            ),
-            'fastl4-profiles': dict(
-                manager=FastL4ProfilesFactManager,
-                client=F5RestClient
-            ),
-            'gateway-icmp-monitors': dict(
-                manager=GatewayIcmpMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-a-pools': dict(
-                manager=GtmAPoolsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-servers': dict(
-                manager=GtmServersFactManager,
-                client=F5RestClient
-            ),
-            'gtm-a-wide-ips': dict(
-                manager=GtmAWideIpsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-aaaa-pools': dict(
-                manager=GtmAaaaPoolsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-aaaa-wide-ips': dict(
-                manager=GtmAaaaWideIpsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-cname-pools': dict(
-                manager=GtmCnamePoolsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-cname-wide-ips': dict(
-                manager=GtmCnameWideIpsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-mx-pools': dict(
-                manager=GtmMxPoolsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-mx-wide-ips': dict(
-                manager=GtmMxWideIpsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-naptr-pools': dict(
-                manager=GtmNaptrPoolsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-naptr-wide-ips': dict(
-                manager=GtmNaptrWideIpsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-srv-pools': dict(
-                manager=GtmSrvPoolsFactManager,
-                client=F5RestClient
-            ),
-            'gtm-srv-wide-ips': dict(
-                manager=GtmSrvWideIpsFactManager,
-                client=F5RestClient
-            ),
-            'http-monitors': dict(
-                manager=HttpMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'https-monitors': dict(
-                manager=HttpsMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'http-profiles': dict(
-                manager=HttpProfilesFactManager,
-                client=F5RestClient
-            ),
-            'iapp-services': dict(
-                manager=IappServicesFactManager,
-                client=F5RestClient
-            ),
-            'iapplx-packages': dict(
-                manager=IapplxPackagesFactManager,
-                client=F5RestClient
-            ),
-            'icmp-monitors': dict(
-                manager=IcmpMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'interfaces': dict(
-                manager=InterfacesFactManager,
-                client=F5RestClient
-            ),
-            'internal-data-groups': dict(
-                manager=InternalDataGroupsFactManager,
-                client=F5RestClient
-            ),
-            'irules': dict(
-                manager=IrulesFactManager,
-                client=F5RestClient
-            ),
-            'ltm-pools': dict(
-                manager=LtmPoolsFactManager,
-                client=F5RestClient
-            ),
-            'nodes': dict(
-                manager=NodesFactManager,
-                client=F5RestClient
-            ),
-            'oneconnect-profiles': dict(
-                manager=OneConnectProfilesFactManager,
-                client=F5RestClient
-            ),
-            'partitions': dict(
-                manager=PartitionFactManager,
-                client=F5RestClient
-            ),
-            'provision-info': dict(
-                manager=ProvisionInfoFactManager,
-                client=F5RestClient
-            ),
-            'route-domains': dict(
-                manager=RouteDomainFactManager,
-                client=F5RestClient
-            ),
-            'self-ips': dict(
-                manager=SelfIpsFactManager,
-                client=F5RestClient
-            ),
-            'server-ssl-profiles': dict(
-                manager=ServerSslProfilesFactManager,
-                client=F5RestClient
-            ),
-            'software-volumes': dict(
-                manager=SoftwareVolumesFactManager,
-                client=F5RestClient
-            ),
-            'software-images': dict(
-                manager=SoftwareImagesFactManager,
-                client=F5RestClient
-            ),
-            'software-hotfixes': dict(
-                manager=SoftwareHotfixesFactManager,
-                client=F5RestClient
-            ),
-            'ssl-certs': dict(
-                manager=SslCertificatesFactManager,
-                client=F5RestClient
-            ),
-            'ssl-keys': dict(
-                manager=SslKeysFactManager,
-                client=F5RestClient
-            ),
-            'system-db': dict(
-                manager=SystemDbFactManager,
-                client=F5RestClient
-            ),
-            'system-info': dict(
-                manager=SystemInfoFactManager,
-                client=F5RestClient
-            ),
-            'tcp-monitors': dict(
-                manager=TcpMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'tcp-half-open-monitors': dict(
-                manager=TcpHalfOpenMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'tcp-profiles': dict(
-                manager=TcpProfilesFactManager,
-                client=F5RestClient
-            ),
-            'traffic-groups': dict(
-                manager=TrafficGroupsFactManager,
-                client=F5RestClient
-            ),
-            'trunks': dict(
-                manager=TrunksFactManager,
-                client=F5RestClient
-            ),
-            'udp-profiles': dict(
-                manager=UdpProfilesFactManager,
-                client=F5RestClient
-            ),
-            'vcmp-guests': dict(
-                manager=VcmpGuestsFactManager,
-                client=F5RestClient
-            ),
-            'virtual-addresses': dict(
-                manager=VirtualAddressesFactManager,
-                client=F5RestClient
-            ),
-            'virtual-servers': dict(
-                manager=VirtualServersFactManager,
-                client=F5RestClient
-            ),
-            'vlans': dict(
-                manager=VlansFactManager,
-                client=F5RestClient
-            ),
+            'asm-policy-stats': AsmPolicyStatsFactManager,
+            'client-ssl-profiles': ClientSslProfilesFactManager,
+            'devices': DevicesFactManager,
+            'device-groups': DeviceGroupsFactManager,
+            'external-monitors': ExternalMonitorsFactManager,
+            'fasthttp-profiles': FastHttpProfilesFactManager,
+            'fastl4-profiles': FastL4ProfilesFactManager,
+            'gateway-icmp-monitors': GatewayIcmpMonitorsFactManager,
+            'gtm-a-pools': GtmAPoolsFactManager,
+            'gtm-servers': GtmServersFactManager,
+            'gtm-a-wide-ips': GtmAWideIpsFactManager,
+            'gtm-aaaa-pools': GtmAaaaPoolsFactManager,
+            'gtm-aaaa-wide-ips': GtmAaaaWideIpsFactManager,
+            'gtm-cname-pools': GtmCnamePoolsFactManager,
+            'gtm-cname-wide-ips': GtmCnameWideIpsFactManager,
+            'gtm-mx-pools': GtmMxPoolsFactManager,
+            'gtm-mx-wide-ips': GtmMxWideIpsFactManager,
+            'gtm-naptr-pools': GtmNaptrPoolsFactManager,
+            'gtm-naptr-wide-ips': GtmNaptrWideIpsFactManager,
+            'gtm-srv-pools': GtmSrvPoolsFactManager,
+            'gtm-srv-wide-ips': GtmSrvWideIpsFactManager,
+            'http-monitors': HttpMonitorsFactManager,
+            'https-monitors': HttpsMonitorsFactManager,
+            'http-profiles': HttpProfilesFactManager,
+            'iapp-services': IappServicesFactManager,
+            'iapplx-packages': IapplxPackagesFactManager,
+            'icmp-monitors': IcmpMonitorsFactManager,
+            'interfaces': InterfacesFactManager,
+            'internal-data-groups': InternalDataGroupsFactManager,
+            'irules': IrulesFactManager,
+            'ltm-pools': LtmPoolsFactManager,
+            'nodes': NodesFactManager,
+            'oneconnect-profiles': OneConnectProfilesFactManager,
+            'partitions': PartitionFactManager,
+            'provision-info': ProvisionInfoFactManager,
+            'route-domains': RouteDomainFactManager,
+            'self-ips': SelfIpsFactManager,
+            'server-ssl-profiles': ServerSslProfilesFactManager,
+            'software-volumes': SoftwareVolumesFactManager,
+            'software-images': SoftwareImagesFactManager,
+            'software-hotfixes': SoftwareHotfixesFactManager,
+            'ssl-certs': SslCertificatesFactManager,
+            'ssl-keys': SslKeysFactManager,
+            'system-db': SystemDbFactManager,
+            'system-info': SystemInfoFactManager,
+            'tcp-monitors': TcpMonitorsFactManager,
+            'tcp-half-open-monitors': TcpHalfOpenMonitorsFactManager,
+            'tcp-profiles': TcpProfilesFactManager,
+            'traffic-groups': TrafficGroupsFactManager,
+            'trunks': TrunksFactManager,
+            'udp-profiles': UdpProfilesFactManager,
+            'vcmp-guests': VcmpGuestsFactManager,
+            'virtual-addresses': VirtualAddressesFactManager,
+            'virtual-servers': VirtualServersFactManager,
+            'vlans': VlansFactManager,
         }
 
     def exec_module(self):
@@ -13566,15 +13401,13 @@ class ModuleManager(object):
 
     def get_manager(self, which):
         result = {}
-        info = self.managers.get(which, None)
-        if not info:
+        manager = self.managers.get(which, None)
+        if not manager:
             return result
         kwargs = dict()
         kwargs.update(self.kwargs)
 
-        manager = info.get('manager', None)
-        client = info.get('client', None)
-        kwargs['client'] = client(**self.module.params)
+        kwargs['client'] = F5RestClient(**self.module.params)
         result = manager(**kwargs)
         return result
 
