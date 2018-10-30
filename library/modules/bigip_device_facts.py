@@ -9976,12 +9976,26 @@ class SelfIpsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SelfIpsParameters(params=resource.attrs)
+            params = SelfIpsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.selfips.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/self".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -13179,7 +13193,8 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'self-ips': dict(
-                manager=SelfIpsFactManager
+                manager=SelfIpsFactManager,
+                client=F5RestClient
             ),
             'server-ssl-profiles': dict(
                 manager=ServerSslProfilesFactManager,
