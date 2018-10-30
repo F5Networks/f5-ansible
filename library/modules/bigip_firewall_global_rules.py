@@ -358,10 +358,6 @@ class ArgumentSpec(object):
             service_policy=dict(),
             staged_policy=dict(),
             description=dict(),
-            partition=dict(
-                default='Common',
-                fallback=(env_fallback, ['F5_PARTITION'])
-            )
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
