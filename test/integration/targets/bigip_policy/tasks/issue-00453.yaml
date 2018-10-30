@@ -4,7 +4,7 @@
   include_vars:
     file: issue-00453.yaml
 
-- name: Create a published policy
+- name: Issue 00453 - Create a published policy
   bigip_policy:
     name: "{{ policy_name }}"
     state: present
@@ -14,26 +14,32 @@
       - rule3
   register: result
 
-- name: Remove some rules
+- name: Issue 00453 - Remove some rules
   bigip_policy:
     name: "{{ policy_name }}"
     rules:
       - rule3
   register: result
 
-- name: Assert Remove some rules
+- name: Issue 00453 - Assert Remove some rules
   assert:
     that:
       - result is changed
 
-- name: Remove some rules - Idempotent check
+- name: Issue 00453 - Remove some rules - Idempotent check
   bigip_policy:
     name: "{{ policy_name }}"
     rules:
       - rule3
   register: result
 
-- name: Assert Remove some rules - Idempotent check
+- name: Issue 00453 - Assert Remove some rules - Idempotent check
   assert:
     that:
       - result is not changed
+
+- name: Issue 00453 - Remove a published policy
+  bigip_policy:
+    name: "{{ policy_name }}"
+    state: absent
+  register: result
