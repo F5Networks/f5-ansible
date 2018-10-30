@@ -6333,16 +6333,26 @@ class DeviceGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = DeviceGroupsParameters(params=resource.attrs)
+            params = DeviceGroupsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.cm.device_groups.get_collection(
-            requests_params=dict(
-                params='expandSubcollections=true'
-            )
+        uri = "https://{0}:{1}/mgmt/tm/cm/device-group/?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -13209,7 +13219,8 @@ class ModuleManager(object):
                 manager=DevicesFactManager
             ),
             'device-groups': dict(
-                manager=DeviceGroupsFactManager
+                manager=DeviceGroupsFactManager,
+                client=F5RestClient
             ),
             'external-monitors': dict(
                 manager=ExternalMonitorsFactManager,
