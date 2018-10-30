@@ -11894,15 +11894,51 @@ class TrafficGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = TrafficGroupsParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.cm.traffic_groups.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/cm/traffic-group".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/cm/traffic-group/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class TrunksParameters(BaseParameters):
@@ -13159,7 +13195,8 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'traffic-groups': dict(
-                manager=TrafficGroupsFactManager
+                manager=TrafficGroupsFactManager,
+                client=F5RestClient
             ),
             'trunks': dict(
                 manager=TrunksFactManager,
@@ -13303,8 +13340,6 @@ class ModuleManager(object):
 
         manager = info.get('manager', None)
         client = info.get('client', None)
-        if client is None:
-            client = F5Client
         kwargs['client'] = client(**self.module.params)
         result = manager(**kwargs)
         return result
