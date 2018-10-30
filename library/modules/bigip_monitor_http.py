@@ -85,6 +85,17 @@ options:
   target_password:
     description:
       - Specifies the password, if the monitored target requires authentication.
+  reverse:
+    description:
+      - Specifies whether the monitor operates in reverse mode.
+      - When the monitor is in reverse mode, a successful receive string match
+        marks the monitored object down instead of up. You can use the
+        this mode only if you configure the C(receive) option.
+      - This parameter is not compatible with the C(time_until_up) parameter. If
+        C(time_until_up) is specified, it must be C(0). Or, if it already exists, it
+        must be C(0).
+    type: bool
+    version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.
@@ -170,6 +181,11 @@ time_until_up:
   returned: changed
   type: int
   sample: 2
+reverse:
+  description: Whether the monitor operates in reverse mode.
+  returned: changed
+  type: bool
+  sample: yes
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -185,6 +201,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.ipaddress import is_valid_ip
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
@@ -196,6 +213,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
 
 
@@ -219,6 +237,7 @@ class Parameters(AnsibleF5Parameters):
         'password',
         'recvDisable',
         'description',
+        'reverse',
     ]
 
     returnables = [
@@ -232,6 +251,7 @@ class Parameters(AnsibleF5Parameters):
         'time_until_up',
         'receive_disable',
         'description',
+        'reverse',
     ]
 
     updatables = [
@@ -245,6 +265,7 @@ class Parameters(AnsibleF5Parameters):
         'target_password',
         'receive_disable',
         'description',
+        'reverse',
     ]
 
     @property
@@ -325,6 +346,10 @@ class Parameters(AnsibleF5Parameters):
     def password(self):
         return self._values['target_password']
 
+    @property
+    def reverse(self):
+        return flatten_boolean(self._values['reverse'])
+
 
 class ApiParameters(Parameters):
     pass
@@ -347,11 +372,19 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def reverse(self):
+        if self._values['reverse'] is None:
+            return None
+        elif self._values['reverse'] == 'yes':
+            return 'enabled'
+        return 'disabled'
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def reverse(self):
+        return flatten_boolean(self._values['reverse'])
 
 
 class Difference(object):
@@ -511,6 +544,15 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
+        if self.want.reverse == 'enabled':
+            if not self.want.receive and not self.have.receive:
+                raise F5ModuleError(
+                    "A 'receive' string must be specified when setting 'reverse'."
+                )
+            if self.want.time_until_up != 0 and self.have.time_until_up != 0:
+                raise F5ModuleError(
+                    "Monitors with the 'reverse' attribute are not currently compatible with 'time_until_up'."
+                )
         if self.module.check_mode:
             return True
         self.update_on_device()
@@ -526,6 +568,15 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        if self.want.reverse == 'enabled':
+            if self.want.time_until_up != 0:
+                raise F5ModuleError(
+                    "Monitors with the 'reverse' attribute are not currently compatible with 'time_until_up'."
+                )
+            if not self.want.receive:
+                raise F5ModuleError(
+                    "A 'receive' string must be specified when setting 'reverse'."
+                )
         self._set_default_creation_values()
         if self.module.check_mode:
             return True
@@ -633,6 +684,7 @@ class ArgumentSpec(object):
             ip=dict(),
             port=dict(type='int'),
             interval=dict(type='int'),
+            reverse=dict(type='bool'),
             timeout=dict(type='int'),
             time_until_up=dict(type='int'),
             target_username=dict(),
