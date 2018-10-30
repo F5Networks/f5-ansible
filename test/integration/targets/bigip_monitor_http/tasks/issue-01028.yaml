@@ -1,0 +1,89 @@
+---
+
+- name: Issue 01028 - Create HTTP Monitor
+  bigip_monitor_http:
+    name: i1028
+    receive: foo
+
+- name: Issue 01028 - Change reverse - yes
+  bigip_monitor_http:
+    name: i1028
+    reverse: yes
+    receive: foo
+  register: result
+
+- name: Issue 01028 - Assert Change reverse - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01028 - Change reverse - yes - Idempotent check
+  bigip_monitor_http:
+    name: i1028
+    reverse: yes
+    receive: foo
+  register: result
+
+- name: Issue 01028 - Assert Change reverse - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01028 - Change reverse - no
+  bigip_monitor_http:
+    name: i1028
+    reverse: no
+  register: result
+
+- name: Issue 01028 - Assert Change reverse - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01028 - Change reverse - no - Idempotent check
+  bigip_monitor_http:
+    name: i1028
+    reverse: no
+  register: result
+
+- name: Issue 01028 - Assert Change reverse - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01028 - Remove monitor
+  bigip_monitor_http:
+    name: i1028
+    state: absent
+
+- name: Issue 01028 - Create HTTP Monitor, reverse yes, no receive - Expected failure
+  bigip_monitor_http:
+    name: i1028
+    reverse: yes
+  register: result
+  failed_when: result is success
+
+- name: Issue 01028 - Create HTTP Monitor, reverse yes, no receive - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01028 - Create HTTP Monitor, reverse yes, time_until_up non-zero - Expected failure
+  bigip_monitor_http:
+    name: i1028
+    reverse: yes
+    time_until_up: 20
+
+  register: result
+  failed_when: result is success
+
+- name: Issue 01028 - Create HTTP Monitor, reverse yes, time_until_up non-zero - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
