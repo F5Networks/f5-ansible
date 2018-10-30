@@ -12288,12 +12288,26 @@ class VirtualAddressesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = VirtualAddressesParameters(params=resource.attrs)
+            params = VirtualAddressesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.virtual_address_s.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/virtual-address".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -13100,7 +13114,8 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'virtual-addresses': dict(
-                manager=VirtualAddressesFactManager
+                manager=VirtualAddressesFactManager,
+                client=F5RestClient
             ),
             'virtual-servers': dict(
                 manager=VirtualServersFactManager
@@ -13382,8 +13397,6 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
 
     client = F5Client(**module.params)
 
