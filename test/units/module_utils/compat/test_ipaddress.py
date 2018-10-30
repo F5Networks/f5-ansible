@@ -155,11 +155,11 @@ class CommonTestMixin_v6(CommonTestMixin):
         self.assertInstancesEqual(3232235521, "::c0a8:1")
 
     def test_packed(self):
-        addr = b'\0'*12 + _compat_bytes_fromhex("00000000")
+        addr = b'\0' * 12 + _compat_bytes_fromhex("00000000")
         self.assertInstancesEqual(addr, "::")
-        addr = b'\0'*12 + _compat_bytes_fromhex("c0a80001")
+        addr = b'\0' * 12 + _compat_bytes_fromhex("c0a80001")
         self.assertInstancesEqual(addr, "::c0a8:1")
-        addr = _compat_bytes_fromhex("c0a80001") + b'\0'*12
+        addr = _compat_bytes_fromhex("c0a80001") + b'\0' * 12
         self.assertInstancesEqual(addr, "c0a8:1::")
 
     def test_negative_ints_rejected(self):

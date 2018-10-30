@@ -98,7 +98,7 @@ options:
   header_erase:
     description:
       - The name of a header, in an HTTP request, which the system removes from request.
-      - To remove the entry completely a value of C(none) or C('') should be set. 
+      - To remove the entry completely a value of C(none) or C('') should be set.
       - The format of the header must be in C(KEY:VALUE) format, otherwise error is raised.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
@@ -106,7 +106,7 @@ options:
   header_insert:
     description:
       - A string that the system inserts as a header in an HTTP request.
-      - To remove the entry completely a value of C(none) or C('') should be set. 
+      - To remove the entry completely a value of C(none) or C('') should be set.
       - The format of the header must be in C(KEY:VALUE) format, otherwise error is raised.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
@@ -127,10 +127,10 @@ options:
     version_added: 2.8
   maximum_age:
     description:
-      - Specifies the maximum length of time, in seconds, that HSTS functionality 
-        requests that clients only use HTTPS to connect to the current host and 
+      - Specifies the maximum length of time, in seconds, that HSTS functionality
+        requests that clients only use HTTPS to connect to the current host and
         any sub-domains of the current host's domain name.
-      - The accepted value range is C(0 - 4294967295) seconds, a value of C(0) seconds 
+      - The accepted value range is C(0 - 4294967295) seconds, a value of C(0) seconds
         re-enables plaintext HTTP access, while specifying C(indefinite) will set it to the maximum value.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
