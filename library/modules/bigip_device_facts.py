@@ -5779,7 +5779,14 @@ def parseStats(entry):
                     names = name.split('.')
                     key = names[0]
                     value = names[1]
-                    if not result[key]:
+                    if result is None:
+                        # result can be None if this branch is reached first
+                        #
+                        # For example, the mgmt/tm/net/trunk/NAME/stats API
+                        # returns counters.bitsIn before anything else.
+                        result = dict()
+                        result[key] = {}
+                    elif not result[key]:
                         result[key] = {}
                     result[key][value] = parseStats(entry)
                 else:
@@ -11947,9 +11954,7 @@ class TrunksParameters(BaseParameters):
 
     @property
     def media_status(self):
-        # This is in the 'description' key instead of the more common
-        # 'value' key. I'm not sure why this is, but it is.
-        return self._values['stats']['status']['description']
+        return self._values['stats']['status']
 
 
 class TrunksFactManager(BaseManager):
@@ -11977,15 +11982,51 @@ class TrunksFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = TrunksParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.trunks.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/trunk".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/net/trunk/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class UdpProfilesParameters(BaseParameters):
@@ -13121,7 +13162,8 @@ class ModuleManager(object):
                 manager=TrafficGroupsFactManager
             ),
             'trunks': dict(
-                manager=TrunksFactManager
+                manager=TrunksFactManager,
+                client=F5RestClient
             ),
             'udp-profiles': dict(
                 manager=UdpProfilesFactManager,
