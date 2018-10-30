@@ -9443,9 +9443,9 @@ class LtmPoolsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            members = resource.members_s.get_collection()
-            attrs['members'] = [member.attrs for member in members]
+            attrs = resource
+            members = self.read_member_from_device(attrs['fullPath'])
+            attrs['members'] = members
             params = LtmPoolsParameters(params=attrs)
             results.append(params)
         return results
@@ -9461,7 +9461,40 @@ class LtmPoolsFactManager(BaseManager):
         Returns:
              list: List of ``Pool`` objects
         """
-        result = self.client.api.tm.ltm.pools.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+    def read_member_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -13223,7 +13256,8 @@ class ModuleManager(object):
                 manager=IrulesFactManager
             ),
             'ltm-pools': dict(
-                manager=LtmPoolsFactManager
+                manager=LtmPoolsFactManager,
+                client=F5RestClient
             ),
             'nodes': dict(
                 manager=NodesFactManager,
