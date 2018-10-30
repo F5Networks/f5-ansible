@@ -12545,14 +12545,6 @@ class VirtualServersParameters(BaseParameters):
         if self._values['snat_type'] is None:
             return None
         if 'type' in self._values['snat_type']:
-            if self._values['snat_type']['type'] == 'pool':
-                return self._values['snat_type']['pool']
-
-    @property
-    def snat_type(self):
-        if self._values['snat_type'] is None:
-            return None
-        if 'type' in self._values['snat_type']:
             if self._values['snat_type']['type'] == 'automap':
                 return 'automap'
             elif self._values['snat_type']['type'] == 'none':
@@ -12768,18 +12760,26 @@ class VirtualServersFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = VirtualServersParameters(params=resource.attrs)
+            params = VirtualServersParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.virtuals.get_collection(
-            requests_params=dict(
-                params=dict(
-                    expandSubcollections='true'
-                )
-            )
+        uri = "https://{0}:{1}/mgmt/tm/ltm/virtual?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -13118,7 +13118,8 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'virtual-servers': dict(
-                manager=VirtualServersFactManager
+                manager=VirtualServersFactManager,
+                client=F5RestClient
             ),
             'vlans': dict(
                 manager=VlansFactManager
