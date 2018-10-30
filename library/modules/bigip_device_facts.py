@@ -5785,9 +5785,11 @@ def parseStats(entry):
                         # For example, the mgmt/tm/net/trunk/NAME/stats API
                         # returns counters.bitsIn before anything else.
                         result = dict()
-                        result[key] = {}
-                    elif not result[key]:
-                        result[key] = {}
+                        result[key] = dict()
+                    elif key not in result:
+                        result[key] = dict()
+                    elif result[key] is None:
+                        result[key] = dict()
                     result[key][value] = parseStats(entry)
                 else:
                     if result and isinstance(result, list):
@@ -7291,7 +7293,7 @@ class GtmXPoolsParameters(BaseParameters):
         if self._values['stats'] is None:
             return None
         try:
-            result = self._values['stats']['status_availabilityState']
+            result = self._values['stats']['status']['availabilityState']
             return result['description']
         except AttributeError:
             return None
@@ -7301,7 +7303,7 @@ class GtmXPoolsParameters(BaseParameters):
         if self._values['stats'] is None:
             return None
         try:
-            result = self._values['stats']['status_enabledState']
+            result = self._values['stats']['status']['enabledState']
             return result['description']
         except AttributeError:
             return None
@@ -9523,27 +9525,27 @@ class NodesParameters(BaseParameters):
 
     @property
     def monitor_status(self):
-        return self._values['stats']['monitorStatus']['description']
+        return self._values['stats']['monitorStatus']
 
     @property
     def session_status(self):
-        return self._values['stats']['sessionStatus']['description']
+        return self._values['stats']['sessionStatus']
 
     @property
     def availability_status(self):
-        return self._values['stats']['status_availabilityState']['description']
+        return self._values['stats']['status']['availabilityState']
 
     @property
     def enabled_status(self):
-        return self._values['stats']['status_enabledState']['description']
+        return self._values['stats']['status']['enabledState']
 
     @property
     def status_reason(self):
-        return self._values['stats']['status_statusReason']['description']
+        return self._values['stats']['status']['statusReason']
 
     @property
     def monitor_rule(self):
-        return self._values['stats']['monitorRule']['description']
+        return self._values['stats']['monitorRule']
 
 
 class NodesFactManager(BaseManager):
@@ -9571,15 +9573,51 @@ class NodesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = NodesParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.nodes.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/node".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/node/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class OneConnectProfilesParameters(BaseParameters):
@@ -13188,7 +13226,8 @@ class ModuleManager(object):
                 manager=LtmPoolsFactManager
             ),
             'nodes': dict(
-                manager=NodesFactManager
+                manager=NodesFactManager,
+                client=F5RestClient
             ),
             'oneconnect-profiles': dict(
                 manager=OneConnectProfilesFactManager,
