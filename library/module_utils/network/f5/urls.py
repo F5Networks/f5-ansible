@@ -45,3 +45,16 @@ def check_header_validity(header):
     except TypeError:
         raise F5ModuleError("Value for header {%s: %s} must be of type str or "
                             "bytes, not %s" % (name, value, type(value)))
+
+
+def build_service_uri(base_uri, partition, name):
+    """Build the proper uri for a service resource.
+    This follows the scheme:
+        <base_uri>/~<partition>~<<name>.app>~<name>
+    :param base_uri: str -- base uri of the REST endpoint
+    :param partition: str -- partition for the service
+    :param name: str -- name of the service
+    :returns: str -- uri to access the service
+    """
+    name = name.replace('/', '~')
+    return '%s~%s~%s.app~%s' % (base_uri, partition, name, name)

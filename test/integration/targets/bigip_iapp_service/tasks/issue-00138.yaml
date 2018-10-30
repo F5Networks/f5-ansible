@@ -1,4 +1,7 @@
 ---
+- name: Issue 00138 - Create vlan net2
+  bigip_vlan:
+    name: net2
 
 - name: Issue 00138 - Add the iApp contained in template indicated in the content field
   bigip_iapp_template:
@@ -36,3 +39,31 @@
         - name: var__forwarding_vlans
           value: net2
   delegate_to: localhost
+
+- name: Issue 00138 - Delete iApp service
+  bigip_iapp_service:
+    name: demo.repro
+    state: absent
+  register: result
+
+- name: Issue 00138 - Assert Delete iApp service
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00138 - Remove demo.repro iApp template
+  bigip_iapp_template:
+    name: demo.repro
+    state: absent
+  register: result
+
+- name: Issue 00138 - Remove demo.repro iApp template
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00138 - Remove vlan net2
+  bigip_vlan:
+    name: net2
+    state: absent
+  register: result

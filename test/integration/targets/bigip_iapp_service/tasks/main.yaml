@@ -106,6 +106,15 @@
     that:
       - result is not changed
 
+- name: Tidy up unit templates
+  bigip_iapp_template:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - f5.http.v1.2.0rc4.tmpl
+    - appsvcs_integration_v2.0.002.tmpl
+  register: result
+
 - name: De-provision ASM
   bigip_provision:
     module: asm

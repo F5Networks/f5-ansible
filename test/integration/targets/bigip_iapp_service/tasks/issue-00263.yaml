@@ -1,6 +1,6 @@
 ---
 
-- name: Issue 00263 - Create htto iApp template
+- name: Issue 00263 - Create http iApp template
   bigip_iapp_template:
     content: "{{ lookup('file', item) }}"
   loop:
@@ -12,7 +12,7 @@
     that:
       - result is changed
 
-- name: Issue 00263 - Create htto iApp service from iApp template
+- name: Issue 00263 - Create http iApp service from iApp template
   bigip_iapp_service:
     name: f5-http-url-routing-lb
     template: f5.http.v1.2.0rc4
@@ -21,12 +21,12 @@
     - f5.http.v1.2.0rc4.parameters.json
   register: result
 
-- name: Issue 00263 - Assert Create htto iApp service from iApp template
+- name: Issue 00263 - Assert Create http iApp service from iApp template
   assert:
     that:
       - result is changed
 
-- name: Issue 00263 - Create htto iApp service from iApp template - Idempotent check
+- name: Issue 00263 - Create http iApp service from iApp template - Idempotent check
   bigip_iapp_service:
     name: f5-http-url-routing-lb
     template: f5.http.v1.2.0rc4
@@ -35,29 +35,29 @@
     - f5.http.v1.2.0rc4.parameters.json
   register: result
 
-- name: Issue 00263 - Assert Create htto iApp service from iApp template - Idempotent check
+- name: Issue 00263 - Assert Create http iApp service from iApp template - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00263 - Delete htto iApp service
+- name: Issue 00263 - Delete http iApp service
   bigip_iapp_service:
     name: f5-http-url-routing-lb
     state: absent
   register: result
 
-- name: Issue 00263 - Assert Delete htto iApp service
+- name: Issue 00263 - Assert Delete http iApp service
   assert:
     that:
       - result is changed
 
-- name: Issue 00263 - Remove htto iApp template
+- name: Issue 00263 - Remove http iApp template
   bigip_iapp_template:
     name: f5.http.v1.2.0rc4
     state: absent
   register: result
 
-- name: Issue 00263 - Assert Remove htto iApp template
+- name: Issue 00263 - Assert Remove http iApp template
   assert:
     that:
       - result is changed
