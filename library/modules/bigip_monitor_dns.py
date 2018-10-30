@@ -357,6 +357,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
     from library.module_utils.network.f5.ipaddress import validate_ip_address
@@ -370,6 +371,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
     from ansible.module_utils.network.f5.ipaddress import validate_ip_address
@@ -603,35 +605,19 @@ class UsableChanges(Changes):
 class ReportableChanges(Changes):
     @property
     def manual_resume(self):
-        if self._values['manual_resume'] is None:
-            return None
-        elif self._values['manual_resume'] == 'enabled':
-            return 'yes'
-        return 'no'
+        return flatten_boolean(self._values['manual_resume'])
 
     @property
     def reverse(self):
-        if self._values['reverse'] is None:
-            return None
-        elif self._values['reverse'] == 'enabled':
-            return 'yes'
-        return 'no'
+        return flatten_boolean(self._values['reverse'])
 
     @property
     def transparent(self):
-        if self._values['transparent'] is None:
-            return None
-        elif self._values['transparent'] == 'enabled':
-            return 'yes'
-        return 'no'
+        return flatten_boolean(self._values['transparent'])
 
     @property
     def adaptive(self):
-        if self._values['adaptive'] is None:
-            return None
-        elif self._values['adaptive'] == 'enabled':
-            return 'yes'
-        return 'no'
+        return flatten_boolean(self._values['adaptive'])
 
 
 class Difference(object):
