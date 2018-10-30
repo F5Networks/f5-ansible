@@ -1,5 +1,11 @@
 ---
 
+- name: Collect BIGIP facts
+  bigip_device_facts:
+    gather_subset:
+      - devices
+  register: f
+
 - name: Create a partition
   bigip_partition:
     name: part1
@@ -125,7 +131,7 @@
 
 - name: Issue 00137 - Add member to device group
   bigip_device_group_member:
-    name: bigip1
+    name: "{{ f['devices'][0]['name'] }}"
     device_group: dg1
 
 - name: Issue 00137 - Create service with device group
@@ -169,7 +175,7 @@
 
 - name: Issue 00137 - Add member to device group
   bigip_device_group_member:
-    name: bigip1
+    name: "{{ f['devices'][0]['name'] }}"
     device_group: dg2
 
 - name: Issue 00137 - Create service with device group - override
@@ -307,6 +313,17 @@
   bigip_iapp_service:
     name: service2
     state: absent
+
+- name: Issue 00089 - Remove f5.http.v1.2.0rc4 iApp template
+  bigip_iapp_template:
+    name: f5.http.v1.2.0rc4
+    state: absent
+  register: result
+
+- name: Issue 00137 - Remove f5.http.v1.2.0rc4 iApp template
+  assert:
+    that:
+      - result is changed
 
 - name: Issue 00137 - Remove a partition
   bigip_partition:
