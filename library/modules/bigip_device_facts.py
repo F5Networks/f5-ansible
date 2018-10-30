@@ -5724,8 +5724,6 @@ from ansible.module_utils.six import string_types
 from collections import namedtuple
 
 try:
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
@@ -5733,14 +5731,9 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.ipaddress import is_valid_ip
-    try:
-        from f5.utils.responses.handlers import Stats
-    except ImportError:
-        HAS_F5SDK = False
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
@@ -5748,11 +5741,8 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import flatten_boolean
+    from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    try:
-        from f5.utils.responses.handlers import Stats
-    except ImportError:
-        HAS_F5SDK = False
 
 
 def parseStats(entry):
@@ -5789,8 +5779,17 @@ def parseStats(entry):
                     names = name.split('.')
                     key = names[0]
                     value = names[1]
-                    if not result[key]:
-                        result[key] = {}
+                    if result is None:
+                        # result can be None if this branch is reached first
+                        #
+                        # For example, the mgmt/tm/net/trunk/NAME/stats API
+                        # returns counters.bitsIn before anything else.
+                        result = dict()
+                        result[key] = dict()
+                    elif key not in result:
+                        result[key] = dict()
+                    elif result[key] is None:
+                        result[key] = dict()
                     result[key][value] = parseStats(entry)
                 else:
                     if result and isinstance(result, list):
@@ -5813,10 +5812,6 @@ class BaseManager(object):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.kwargs = kwargs
-
-    def read_stats_from_device(self, resource):
-        stats = Stats(resource.stats.load())
-        return stats.stat
 
     def exec_module(self):
         results = []
@@ -6239,12 +6234,26 @@ class ClientSslProfilesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = ClientSslProfilesParameters(params=resource.attrs)
+            params = ClientSslProfilesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.profile.client_ssls.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/client-ssl".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -6338,16 +6347,26 @@ class DeviceGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = DeviceGroupsParameters(params=resource.attrs)
+            params = DeviceGroupsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.cm.device_groups.get_collection(
-            requests_params=dict(
-                params='expandSubcollections=true'
-            )
+        uri = "https://{0}:{1}/mgmt/tm/cm/device-group/?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -6485,12 +6504,26 @@ class DevicesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = DevicesParameters(params=resource.attrs)
+            params = DevicesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.cm.devices.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/cm/device".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -6719,12 +6752,26 @@ class FastHttpProfilesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = FastHttpProfilesParameters(params=resource.attrs)
+            params = FastHttpProfilesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.profile.fasthttps.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/fasthttp".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -7298,7 +7345,7 @@ class GtmXPoolsParameters(BaseParameters):
         if self._values['stats'] is None:
             return None
         try:
-            result = self._values['stats']['status_availabilityState']
+            result = self._values['stats']['status']['availabilityState']
             return result['description']
         except AttributeError:
             return None
@@ -7308,7 +7355,7 @@ class GtmXPoolsParameters(BaseParameters):
         if self._values['stats'] is None:
             return None
         try:
-            result = self._values['stats']['status_enabledState']
+            result = self._values['stats']['status']['enabledState']
             return result['description']
         except AttributeError:
             return None
@@ -9123,12 +9170,26 @@ class InterfacesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = InterfacesParameters(params=resource.attrs)
+            params = InterfacesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.interfaces.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/interface".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -9170,12 +9231,26 @@ class InternalDataGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = InternalDataGroupsParameters(params=resource.attrs)
+            params = InternalDataGroupsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.data_group.internals.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/internal".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -9253,12 +9328,26 @@ class IrulesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = IrulesParameters(params=resource.attrs)
+            params = IrulesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.rules.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/rule".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -9448,9 +9537,9 @@ class LtmPoolsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            members = resource.members_s.get_collection()
-            attrs['members'] = [member.attrs for member in members]
+            attrs = resource
+            members = self.read_member_from_device(attrs['fullPath'])
+            attrs['members'] = members
             params = LtmPoolsParameters(params=attrs)
             results.append(params)
         return results
@@ -9466,7 +9555,40 @@ class LtmPoolsFactManager(BaseManager):
         Returns:
              list: List of ``Pool`` objects
         """
-        result = self.client.api.tm.ltm.pools.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+    def read_member_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -9530,27 +9652,27 @@ class NodesParameters(BaseParameters):
 
     @property
     def monitor_status(self):
-        return self._values['stats']['monitorStatus']['description']
+        return self._values['stats']['monitorStatus']
 
     @property
     def session_status(self):
-        return self._values['stats']['sessionStatus']['description']
+        return self._values['stats']['sessionStatus']
 
     @property
     def availability_status(self):
-        return self._values['stats']['status_availabilityState']['description']
+        return self._values['stats']['status']['availabilityState']
 
     @property
     def enabled_status(self):
-        return self._values['stats']['status_enabledState']['description']
+        return self._values['stats']['status']['enabledState']
 
     @property
     def status_reason(self):
-        return self._values['stats']['status_statusReason']['description']
+        return self._values['stats']['status']['statusReason']
 
     @property
     def monitor_rule(self):
-        return self._values['stats']['monitorRule']['description']
+        return self._values['stats']['monitorRule']
 
 
 class NodesFactManager(BaseManager):
@@ -9578,15 +9700,51 @@ class NodesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = NodesParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.nodes.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/node".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/node/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class OneConnectProfilesParameters(BaseParameters):
@@ -9983,12 +10141,26 @@ class SelfIpsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SelfIpsParameters(params=resource.attrs)
+            params = SelfIpsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.selfips.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/self".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -10359,12 +10531,26 @@ class SoftwareVolumesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SoftwareVolumesParameters(params=resource.attrs)
+            params = SoftwareVolumesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.software.volumes.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -10623,12 +10809,26 @@ class SslCertificatesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SslCertificatesParameters(params=resource.attrs)
+            params = SslCertificatesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.file.ssl_certs.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-cert".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -10685,12 +10885,26 @@ class SslKeysFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SslKeysParameters(params=resource.attrs)
+            params = SslKeysParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.file.ssl_keys.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-key".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -11901,15 +12115,51 @@ class TrafficGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = TrafficGroupsParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.cm.traffic_groups.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/cm/traffic-group".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/cm/traffic-group/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class TrunksParameters(BaseParameters):
@@ -11961,9 +12211,7 @@ class TrunksParameters(BaseParameters):
 
     @property
     def media_status(self):
-        # This is in the 'description' key instead of the more common
-        # 'value' key. I'm not sure why this is, but it is.
-        return self._values['stats']['status']['description']
+        return self._values['stats']['status']
 
 
 class TrunksFactManager(BaseManager):
@@ -11991,15 +12239,51 @@ class TrunksFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = TrunksParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.trunks.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/trunk".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/net/trunk/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class UdpProfilesParameters(BaseParameters):
@@ -12545,14 +12829,6 @@ class VirtualServersParameters(BaseParameters):
         if self._values['snat_type'] is None:
             return None
         if 'type' in self._values['snat_type']:
-            if self._values['snat_type']['type'] == 'pool':
-                return self._values['snat_type']['pool']
-
-    @property
-    def snat_type(self):
-        if self._values['snat_type'] is None:
-            return None
-        if 'type' in self._values['snat_type']:
             if self._values['snat_type']['type'] == 'automap':
                 return 'automap'
             elif self._values['snat_type']['type'] == 'none':
@@ -12768,18 +13044,26 @@ class VirtualServersFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = VirtualServersParameters(params=resource.attrs)
+            params = VirtualServersParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.virtuals.get_collection(
-            requests_params=dict(
-                params=dict(
-                    expandSubcollections='true'
-                )
-            )
+        uri = "https://{0}:{1}/mgmt/tm/ltm/virtual?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -12861,12 +13145,12 @@ class VlansParameters(BaseParameters):
     @property
     def true_mac_address(self):
         # Who made this field a "description"!?
-        return self._values['stats']['macTrue']['description']
+        return self._values['stats']['macTrue']
 
     @property
     def tag(self):
         # We can't agree on field names...SMH
-        return self._values['stats']['id']['value']
+        return self._values['stats']['id']
 
     @property
     def failsafe_enabled(self):
@@ -12898,19 +13182,51 @@ class VlansFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = VlansParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.vlans.get_collection(
-            requests_params=dict(
-                params='expandSubcollections=true'
-            )
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class ModuleManager(object):
@@ -12925,20 +13241,24 @@ class ModuleManager(object):
                 client=F5RestClient,
             ),
             'client-ssl-profiles': dict(
-                manager=ClientSslProfilesFactManager
+                manager=ClientSslProfilesFactManager,
+                client=F5RestClient
             ),
             'devices': dict(
-                manager=DevicesFactManager
+                manager=DevicesFactManager,
+                client=F5RestClient
             ),
             'device-groups': dict(
-                manager=DeviceGroupsFactManager
+                manager=DeviceGroupsFactManager,
+                client=F5RestClient
             ),
             'external-monitors': dict(
                 manager=ExternalMonitorsFactManager,
                 client=F5RestClient
             ),
             'fasthttp-profiles': dict(
-                manager=FastHttpProfilesFactManager
+                manager=FastHttpProfilesFactManager,
+                client=F5RestClient
             ),
             'fastl4-profiles': dict(
                 manager=FastL4ProfilesFactManager,
@@ -13025,19 +13345,24 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'interfaces': dict(
-                manager=InterfacesFactManager
+                manager=InterfacesFactManager,
+                client=F5RestClient
             ),
             'internal-data-groups': dict(
-                manager=InternalDataGroupsFactManager
+                manager=InternalDataGroupsFactManager,
+                client=F5RestClient
             ),
             'irules': dict(
-                manager=IrulesFactManager
+                manager=IrulesFactManager,
+                client=F5RestClient
             ),
             'ltm-pools': dict(
-                manager=LtmPoolsFactManager
+                manager=LtmPoolsFactManager,
+                client=F5RestClient
             ),
             'nodes': dict(
-                manager=NodesFactManager
+                manager=NodesFactManager,
+                client=F5RestClient
             ),
             'oneconnect-profiles': dict(
                 manager=OneConnectProfilesFactManager,
@@ -13056,14 +13381,16 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'self-ips': dict(
-                manager=SelfIpsFactManager
+                manager=SelfIpsFactManager,
+                client=F5RestClient
             ),
             'server-ssl-profiles': dict(
                 manager=ServerSslProfilesFactManager,
                 client=F5RestClient
             ),
             'software-volumes': dict(
-                manager=SoftwareVolumesFactManager
+                manager=SoftwareVolumesFactManager,
+                client=F5RestClient
             ),
             'software-images': dict(
                 manager=SoftwareImagesFactManager,
@@ -13074,10 +13401,12 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'ssl-certs': dict(
-                manager=SslCertificatesFactManager
+                manager=SslCertificatesFactManager,
+                client=F5RestClient
             ),
             'ssl-keys': dict(
-                manager=SslKeysFactManager
+                manager=SslKeysFactManager,
+                client=F5RestClient
             ),
             'system-db': dict(
                 manager=SystemDbFactManager,
@@ -13100,10 +13429,12 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'traffic-groups': dict(
-                manager=TrafficGroupsFactManager
+                manager=TrafficGroupsFactManager,
+                client=F5RestClient
             ),
             'trunks': dict(
-                manager=TrunksFactManager
+                manager=TrunksFactManager,
+                client=F5RestClient
             ),
             'udp-profiles': dict(
                 manager=UdpProfilesFactManager,
@@ -13118,10 +13449,12 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'virtual-servers': dict(
-                manager=VirtualServersFactManager
+                manager=VirtualServersFactManager,
+                client=F5RestClient
             ),
             'vlans': dict(
-                manager=VlansFactManager
+                manager=VlansFactManager,
+                client=F5RestClient
             ),
         }
 
@@ -13241,8 +13574,6 @@ class ModuleManager(object):
 
         manager = info.get('manager', None)
         client = info.get('client', None)
-        if client is None:
-            client = F5Client
         kwargs['client'] = client(**self.module.params)
         result = manager(**kwargs)
         return result
@@ -13398,7 +13729,7 @@ def main():
         supports_check_mode=spec.supports_check_mode
     )
 
-    client = F5Client(**module.params)
+    client = F5RestClient(**module.params)
 
     try:
         mm = ModuleManager(module=module, client=client)
