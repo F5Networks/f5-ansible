@@ -1,5 +1,9 @@
 ---
 
+- name: Issue 00136 - Create vlan net2
+  bigip_vlan:
+    name: net2
+
 - name: Issue 00136 - Add the iApp contained in template indicated in the content field
   bigip_iapp_template:
     content: "{{ lookup('template', 'issue-00136/original.iapp') }}"
@@ -24,3 +28,31 @@
     force: yes
     state: present
   delegate_to: localhost
+
+- name: Issue 00136 - Delete iApp service
+  bigip_iapp_service:
+    name: demo.repro
+    state: absent
+  register: result
+
+- name: Issue 00136 - Assert Delete iApp service
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00136 - Remove demo.repro iApp template
+  bigip_iapp_template:
+    name: demo.repro
+    state: absent
+  register: result
+
+- name: Issue 00136 - Assert Remove demo.repro iApp template
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00138 - Remove vlan net2
+  bigip_vlan:
+    name: net2
+    state: absent
+  register: result
