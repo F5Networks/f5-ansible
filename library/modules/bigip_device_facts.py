@@ -10616,12 +10616,26 @@ class SslCertificatesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SslCertificatesParameters(params=resource.attrs)
+            params = SslCertificatesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.file.ssl_certs.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-cert".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -10678,12 +10692,26 @@ class SslKeysFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SslKeysParameters(params=resource.attrs)
+            params = SslKeysParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.file.ssl_keys.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-key".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -13169,10 +13197,12 @@ class ModuleManager(object):
                 client=F5RestClient
             ),
             'ssl-certs': dict(
-                manager=SslCertificatesFactManager
+                manager=SslCertificatesFactManager,
+                client=F5RestClient
             ),
             'ssl-keys': dict(
-                manager=SslKeysFactManager
+                manager=SslKeysFactManager,
+                client=F5RestClient
             ),
             'system-db': dict(
                 manager=SystemDbFactManager,
