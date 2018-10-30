@@ -24,11 +24,15 @@ options:
     description:
       - Specifies the name of the profile.
     required: True
+  description:
+    description:
+      - Description of the profile.
   parent:
     description:
       - Specifies the profile from which this profile inherits settings.
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(cookie) profile.
+    default: cookie
   cookie_method:
     description:
       - Specifies the type of cookie processing that the system uses.
