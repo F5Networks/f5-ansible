@@ -33,3 +33,8 @@
     name: good_templ
     partition: my-part1
     state: absent
+
+- name: Issue 00738 - Remove partition
+  bigip_partition:
+    name: my-part1
+    state: absent
