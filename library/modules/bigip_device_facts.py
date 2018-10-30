@@ -9248,12 +9248,26 @@ class IrulesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = IrulesParameters(params=resource.attrs)
+            params = IrulesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.rules.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/rule".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
         return result
 
 
@@ -13253,7 +13267,8 @@ class ModuleManager(object):
                 manager=InternalDataGroupsFactManager
             ),
             'irules': dict(
-                manager=IrulesFactManager
+                manager=IrulesFactManager,
+                client=F5RestClient
             ),
             'ltm-pools': dict(
                 manager=LtmPoolsFactManager,
