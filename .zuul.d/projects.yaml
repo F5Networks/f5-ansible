@@ -1,6 +1,7 @@
 ---
 
 - project:
+    name: f5ansible/bigip_selfip
     periodic:
       jobs:
         - noop
