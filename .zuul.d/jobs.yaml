@@ -7,9 +7,3 @@
     description: |
       The base job for the F5-Ansible installation of Zuul.
     pre-run: .zuul.d/playbooks/base/pre.yaml
-
-- job:
-    name: noop
-    parent: base
-    description: |
-      A job that will always succeed, no operation.
