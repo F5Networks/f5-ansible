@@ -1,0 +1,31 @@
+---
+
+- name: Issue 01017 - Select all facts, single keyword
+  bigip_device_facts:
+    include:
+      - all
+  register: result
+
+- name: Issue 01017 - Assert Select all facts, single keyword
+  assert:
+    that:
+      - result is success
+      - "'client_ssl_profiles' in result"
+      - "'device_groups' in result"
+      - "'devices' in result"
+      - "'interfaces' in result"
+      - "'internal_data_groups' in result"
+      - "'irules' in result"
+      - "'ltm_pools' in result"
+      - "'nodes' in result"
+      - "'provision_info' in result"
+      - "'self_ips' in result"
+      - "'software_volumes' in result"
+      - "'ssl_certs' in result"
+      - "'ssl_keys' in result"
+      - "'system_info' in result"
+      - "'traffic_groups' in result"
+      - "'trunks' in result"
+      - "'virtual_addresses' in result"
+      - "'virtual_servers' in result"
+      - "'vlans' in result"

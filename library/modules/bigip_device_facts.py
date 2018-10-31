@@ -5733,6 +5733,7 @@ try:
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.icontrol import modules_provisioned
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -5743,6 +5744,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible.module_utils.network.f5.icontrol import modules_provisioned
 
 
 def parseStats(entry):
@@ -5812,6 +5814,29 @@ class BaseManager(object):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.kwargs = kwargs
+
+        # A list of modules currently provisioned on the device.
+        #
+        # This list is used by different fact managers to check to see
+        # if they should even attempt to gather facts. If the module is
+        # not provisioned, then it is likely that the REST API will not
+        # return valid data.
+        #
+        # For example, ASM (at the time of this writing 13.x/14.x) will
+        # raise an exception if you attempt to query its APIs if it is
+        # not provisioned. An example error message is shown below.
+        #
+        #  {
+        #    "code": 400,
+        #    "message": "java.net.ConnectException: Connection refused (Connection refused)",
+        #    "referer": "172.18.43.40",
+        #    "restOperationId": 18164160,
+        #    "kind": ":resterrorresponse"
+        #  }
+        #
+        # This list is provided to the specific fact manager by the
+        # master ModuleManager of this module.
+        self.provisioned_modules = []
 
     def exec_module(self):
         results = []
@@ -5919,6 +5944,8 @@ class AsmPolicyStatsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'asm' not in self.provisioned_modules:
+            return []
         facts = self.read_facts()
         results = facts.to_return()
         return results
@@ -6253,6 +6280,8 @@ class ClientSslProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -6366,6 +6395,8 @@ class DeviceGroupsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -6523,6 +6554,8 @@ class DevicesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -6623,6 +6656,8 @@ class ExternalMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -6771,6 +6806,8 @@ class FastHttpProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7097,6 +7134,8 @@ class FastL4ProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7196,6 +7235,8 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7402,6 +7443,8 @@ class GtmAPoolsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -7433,6 +7476,8 @@ class GtmAPoolsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7450,6 +7495,8 @@ class GtmAaaaPoolsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -7481,6 +7528,8 @@ class GtmAaaaPoolsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7498,6 +7547,8 @@ class GtmCnamePoolsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -7529,6 +7580,8 @@ class GtmCnamePoolsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7546,6 +7599,8 @@ class GtmMxPoolsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -7577,6 +7632,8 @@ class GtmMxPoolsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7594,6 +7651,8 @@ class GtmNaptrPoolsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -7625,6 +7684,8 @@ class GtmNaptrPoolsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7642,6 +7703,8 @@ class GtmSrvPoolsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -7673,6 +7736,8 @@ class GtmSrvPoolsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7892,6 +7957,8 @@ class GtmServersFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -7923,6 +7990,8 @@ class GtmServersFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8014,6 +8083,8 @@ class GtmAWideIpsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -8045,6 +8116,8 @@ class GtmAWideIpsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8062,6 +8135,8 @@ class GtmAaaaWideIpsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -8093,6 +8168,8 @@ class GtmAaaaWideIpsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8110,6 +8187,8 @@ class GtmCnameWideIpsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -8141,6 +8220,8 @@ class GtmCnameWideIpsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8158,6 +8239,8 @@ class GtmMxWideIpsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -8189,6 +8272,8 @@ class GtmMxWideIpsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8207,6 +8292,8 @@ class GtmNaptrWideIpsFactManager(BaseManager):
 
     def _exec_module(self):
         results = []
+        if 'gtm' not in self.provisioned_modules:
+            return []
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
@@ -8237,6 +8324,8 @@ class GtmNaptrWideIpsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8254,6 +8343,8 @@ class GtmSrvWideIpsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -8285,6 +8376,8 @@ class GtmSrvWideIpsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8765,6 +8858,8 @@ class HttpProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8863,6 +8958,8 @@ class IappServicesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9070,6 +9167,8 @@ class IcmpMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9189,6 +9288,8 @@ class InterfacesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9250,6 +9351,8 @@ class InternalDataGroupsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9347,6 +9450,8 @@ class IrulesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9569,6 +9674,8 @@ class LtmPoolsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9721,6 +9828,8 @@ class NodesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9840,6 +9949,8 @@ class OneConnectProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9902,6 +10013,8 @@ class PartitionFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9968,6 +10081,8 @@ class ProvisionInfoFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10052,6 +10167,8 @@ class RouteDomainFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10160,6 +10277,8 @@ class SelfIpsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10464,6 +10583,8 @@ class ServerSslProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10550,6 +10671,8 @@ class SoftwareVolumesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10616,6 +10739,8 @@ class SoftwareHotfixesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10733,6 +10858,8 @@ class SoftwareImagesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10828,6 +10955,8 @@ class SslCertificatesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10904,6 +11033,8 @@ class SslKeysFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10970,6 +11101,8 @@ class SystemDbFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -11523,6 +11656,8 @@ class TcpMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -11609,6 +11744,8 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -12032,6 +12169,8 @@ class TcpProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -12136,6 +12275,8 @@ class TrafficGroupsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -12260,6 +12401,8 @@ class TrunksFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -12392,6 +12535,8 @@ class UdpProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -12448,6 +12593,8 @@ class VcmpGuestsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'vcmp' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -12479,6 +12626,8 @@ class VcmpGuestsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -12591,6 +12740,8 @@ class VirtualAddressesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -13063,6 +13214,8 @@ class VirtualServersFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -13203,6 +13356,8 @@ class VlansFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -13394,7 +13549,10 @@ class ModuleManager(object):
 
     def execute_managers(self, managers):
         results = dict()
+        client = F5RestClient(**self.module.params)
+        prov = modules_provisioned(client)
         for manager in managers:
+            manager.provisioned_modules = prov
             result = manager.exec_module()
             results.update(result)
         return results

@@ -463,15 +463,25 @@ def tmos_version(client):
 
 
 def module_provisioned(client, module_name):
-    modules = dict(
-        afm='provisioned.cpu.afm', avr='provisioned.cpu.avr', asm='provisioned.cpu.asm',
-        apm='provisioned.cpu.apm', gtm='provisioned.cpu.gtm', ilx='provisioned.cpu.ilx',
-        pem='provisioned.cpu.pem', vcmp='provisioned.cpu.vcmp'
-    )
-    uri = "https://{0}:{1}/mgmt/tm/sys/db/{2}".format(
+    provisioned = modules_provisioned(client)
+    if module_name in provisioned:
+        return True
+    return False
+
+
+def modules_provisioned(client):
+    """Returns a list of all provisioned modules
+
+    Args:
+        client: Client connection to the BIG-IP
+
+    Returns:
+        A list of provisioned modules in their short name for.
+        For example, ['afm', 'asm', 'ltm']
+    """
+    uri = "https://{0}:{1}/mgmt/tm/sys/provision".format(
         client.provider['server'],
-        client.provider['server_port'],
-        modules[module_name]
+        client.provider['server_port']
     )
     resp = client.api.get(uri)
 
@@ -485,6 +495,6 @@ def module_provisioned(client, module_name):
             raise F5ModuleError(response['message'])
         else:
             raise F5ModuleError(resp.content)
-    if int(response['value']) == 0:
-        return False
-    return True
+    if 'items' not in response:
+        return []
+    return [x['name'] for x in response['items'] if x['level'] != 'none']
