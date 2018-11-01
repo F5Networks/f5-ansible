@@ -1,6 +1,0 @@
----
-
-connector_name: "connector-foo"
-device_name1: "foo.example.com"
-device_ip1: "10.0.2.3"
-subnet_address: "{{ device_ip1 | ipsubnet(24,0) }}"
