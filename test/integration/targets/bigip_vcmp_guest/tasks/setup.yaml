@@ -8,8 +8,8 @@
     - module-provisioning
 
 - name: Upload initial image to be used
-  bigip_software:
-    base_image: "{{ initial_image }}"
+  bigip_software_image:
+    image: "{{ initial_image }}"
     state: present
 
 - name: Create VLANs
