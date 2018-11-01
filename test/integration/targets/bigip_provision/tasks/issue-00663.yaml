@@ -24,3 +24,9 @@
   bigip_provision:
     module: cgnat
     state: absent
+  register: result
+
+- name: Issue 00663 - Assert De-provision CGNAT
+  assert:
+    that:
+      - result is changed
