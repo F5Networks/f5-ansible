@@ -24,7 +24,6 @@
     state: present
   register: result
 
-
 - name: Issue 00834 - Assert Create HTTP Monitor with description - Idempotent check
   assert:
     that:
