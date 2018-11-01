@@ -1,37 +1,31 @@
 ---
 
 - nodeset:
+    name: ubuntu-latest
+    nodes:
+      - name: controller
+        label: ubuntu-latest
+
+- nodeset:
     name: centos-7
     nodes:
-      - name: centos-7
-        label: ansible-centos-7
+      - name: controller
+        label: centos-7
 
 - nodeset:
-    name: centos-7-1vcpu
+    name: centos-latest
     nodes:
-      - name: centos-7
-        label: ansible-centos-7-1vcpu
-
-- nodeset:
-    name: centos-7-4vcpu
-    nodes:
-      - name: centos-7
-        label: ansible-centos-7-4vcpu
+      - name: controller
+        label: centos-latest
 
 - nodeset:
     name: fedora-latest
     nodes:
-      - name: fedora-28
-        label: ansible-fedora-28
+      - name: controller
+        label: fedora-latest
 
 - nodeset:
-    name: fedora-latest-1vcpu
+    name: fedora-28
     nodes:
-      - name: fedora-28
-        label: ansible-fedora-28-1vcpu
-
-- nodeset:
-    name: fedora-latest-4vcpu
-    nodes:
-      - name: fedora-28
-        label: ansible-fedora-28-4vcpu
+      - name: controller
+        label: fedora-28
