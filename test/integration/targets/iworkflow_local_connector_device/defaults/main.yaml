@@ -1,5 +1,0 @@
----
-
-connector_name: "connector-foo"
-device_name1: "bigip1"
-device_ip1: "10.2.2.3"
