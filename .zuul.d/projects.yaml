@@ -4,3 +4,9 @@
     name: F5Networks/f5-ansible
     templates:
       - noop-jobs
+
+- project:
+    name: F5Networks/f5-ansible
+    periodic:
+      jobs:
+        - plain-run
