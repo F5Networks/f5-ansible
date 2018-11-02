@@ -1,0 +1,5 @@
+---
+text_1: "Set by ansible"
+text_2: "Changed by ansible"
+name_1: "ike1"
+dst_1: "1.2.3.4"
