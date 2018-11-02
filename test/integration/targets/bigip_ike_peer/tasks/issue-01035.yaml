@@ -1,0 +1,74 @@
+---
+- import_tasks: setup.yaml
+
+- name: Issue 01035 - Include issue variables
+  include_vars:
+    file: issue-01035.yaml
+
+- name: Issue 01035 - Create new IKE peer with description
+  bigip_ike_peer:
+    name: "{{ name_1 }}"
+    description: "{{ text_1 }}"
+    remote_address: "{{ dst_1 }}"
+    version:
+      - v1
+  register: result
+
+- name: Issue 01035 - Assert Create new IKE peer with description
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01035 - Create new IKE peer with description - Idempotent check
+  bigip_ike_peer:
+    name: "{{ name_1 }}"
+    description: "{{ text_1 }}"
+    remote_address: "{{ dst_1 }}"
+    version:
+      - v1
+  register: result
+
+- name: Issue 01035 - Assert Create new IKE peer with description - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01035 - Change IKE peer description
+  bigip_ike_peer:
+    name: "{{ name_1 }}"
+    description: "{{ text_2 }}"
+  register: result
+
+- name: Issue 01035 - Assert Change IKE peer description
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01035 - Change IKE peer description - Idempotent check
+  bigip_ike_peer:
+    name: "{{ name_1 }}"
+    description: "{{ text_2 }}"
+  register: result
+
+- name: Issue 01035 - Assert Change IKE peer description - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01035 - Remove IKE peer
+  bigip_ike_peer:
+    name: "{{ name_1 }}"
+    state: absent
+  register: result
+
+- name: Issue 01035 - Assert Remove IKE peer
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- import_tasks: teardown.yaml

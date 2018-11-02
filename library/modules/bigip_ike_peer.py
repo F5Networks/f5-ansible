@@ -24,6 +24,9 @@ options:
     description:
       - Specifies the name of the IKE peer.
     required: True
+  description:
+    description:
+      - Description of the IKE peer.
   version:
     description:
       - Specifies which version of IKE is used.
@@ -174,6 +177,7 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -315,6 +319,7 @@ class Parameters(AnsibleF5Parameters):
         'verifyCert',
         'peersIdValue',
         'myIdValue',
+        'description',
     ]
 
     returnables = [
@@ -332,6 +337,7 @@ class Parameters(AnsibleF5Parameters):
         'phase1_verify_peer_cert',
         'verified_id_value',
         'presented_id_value',
+        'description',
     ]
 
     updatables = [
@@ -349,6 +355,7 @@ class Parameters(AnsibleF5Parameters):
         'phase1_verify_peer_cert',
         'verified_id_value',
         'presented_id_value',
+        'description',
     ]
 
     @property
@@ -695,6 +702,7 @@ class ArgumentSpec(object):
                 default='always',
                 choices=['always', 'on_create']
             ),
+            description=dict(),
             state=dict(default='present', choices=['absent', 'present']),
             partition=dict(
                 default='Common',
