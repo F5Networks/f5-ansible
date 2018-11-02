@@ -1,0 +1,92 @@
+---
+
+- name: Issue 01036 - Include issue variables
+  include_vars:
+    file: issue-01036.yaml
+
+- name: Issue 01036 - Provision AFM
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Issue 01036 - Create first policy
+  bigip_firewall_policy:
+    name: "{{ policy_1 }}"
+  register: result
+
+- name: Issue 01036 - Create second policy
+  bigip_firewall_policy:
+    name: "{{ policy_2 }}"
+  register: result
+
+- name: Issue 01036 - Create route domain, attach FW policy
+  bigip_routedomain:
+    id: "{{ route_domain_id }}"
+    name: "{{ route_domain_name }}"
+    fw_enforced_policy: "{{ policy_1 }}"
+  register: result
+
+- name: Issue 01036 - Assert Create route domain, attach FW policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01036 - Create route domain, attach FW policy - Idempotent check
+  bigip_routedomain:
+    id: "{{ route_domain_id }}"
+    name: "{{ route_domain_name }}"
+    fw_enforced_policy: "{{ policy_1 }}"
+  register: result
+
+- name: Issue 01036 - Assert Create route domain, attach FW policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01036 - Change attached FW policy on a route domain
+  bigip_routedomain:
+    name: "{{ route_domain_name }}"
+    fw_enforced_policy: "{{ policy_2 }}"
+  register: result
+
+- name: Issue 01036 - Assert Change attached FW policy on a route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01036 - Change attached FW policy on a route domain - Idempotent check
+  bigip_routedomain:
+    name: "{{ route_domain_name }}"
+    fw_enforced_policy: "{{ policy_2 }}"
+  register: result
+
+- name: Issue 01036 - Assert Change attached FW policy on a route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01036 - Delete a route domain
+  bigip_routedomain:
+    name: "{{ route_domain_name }}"
+    state: absent
+
+- name: Issue 01036 - Remove AFM policies
+  bigip_firewall_policy:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ policy_1 }}"
+    - "{{ policy_2 }}"
+
+- name: Issue 01036 - De-provision AFM
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
