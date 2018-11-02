@@ -44,6 +44,9 @@ options:
       - Traffic is matched to the traffic selector with the highest priority (lowest order number).
       - When creating a new traffic selector, if this parameter is not specified, the default
         is C(last).
+  description:
+    description:
+      - Description of the traffic selector.
   partition:
     description:
       - Device partition to manage resources on.
@@ -59,6 +62,7 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -140,6 +144,7 @@ class Parameters(AnsibleF5Parameters):
         'sourceAddress',
         'ipsecPolicy',
         'order',
+        'description',
     ]
 
     returnables = [
@@ -147,6 +152,7 @@ class Parameters(AnsibleF5Parameters):
         'source_address',
         'ipsec_policy',
         'order',
+        'description',
     ]
 
     updatables = [
@@ -154,6 +160,7 @@ class Parameters(AnsibleF5Parameters):
         'source_address',
         'ipsec_policy',
         'order',
+        'description',
     ]
 
 
@@ -252,6 +259,16 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def description(self):
+        if self.want.description is None:
+            return None
+        if self.want.description in ['none', '']:
+            if self.have.description in [None, 'none']:
+                return None
+        if self.want.description != self.have.description:
+            return self.want.description
 
 
 class ModuleManager(object):
@@ -447,6 +464,7 @@ class ArgumentSpec(object):
             source_address=dict(),
             ipsec_policy=dict(),
             order=dict(type='int'),
+            description=dict(),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
@@ -469,8 +487,9 @@ def main():
         supports_check_mode=spec.supports_check_mode,
     )
 
+    client = F5RestClient(**module.params)
+
     try:
-        client = F5RestClient(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)

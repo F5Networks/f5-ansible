@@ -1,0 +1,6 @@
+---
+text_1: "Set by ansible"
+text_2: "Changed by ansible"
+name_1: "selector1"
+dst_1: "1.2.2.1"
+src_1: "2.1.1.2"
