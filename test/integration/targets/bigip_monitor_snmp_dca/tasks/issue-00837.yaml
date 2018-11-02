@@ -54,6 +54,30 @@
     that:
       - result is not changed
 
+- name: Issue 00837 - Remove SNMP DCA Monitor Description
+  bigip_monitor_snmp_dca:
+    name: "{{ monitor_name }}"
+    description: ""
+    state: present
+  register: result
+
+- name: Issue 00837 - Assert Remove SNMP DCA Monitor Description
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00837 - Remove SNMP DCA Monitor Description - Idempotent check
+  bigip_monitor_snmp_dca:
+    name: "{{ monitor_name }}"
+    description: ""
+    state: present
+  register: result
+
+- name: Issue 00837 - Assert Remove SNMP DCA Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Issue 00837 - Remove Monitor
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"

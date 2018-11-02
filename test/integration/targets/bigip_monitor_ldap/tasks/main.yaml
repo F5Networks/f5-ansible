@@ -2,6 +2,78 @@
 
 - import_tasks: setup.yaml
 
+- name: Create LDAP Monitor with description
+  bigip_monitor_ldap:
+    name: "{{ monitor_name_2 }}"
+    description: "{{ text_1 }}"
+  register: result
+
+- name: Assert Create LDAP Monitor with description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create LDAP Monitor with description - Idempotent check
+  bigip_monitor_ldap:
+    name: "{{ monitor_name_2 }}"
+    description: "{{ text_1 }}"
+  register: result
+
+- name: Assert Create LDAP Monitor with description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change LDAP Monitor description
+  bigip_monitor_ldap:
+    name: "{{ monitor_name_2 }}"
+    description: "{{ text_2 }}"
+  register: result
+
+- name: Assert Change LDAP Monitor description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change LDAP Monitor description - Idempotent check
+  bigip_monitor_ldap:
+    name: "{{ monitor_name_2 }}"
+    description: "{{ text_2 }}"
+  register: result
+
+- name: Assert Change LDAP Monitor description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove LDAP Monitor description
+  bigip_monitor_ldap:
+    name: "{{ monitor_name_2 }}"
+    description: ""
+  register: result
+
+- name: Assert Remove LDAP Monitor description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove LDAP Monitor description - Idempotent check
+  bigip_monitor_ldap:
+    name: "{{ monitor_name_2 }}"
+    description: ""
+  register: result
+
+- name: Assert Remove LDAP Monitor description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
 - name: Create LDAP Monitor
   bigip_monitor_ldap:
     name: "{{ monitor_name }}"
@@ -506,5 +578,10 @@
   assert:
     that:
       - result is not changed
+
+- name: Remove second LDAP Monitor
+  bigip_monitor_ldap:
+    name: "{{ monitor_name_2 }}"
+    state: absent
 
 - import_tasks: teardown.yaml
