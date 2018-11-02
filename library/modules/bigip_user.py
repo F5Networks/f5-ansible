@@ -200,6 +200,7 @@ import re
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.six import string_types
 from distutils.version import LooseVersion
 
 try:
@@ -251,26 +252,26 @@ class Parameters(AnsibleF5Parameters):
         'password',
     ]
 
-
-class ApiParameters(Parameters):
-    @property
-    def shell(self):
-        if self._values['shell'] in [None, 'none']:
-            return None
-        return self._values['shell']
-
     @property
     def partition_access(self):
-        """
+        """Partition access values will require some transformation.
+
+        This operates on both user and device returned values.
+        Check if the element is a string from user input in the format of
+        name:role, if it is split  it and create dictionary out of it.
+
         If the access value is a dictionary (returned from device,
         or already processed) and contains nameReference
         key, delete it and append the remaining dictionary element into
         a list.
+
         If the nameReference key is removed just append the dictionary
         into the list.
 
-        :returns list of dictionaries
-
+        Returns:
+            List of dictionaries. Each item in the list is a dictionary
+            which contains the ``name`` of the partition and the ``role`` to
+            allow on that partition.
         """
         if self._values['partition_access'] is None:
             return
@@ -280,10 +281,29 @@ class ApiParameters(Parameters):
             if isinstance(access, dict):
                 if 'nameReference' in access:
                     del access['nameReference']
+
                     result.append(access)
                 else:
                     result.append(access)
+            if isinstance(access, string_types):
+                acl = access.split(':')
+                if acl[0].lower() == 'all':
+                    acl[0] = 'all-partitions'
+                value = dict(
+                    name=acl[0],
+                    role=acl[1]
+                )
+
+                result.append(value)
         return result
+
+
+class ApiParameters(Parameters):
+    @property
+    def shell(self):
+        if self._values['shell'] in [None, 'none']:
+            return None
+        return self._values['shell']
 
 
 class ModuleParameters(Parameters):
@@ -292,32 +312,6 @@ class ModuleParameters(Parameters):
         if self._values['shell'] in [None, 'none']:
             return None
         return self._values['shell']
-
-    @property
-    def partition_access(self):
-        """Partition access values will require some transformation.
-
-        Check if the element is a string from user input in the format of
-        name:role, if it is split  it and create dictionary out of it.
-
-        :returns list of dictionaries
-
-        """
-        if self._values['partition_access'] is None:
-            return
-        result = []
-        part_access = self._values['partition_access']
-        for access in part_access:
-            if isinstance(access, str):
-                acl = access.split(':')
-                if acl[0].lower() == 'all':
-                    acl[0] = 'all-partitions'
-                value = dict(
-                    name=acl[0],
-                    role=acl[1]
-                )
-                result.append(value)
-        return result
 
 
 class Changes(Parameters):
@@ -402,7 +396,7 @@ class Difference(object):
         """
 
         err = "Shell access is only available to " \
-              "'admin' or 'resource-admin' roles"
+              "'admin' or 'resource-admin' roles."
         permit = ['admin', 'resource-admin']
 
         have = self.have.partition_access
@@ -434,7 +428,7 @@ class ModuleManager(object):
         if type == 'root':
             return RootUserManager(**self.kwargs)
         elif type == 'v1':
-            return UnparitionedManager(**self.kwargs)
+            return UnpartitionedManager(**self.kwargs)
         elif type == 'v2':
             return PartitionedManager(**self.kwargs)
 
@@ -600,7 +594,7 @@ class BaseManager(object):
             raise F5ModuleError(err)
 
 
-class UnparitionedManager(BaseManager):
+class UnpartitionedManager(BaseManager):
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/auth/user/{2}".format(
             self.client.provider['server'],
