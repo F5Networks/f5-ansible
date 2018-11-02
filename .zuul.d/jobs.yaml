@@ -5,5 +5,5 @@
     parent: base-minimal
     description: |
       Just a basic job to see zuul do something.
-    run: .zuul.d/playbooks/job-playbook.yaml
+    run: playbooks/job-playbook.yaml
     branches: devel
