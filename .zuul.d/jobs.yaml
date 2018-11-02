@@ -7,3 +7,6 @@
       Just a basic job to see zuul do something.
     run: playbooks/job-playbook.yaml
     branches: devel
+    host-vars:
+      controller:
+        ansible_python_interpreter: /usr/bin/python3
