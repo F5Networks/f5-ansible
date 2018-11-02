@@ -37,6 +37,10 @@ options:
       - If this parameter is not specified, then it will default to the value supplied
         in the C(address) parameter.
     required: True
+  description:
+    description:
+      - Description of the traffic selector.
+  version_added: 2.8
   netmask:
     description:
       - The netmask for the self IP. When creating a new Self IP, this value
@@ -257,15 +261,30 @@ class Parameters(AnsibleF5Parameters):
     }
 
     updatables = [
-        'traffic_group', 'allow_service', 'vlan', 'netmask', 'address',
+        'traffic_group',
+        'allow_service',
+        'vlan',
+        'netmask',
+        'address',
+        'description',
     ]
 
     returnables = [
-        'traffic_group', 'allow_service', 'vlan', 'route_domain', 'netmask', 'address',
+        'traffic_group',
+        'allow_service',
+        'vlan',
+        'route_domain',
+        'netmask',
+        'address',
+        'description',
     ]
 
     api_attributes = [
-        'trafficGroup', 'allowService', 'vlan', 'address',
+        'trafficGroup',
+        'allowService',
+        'vlan',
+        'address',
+        'description',
     ]
 
     @property
@@ -775,6 +794,7 @@ class ArgumentSpec(object):
             traffic_group=dict(),
             vlan=dict(),
             route_domain=dict(type='int'),
+            description=dict(),
             state=dict(
                 default='present',
                 choices=['present', 'absent']

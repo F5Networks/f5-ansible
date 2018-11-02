@@ -1,0 +1,72 @@
+---
+- name: Issue 01038 - Ensure internal VLAN exists - Environment
+  bigip_vlan:
+    name: internal
+
+- name: Issue 01038 - Create self-IP, with description - Environment
+  bigip_selfip:
+    name: issue-01038-a
+    address: "2700:bc00:1f10:101::6"
+    netmask: "ffff:ffff:ffff:ffff::"
+    vlan: internal
+    description: "Set by ansible"
+  delegate_to: localhost
+  register: result
+
+- name: Issue 01038 - Assert Create self-IP, with description - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01038 - Create self-IP, with description - Environment - Idempotent check
+  bigip_selfip:
+    name: issue-01038-a
+    address: "2700:bc00:1f10:101::6"
+    netmask: "ffff:ffff:ffff:ffff::"
+    vlan: internal
+    description: "Set by ansible"
+  delegate_to: localhost
+  register: result
+
+- name: Issue 00365 - Assert Create self-IP, with description - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01038 - Change self-IP description - Environment
+  bigip_selfip:
+    name: issue-01038-a
+    description: "Changed by ansible"
+  delegate_to: localhost
+  register: result
+
+- name: Issue 00365 - Assert Change self-IP description - Environment
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01038 - Change self-IP description - Environment - Idempotent check
+  bigip_selfip:
+    name: issue-01038-a
+    description: "Changed by ansible"
+  delegate_to: localhost
+  register: result
+
+- name: Issue 01038 - Assert Change self-IP description - Environment - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01038 - Remove self-IPs - Environment
+  bigip_selfip:
+    name: issue-01038-a
+    state: absent
+
+- name: Issue 01038 - Remove VLANs - Environment
+  bigip_vlan:
+    name: internal
+    state: absent
