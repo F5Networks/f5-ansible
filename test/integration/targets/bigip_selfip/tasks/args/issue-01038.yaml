@@ -1,0 +1,105 @@
+---
+- name: Issue 01038 - Ensure internal VLAN exists - Args
+  bigip_vlan:
+    name: internal
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+
+- name: Issue 01038 - Create self-IP, with description - Args
+  bigip_selfip:
+    name: issue-01038-a
+    address: "2700:bc00:1f10:101::6"
+    netmask: "ffff:ffff:ffff:ffff::"
+    description: "Set by ansible"
+    vlan: internal
+    state: present
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 01038 - Assert Create self-IP, with description - Args
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01038 - Create self-IP, with description - Args - Idempotent check
+  bigip_selfip:
+    name: issue-01038-a
+    address: "2700:bc00:1f10:101::6"
+    netmask: "ffff:ffff:ffff:ffff::"
+    description: "Set by ansible"
+    vlan: internal
+    state: present
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 01038 - Assert Create self-IP, with description - Args - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01038 - Change self-IP description - Args
+  bigip_selfip:
+    name: issue-01038-a
+    description: "Changed by ansible"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 01038 - Assert Create self-IP, with description - Args
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01038 - Change self-IP description - Args - Idempotent check
+  bigip_selfip:
+    name: issue-01038-a
+    description: "Changed by ansible"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 01038 - Assert Create self-IP, with description - Args - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01038 - Remove self-IPs - Args
+  bigip_selfip:
+    name: issue-01038-a
+    state: absent
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+
+- name: Issue 01038 - Remove VLANs - Args
+  bigip_vlan:
+    name: internal
+    state: absent
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
