@@ -119,6 +119,7 @@ try:
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.compat.ipaddress import ip_interface
+    from library.module_utils.network.f5.compare import cmp_str_with_none
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -130,6 +131,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.compat.ipaddress import ip_interface
+    from ansible.module_utils.network.f5.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
