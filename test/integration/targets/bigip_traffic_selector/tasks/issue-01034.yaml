@@ -1,0 +1,72 @@
+---
+- import_tasks: setup.yaml
+
+- name: Issue 01034- Include issue variables
+  include_vars:
+    file: issue-01034.yaml
+
+- name: Issue 01034 - Create a traffic selector with description
+  bigip_traffic_selector:
+    name: "{{ name_1 }}"
+    description: "{{ text_1 }}"
+    destination_address: "{{ dst_1 }}"
+    source_address: "{{ src_1 }}"
+  register: result
+
+- name: Issue 01034 - Assert Create a traffic selector with description
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01034 - Create a traffic selector with description - Idempotent check
+  bigip_traffic_selector:
+    name: "{{ name_1 }}"
+    description: "{{ text_1 }}"
+    destination_address: "{{ dst_1 }}"
+    source_address: "{{ src_1 }}"
+  register: result
+
+- name: Issue 01034 - Assert Create a traffic selector with description - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01034 - Change traffic selector description
+  bigip_traffic_selector:
+    name: "{{ name_1 }}"
+    description: "{{ text_2 }}"
+  register: result
+
+- name: Issue 01034 - Assert Change traffic selector description
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01034 - Change traffic selector description - Idempotent check
+  bigip_traffic_selector:
+    name: "{{ name_1 }}"
+    description: "{{ text_2 }}"
+  register: result
+
+- name: Issue 01034 - Assert Change traffic selector description - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01034 - Remove traffic selector
+  bigip_traffic_selector:
+    name: "{{ name_1 }}"
+    state: absent
+  register: result
+
+- name: Issue 01034 - Assert Remove traffic selector
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- import_tasks: teardown.yaml
