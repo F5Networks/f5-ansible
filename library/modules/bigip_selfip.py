@@ -37,6 +37,10 @@ options:
       - If this parameter is not specified, then it will default to the value supplied
         in the C(address) parameter.
     required: True
+  description:
+    description:
+      - Description of the traffic selector.
+  version_added: 2.8
   netmask:
     description:
       - The netmask for the self IP. When creating a new Self IP, this value
@@ -233,6 +237,7 @@ try:
     from library.module_utils.compat.ipaddress import ip_address
     from library.module_utils.compat.ipaddress import ip_network
     from library.module_utils.compat.ipaddress import ip_interface
+    from library.module_utils.network.f5.compare import cmp_str_with_none
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -248,6 +253,7 @@ except ImportError:
     from ansible.module_utils.compat.ipaddress import ip_address
     from ansible.module_utils.compat.ipaddress import ip_network
     from ansible.module_utils.compat.ipaddress import ip_interface
+    from ansible.module_utils.network.f5.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
@@ -257,15 +263,30 @@ class Parameters(AnsibleF5Parameters):
     }
 
     updatables = [
-        'traffic_group', 'allow_service', 'vlan', 'netmask', 'address',
+        'traffic_group',
+        'allow_service',
+        'vlan',
+        'netmask',
+        'address',
+        'description',
     ]
 
     returnables = [
-        'traffic_group', 'allow_service', 'vlan', 'route_domain', 'netmask', 'address',
+        'traffic_group',
+        'allow_service',
+        'vlan',
+        'route_domain',
+        'netmask',
+        'address',
+        'description',
     ]
 
     api_attributes = [
-        'trafficGroup', 'allowService', 'vlan', 'address',
+        'trafficGroup',
+        'allowService',
+        'vlan',
+        'address',
+        'description',
     ]
 
     @property
@@ -389,6 +410,14 @@ class ModuleParameters(Parameters):
         result = sorted(list(set(result)))
         return result
 
+    @property
+    def description(self):
+        if self._values['description'] is None:
+            return None
+        elif self._values['description'] in ['none', '']:
+            return ''
+        return self._values['description']
+
 
 class ApiParameters(Parameters):
     @property
@@ -422,6 +451,12 @@ class ApiParameters(Parameters):
     def ip(self):
         result = ip_interface(self.destination_ip)
         return str(result.ip)
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
 
 
 class Changes(Parameters):
@@ -531,6 +566,10 @@ class Difference(object):
     def traffic_group(self):
         if self.want.traffic_group != self.have.traffic_group:
             return self.want.traffic_group
+
+    @property
+    def description(self):
+        return cmp_str_with_none(self.want.description, self.have.description)
 
 
 class ModuleManager(object):
@@ -775,6 +814,7 @@ class ArgumentSpec(object):
             traffic_group=dict(),
             vlan=dict(),
             route_domain=dict(type='int'),
+            description=dict(),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
