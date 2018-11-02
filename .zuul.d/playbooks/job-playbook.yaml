@@ -1,0 +1,9 @@
+---
+
+- name: This is a test play
+  hosts: all
+  tasks:
+    - name: Run a single task
+      copy:
+        dest: /tmp/foo.txt
+      content: "ADADSADDAS"
