@@ -52,6 +52,28 @@
     that:
       - result is not changed
 
+- name: Issue 00841 - Remove UDP Monitor description
+  bigip_monitor_udp:
+    name: "{{ monitor_name }}"
+    description: ""
+  register: result
+
+- name: Issue 00841 - Assert Remove UDP Monitor description
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00841 - Remove UDP Monitor description - Idempotent check
+  bigip_monitor_udp:
+    name: "{{ monitor_name }}"
+    description: ""
+  register: result
+
+- name: Issue 00841 - Assert Remove UDP Monitor description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Issue 00841 - Remove UDP Monitor
   bigip_monitor_udp:
     name: "{{ monitor_name }}"

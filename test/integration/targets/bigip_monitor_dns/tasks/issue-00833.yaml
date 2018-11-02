@@ -58,6 +58,32 @@
     that:
       - result is not changed
 
+- name: Issue 00833 - Remove DNS Monitor Description
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name }}"
+    description: "none"
+    state: present
+  register: result
+
+- name: Issue 00833 - Assert Remove DNS Monitor Description
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00833 - Remove DNS Monitor Description - Idempotent check
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name }}"
+    description: "none"
+    state: present
+  register: result
+
+- name: Issue 00833 - Assert Remove DNS Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Issue 00833 - Remove DNS Monitor
   bigip_monitor_dns:
     name: "{{ monitor_name }}"

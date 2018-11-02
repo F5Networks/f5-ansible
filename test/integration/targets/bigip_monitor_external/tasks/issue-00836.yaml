@@ -54,6 +54,30 @@
     that:
       - result is not changed
 
+- name: Issue 00836 - Remove External Monitor Description
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    description: "none"
+    state: present
+  register: result
+
+- name: Issue 00836 - Assert Remove External Monitor Description
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00836 - Remove External Monitor Description - Idempotent check
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    description: "none"
+    state: present
+  register: result
+
+- name: Issue 00836 - Assert Modify External Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Issue 00836 - Remove External Monitor
   bigip_monitor_external:
     name: "{{ monitor_name }}"

@@ -1,3 +1,6 @@
 ---
 
 monitor_name: my_ldap_monitor
+monitor_name_2: my_ldap_monitor_2
+text_1: "Ansible set it"
+text_2: "Ansible changed it"
