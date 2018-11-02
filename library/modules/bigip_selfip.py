@@ -551,6 +551,16 @@ class Difference(object):
         if self.want.traffic_group != self.have.traffic_group:
             return self.want.traffic_group
 
+    @property
+    def description(self):
+        if self.want.description is None:
+            return None
+        if self.want.description in ['none', '']:
+            if self.have.description in [None, 'none']:
+                return None
+        if self.want.description != self.have.description:
+            return self.want.description
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):

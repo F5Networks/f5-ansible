@@ -68,6 +68,34 @@
       - result is not changed
       - result is success
 
+- name: Issue 01038 - Remove self-IP description - Provider
+  bigip_selfip:
+    name: issue-01038-a
+    description: "none"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  register: result
+
+- name: Issue 00365 - Assert Remove self-IP description - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01038 - Remove self-IP description - Provider - Idempotent check
+  bigip_selfip:
+    name: issue-01038-a
+    description: "none"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  register: result
+
+- name: Issue 01038 - Assert Remove self-IP description - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
 - name: Issue 01038 - Remove self-IPs - Provider
   bigip_selfip:
     name: issue-01038-a
