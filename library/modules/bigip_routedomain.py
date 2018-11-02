@@ -87,6 +87,10 @@ options:
   vlans:
     description:
       - VLANs for the system to use in the route domain.
+  fw_enforced_policy:
+    description:
+      - Specfies AFM policy to be attached to route domain.
+    version_added: 2.8 
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -168,6 +172,11 @@ service_policy:
   returned: changed
   type: string
   sample: /Common-my-service-policy
+fw_enforced_policy:
+  description: Specfies AFM policy to be attached to route domain.
+  returned: changed
+  type: string
+  sample: /Common/afm-blocking-policy
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -204,6 +213,8 @@ class Parameters(AnsibleF5Parameters):
         'bwcPolicy': 'bwc_policy',
         'flowEvictionPolicy': 'flow_eviction_policy',
         'routingProtocol': 'routing_protocol',
+        'fwEnforcedPolicy': 'fw_enforced_policy',
+        'fwEnforcedPolicyReference': 'fw_policy_link',
     }
 
     api_attributes = [
@@ -217,6 +228,8 @@ class Parameters(AnsibleF5Parameters):
         'routingProtocol',
         'vlans',
         'id',
+        'fwEnforcedPolicy',
+        'fwEnforcedPolicyReference',
     ]
 
     returnables = [
@@ -243,6 +256,8 @@ class Parameters(AnsibleF5Parameters):
         'vlans',
         'connection_limit',
         'id',
+        'fw_enforced_policy',
+        'fw_policy_link',
     ]
 
     @property
@@ -340,6 +355,24 @@ class ModuleParameters(Parameters):
             return ''
         return self._values['routing_protocol']
 
+    @property
+    def fw_enforced_policy(self):
+        if self._values['fw_enforced_policy'] is None:
+            return None
+        if self._values['fw_enforced_policy'] in ['none', '']:
+            return None
+        name = self._values['fw_enforced_policy']
+        return fq_name(self.partition, name)
+
+    @property
+    def fw_policy_link(self):
+        policy = self.fw_enforced_policy
+        if policy is None:
+            return None
+        tmp = policy.split('/')
+        link = dict(link='https://localhost/mgmt/tm/security/firewall/policy/~{0}~{1}'.format(tmp[1], tmp[2]))
+        return link
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -401,6 +434,15 @@ class Difference(object):
     @property
     def vlans(self):
         return cmp_simple_list(self.want.vlans, self.have.vlans)
+
+    @property
+    def fw_policy_link(self):
+        if self.want.fw_enforced_policy is None:
+            return None
+        if self.want.fw_enforced_policy == self.have.fw_enforced_policy:
+            return None
+        if self.want.fw_policy_link != self.have.fw_policy_link:
+            return self.want.fw_policy_link
 
 
 class ModuleManager(object):
@@ -549,7 +591,29 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-        return response['selfLink']
+        if self.want.fw_enforced_policy:
+            payload = dict(
+                fwEnforcedPolicy=self.want.fw_enforced_policy,
+                fwEnforcedPolicyReference=self.want.fw_policy_link
+            )
+            uri = "https://{0}:{1}/mgmt/tm/net/route-domain/{2}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.want.partition, self.want.name),
+            )
+            resp = self.client.api.patch(uri, json=payload)
+
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if 'code' in response and response['code'] in [400, 403]:
+                if 'message' in response:
+                    raise F5ModuleError(response['message'])
+                else:
+                    raise F5ModuleError(resp.content)
+        return True
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -619,6 +683,7 @@ class ArgumentSpec(object):
             connection_limit=dict(type='int'),
             flow_eviction_policy=dict(),
             service_policy=dict(),
+            fw_enforced_policy=dict(),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

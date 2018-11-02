@@ -266,7 +266,7 @@ class Parameters(AnsibleF5Parameters):
         'serverAgentName': 'server_agent_name',
         'includeSubdomains': 'include_subdomains',
         'maximumAge': 'maximum_age',
-        'mode': 'hsts_mode'
+        'mode': 'hsts_mode',
     }
 
     api_attributes = [
