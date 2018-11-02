@@ -6,7 +6,7 @@
     - name: Run a single task
       copy:
         dest: /tmp/foo.txt
-      content: "ADADSADDAS"
+        content: "ADADSADDAS"
 
     - name: Wait for some seconds
       pause:
