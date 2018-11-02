@@ -1,0 +1,5 @@
+---
+policy_1: foo1_01036
+policy_2: foo2_01036
+route_domain_id: 22
+route_domain_name: afm_foo_01036

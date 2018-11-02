@@ -530,3 +530,6 @@
 
 - import_tasks: issue-00775.yaml
   tags: issue-00775
+
+- import_tasks: issue-01036.yaml
+  tags: issue-01036
