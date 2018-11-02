@@ -574,8 +574,6 @@ class BaseManager(object):
 
         if self.want.partition_access is not None:
             want = self.want.partition_access
-            import q;
-            q.q(want)
             if not any(r['role'] for r in want if r['role'] in permit):
                 raise F5ModuleError(err)
 
@@ -705,7 +703,6 @@ class PartitionedManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port']
         )
-        import q; q.q(params)
         resp = self.client.api.post(uri, json=params)
         try:
             response = resp.json()
