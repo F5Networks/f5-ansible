@@ -273,6 +273,7 @@ try:
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.compare import cmp_str_with_none
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -284,6 +285,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import flatten_boolean
+    from ansible.module_utils.network.f5.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
@@ -364,7 +366,11 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
 
 
 class ModuleParameters(Parameters):
@@ -383,6 +389,14 @@ class ModuleParameters(Parameters):
         if self._values['phase1_key'] in ['', 'none']:
             return ''
         return fq_name(self.partition, self._values['phase1_key'])
+
+    @property
+    def description(self):
+        if self._values['description'] is None:
+            return None
+        elif self._values['description'] in ['none', '']:
+            return ''
+        return self._values['description']
 
 
 class Changes(Parameters):
@@ -441,13 +455,7 @@ class Difference(object):
 
     @property
     def description(self):
-        if self.want.description is None:
-            return None
-        if self.want.description in ['none', '']:
-            if self.have.description in [None, 'none']:
-                return None
-        if self.want.description != self.have.description:
-            return self.want.description
+        return cmp_str_with_none(self.want.description, self.have.description)
 
 
 class ModuleManager(object):
