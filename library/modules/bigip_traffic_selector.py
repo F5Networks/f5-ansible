@@ -165,7 +165,11 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
 
 
 class ModuleParameters(Parameters):
@@ -192,6 +196,14 @@ class ModuleParameters(Parameters):
                 "No IP address found in 'source_address'."
             )
         return result
+
+    @property
+    def description(self):
+        if self._values['description'] is None:
+            return None
+        elif self._values['description'] in ['none', '']:
+            return ''
+        return self._values['description']
 
     def _format_address(self, type):
         if self._values[type] is None:
@@ -262,13 +274,7 @@ class Difference(object):
 
     @property
     def description(self):
-        if self.want.description is None:
-            return None
-        if self.want.description in ['none', '']:
-            if self.have.description in [None, 'none']:
-                return None
-        if self.want.description != self.have.description:
-            return self.want.description
+        return cmp_str_with_none(self.want.description, self.have.description)
 
 
 class ModuleManager(object):
