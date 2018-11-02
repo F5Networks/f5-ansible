@@ -1,0 +1,768 @@
+---
+
+- name: Add vector for protocol-dns - mitigate - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for protocol-dns - mitigate - SIP ACK
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for protocol-dns - mitigate - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for protocol-dns - mitigate - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for protocol-dns - detect-only - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: detect-only
+  register: result
+
+- name: Assert Add vector for protocol-dns - detect-only - SIP ACK
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for protocol-dns - detect-only - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: detect-only
+  register: result
+
+- name: Assert Add vector for protocol-dns - detect-only - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for protocol-dns - learn-only - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for protocol-dns - learn-only - SIP ACK
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for protocol-dns - learn-only - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for protocol-dns - learn-only - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for protocol-dns - disabled - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: disabled
+  register: result
+
+- name: Assert Add vector for protocol-dns - disabled - SIP ACK
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for protocol-dns - disabled - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: disabled
+  register: result
+
+- name: Assert Add vector for protocol-dns - disabled - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change state to mitigate - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: mitigate
+  register: result
+
+- name: Change allow_advertisement - yes - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    allow_advertisement: yes
+  register: result
+
+- name: Assert Change allow_advertisement - yes - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allow_advertisement - yes - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    allow_advertisement: yes
+  register: result
+
+- name: Assert Change allow_advertisement - yes - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change allow_advertisement - no - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    allow_advertisement: no
+  register: result
+
+- name: Assert Change allow_advertisement - no - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allow_advertisement - no - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    allow_advertisement: no
+  register: result
+
+- name: Assert Change allow_advertisement - no - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change bad_actor_detection - yes - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    bad_actor_detection: yes
+  register: result
+
+- name: Assert Change bad_actor_detection - yes - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change bad_actor_detection - yes - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    bad_actor_detection: yes
+  register: result
+
+- name: Assert Change bad_actor_detection - yes - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auto_blacklist - yes - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    auto_blacklist: yes
+  register: result
+
+- name: Assert Change auto_blacklist - yes - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auto_blacklist - yes - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    auto_blacklist: yes
+  register: result
+
+- name: Assert Change auto_blacklist - yes - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change auto_blacklist - no - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    auto_blacklist: no
+  register: result
+
+- name: Assert Change auto_blacklist - no - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change auto_blacklist - no - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    auto_blacklist: no
+  register: result
+
+- name: Assert Change auto_blacklist - no - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change bad_actor_detection - no - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    bad_actor_detection: no
+  register: result
+
+- name: Assert Change bad_actor_detection - no - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change bad_actor_detection - no - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    bad_actor_detection: no
+  register: result
+
+- name: Assert Change bad_actor_detection - no - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change simulate_auto_threshold - yes - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    simulate_auto_threshold: yes
+  register: result
+
+- name: Assert Change simulate_auto_threshold - yes - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change simulate_auto_threshold - yes - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    simulate_auto_threshold: yes
+  register: result
+
+- name: Assert Change simulate_auto_threshold - yes - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change simulate_auto_threshold - no - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    simulate_auto_threshold: no
+  register: result
+
+- name: Assert Change simulate_auto_threshold - no - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change simulate_auto_threshold - no - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    simulate_auto_threshold: no
+  register: result
+
+- name: Assert Change simulate_auto_threshold - no - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change blacklist_detection_seconds - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    blacklist_detection_seconds: 90
+  register: result
+
+- name: Assert Change blacklist_detection_seconds - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change blacklist_detection_seconds - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    blacklist_detection_seconds: 90
+  register: result
+
+- name: Assert Change blacklist_detection_seconds - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change blacklist_duration - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    blacklist_duration: 10000
+  register: result
+
+- name: Assert Change blacklist_duration - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change blacklist_duration - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    blacklist_duration: 10000
+  register: result
+
+- name: Assert Change blacklist_duration - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_floor - number - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    attack_floor: 20
+  register: result
+
+- name: Assert Change attack_floor - number - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_floor - number - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    attack_floor: 20
+  register: result
+
+- name: Assert Change attack_floor - number - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_ceiling - number - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    attack_ceiling: 50
+  register: result
+
+- name: Assert Change attack_ceiling - number - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_ceiling - number - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    attack_ceiling: 50
+  register: result
+
+- name: Assert Change attack_ceiling - number - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_ceiling - infinite - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    attack_ceiling: infinite
+  register: result
+
+- name: Assert Change attack_ceiling - infinite - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_ceiling - infinite - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    attack_ceiling: infinite
+  register: result
+
+- name: Assert Change attack_ceiling - infinite - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - number - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    per_source_ip_detection_threshold: 50
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - number - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - number - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    per_source_ip_detection_threshold: 50
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - number - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - infinite - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    per_source_ip_detection_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - infinite - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - infinite - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    per_source_ip_detection_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - infinite - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - number - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    per_source_ip_mitigation_threshold: 20
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - number - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - number - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    per_source_ip_mitigation_threshold: 20
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - number - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - infinite - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    per_source_ip_mitigation_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - infinite - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    per_source_ip_mitigation_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_percent - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    detection_threshold_percent: 200
+  register: result
+
+- name: Assert Change detection_threshold_percent - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_percent - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    detection_threshold_percent: 200
+  register: result
+
+- name: Assert Change detection_threshold_percent - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    detection_threshold_eps: 80
+  register: result
+
+- name: Assert Change detection_threshold_eps - number - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    detection_threshold_eps: 80
+  register: result
+
+- name: Assert Change detection_threshold_eps - number - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - infinite - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    detection_threshold_eps: infinite
+  register: result
+
+- name: Assert Change detection_threshold_eps - infinite - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_eps - infinite - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    detection_threshold_eps: infinite
+  register: result
+
+- name: Assert Change detection_threshold_eps - infinite - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - number - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    mitigation_threshold_eps: 90
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - number - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - number - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    mitigation_threshold_eps: 90
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - number - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - infinite - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    mitigation_threshold_eps: infinite
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - infinite - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - infinite - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    mitigation_threshold_eps: infinite
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - infinite - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - stress-based-mitigation - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    threshold_mode: stress-based-mitigation
+  register: result
+
+- name: Assert Change threshold_mode - stress-based-mitigation - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - stress-based-mitigation - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    threshold_mode: stress-based-mitigation
+  register: result
+
+- name: Assert Change threshold_mode - stress-based-mitigation - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - fully-automatic - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    threshold_mode: fully-automatic
+  register: result
+
+- name: Assert Change threshold_mode - fully-automatic - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - fully-automatic - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    threshold_mode: fully-automatic
+  register: result
+
+- name: Assert Change threshold_mode - fully-automatic - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - manual - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    threshold_mode: manual
+  register: result
+
+- name: Assert Change threshold_mode - manual - SIP ACK
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - manual - SIP ACK - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    threshold_mode: manual
+  register: result
+
+- name: Assert Change threshold_mode - manual - SIP ACK - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove vector from protocol-dns - SIP ACK
+  bigip_firewall_dos_vector:
+    name: ack
+    profile: profile1
+    state: disabled
