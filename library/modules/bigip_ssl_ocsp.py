@@ -104,6 +104,19 @@ options:
     choices:
       - always
       - on_create
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+    version_added: 2.5
+  state:
+    description:
+      - When C(present), ensures that the resource exists.
+      - When C(absent), ensures that the resource does not exist.
+    default: present
+    choices:
+      - present
+      - absent
 extends_documentation_fragment: f5
 notes:
   - Requires BIG-IP >= 13.x.
@@ -723,7 +736,7 @@ class ArgumentSpec(object):
             ['dns_resolver', 'proxy_server_pool']
         ]
         self.required_together = [
-            'certificate', 'key'
+            ['certificate', 'key']
         ]
 
 
