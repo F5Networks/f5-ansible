@@ -96,6 +96,14 @@ class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
+        try:
+            self.p1 = patch('library.modules.bigip_service_policy.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+        except Exception:
+            self.p1 = patch('ansible.modules.network.f5.bigip_service_policy.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
 
     def test_create_selfip(self, *args):
         set_module_args(dict(
