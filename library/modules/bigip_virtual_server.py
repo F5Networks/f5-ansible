@@ -288,6 +288,12 @@ options:
       - preserve-strict
       - change
     version_added: 2.8
+  mirror:
+    description:
+      - Specifies that the system mirrors connections on each member of a redundant pair.
+      - When creating a new virtual server, if this parameter is not specified, the default is C(disabled).
+    type: bool
+    version_added: 2.8 
   ip_protocol:
     description:
       - Specifies a network protocol name you want the system to use to direct traffic
@@ -623,6 +629,11 @@ source_port
   returned: changed
   type: string
   sample: change
+mirror:
+  description: Specifies that the system mirrors connections on each member of a redundant pair.
+  returned: changed
+  type: bool
+  sample: True
 ip_protocol:
   description: The new value of the IP protocol.
   returned: changed
@@ -667,6 +678,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import mark_managed_by
     from library.module_utils.network.f5.common import only_has_managed_metadata
+    from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.compare import cmp_simple_list
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.ipaddress import ip_interface
@@ -685,6 +697,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import mark_managed_by
     from ansible.module_utils.network.f5.common import only_has_managed_metadata
+    from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.compare import cmp_simple_list
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.network.f5.ipaddress import ip_interface
@@ -742,6 +755,7 @@ class Parameters(AnsibleF5Parameters):
         'securityLogProfiles',
         'securityNatPolicy',
         'sourcePort',
+        'mirror',
     ]
 
     updatables = [
@@ -769,6 +783,7 @@ class Parameters(AnsibleF5Parameters):
         'security_log_profiles',
         'security_nat_policy',
         'source_port',
+        'mirror',
     ]
 
     returnables = [
@@ -800,6 +815,7 @@ class Parameters(AnsibleF5Parameters):
         'security_log_profiles',
         'security_nat_policy',
         'source_port',
+        'mirror',
     ]
 
     profiles_mutex = [
@@ -1733,6 +1749,15 @@ class ModuleParameters(Parameters):
             return result
         return None
 
+    @property
+    def mirror(self):
+        result = flatten_boolean(self._values['mirror'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
 
 class Changes(Parameters):
     pass
@@ -1856,6 +1881,14 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
+    @property
+    def mirror(self):
+        if self._values['mirror'] is None:
+            return None
+        elif self._values['mirror'] == 'enabled':
+            return 'yes'
+        return 'no'
+
     @property
     def snat(self):
         if self._values['snat'] is None:
@@ -3064,6 +3097,7 @@ class ArgumentSpec(object):
                     'performance-http', 'performance-l4', 'reject', 'stateless', 'dhcp'
                 ]
             ),
+            mirror=dict(type='bool'),
             firewall_staged_policy=dict(),
             firewall_enforced_policy=dict(),
             security_log_profiles=dict(type='list'),
