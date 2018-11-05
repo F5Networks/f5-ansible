@@ -364,6 +364,7 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -1388,6 +1389,15 @@ class ModuleParameters(Parameters):
             )
         result = self._format_destination(addr, self.port, self.route_domain)
         return result
+
+    @property
+    def route_domain(self):
+        if self._values['destination'] is None:
+            return None
+        result = self._values['destination'].split("%")
+        if len(result) > 1:
+            return int(result[1])
+        return None
 
     @property
     def destination_tuple(self):

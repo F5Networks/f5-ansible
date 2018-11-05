@@ -1,6 +1,6 @@
 ---
 
-- name: Issue 00957 - Include issue variables - Args
+- name: Issue 00957 - Include issue variables
   include_vars:
     file: issue-00957.yaml
 
