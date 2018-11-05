@@ -279,6 +279,15 @@ options:
       - When creating a new virtual server, the default is C(enabled).
     type: bool
     version_added: 2.6
+  source_port:
+    description:
+      - Specifies whether the system preserves the source port of the connection.
+      - When creating a new virtual server, if this parameter is not specified, the default is C(preserve).
+    choices:
+      - preserve
+      - preserve-strict
+      - change
+    version_added: 2.8
   ip_protocol:
     description:
       - Specifies a network protocol name you want the system to use to direct traffic
@@ -609,6 +618,11 @@ port_translation:
   returned: changed
   type: bool
   sample: True
+source_port
+  description: Specifies whether the system preserves the source port of the connection.
+  returned: changed
+  type: string
+  sample: change
 ip_protocol:
   description: The new value of the IP protocol.
   returned: changed
@@ -694,6 +708,7 @@ class Parameters(AnsibleF5Parameters):
         'fwStagedPolicy': 'firewall_staged_policy',
         'securityLogProfiles': 'security_log_profiles',
         'securityNatPolicy': 'security_nat_policy',
+        'sourcePort': 'source_port',
     }
 
     api_attributes = [
@@ -726,6 +741,7 @@ class Parameters(AnsibleF5Parameters):
         'fwStagedPolicy',
         'securityLogProfiles',
         'securityNatPolicy',
+        'sourcePort',
     ]
 
     updatables = [
@@ -752,6 +768,7 @@ class Parameters(AnsibleF5Parameters):
         'firewall_staged_policy',
         'security_log_profiles',
         'security_nat_policy',
+        'source_port',
     ]
 
     returnables = [
@@ -782,6 +799,7 @@ class Parameters(AnsibleF5Parameters):
         'firewall_staged_policy',
         'security_log_profiles',
         'security_nat_policy',
+        'source_port',
     ]
 
     profiles_mutex = [
@@ -3027,6 +3045,11 @@ class ArgumentSpec(object):
             ),
             address_translation=dict(type='bool'),
             port_translation=dict(type='bool'),
+            source_port=dict(
+                choices=[
+                    'preserve', 'preserve-strict', 'change'
+                ]
+            ),
             ip_protocol=dict(
                 choices=[
                     'ah', 'any', 'bna', 'esp', 'etherip', 'gre', 'icmp', 'ipencap', 'ipv6',
