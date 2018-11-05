@@ -337,56 +337,61 @@ Examples
     
     - name: Add the user 'johnd' as an admin
       bigip_user:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         username_credential: johnd
         password_credential: password
         full_name: John Doe
         partition_access: all:admin
         update_password: on_create
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Change the user "johnd's" role and shell
       bigip_user:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         username_credential: johnd
         partition_access: NewPartition:manager
         shell: tmsh
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Make the user 'johnd' an admin and set to advanced shell
       bigip_user:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: johnd
         partition_access: all:admin
         shell: bash
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Remove the user 'johnd'
       bigip_user:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         name: johnd
         state: absent
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Update password
       bigip_user:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         state: present
         username_credential: johnd
         password_credential: newsupersecretpassword
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     # Note that the second time this task runs, it would fail because
@@ -398,22 +403,24 @@ Examples
     #   * Include `ignore_errors` on this task
     - name: Change the Admin password
       bigip_user:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         state: present
         username_credential: admin
         password_credential: NewSecretPassword
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Change the root user's password
       bigip_user:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         username_credential: root
         password_credential: secret
         state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
 

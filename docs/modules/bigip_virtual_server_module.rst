@@ -34,10 +34,10 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -158,6 +158,7 @@ Parameters
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li>ah</li>
+                                                                                                                                                                                                <li>any</li>
                                                                                                                                                                                                 <li>bna</li>
                                                                                                                                                                                                 <li>esp</li>
                                                                                                                                                                                                 <li>etherip</li>
@@ -213,6 +214,21 @@ Parameters
                                                     <div>Key names will be stored as strings; this includes names that are numbers.</div>
                                                     <div>Values for all of the keys will be stored as strings; this includes values that are numbers.</div>
                                                     <div>Data will be persisted, not ephemeral.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>mirror</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies that the system mirrors connections on each member of a redundant pair.</div>
+                                                    <div>When creating a new virtual server, if this parameter is not specified, the default is <code>disabled</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -608,6 +624,22 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>source_port</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>preserve</li>
+                                                                                                                                                                                                <li>preserve-strict</li>
+                                                                                                                                                                                                <li>change</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the system preserves the source port of the connection.</div>
+                                                    <div>When creating a new virtual server, if this parameter is not specified, the default is <code>preserve</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
@@ -861,7 +893,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -1048,6 +1080,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
+                    <b>mirror</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies that the system mirrors connections on each member of a redundant pair.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
                     <b>policies</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
@@ -1150,6 +1195,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.2.3.4/32</div>
                                     </td>
             </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>source_port</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies whether the system preserves the source port of the connection.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">change</div>
+                                    </td>
+            </tr>
                         </table>
     <br/><br/>
 
@@ -1168,4 +1226,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

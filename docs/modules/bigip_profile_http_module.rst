@@ -34,8 +34,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -87,6 +87,62 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>header_erase</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The name of a header, in an HTTP request, which the system removes from request.</div>
+                                                    <div>To remove the entry completely a value of <code>none</code> or <code>&#x27;&#x27;</code> should be set.</div>
+                                                    <div>The format of the header must be in <code>KEY:VALUE</code> format, otherwise error is raised.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>header_insert</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>A string that the system inserts as a header in an HTTP request.</div>
+                                                    <div>To remove the entry completely a value of <code>none</code> or <code>&#x27;&#x27;</code> should be set.</div>
+                                                    <div>The format of the header must be in <code>KEY:VALUE</code> format, otherwise error is raised.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>hsts_mode</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When set to <code>yes</code>, enables the HSTS settings.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>include_subdomains</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When set to <code>yes</code>, applies the HSTS policy to the HSTS host and its sub-domains.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>insert_xforwarded_for</b>
                                                         </td>
                                 <td>
@@ -97,6 +153,18 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>When specified system inserts an X-Forwarded-For header in an HTTP request with the client IP address, to use with connection pooling.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>maximum_age</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the maximum length of time, in seconds, that HSTS functionality requests that clients only use HTTPS to connect to the current host and any sub-domains of the current host&#x27;s domain name.</div>
+                                                    <div>The accepted value range is <code>0 - 4294967295</code> seconds, a value of <code>0</code> seconds re-enables plaintext HTTP access, while specifying <code>indefinite</code> will set it to the maximum value.</div>
                                                     <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
@@ -308,6 +376,18 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>server_agent_name</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the string used as the server name in traffic generated by LTM.</div>
+                                                    <div>To remove the entry completely a value of <code>none</code> or <code>&#x27;&#x27;</code> should be set.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>

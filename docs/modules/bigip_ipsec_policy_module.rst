@@ -78,11 +78,18 @@ Parameters
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>None</li>
+                                                                                                                                                                <li>none</li>
                                                                                                                                                                                                 <li>3des</li>
                                                                                                                                                                                                 <li>aes128</li>
                                                                                                                                                                                                 <li>aes192</li>
                                                                                                                                                                                                 <li>aes256</li>
+                                                                                                                                                                                                <li>aes-gmac256</li>
+                                                                                                                                                                                                <li>aes-gmac192</li>
+                                                                                                                                                                                                <li>aes-gmac128</li>
+                                                                                                                                                                                                <li>aes-gcm256</li>
+                                                                                                                                                                                                <li>aes-gcm192</li>
+                                                                                                                                                                                                <li>aes-gcm256</li>
+                                                                                                                                                                                                <li>aes-gcm128</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -96,6 +103,7 @@ Parameters
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li>none</li>
+                                                                                                                                                                                                <li>null</li>
                                                                                                                                                                                                 <li>deflate</li>
                                                                                     </ul>
                                                                             </td>

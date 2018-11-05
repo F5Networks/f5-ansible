@@ -456,10 +456,10 @@ Examples
         process_recursion_desired: no
         use_local_bind: no
         enable_dns_firewall: yes
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 

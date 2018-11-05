@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -59,6 +59,16 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Configure port lockdown for the Self IP. By default, the Self IP has a &quot;default deny&quot; policy. This can be changed to allow TCP and UDP ports as well as specific protocols. This list should contain <code>protocol</code>:<code>port</code> values.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>description</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Description of the traffic selector.</div>
                                                                                 </td>
             </tr>
                                 <tr>

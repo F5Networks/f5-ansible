@@ -140,20 +140,6 @@ All modules
   * :ref:`bigiq_regkey_pool_module`
   * :ref:`bigiq_utility_license_module`
   * :ref:`bigiq_utility_license_assignment_module`
-  * :ref:`iworkflow_device_module`
-  * :ref:`iworkflow_iapp_template_module`
-  * :ref:`iworkflow_license_module`
-  * :ref:`iworkflow_license_pool_module`
-  * :ref:`iworkflow_license_pool_member_module`
-  * :ref:`iworkflow_local_connector_module`
-  * :ref:`iworkflow_local_connector_device_module`
-  * :ref:`iworkflow_local_connector_node_module`
-  * :ref:`iworkflow_service_module`
-  * :ref:`iworkflow_service_template_module`
-  * :ref:`iworkflow_system_setup_module`
-  * :ref:`iworkflow_tenant_module`
-  * :ref:`iworkflow_tenant_connector_module`
-  * :ref:`iworkflow_user_module`
 
 
 .. note::

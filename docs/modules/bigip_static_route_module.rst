@@ -378,10 +378,11 @@ Examples
         netmask: 255.255.255.255
         gateway_address: 10.2.2.3
         name: test-route
-        password: secret
-        server: lb.mydomain.come
-        user: admin
-        validate_certs: no
+        provider:
+          password: secret
+          server: lb.mydomain.come
+          user: admin
+          validate_certs: no
       delegate_to: localhost
 
 

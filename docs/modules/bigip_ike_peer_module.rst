@@ -34,13 +34,23 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>description</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Description of the IKE peer.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
@@ -715,4 +725,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

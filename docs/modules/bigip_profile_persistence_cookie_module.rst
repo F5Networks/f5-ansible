@@ -34,7 +34,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -100,6 +100,16 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies a unique name for the cookie.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>description</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Description of the profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -215,7 +225,8 @@ Parameters
                     <b>parent</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">cookie</div>
+                                    </td>
                                                                 <td>
                                                                         <div>Specifies the profile from which this profile inherits settings.</div>
                                                     <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>cookie</code> profile.</div>
