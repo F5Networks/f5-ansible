@@ -342,7 +342,8 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the name of the profile to manage vectors in.</div>
-                                                    <div>The reserved name <code>device-config</code> represents the vec</div>
+                                                    <div>The name <code>device-config</code> is reserved for use by this module.</div>
+                                                    <div>Vectors can be managed in either DoS Profiles, or Device Configuration. By specifying a profile of &#x27;device-config&#x27;, this module will specifically tailor configuration of the provided vectors to the Device Configuration.</div>
                                                                                 </td>
             </tr>
                                 <tr>

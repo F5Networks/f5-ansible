@@ -491,10 +491,6 @@ Examples
     
     - name: Add pool member
       bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
         pool: my-pool
         partition: Common
         host: "{{ ansible_default_ipv4['address'] }}"
@@ -503,57 +499,64 @@ Examples
         connection_limit: 100
         rate_limit: 50
         ratio: 2
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Modify pool member ratio and description
       bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
         pool: my-pool
         partition: Common
         host: "{{ ansible_default_ipv4['address'] }}"
         port: 80
         ratio: 1
         description: nginx server
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Remove pool member from pool
       bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         state: absent
         pool: my-pool
         partition: Common
         host: "{{ ansible_default_ipv4['address'] }}"
         port: 80
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Force pool member offline
       bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         state: forced_offline
         pool: my-pool
         partition: Common
         host: "{{ ansible_default_ipv4['address'] }}"
         port: 80
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
     - name: Create members with priority groups
       bigip_pool_member:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         pool: my-pool
         partition: Common
         host: "{{ item.address }}"
         name: "{{ item.name }}"
         priority_group: "{{ item.priority_group }}"
         port: 80
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
       loop:
         - host: 1.1.1.1
