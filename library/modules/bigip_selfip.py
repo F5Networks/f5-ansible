@@ -40,7 +40,7 @@ options:
   description:
     description:
       - Description of the traffic selector.
-  version_added: 2.8
+    version_added: 2.8
   netmask:
     description:
       - The netmask for the self IP. When creating a new Self IP, this value
