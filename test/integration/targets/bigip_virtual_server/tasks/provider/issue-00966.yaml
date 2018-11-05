@@ -1,0 +1,63 @@
+---
+
+- name: Issue 00966 - Create Virtual Server. source port set to non default - Provider
+  bigip_virtual_server:
+    name: issue_00966_test-vs
+    destination: "10.10.10.10"
+    port: 8080
+    source_port: "preserve-strict"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00966 - Assert Create Virtual Server. source port set to non default - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00966 - Create Virtual Server. source port set to non default - Provider - Idempotent check
+  bigip_virtual_server:
+    name: issue_00966_test-vs
+    destination: "10.10.10.10"
+    port: 8080
+    source_port: "preserve-strict"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00966 - Assert Create Virtual Server. source port set to non default - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00966 - Change Virtual Server. source port - Provider
+  bigip_virtual_server:
+    name: issue_00966_test-vs
+    source_port: "change"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00966 - Assert Change Virtual Server. source port - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00966 - Change Virtual Server. source port - Provider - Idempotent check
+  bigip_virtual_server:
+    name: issue_00966_test-vs
+    source_port: "change"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00966 - Assert Change Virtual Server. source port - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00966 - Remove virtual - Provider
+  bigip_virtual_server:
+    name: issue_00966_test-vs
+    state: absent
+    provider: "{{ provider }}"
