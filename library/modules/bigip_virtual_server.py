@@ -624,7 +624,7 @@ port_translation:
   returned: changed
   type: bool
   sample: True
-source_port
+source_port:
   description: Specifies whether the system preserves the source port of the connection.
   returned: changed
   type: string
