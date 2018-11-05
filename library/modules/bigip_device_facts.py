@@ -2771,6 +2771,24 @@ ltm_pools:
       returned: changed
       type: int
       sample: 0
+    real_session:
+      description:
+        - The actual REST API value for the C(session) attribute.
+        - This is different from the C(state) return value, insofar as the return value
+          can be considered a generalization of all available sessions, instead of the
+          specific value of the session.
+      returned: changed
+      type: string
+      sample: monitor-enabled
+    real_state:
+      description:
+        - The actual REST API value for the C(state) attribute.
+        - This is different from the C(state) return value, insofar as the return value
+          can be considered a generalization of all available states, instead of the
+          specific value of the state.
+      returned: changed
+      type: string
+      sample: up
     reselect_tries:
       description:
         - The number of times the system tries to contact a pool member after a passive failure.
@@ -9533,10 +9551,15 @@ class LtmPoolsParameters(BaseParameters):
             session = member.pop('session')
             state = member.pop('state')
 
-            if state in ['user-up', 'unchecked', 'fqdn-up-no-addr'] and session in ['user-enabled']:
+            member['real_session'] = session
+            member['real_state'] = state
+
+            if state in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up'] and session in ['user-enabled']:
                 member['state'] = 'present'
             elif state in ['user-down'] and session in ['user-disabled']:
                 member['state'] = 'forced_offline'
+            elif state in ['up', 'checking'] and session in ['monitor-enabled']:
+                member['state'] = 'present'
             elif state in ['down'] and session in ['monitor-enabled']:
                 member['state'] = 'offline'
             else:
