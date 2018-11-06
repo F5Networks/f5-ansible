@@ -33,6 +33,9 @@ options:
         Playbooks from becoming too large.
       - If you C(content) includes encrypted values (such as ciphertexts, passphrases, etc),
         the returned C(changed) value will always be true.
+      - If you are using the C(to_nice_json) filter, it will cause this module to fail because
+        the purpose of that filter is to format the JSON to be human-readable and this process
+        includes inserting "extra characters that break JSON validators.
     required: True
   tenants:
     description:
@@ -430,7 +433,13 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "Empty content cannot be specified when 'state' is 'present'."
             )
-        declaration.update(self.want.content)
+        try:
+            declaration.update(self.want.content)
+        except ValueError:
+            raise F5ModuleError(
+                "The provided 'content' could not be converted into valid json. If you "
+                "are using the 'to_nice_json' filter, please remove it."
+            )
         declaration['action'] = 'dry-run'
 
         # This deals with cases where you're comparing a passphrase.
