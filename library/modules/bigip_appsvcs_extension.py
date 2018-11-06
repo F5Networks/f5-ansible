@@ -383,6 +383,8 @@ class ModuleManager(object):
         if 'results' not in messages:
             if 'message' in messages:
                 results.append(messages['message'])
+            if 'errors' in messages:
+                results += messages['errors']
         else:
             for message in messages['results']:
                 if 'message' in message and message['message'] == 'declaration failed':
