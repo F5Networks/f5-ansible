@@ -1,0 +1,42 @@
+---
+- import_tasks: setup.yaml
+
+- name: Issue 01052 - Create partition
+  bigip_partition:
+    name: "{{ partition }}"
+    route_domain: "{{ route_domain1 }}"
+  register: result
+
+- name: Issue 01052 - Assert Create partition
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01052 - Gather Facts
+  bigip_device_facts:
+    gather_subset:
+      - partitions
+  register: f
+
+- name: Issue 01052 - Assert partition has correct default RD
+  assert:
+    that:
+      - f.partitions | json_query("[?name=='" + partition + "'].default_route_domain")| first == route_domain1
+
+- name: Issue 01052 - Create partition - Idempotent check
+  bigip_partition:
+    name: "{{ partition }}"
+    route_domain: "{{ route_domain1 }}"
+  register: result
+
+- name: Issue 01052 - Assert Create partition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01052 - Remove partition
+  bigip_partition:
+    name: "{{ partition }}"
+    state: absent
+
+- import_tasks: teardown.yaml
