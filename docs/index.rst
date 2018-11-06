@@ -7,6 +7,9 @@ Use these modules to create, edit, update, and delete configuration objects on B
 
 The code is open source and |f5_ansible_github|. Additionally, some modules have been promoted to the |ansible_core| and |ansible_extras|.
 
+|
+|
+
 .. toctree::
    :maxdepth: 2
    :includehidden:
@@ -25,7 +28,6 @@ The code is open source and |f5_ansible_github|. Additionally, some modules have
    /usage/playbook_tutorial
    /usage/connection-local-or-delegate-to
    /usage/support
-   /usage/rupported-versions
 
 .. toctree::
    :maxdepth: 2
