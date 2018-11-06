@@ -227,7 +227,7 @@ class ModuleManager(object):
 
     def _set_changed_options(self):
         changed = {}
-        for key in ApiParameters.returnables:
+        for key in Parameters.returnables:
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
@@ -235,7 +235,7 @@ class ModuleManager(object):
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
-        updatables = ApiParameters.updatables
+        updatables = Parameters.updatables
         changed = dict()
         for k in updatables:
             change = diff.compare(k)
@@ -275,6 +275,7 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
+        self._set_changed_options()
         if self.module.check_mode:
             return True
         self.create_on_device()
