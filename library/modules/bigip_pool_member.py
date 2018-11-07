@@ -166,6 +166,7 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = '''
@@ -463,7 +464,8 @@ class ModuleParameters(Parameters):
             return None
         elif self._values['address'] == 'any6':
             return 'any6'
-        if is_valid_ip(self._values['address']):
+        address = self._values['address'].split('%')[0]
+        if is_valid_ip(address):
             return self._values['address']
         raise F5ModuleError(
             "The specified 'address' value is not a valid IP address."
@@ -955,7 +957,7 @@ class ModuleManager(object):
             return False
         return True
 
-    def pool_exist(self):  # lgtm [py/similar-function]
+    def pool_exist(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
