@@ -928,10 +928,19 @@ class DeviceConfigManager(BaseManager):
         return self._update('dosDeviceVector')
 
     def normalize_names_in_device_config(self, name):
+        # Overwrite specific names because they do not align with DoS Profile names
+        #
+        # The following names (on the right) differ from the functionally equivalent
+        # names (on the left) found in DoS Profiles. This seems like a bug to me,
+        # but I do not expect it to be fixed, so this works around it in the meantime.
         name_map = {
             'hop-cnt-low': 'hop-cnt-leq-one',
             'ip-low-ttl': 'ttl-leq-one',
         }
+
+        # Attempt to normalize, else just return the name. This handles the default
+        # case where the name is actually correct and would not be found in the
+        # ``name_map`` above.
         result = name_map.get(name, name)
         return result
 
