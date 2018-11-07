@@ -1,0 +1,359 @@
+---
+
+
+- name: Issue 00650 - Remove IPV4 network virtual server - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV4 catch all network virtual server, mask specified - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 0.0.0.0
+    mask: 0.0.0.0
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV4 catch all network virtual server, mask specified - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Create IPV4 catch all network virtual server, mask specified - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 0.0.0.0
+    mask: 0.0.0.0
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV4 catch all network virtual server, mask specified - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+# this test is to test for edge case where a catch all address is provided without netmask,
+# we should apply any netmask in this instance so there would be no change
+- name: Issue 00650 - Change IPV4 catch all network virtual server, mask missing - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 0.0.0.0
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV4 catch all network virtual server, mask missing - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Remove IPV4 catch all network virtual server - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV4 catch all network virtual server any specified - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 0.0.0.0/any
+    mask: 0.0.0.0
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV4 catch all network virtual server any specified - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Create IPV4 catch all network virtual server any specified - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 0.0.0.0/any
+    mask: 0.0.0.0
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV4 catch all network virtual server any specified - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Remove IPV4 second catch all network virtual server - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 network virtual server, compressed mask specified - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "2001:db8:0:0:0:0:0:0"
+    mask: "ffff:ffff:8000::"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 network virtual server, compressed mask specified - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Create IPV6 network virtual server, compressed mask specified - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "2001:db8:0:0:0:0:0:0"
+    mask: "ffff:ffff:8000::"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 network virtual server, compressed mask specified - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "2001:db8:0:0:0:0:0:0/64"
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "2001:db8:0:0:0:0:0:0/64"
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Change IPV6 network VS, mask missing, destination not in CIDR - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "2001:db8:0:0:0:0:0:0"
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV6 network VS, mask missing, destination not in CIDR - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "2001:db8:0:0:0:0:0:0"
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Remove IPV6 network virtual server - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 catch all network virtual server, mask specified - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "::"
+    mask: "any6"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 catch all network virtual server, mask specified - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Create IPV6 catch all network virtual server, mask specified - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "::"
+    mask: "any6"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 catch all network virtual server, mask specified - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+# this test is to test for edge case where a catch all address is provided without netmask,
+# we should apply any6 netmask in this instance so there would be no change
+- name: Issue 00650 - Change IPV6 catch all network virtual server, mask missing - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "::"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV6 catch all network virtual server, mask missing - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Remove IPV6 catch all network virtual server - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 catch all network virtual server any specified - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "::/any6"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 catch all network virtual server any specified - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Create IPV6 catch all network virtual server any specified - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "::/any6"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 catch all network virtual server any specified - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Remove IPV6 second catch all network virtual server - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 network virtual server, uncompressed mask specified - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "2001:db8:0:0:0:0:0:0"
+    mask: "ffff:ffff:8000:0000:0000:0000:0000:0000"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 network virtual server, uncompressed mask specified - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Create IPV6 network virtual server, uncompressed mask specified - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: "2001:db8:0:0:0:0:0:0"
+    mask: "ffff:ffff:8000:0000:0000:0000:0000:0000"
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV6 network virtual server, uncompressed mask specified - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Remove IPV6 network virtual server - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    state: absent
+    provider: "{{ provider }}"
+  register: result
