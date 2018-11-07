@@ -11,4 +11,7 @@
 - import_tasks: dos-network.yaml
   tags:
     - dos-network
+- import_tasks: device-config.yaml
+  tags:
+    - device-config
 - import_tasks: teardown.yaml

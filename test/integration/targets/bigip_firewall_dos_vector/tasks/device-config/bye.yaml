@@ -1,104 +1,104 @@
 ---
 
-- name: Add vector for protocol-dns - mitigate - SIP BYE
-  bigip_firewall_dos_vector:
-    name: bye
-    profile: profile1
-    state: mitigate
-  register: result
-
-- name: Assert Add vector for protocol-dns - mitigate - SIP BYE
-  assert:
-    that:
-      - result is success
-      - result is changed
-
-- name: Add vector for protocol-dns - mitigate - SIP BYE - Idempotent check
-  bigip_firewall_dos_vector:
-    name: bye
-    profile: profile1
-    state: mitigate
-  register: result
-
-- name: Assert Add vector for protocol-dns - mitigate - SIP BYE - Idempotent check
-  assert:
-    that:
-      - result is success
-      - result is not changed
-
-- name: Add vector for protocol-dns - detect-only - SIP BYE
+- name: Add vector for device-config - detect-only - SIP BYE
   bigip_firewall_dos_vector:
     name: bye
     profile: profile1
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - SIP BYE
+- name: Assert Add vector for device-config - detect-only - SIP BYE
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - detect-only - SIP BYE - Idempotent check
+- name: Add vector for device-config - detect-only - SIP BYE - Idempotent check
   bigip_firewall_dos_vector:
     name: bye
     profile: profile1
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - SIP BYE - Idempotent check
+- name: Assert Add vector for device-config - detect-only - SIP BYE - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - learn-only - SIP BYE
+- name: Add vector for device-config - mitigate - SIP BYE
+  bigip_firewall_dos_vector:
+    name: bye
+    profile: profile1
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - SIP BYE
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - mitigate - SIP BYE - Idempotent check
+  bigip_firewall_dos_vector:
+    name: bye
+    profile: profile1
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - SIP BYE - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - learn-only - SIP BYE
   bigip_firewall_dos_vector:
     name: bye
     profile: profile1
     state: learn-only
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - SIP BYE
+- name: Assert Add vector for device-config - learn-only - SIP BYE
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - learn-only - SIP BYE - Idempotent check
+- name: Add vector for device-config - learn-only - SIP BYE - Idempotent check
   bigip_firewall_dos_vector:
     name: bye
     profile: profile1
     state: learn-only
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - SIP BYE - Idempotent check
+- name: Assert Add vector for device-config - learn-only - SIP BYE - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - disabled - SIP BYE
+- name: Add vector for device-config - disabled - SIP BYE
   bigip_firewall_dos_vector:
     name: bye
     profile: profile1
     state: disabled
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - SIP BYE
+- name: Assert Add vector for device-config - disabled - SIP BYE
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - disabled - SIP BYE - Idempotent check
+- name: Add vector for device-config - disabled - SIP BYE - Idempotent check
   bigip_firewall_dos_vector:
     name: bye
     profile: profile1
     state: disabled
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - SIP BYE - Idempotent check
+- name: Assert Add vector for device-config - disabled - SIP BYE - Idempotent check
   assert:
     that:
       - result is success
@@ -761,7 +761,7 @@
       - result is not changed
       - result is success
 
-- name: Remove vector from protocol-dns - SIP BYE
+- name: Remove vector from device-config - SIP BYE
   bigip_firewall_dos_vector:
     name: bye
     profile: profile1

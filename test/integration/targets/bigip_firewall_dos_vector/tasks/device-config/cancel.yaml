@@ -1,104 +1,104 @@
 ---
 
-- name: Add vector for protocol-dns - mitigate - SIP CANCEL
-  bigip_firewall_dos_vector:
-    name: cancel
-    profile: profile1
-    state: mitigate
-  register: result
-
-- name: Assert Add vector for protocol-dns - mitigate - SIP CANCEL
-  assert:
-    that:
-      - result is success
-      - result is changed
-
-- name: Add vector for protocol-dns - mitigate - SIP CANCEL - Idempotent check
-  bigip_firewall_dos_vector:
-    name: cancel
-    profile: profile1
-    state: mitigate
-  register: result
-
-- name: Assert Add vector for protocol-dns - mitigate - SIP CANCEL - Idempotent check
-  assert:
-    that:
-      - result is success
-      - result is not changed
-
-- name: Add vector for protocol-dns - detect-only - SIP CANCEL
+- name: Add vector for device-config - detect-only - SIP CANCEL
   bigip_firewall_dos_vector:
     name: cancel
     profile: profile1
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - SIP CANCEL
+- name: Assert Add vector for device-config - detect-only - SIP CANCEL
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - detect-only - SIP CANCEL - Idempotent check
+- name: Add vector for device-config - detect-only - SIP CANCEL - Idempotent check
   bigip_firewall_dos_vector:
     name: cancel
     profile: profile1
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - SIP CANCEL - Idempotent check
+- name: Assert Add vector for device-config - detect-only - SIP CANCEL - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - learn-only - SIP CANCEL
+- name: Add vector for device-config - mitigate - SIP CANCEL
+  bigip_firewall_dos_vector:
+    name: cancel
+    profile: profile1
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - SIP CANCEL
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - mitigate - SIP CANCEL - Idempotent check
+  bigip_firewall_dos_vector:
+    name: cancel
+    profile: profile1
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - SIP CANCEL - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - learn-only - SIP CANCEL
   bigip_firewall_dos_vector:
     name: cancel
     profile: profile1
     state: learn-only
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - SIP CANCEL
+- name: Assert Add vector for device-config - learn-only - SIP CANCEL
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - learn-only - SIP CANCEL - Idempotent check
+- name: Add vector for device-config - learn-only - SIP CANCEL - Idempotent check
   bigip_firewall_dos_vector:
     name: cancel
     profile: profile1
     state: learn-only
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - SIP CANCEL - Idempotent check
+- name: Assert Add vector for device-config - learn-only - SIP CANCEL - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - disabled - SIP CANCEL
+- name: Add vector for device-config - disabled - SIP CANCEL
   bigip_firewall_dos_vector:
     name: cancel
     profile: profile1
     state: disabled
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - SIP CANCEL
+- name: Assert Add vector for device-config - disabled - SIP CANCEL
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - disabled - SIP CANCEL - Idempotent check
+- name: Add vector for device-config - disabled - SIP CANCEL - Idempotent check
   bigip_firewall_dos_vector:
     name: cancel
     profile: profile1
     state: disabled
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - SIP CANCEL - Idempotent check
+- name: Assert Add vector for device-config - disabled - SIP CANCEL - Idempotent check
   assert:
     that:
       - result is success
@@ -761,7 +761,7 @@
       - result is not changed
       - result is success
 
-- name: Remove vector from protocol-dns - SIP CANCEL
+- name: Remove vector from device-config - SIP CANCEL
   bigip_firewall_dos_vector:
     name: cancel
     profile: profile1
