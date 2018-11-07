@@ -1,104 +1,104 @@
 ---
 
-- name: Add vector for protocol-dns - mitigate - SIP SUBSCRIBE
+- name: Add vector for device-config - detect-only - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
-    state: mitigate
-  register: result
-
-- name: Assert Add vector for protocol-dns - mitigate - SIP SUBSCRIBE
-  assert:
-    that:
-      - result is success
-      - result is changed
-
-- name: Add vector for protocol-dns - mitigate - SIP SUBSCRIBE - Idempotent check
-  bigip_firewall_dos_vector:
-    name: subscribe
-    profile: profile1
-    state: mitigate
-  register: result
-
-- name: Assert Add vector for protocol-dns - mitigate - SIP SUBSCRIBE - Idempotent check
-  assert:
-    that:
-      - result is success
-      - result is not changed
-
-- name: Add vector for protocol-dns - detect-only - SIP SUBSCRIBE
-  bigip_firewall_dos_vector:
-    name: subscribe
-    profile: profile1
+    profile: device-config
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - SIP SUBSCRIBE
+- name: Assert Add vector for device-config - detect-only - SIP SUBSCRIBE
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - detect-only - SIP SUBSCRIBE - Idempotent check
+- name: Add vector for device-config - detect-only - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - SIP SUBSCRIBE - Idempotent check
+- name: Assert Add vector for device-config - detect-only - SIP SUBSCRIBE - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - learn-only - SIP SUBSCRIBE
+- name: Add vector for device-config - mitigate - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
-    state: learn-only
+    profile: device-config
+    state: mitigate
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - SIP SUBSCRIBE
+- name: Assert Add vector for device-config - mitigate - SIP SUBSCRIBE
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - learn-only - SIP SUBSCRIBE - Idempotent check
+- name: Add vector for device-config - mitigate - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
-    state: learn-only
+    profile: device-config
+    state: mitigate
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - SIP SUBSCRIBE - Idempotent check
+- name: Assert Add vector for device-config - mitigate - SIP SUBSCRIBE - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - disabled - SIP SUBSCRIBE
+- name: Add vector for device-config - learn-only - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
-    state: disabled
+    profile: device-config
+    state: learn-only
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - SIP SUBSCRIBE
+- name: Assert Add vector for device-config - learn-only - SIP SUBSCRIBE
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - disabled - SIP SUBSCRIBE - Idempotent check
+- name: Add vector for device-config - learn-only - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for device-config - learn-only - SIP SUBSCRIBE - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - disabled - SIP SUBSCRIBE
+  bigip_firewall_dos_vector:
+    name: subscribe
+    profile: device-config
     state: disabled
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - SIP SUBSCRIBE - Idempotent check
+- name: Assert Add vector for device-config - disabled - SIP SUBSCRIBE
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - disabled - SIP SUBSCRIBE - Idempotent check
+  bigip_firewall_dos_vector:
+    name: subscribe
+    profile: device-config
+    state: disabled
+  register: result
+
+- name: Assert Add vector for device-config - disabled - SIP SUBSCRIBE - Idempotent check
   assert:
     that:
       - result is success
@@ -107,14 +107,14 @@
 - name: Change state to mitigate - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     state: mitigate
   register: result
 
 - name: Change allow_advertisement - yes - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     allow_advertisement: yes
   register: result
 
@@ -127,7 +127,7 @@
 - name: Change allow_advertisement - yes - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     allow_advertisement: yes
   register: result
 
@@ -140,7 +140,7 @@
 - name: Change allow_advertisement - no - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     allow_advertisement: no
   register: result
 
@@ -153,7 +153,7 @@
 - name: Change allow_advertisement - no - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     allow_advertisement: no
   register: result
 
@@ -166,7 +166,7 @@
 - name: Change bad_actor_detection - yes - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     bad_actor_detection: yes
   register: result
 
@@ -179,7 +179,7 @@
 - name: Change bad_actor_detection - yes - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     bad_actor_detection: yes
   register: result
 
@@ -192,7 +192,7 @@
 - name: Change auto_blacklist - yes - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     auto_blacklist: yes
   register: result
 
@@ -205,7 +205,7 @@
 - name: Change auto_blacklist - yes - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     auto_blacklist: yes
   register: result
 
@@ -218,7 +218,7 @@
 - name: Change auto_blacklist - no - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     auto_blacklist: no
   register: result
 
@@ -231,7 +231,7 @@
 - name: Change auto_blacklist - no - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     auto_blacklist: no
   register: result
 
@@ -244,7 +244,7 @@
 - name: Change bad_actor_detection - no - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     bad_actor_detection: no
   register: result
 
@@ -257,7 +257,7 @@
 - name: Change bad_actor_detection - no - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     bad_actor_detection: no
   register: result
 
@@ -270,7 +270,7 @@
 - name: Change simulate_auto_threshold - yes - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     simulate_auto_threshold: yes
   register: result
 
@@ -283,7 +283,7 @@
 - name: Change simulate_auto_threshold - yes - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     simulate_auto_threshold: yes
   register: result
 
@@ -296,7 +296,7 @@
 - name: Change simulate_auto_threshold - no - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     simulate_auto_threshold: no
   register: result
 
@@ -309,7 +309,7 @@
 - name: Change simulate_auto_threshold - no - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     simulate_auto_threshold: no
   register: result
 
@@ -322,7 +322,7 @@
 - name: Change blacklist_detection_seconds - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     blacklist_detection_seconds: 90
   register: result
 
@@ -335,7 +335,7 @@
 - name: Change blacklist_detection_seconds - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     blacklist_detection_seconds: 90
   register: result
 
@@ -348,7 +348,7 @@
 - name: Change blacklist_duration - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     blacklist_duration: 10000
   register: result
 
@@ -361,7 +361,7 @@
 - name: Change blacklist_duration - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     blacklist_duration: 10000
   register: result
 
@@ -374,7 +374,7 @@
 - name: Change attack_floor - number - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     attack_floor: 20
   register: result
 
@@ -387,7 +387,7 @@
 - name: Change attack_floor - number - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     attack_floor: 20
   register: result
 
@@ -400,7 +400,7 @@
 - name: Change attack_ceiling - number - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     attack_ceiling: 50
   register: result
 
@@ -413,7 +413,7 @@
 - name: Change attack_ceiling - number - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     attack_ceiling: 50
   register: result
 
@@ -426,7 +426,7 @@
 - name: Change attack_ceiling - infinite - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     attack_ceiling: infinite
   register: result
 
@@ -439,7 +439,7 @@
 - name: Change attack_ceiling - infinite - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     attack_ceiling: infinite
   register: result
 
@@ -452,7 +452,7 @@
 - name: Change per_source_ip_detection_threshold - number - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     per_source_ip_detection_threshold: 50
   register: result
 
@@ -465,7 +465,7 @@
 - name: Change per_source_ip_detection_threshold - number - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     per_source_ip_detection_threshold: 50
   register: result
 
@@ -478,7 +478,7 @@
 - name: Change per_source_ip_detection_threshold - infinite - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     per_source_ip_detection_threshold: infinite
   register: result
 
@@ -491,7 +491,7 @@
 - name: Change per_source_ip_detection_threshold - infinite - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     per_source_ip_detection_threshold: infinite
   register: result
 
@@ -504,7 +504,7 @@
 - name: Change per_source_ip_mitigation_threshold - number - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     per_source_ip_mitigation_threshold: 20
   register: result
 
@@ -517,7 +517,7 @@
 - name: Change per_source_ip_mitigation_threshold - number - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     per_source_ip_mitigation_threshold: 20
   register: result
 
@@ -530,7 +530,7 @@
 - name: Change per_source_ip_mitigation_threshold - infinite - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     per_source_ip_mitigation_threshold: infinite
   register: result
 
@@ -543,7 +543,7 @@
 - name: Change per_source_ip_mitigation_threshold - infinite - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     per_source_ip_mitigation_threshold: infinite
   register: result
 
@@ -556,7 +556,7 @@
 - name: Change detection_threshold_percent - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     detection_threshold_percent: 200
   register: result
 
@@ -569,7 +569,7 @@
 - name: Change detection_threshold_percent - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     detection_threshold_percent: 200
   register: result
 
@@ -582,7 +582,7 @@
 - name: Change detection_threshold_eps - number - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     detection_threshold_eps: 80
   register: result
 
@@ -595,7 +595,7 @@
 - name: Change detection_threshold_eps - number - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     detection_threshold_eps: 80
   register: result
 
@@ -608,7 +608,7 @@
 - name: Change detection_threshold_eps - infinite - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     detection_threshold_eps: infinite
   register: result
 
@@ -621,7 +621,7 @@
 - name: Change detection_threshold_eps - infinite - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     detection_threshold_eps: infinite
   register: result
 
@@ -634,7 +634,7 @@
 - name: Change mitigation_threshold_eps - number - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     mitigation_threshold_eps: 90
   register: result
 
@@ -647,7 +647,7 @@
 - name: Change mitigation_threshold_eps - number - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     mitigation_threshold_eps: 90
   register: result
 
@@ -660,7 +660,7 @@
 - name: Change mitigation_threshold_eps - infinite - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     mitigation_threshold_eps: infinite
   register: result
 
@@ -673,7 +673,7 @@
 - name: Change mitigation_threshold_eps - infinite - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     mitigation_threshold_eps: infinite
   register: result
 
@@ -686,7 +686,7 @@
 - name: Change threshold_mode - stress-based-mitigation - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     threshold_mode: stress-based-mitigation
   register: result
 
@@ -699,7 +699,7 @@
 - name: Change threshold_mode - stress-based-mitigation - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     threshold_mode: stress-based-mitigation
   register: result
 
@@ -712,7 +712,7 @@
 - name: Change threshold_mode - fully-automatic - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     threshold_mode: fully-automatic
   register: result
 
@@ -725,7 +725,7 @@
 - name: Change threshold_mode - fully-automatic - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     threshold_mode: fully-automatic
   register: result
 
@@ -738,7 +738,7 @@
 - name: Change threshold_mode - manual - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     threshold_mode: manual
   register: result
 
@@ -751,7 +751,7 @@
 - name: Change threshold_mode - manual - SIP SUBSCRIBE - Idempotent check
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     threshold_mode: manual
   register: result
 
@@ -761,8 +761,8 @@
       - result is not changed
       - result is success
 
-- name: Remove vector from protocol-dns - SIP SUBSCRIBE
+- name: Remove vector from device-config - SIP SUBSCRIBE
   bigip_firewall_dos_vector:
     name: subscribe
-    profile: profile1
+    profile: device-config
     state: disabled

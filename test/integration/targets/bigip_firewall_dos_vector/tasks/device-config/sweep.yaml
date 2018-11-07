@@ -1,104 +1,104 @@
 ---
 
-- name: Add vector for protocol-dns - mitigate - Network Security Sweep
+- name: Add vector for device-config - detect-only - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
-    state: mitigate
-  register: result
-
-- name: Assert Add vector for protocol-dns - mitigate - Network Security Sweep
-  assert:
-    that:
-      - result is success
-      - result is changed
-
-- name: Add vector for protocol-dns - mitigate - Network Security Sweep - Idempotent check
-  bigip_firewall_dos_vector:
-    name: sweep
-    profile: profile1
-    state: mitigate
-  register: result
-
-- name: Assert Add vector for protocol-dns - mitigate - Network Security Sweep - Idempotent check
-  assert:
-    that:
-      - result is success
-      - result is not changed
-
-- name: Add vector for protocol-dns - detect-only - Network Security Sweep
-  bigip_firewall_dos_vector:
-    name: sweep
-    profile: profile1
+    profile: device-config
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - Network Security Sweep
+- name: Assert Add vector for device-config - detect-only - Network Security Sweep
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - detect-only - Network Security Sweep - Idempotent check
+- name: Add vector for device-config - detect-only - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     state: detect-only
   register: result
 
-- name: Assert Add vector for protocol-dns - detect-only - Network Security Sweep - Idempotent check
+- name: Assert Add vector for device-config - detect-only - Network Security Sweep - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - learn-only - Network Security Sweep
+- name: Add vector for device-config - mitigate - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
-    state: learn-only
+    profile: device-config
+    state: mitigate
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - Network Security Sweep
+- name: Assert Add vector for device-config - mitigate - Network Security Sweep
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - learn-only - Network Security Sweep - Idempotent check
+- name: Add vector for device-config - mitigate - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
-    state: learn-only
+    profile: device-config
+    state: mitigate
   register: result
 
-- name: Assert Add vector for protocol-dns - learn-only - Network Security Sweep - Idempotent check
+- name: Assert Add vector for device-config - mitigate - Network Security Sweep - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Add vector for protocol-dns - disabled - Network Security Sweep
+- name: Add vector for device-config - learn-only - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
-    state: disabled
+    profile: device-config
+    state: learn-only
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - Network Security Sweep
+- name: Assert Add vector for device-config - learn-only - Network Security Sweep
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Add vector for protocol-dns - disabled - Network Security Sweep - Idempotent check
+- name: Add vector for device-config - learn-only - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for device-config - learn-only - Network Security Sweep - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - disabled - Network Security Sweep
+  bigip_firewall_dos_vector:
+    name: sweep
+    profile: device-config
     state: disabled
   register: result
 
-- name: Assert Add vector for protocol-dns - disabled - Network Security Sweep - Idempotent check
+- name: Assert Add vector for device-config - disabled - Network Security Sweep
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - disabled - Network Security Sweep - Idempotent check
+  bigip_firewall_dos_vector:
+    name: sweep
+    profile: device-config
+    state: disabled
+  register: result
+
+- name: Assert Add vector for device-config - disabled - Network Security Sweep - Idempotent check
   assert:
     that:
       - result is success
@@ -107,14 +107,14 @@
 - name: Change state to mitigate - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     state: mitigate
   register: result
 
 - name: Change allow_advertisement - yes - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     allow_advertisement: yes
   register: result
 
@@ -127,7 +127,7 @@
 - name: Change allow_advertisement - yes - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     allow_advertisement: yes
   register: result
 
@@ -140,7 +140,7 @@
 - name: Change allow_advertisement - no - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     allow_advertisement: no
   register: result
 
@@ -153,7 +153,7 @@
 - name: Change allow_advertisement - no - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     allow_advertisement: no
   register: result
 
@@ -166,7 +166,7 @@
 - name: Change bad_actor_detection - yes - Network Security Sweep - Expected failure
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     bad_actor_detection: yes
   register: result
   failed_when: result is success
@@ -180,7 +180,7 @@
 - name: Change auto_blacklist - yes - Network Security Sweep - Expected failure
   bigip_firewall_dos_vector:
     name: cname
-    profile: profile1
+    profile: device-config
     auto_blacklist: yes
   register: result
   failed_when: result is success
@@ -194,7 +194,7 @@
 - name: Change simulate_auto_threshold - yes - Network Security Sweep - Expected failure
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     simulate_auto_threshold: yes
   register: result
   failed_when: result is success
@@ -208,7 +208,7 @@
 - name: Change blacklist_detection_seconds - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     blacklist_detection_seconds: 90
   register: result
 
@@ -221,7 +221,7 @@
 - name: Change blacklist_detection_seconds - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     blacklist_detection_seconds: 90
   register: result
 
@@ -234,7 +234,7 @@
 - name: Change blacklist_duration - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     blacklist_duration: 10000
   register: result
 
@@ -247,7 +247,7 @@
 - name: Change blacklist_duration - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     blacklist_duration: 10000
   register: result
 
@@ -260,7 +260,7 @@
 - name: Change attack_floor - number - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     attack_floor: 20
   register: result
 
@@ -273,7 +273,7 @@
 - name: Change attack_floor - number - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     attack_floor: 20
   register: result
 
@@ -286,7 +286,7 @@
 - name: Change attack_ceiling - number - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     attack_ceiling: 50
   register: result
 
@@ -299,7 +299,7 @@
 - name: Change attack_ceiling - number - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     attack_ceiling: 50
   register: result
 
@@ -312,7 +312,7 @@
 - name: Change attack_ceiling - infinite - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     attack_ceiling: infinite
   register: result
 
@@ -325,7 +325,7 @@
 - name: Change attack_ceiling - infinite - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     attack_ceiling: infinite
   register: result
 
@@ -338,7 +338,7 @@
 - name: Change per_source_ip_detection_threshold - number - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     per_source_ip_detection_threshold: 50
   register: result
 
@@ -351,7 +351,7 @@
 - name: Change per_source_ip_detection_threshold - number - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     per_source_ip_detection_threshold: 50
   register: result
 
@@ -364,7 +364,7 @@
 - name: Change per_source_ip_detection_threshold - infinite - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     per_source_ip_detection_threshold: infinite
   register: result
 
@@ -377,7 +377,7 @@
 - name: Change per_source_ip_detection_threshold - infinite - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     per_source_ip_detection_threshold: infinite
   register: result
 
@@ -390,7 +390,7 @@
 - name: Change per_source_ip_mitigation_threshold - number - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     per_source_ip_mitigation_threshold: 20
   register: result
 
@@ -403,7 +403,7 @@
 - name: Change per_source_ip_mitigation_threshold - number - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     per_source_ip_mitigation_threshold: 20
   register: result
 
@@ -416,7 +416,7 @@
 - name: Change per_source_ip_mitigation_threshold - infinite - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     per_source_ip_mitigation_threshold: infinite
   register: result
 
@@ -429,7 +429,7 @@
 - name: Change per_source_ip_mitigation_threshold - infinite - Network Security Sweep- Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     per_source_ip_mitigation_threshold: infinite
   register: result
 
@@ -442,7 +442,7 @@
 - name: Change detection_threshold_percent - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     detection_threshold_percent: 200
   register: result
 
@@ -455,7 +455,7 @@
 - name: Change detection_threshold_percent - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     detection_threshold_percent: 200
   register: result
 
@@ -468,7 +468,7 @@
 - name: Change detection_threshold_eps - number - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     detection_threshold_eps: 80
   register: result
 
@@ -481,7 +481,7 @@
 - name: Change detection_threshold_eps - number - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     detection_threshold_eps: 80
   register: result
 
@@ -494,7 +494,7 @@
 - name: Change detection_threshold_eps - infinite - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     detection_threshold_eps: infinite
   register: result
 
@@ -507,7 +507,7 @@
 - name: Change detection_threshold_eps - infinite - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     detection_threshold_eps: infinite
   register: result
 
@@ -520,7 +520,7 @@
 - name: Change mitigation_threshold_eps - number - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     mitigation_threshold_eps: 90
   register: result
 
@@ -533,7 +533,7 @@
 - name: Change mitigation_threshold_eps - number - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     mitigation_threshold_eps: 90
   register: result
 
@@ -546,7 +546,7 @@
 - name: Change mitigation_threshold_eps - infinite - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     mitigation_threshold_eps: infinite
   register: result
 
@@ -559,7 +559,7 @@
 - name: Change mitigation_threshold_eps - infinite - Network Security Sweep - Idempotent check
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     mitigation_threshold_eps: infinite
   register: result
 
@@ -572,7 +572,7 @@
 - name: Change threshold_mode - stress-based-mitigation - Network Security Sweep - Expected failure
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     threshold_mode: stress-based-mitigation
   register: result
   failed_when: result is success
@@ -586,7 +586,7 @@
 - name: Change threshold_mode - fully-automatic - Network Security Sweep - Expected failure
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     threshold_mode: fully-automatic
   register: result
   failed_when: result is success
@@ -597,8 +597,8 @@
       - result is not changed
       - result is success
 
-- name: Remove vector from protocol-dns - Network Security Sweep
+- name: Remove vector from device-config - Network Security Sweep
   bigip_firewall_dos_vector:
     name: sweep
-    profile: profile1
+    profile: device-config
     state: disabled

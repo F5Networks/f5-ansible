@@ -1,0 +1,80 @@
+---
+
+- import_tasks: device-config/ext-hdr-too-large.yaml
+  tags:
+    - ext-hdr-too-large
+- import_tasks: device-config/hop-cnt-low.yaml
+  tags:
+    - hop-cnt-low
+- import_tasks: device-config/host-unreachable.yaml
+  tags:
+    - host-unreachable
+- import_tasks: device-config/icmp-frag.yaml
+  tags:
+    - icmp-frag
+- import_tasks: device-config/icmpv4-flood.yaml
+  tags:
+    - icmpv4-flood
+- import_tasks: device-config/icmpv6-flood.yaml
+  tags:
+    - icmpv6-flood
+- import_tasks: device-config/ip-frag-flood.yaml
+  tags:
+    - ip-frag-flood
+- import_tasks: device-config/ip-low-ttl.yaml
+  tags:
+    - ip-low-ttl
+- import_tasks: device-config/ip-opt-frames.yaml
+  tags:
+    - ip-opt-frames
+- import_tasks: device-config/ipv6-ext-hdr-frames.yaml
+  tags:
+    - ipv6-ext-hdr-frames
+- import_tasks: device-config/ipv6-frag-flood.yaml
+  tags:
+    - ipv6-frag-flood
+- import_tasks: device-config/opt-present-with-illegal-len.yaml
+  tags:
+    - opt-present-with-illegal-len
+- import_tasks: device-config/sweep.yaml
+  tags:
+    - sweep
+- import_tasks: device-config/tcp-bad-urg.yaml
+  tags:
+    - tcp-bad-urg
+- import_tasks: device-config/tcp-half-open.yaml
+  tags:
+    - tcp-half-open
+- import_tasks: device-config/tcp-opt-overruns-tcp-hdr.yaml
+  tags:
+    - tcp-opt-overruns-tcp-hdr
+- import_tasks: device-config/tcp-psh-flood.yaml
+  tags:
+    - tcp-psh-flood
+- import_tasks: device-config/tcp-rst-flood.yaml
+  tags:
+    - tcp-rst-flood
+- import_tasks: device-config/tcp-syn-flood.yaml
+  tags:
+    - tcp-syn-flood
+- import_tasks: device-config/tcp-syn-oversize.yaml
+  tags:
+    - tcp-syn-oversize
+- import_tasks: device-config/tcp-synack-flood.yaml
+  tags:
+    - tcp-synack-flood
+- import_tasks: device-config/tcp-window-size.yaml
+  tags:
+    - tcp-window-size
+- import_tasks: device-config/tidcmp.yaml
+  tags:
+    - tidcmp
+- import_tasks: device-config/too-many-ext-hdrs.yaml
+  tags:
+    - too-many-ext-hdrs
+- import_tasks: device-config/udp-flood.yaml
+  tags:
+    - udp-flood
+- import_tasks: device-config/unk-tcp-opt-type.yaml
+  tags:
+    - unk-tcp-opt-type
