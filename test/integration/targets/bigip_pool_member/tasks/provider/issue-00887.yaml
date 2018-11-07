@@ -1,0 +1,84 @@
+---
+- name: Issue 00887 - Create test RD - Provider
+  bigip_routedomain:
+    name: rd-issue887
+    id: 5
+    provider: "{{ provider }}"
+
+- name: Issue 00887 - Create test partition - Provider
+  bigip_partition:
+    name: part-issue887
+    route_domain: 5
+    provider: "{{ provider }}"
+
+- name: Issue 00887 - Create node - Provider
+  bigip_node:
+    name: node-issue887
+    partition: part-issue887
+    address: 1.2.3.4
+    provider: "{{ provider }}"
+
+- name: Issue 00887 - Create pool - Provider
+  bigip_pool:
+    name: pool-issue887
+    partition: part-issue887
+    provider: "{{ provider }}"
+
+- name: Issue 00887 - Add pool member - Provider
+  bigip_pool_member:
+    pool: pool-issue887
+    partition: part-issue887
+    name: node-issue887
+    port: 8080
+    host: 1.2.3.4
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00887 - Assert Add pool member - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00887 - Add pool member - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool-issue887
+    partition: part-issue887
+    name: node-issue887
+    port: 8080
+    host: 1.2.3.4
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00887 - Assert Add pool member - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00887 - Remove pool - Provider
+  bigip_pool:
+    name: pool-issue887
+    partition: part-issue887
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 00887 - Remove node - Provider
+  bigip_node:
+    name: node-issue887
+    partition: part-issue887
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 00887 - Remove test partition - Provider
+  bigip_partition:
+    name: part-issue887
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 00887 - Remove test RD - Provider
+  bigip_routedomain:
+    name: rd-issue887
+    id: 5
+    state: absent
+    provider: "{{ provider }}"
