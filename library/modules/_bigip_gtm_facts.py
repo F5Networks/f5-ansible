@@ -946,8 +946,9 @@ def main():
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
 
+    client = F5Client(**module.params)
+
     try:
-        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
