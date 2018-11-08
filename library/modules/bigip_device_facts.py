@@ -2656,6 +2656,60 @@ ltm_pools:
   returned: When C(ltm-pools) is specified in C(gather_subset).
   type: complex
   contains:
+    active_member_count:
+      description:
+        - The number of active pool members in the pool.
+      returned: changed
+      type: int
+      sample: 3
+    all_avg_queue_entry_age:
+      description:
+        - Average queue entry age, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 5
+    all_max_queue_entry_age_ever:
+      description:
+        - Maximum queue entry age ever, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 2
+    all_max_queue_entry_age_recently:
+      description:
+        - Maximum queue entry age recently, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 5
+    all_num_connections_queued_now:
+      description:
+        - Number of connections queued now, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 20
+    all_num_connections_serviced:
+      description:
+        - Number of connections serviced, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 15
+    all_queue_head_entry_age:
+      description:
+        - Queue head entry age, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 4
+    available_member_count:
+      description:
+        - The number of available pool members in the pool.
+      returned: changed
+      type: int
+      sample: 4
+    availability_status:
+      description:
+        - The availability of the pool.
+      returned: changed
+      type: string
+      sample: offline
     allow_nat:
       description:
         - Whether NATs are automatically enabled or disabled for any connections using this pool.
@@ -2684,12 +2738,24 @@ ltm_pools:
       returned: changed
       type: string
       sample: pass-through
+    current_sessions:
+      descriptions:
+        - Current sessions.
+      returned: changed
+      type: int
+      sample: 2
     description:
       description:
         - Description of the pool.
       returned: changed
       type: string
       sample: my pool
+    enabled_status:
+      description:
+        - The enabled-ness of the pool.
+      returned: changed
+      type: string
+      sample: enabled
     full_path:
       description:
         - Full name of the resource as known to BIG-IP.
@@ -2708,6 +2774,12 @@ ltm_pools:
       returned: changed
       type: string
       sample: round-robin
+    member_count:
+      description:
+        - Total number of members in the pool.
+      returned: changed
+      type: int
+      sample: 50
     metadata:
       description:
         - Dictionary of arbitrary key/value pairs set on the pool.
@@ -2746,6 +2818,42 @@ ltm_pools:
       returned: changed
       type: string
       sample: pool1
+    pool_avg_queue_entry_age:
+      description:
+        - Average queue entry age, for the pool only.
+      returned: changed
+      type: int
+      sample: 5
+    pool_max_queue_entry_age_ever:
+      description:
+        - Maximum queue entry age ever, for the pool only.
+      returned: changed
+      type: int
+      sample: 2
+    pool_max_queue_entry_age_recently:
+      description:
+        - Maximum queue entry age recently, for the pool only.
+      returned: changed
+      type: int
+      sample: 5
+    pool_num_connections_queued_now:
+      description:
+        - Number of connections queued now, for the pool only.
+      returned: changed
+      type: int
+      sample: 20
+    pool_num_connections_serviced:
+      description:
+        - Number of connections serviced, for the pool only.
+      returned: changed
+      type: int
+      sample: 15
+    pool_queue_head_entry_age:
+      description:
+        - Queue head entry age, for the pool only.
+      returned: changed
+      type: int
+      sample: 4
     priority_group_activation:
       description:
         - Whether the system load balances traffic according to the priority number assigned to the pool member.
@@ -2813,6 +2921,48 @@ ltm_pools:
       returned: changed
       type: string
       sample: none
+    server_side_bits_in:
+      description:
+        - Number of server-side ingress bits.
+      returned: changed
+      type: int
+      sample: 1000
+    server_side_bits_out:
+      description:
+        - Number of server-side egress bits.
+      returned: changed
+      type: int
+      sample: 200
+    server_side_current_connections:
+      description:
+        - Number of current connections server-side.
+      returned: changed
+      type: int
+      sample: 300
+    server_side_max_connections:
+      description:
+        - Maximum number of connections server-side.
+      returned: changed
+      type: int
+      sample: 40
+    server_side_pkts_in:
+      description:
+        - Number of server-side ingress packets.
+      returned: changed
+      type: int
+      sample: 1098384
+    server_side_pkts_out:
+      description:
+        - Number of server-side egress packets.
+      returned: changed
+      type: int
+      sample: 3484734
+    server_side_total_connections:
+      description:
+        - Total number of connections.
+      returned: changed
+      type: int
+      sample: 24
     slow_ramp_time:
       description:
         - The ramp time for the pool.
@@ -2821,6 +2971,12 @@ ltm_pools:
       returned: changed
       type: int
       sample: 10
+    status_reason:
+      description:
+        - If there is a problem with the status of the pool, that problem is reported here.
+      returned: changed
+      type: string
+      sample: The children pool member(s) are down.
     members:
       description: List of LTM (Local Traffic Manager) pools.
       returned: when members exist in the pool.
@@ -2932,6 +3088,11 @@ ltm_pools:
           returned: changed
           type: string
           sample: down
+    total_requests:
+      description:
+        - Total requests.
+      type: int
+      sample: 8
   sample: hash/dictionary of values
 nodes:
   description: Node related facts.
@@ -9463,8 +9624,143 @@ class LtmPoolsParameters(BaseParameters):
         'slow_ramp_time',
         'priority_group_activation',
         'members',
-        'metadata'
+        'metadata',
+        'active_member_count',
+        'available_member_count',
+        'availability_status',
+        'enabled_status',
+        'status_reason',
+        'all_max_queue_entry_age_ever',
+        'all_avg_queue_entry_age',
+        'all_queue_head_entry_age',
+        'all_max_queue_entry_age_recently',
+        'all_num_connections_queued_now',
+        'all_num_connections_serviced',
+        'pool_max_queue_entry_age_ever',
+        'pool_avg_queue_entry_age',
+        'pool_queue_head_entry_age',
+        'pool_max_queue_entry_age_recently',
+        'pool_num_connections_queued_now',
+        'pool_num_connections_serviced',
+        'current_sessions',
+        'member_count',
+        'total_requests',
+        'server_side_bits_in',
+        'server_side_bits_out',
+        'server_side_current_connections',
+        'server_side_max_connections',
+        'server_side_pkts_in',
+        'server_side_pkts_out',
+        'server_side_total_connections',
     ]
+
+    @property
+    def active_member_count(self):
+        return int(self._values['stats']['activeMemberCnt'])
+
+    @property
+    def available_member_count(self):
+        return int(self._values['stats']['availableMemberCnt'])
+
+    @property
+    def all_max_queue_entry_age_ever(self):
+        return self._values['stats']['connqAll']['ageEdm']
+
+    @property
+    def all_avg_queue_entry_age(self):
+        return self._values['stats']['connqAll']['ageEma']
+
+    @property
+    def all_queue_head_entry_age(self):
+        return self._values['stats']['connqAll']['ageHead']
+
+    @property
+    def all_max_queue_entry_age_recently(self):
+        return self._values['stats']['connqAll']['ageMax']
+
+    @property
+    def all_num_connections_queued_now(self):
+        return self._values['stats']['connqAll']['depth']
+
+    @property
+    def all_num_connections_serviced(self):
+        return self._values['stats']['connqAll']['serviced']
+
+    @property
+    def availability_status(self):
+        return self._values['stats']['status']['availabilityState']
+
+    @property
+    def enabled_status(self):
+        return self._values['stats']['status']['enabledState']
+
+    @property
+    def status_reason(self):
+        return self._values['stats']['status']['statusReason']
+
+    @property
+    def pool_max_queue_entry_age_ever(self):
+        return self._values['stats']['connq']['ageEdm']
+
+    @property
+    def pool_avg_queue_entry_age(self):
+        return self._values['stats']['connq']['ageEma']
+
+    @property
+    def pool_queue_head_entry_age(self):
+        return self._values['stats']['connq']['ageHead']
+
+    @property
+    def pool_max_queue_entry_age_recently(self):
+        return self._values['stats']['connq']['ageMax']
+
+    @property
+    def pool_num_connections_queued_now(self):
+        return self._values['stats']['connq']['depth']
+
+    @property
+    def pool_num_connections_serviced(self):
+        return self._values['stats']['connq']['serviced']
+
+    @property
+    def current_sessions(self):
+        return self._values['stats']['curSessions']
+
+    @property
+    def member_count(self):
+        return self._values['stats']['memberCnt']
+
+    @property
+    def total_requests(self):
+        return self._values['stats']['totRequests']
+
+    @property
+    def server_side_bits_in(self):
+        return self._values['stats']['serverside']['bitsIn']
+
+    @property
+    def server_side_bits_out(self):
+        return self._values['stats']['serverside']['bitsOut']
+
+    @property
+    def server_side_current_connections(self):
+        return self._values['stats']['serverside']['curConns']
+
+    @property
+    def server_side_max_connections(self):
+        return self._values['stats']['serverside']['maxConns']
+
+    @property
+    def server_side_pkts_in(self):
+        return self._values['stats']['serverside']['pktsIn']
+
+    @property
+    def server_side_pkts_out(self):
+        return self._values['stats']['serverside']['pktsOut']
+
+    @property
+    def server_side_total_connections(self):
+        return self._values['stats']['serverside']['totConns']
 
     @property
     def ignore_persisted_weight(self):
@@ -9608,6 +9904,7 @@ class LtmPoolsFactManager(BaseManager):
             attrs = resource
             members = self.read_member_from_device(attrs['fullPath'])
             attrs['members'] = members
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = LtmPoolsParameters(params=attrs)
             results.append(params)
         return results
@@ -9660,6 +9957,28 @@ class LtmPoolsFactManager(BaseManager):
                 raise F5ModuleError(resp.content)
         result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class NodesParameters(BaseParameters):
