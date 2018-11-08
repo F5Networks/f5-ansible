@@ -1,0 +1,76 @@
+---
+- name: Issue 01030 - Include issue variables
+  include_vars:
+    file: issue-01030.yaml
+
+- name: Issue 00406 - Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
+- name: Issue 01030 - Create blank ASM policy, no activation
+  bigip_asm_policy:
+    name: "{{ policy }}"
+    state: present
+  register: result
+
+- name: Issue 01030 - Assert Create blank ASM policy, no activation
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01030 - Create blank ASM policy, no activation - Idempotent check
+  bigip_asm_policy:
+    name: "{{ policy }}"
+    state: present
+  register: result
+
+- name: Issue 01030 - Assert Create blank ASM policy, no activation - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01030 - Create blank ASM policy, and activate
+  bigip_asm_policy:
+    name: "{{ policy_2 }}"
+    active: yes
+    state: present
+  register: result
+
+- name: Issue 01030 - Assert Create blank ASM policy, and activate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01030 - Create blank ASM policy, and activate - Idempotent check
+  bigip_asm_policy:
+    name: "{{ policy_2 }}"
+    active: yes
+    state: present
+  register: result
+
+- name: Issue 01030 - Assert Create blank ASM policy, and activate - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove ASM policy
+  bigip_asm_policy:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ policy }}"
+    - "{{ policy_2 }}"
+
+- name: Issue 00406 - Deprovision ASM
+  bigip_provision:
+    module: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
