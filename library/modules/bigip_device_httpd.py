@@ -163,7 +163,7 @@ EXAMPLES = r'''
 
 - name: Set SSL protocols by string
   bigip_device_httpd:
-    ssl_cipher_suite: all -SSLv2 -SSLv3
+    ssl_protocols: all -SSLv2 -SSLv3
     provider:
       password: secret
       server: lb.mydomain.com
@@ -227,6 +227,11 @@ ssl_cipher_suite:
   returned: changed
   type: string
   sample: ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA
+ssl_cipher_suite_list:
+  description: List of the new ciphers that the system uses.
+  returned: changed
+  type: string
+  sample: ['ECDHE-RSA-AES256-GCM-SHA384', 'ECDHE-RSA-AES128-SHA']
 ssl_protocols:
   description: The new list of SSL protocols to accept on the management console.
   returned: changed
@@ -283,7 +288,7 @@ class Parameters(AnsibleF5Parameters):
         'auth_pam_idle_timeout', 'auth_pam_validate_ip', 'auth_name',
         'auth_pam_dashboard_timeout', 'fast_cgi_timeout', 'hostname_lookup',
         'log_level', 'max_clients', 'redirect_http_to_https', 'ssl_port',
-        'allow', 'ssl_cipher_suite', 'ssl_protocols'
+        'allow', 'ssl_cipher_suite', 'ssl_protocols', 'ssl_cipher_suite_list',
     ]
 
     updatables = [
@@ -401,11 +406,11 @@ class ModuleParameters(Parameters):
                 "ssl_cipher_suite may not be set to 'none'"
             )
         if ciphers == 'default':
-            ciphers = ':'.join(sorted(Parameters._ciphers.split(':')))
+            ciphers = ':'.join(Parameters._ciphers.split(':'))
         elif isinstance(self._values['ssl_cipher_suite'], string_types):
-            ciphers = ':'.join(sorted(ciphers.split(':')))
+            ciphers = ':'.join(ciphers.split(':'))
         else:
-            ciphers = ':'.join(sorted(ciphers))
+            ciphers = ':'.join(ciphers)
         return ciphers
 
     @property
@@ -461,11 +466,15 @@ class UsableChanges(Changes):
 class ReportableChanges(Changes):
     @property
     def ssl_cipher_suite(self):
-        default = ':'.join(sorted(Parameters._ciphers.split(':')))
+        default = ':'.join(Parameters._ciphers.split(':'))
         if self._values['ssl_cipher_suite'] == default:
             return 'default'
         else:
             return self._values['ssl_cipher_suite']
+
+    @property
+    def ssl_cipher_suite_list(self):
+        return self._values['ssl_cipher_suite'].split(':')
 
     @property
     def ssl_protocols(self):
