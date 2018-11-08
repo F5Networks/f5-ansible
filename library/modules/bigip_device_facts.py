@@ -3091,6 +3091,7 @@ ltm_pools:
     total_requests:
       description:
         - Total requests.
+      returned: changed
       type: int
       sample: 8
   sample: hash/dictionary of values
@@ -5500,6 +5501,12 @@ virtual_servers:
   returned: When C(virtual-addresses) is specified in C(gather_subset).
   type: complex
   contains:
+    availability_status:
+      description:
+        - The availability of the virtual server.
+      returned: changed
+      type: string
+      sample: offline
     full_path:
       description:
         - Full name of the resource as known to BIG-IP.
@@ -5527,12 +5534,72 @@ virtual_servers:
       returned: changed
       type: string
       sample: /Common/bw1
+    client_side_bits_in:
+      description:
+        - Number of client-side ingress bits.
+      returned: changed
+      type: int
+      sample: 1000
+    client_side_bits_out:
+      description:
+        - Number of client-side egress bits.
+      returned: changed
+      type: int
+      sample: 200
+    client_side_current_connections:
+      description:
+        - Number of current connections client-side.
+      returned: changed
+      type: int
+      sample: 300
+    client_side_evicted_connections:
+      description:
+        - Number of evicted connections client-side.
+      returned: changed
+      type: int
+      sample: 100
+    client_side_max_connections:
+      description:
+        - Maximum number of connections client-side.
+      returned: changed
+      type: int
+      sample: 40
+    client_side_pkts_in:
+      description:
+        - Number of client-side ingress packets.
+      returned: changed
+      type: int
+      sample: 1098384
+    client_side_pkts_out:
+      description:
+        - Number of client-side egress packets.
+      returned: changed
+      type: int
+      sample: 3484734
+    client_side_slow_killed:
+      description:
+        - Number of slow connections killed, client-side.
+      returned: changed
+      type: int
+      sample: 234
+    client_side_total_connections:
+      description:
+        - Total number of connections.
+      returned: changed
+      type: int
+      sample: 24
     cmp_enabled:
       description:
         - Whether or not clustered multi-processor (CMP) acceleration is enabled.
       returned: changed
       type: bool
       sample: yes
+    cmp_mode:
+      description:
+        - The clustered-multiprocessing mode.
+      returned: changed
+      type: string
+      sample: all-cpus
     connection_limit:
       description:
         - Maximum number of concurrent connections you want to allow for the virtual server.
@@ -5551,6 +5618,156 @@ virtual_servers:
       returned: changed
       type: bool
       sample: yes
+    ephemeral_bits_in:
+      description:
+        - Number of ephemeral ingress bits.
+      returned: changed
+      type: int
+      sample: 1000
+    ephemeral_bits_out:
+      description:
+        - Number of ephemeral egress bits.
+      returned: changed
+      type: int
+      sample: 200
+    ephemeral_current_connections:
+      description:
+        - Number of ephemeral current connections.
+      returned: changed
+      type: int
+      sample: 300
+    ephemeral_evicted_connections:
+      description:
+        - Number of ephemeral evicted connections.
+      returned: changed
+      type: int
+      sample: 100
+    ephemeral_max_connections:
+      description:
+        - Maximum number of ephemeral connections.
+      returned: changed
+      type: int
+      sample: 40
+    ephemeral_pkts_in:
+      description:
+        - Number of ephemeral ingress packets.
+      returned: changed
+      type: int
+      sample: 1098384
+    ephemeral_pkts_out:
+      description:
+        - Number of ephemeral egress packets.
+      returned: changed
+      type: int
+      sample: 3484734
+    ephemeral_slow_killed:
+      description:
+        - Number of ephemeral slow connections killed.
+      returned: changed
+      type: int
+      sample: 234
+    ephemeral_total_connections:
+      description:
+        - Total number of ephemeral connections.
+      returned: changed
+      type: int
+      sample: 24
+    total_software_accepted_syn_cookies:
+      description:
+        - SYN Cookies Total Software Accepted.
+      returned: changed
+      type: int
+      sample: 0
+    total_hardware_accepted_syn_cookies:
+      description:
+        - SYN Cookies Total Hardware Accepted.
+      returned: changed
+      type: int
+      sample: 0
+    total_hardware_syn_cookies:
+      description:
+        - SYN Cookies Total Hardware
+      returned: changed
+      type: int
+      sample: 0
+    hardware_syn_cookie_instances:
+      description:
+        - Hardware SYN Cookie Instances
+      returned: changed
+      type: int
+      sample: 0
+    total_software_rejected_syn_cookies:
+      description:
+        - Total Software Rejected
+      returned: changed
+      type: int
+      sample: 0
+    software_syn_cookie_instances:
+      description:
+        - Software SYN Cookie Instances
+      returned: changed
+      type: int
+      sample: 0
+    current_syn_cache:
+      description:
+        - Current SYN Cache
+      returned: changed
+      type: int
+      sample: 0
+    max_conn_duration:
+      description:
+        - Max Conn Duration/msec
+      returned: changed
+      type: int
+      sample: 0
+    mean_conn_duration:
+      description:
+        - Mean Conn Duration/msec
+      returned: changed
+      type: int
+      sample: 0
+    min_conn_duration:
+      description:
+        - Min Conn Duration/msec
+      returned: changed
+      type: int
+      sample: 0
+    cpu_usage_ratio_last_5_min:
+      description:
+        - CPU Usage Ratio (%) Last 5 Minutes
+      returned: changed
+      type: int
+      sample: 0
+    cpu_usage_ratio_last_5_sec:
+      description:
+        - CPU Usage Ratio (%) Last 5 Seconds
+      returned: changed
+      type: int
+      sample: 0
+    cpu_usage_ratio_last_1_min:
+      description:
+        - CPU Usage Ratio (%) Last 1 Minute
+      returned: changed
+      type: int
+      sample: 0
+    syn_cache_overflow:
+      description:
+        - SYN Cache Overflow
+      returned: changed
+      type: int
+      sample: 0
+    total_software_syn_cookies:
+      description:
+        - Total Software
+      returned: changed
+      type: int
+      sample: 0
+    syn_cookies_status:
+      description:
+        - SYN Cookies Status
+      returned: changed
+      type: string
+      sample: not-activated
     fallback_persistence_profile:
       description:
         - Fallback persistence profile for the virtual server to use
@@ -5661,6 +5878,12 @@ virtual_servers:
       returned: changed
       type: string
       sample: /Common/pool1
+    status_reason:
+      description:
+        - If there is a problem with the status of the virtual, that problem is reported here.
+      returned: changed
+      type: string
+      sample: The children pool member(s) either don't have service checking...
     gtm_score:
       description:
         - Specifies a score that is associated with the virtual server.
@@ -5755,6 +5978,12 @@ virtual_servers:
           returned: changed
           type: string
           sample: tcp
+    total_requests:
+      description:
+        - Total requests.
+      returned: changed
+      type: int
+      sample: 8
   sample: hash/dictionary of values
 vlans:
   description: List of VLAN facts.
@@ -13097,8 +13326,198 @@ class VirtualServersParameters(BaseParameters):
         'type',
         'profiles',
         'destination_address',
-        'destination_port'
+        'destination_port',
+        'availability_status',
+        'status_reason',
+        'total_requests',
+        'client_side_bits_in',
+        'client_side_bits_out',
+        'client_side_current_connections',
+        'client_side_evicted_connections',
+        'client_side_max_connections',
+        'client_side_pkts_in',
+        'client_side_pkts_out',
+        'client_side_slow_killed',
+        'client_side_total_connections',
+        'cmp_mode',
+        'ephemeral_bits_in',
+        'ephemeral_bits_out',
+        'ephemeral_current_connections',
+        'ephemeral_evicted_connections',
+        'ephemeral_max_connections',
+        'ephemeral_pkts_in',
+        'ephemeral_pkts_out',
+        'ephemeral_slow_killed',
+        'ephemeral_total_connections',
+        'total_software_accepted_syn_cookies',
+        'total_hardware_accepted_syn_cookies',
+        'total_hardware_syn_cookies',
+        'hardware_syn_cookie_instances',
+        'total_software_rejected_syn_cookies',
+        'software_syn_cookie_instances',
+        'current_syn_cache',
+        'syn_cache_overflow',
+        'total_software_syn_cookies',
+        'syn_cookies_status',
+        'max_conn_duration',
+        'mean_conn_duration',
+        'min_conn_duration',
+        'cpu_usage_ratio_last_5_min',
+        'cpu_usage_ratio_last_5_sec',
+        'cpu_usage_ratio_last_1_min',
     ]
+
+    @property
+    def max_conn_duration(self):
+        return self._values['stats']['csMaxConnDur']
+
+    @property
+    def mean_conn_duration(self):
+        return self._values['stats']['csMeanConnDur']
+
+    @property
+    def min_conn_duration(self):
+        return self._values['stats']['csMinConnDur']
+
+    @property
+    def cpu_usage_ratio_last_5_min(self):
+        return self._values['stats']['fiveMinAvgUsageRatio']
+
+    @property
+    def cpu_usage_ratio_last_5_sec(self):
+        return self._values['stats']['fiveSecAvgUsageRatio']
+
+    @property
+    def cpu_usage_ratio_last_1_min(self):
+        return self._values['stats']['oneMinAvgUsageRatio']
+
+    @property
+    def cmp_mode(self):
+        return self._values['stats']['cmpEnableMode']
+
+    @property
+    def availability_status(self):
+        return self._values['stats']['status']['availabilityState']
+
+    @property
+    def status_reason(self):
+        return self._values['stats']['status']['statusReason']
+
+    @property
+    def total_requests(self):
+        return self._values['stats']['totRequests']
+
+    @property
+    def ephemeral_bits_in(self):
+        return self._values['stats']['ephemeral']['bitsIn']
+
+    @property
+    def ephemeral_bits_out(self):
+        return self._values['stats']['ephemeral']['bitsOut']
+
+    @property
+    def ephemeral_current_connections(self):
+        return self._values['stats']['ephemeral']['curConns']
+
+    @property
+    def ephemeral_evicted_connections(self):
+        return self._values['stats']['ephemeral']['evictedConns']
+
+    @property
+    def ephemeral_max_connections(self):
+        return self._values['stats']['ephemeral']['maxConns']
+
+    @property
+    def ephemeral_pkts_in(self):
+        return self._values['stats']['ephemeral']['pktsIn']
+
+    @property
+    def ephemeral_pkts_out(self):
+        return self._values['stats']['ephemeral']['pktsOut']
+
+    @property
+    def ephemeral_slow_killed(self):
+        return self._values['stats']['ephemeral']['slowKilled']
+
+    @property
+    def ephemeral_total_connections(self):
+        return self._values['stats']['ephemeral']['totConns']
+
+    @property
+    def client_side_bits_in(self):
+        return self._values['stats']['clientside']['bitsIn']
+
+    @property
+    def client_side_bits_out(self):
+        return self._values['stats']['clientside']['bitsOut']
+
+    @property
+    def client_side_current_connections(self):
+        return self._values['stats']['clientside']['curConns']
+
+    @property
+    def client_side_evicted_connections(self):
+        return self._values['stats']['clientside']['evictedConns']
+
+    @property
+    def client_side_max_connections(self):
+        return self._values['stats']['clientside']['maxConns']
+
+    @property
+    def client_side_pkts_in(self):
+        return self._values['stats']['clientside']['pktsIn']
+
+    @property
+    def client_side_pkts_out(self):
+        return self._values['stats']['clientside']['pktsOut']
+
+    @property
+    def client_side_slow_killed(self):
+        return self._values['stats']['clientside']['slowKilled']
+
+    @property
+    def client_side_total_connections(self):
+        return self._values['stats']['clientside']['totConns']
+
+    @property
+    def total_software_accepted_syn_cookies(self):
+        return self._values['stats']['syncookie']['accepts']
+
+    @property
+    def total_hardware_accepted_syn_cookies(self):
+        return self._values['stats']['syncookie']['hwAccepts']
+
+    @property
+    def total_hardware_syn_cookies(self):
+        return self._values['stats']['syncookie']['hwSyncookies']
+
+    @property
+    def hardware_syn_cookie_instances(self):
+        return self._values['stats']['syncookie']['hwsyncookieInstance']
+
+    @property
+    def total_software_rejected_syn_cookies(self):
+        return self._values['stats']['syncookie']['rejects']
+
+    @property
+    def software_syn_cookie_instances(self):
+        return self._values['stats']['syncookie']['swsyncookieInstance']
+
+    @property
+    def current_syn_cache(self):
+        return self._values['stats']['syncookie']['syncacheCurr']
+
+    @property
+    def syn_cache_overflow(self):
+        return self._values['stats']['syncookie']['syncacheOver']
+
+    @property
+    def total_software_syn_cookies(self):
+        return self._values['stats']['syncookie']['syncookies']
+
+    @property
+    def syn_cookies_status(self):
+        return self._values['stats']['syncookieStatus']
 
     @property
     def destination_address(self):
@@ -13477,7 +13896,9 @@ class VirtualServersFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = VirtualServersParameters(params=resource)
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
+            params = VirtualServersParameters(params=attrs)
             results.append(params)
         return results
 
@@ -13500,6 +13921,28 @@ class VirtualServersFactManager(BaseManager):
             return []
         result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/virtual/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class VlansParameters(BaseParameters):
