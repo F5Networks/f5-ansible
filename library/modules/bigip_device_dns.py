@@ -541,6 +541,7 @@ def main():
         supports_check_mode=spec.supports_check_mode,
         required_one_of=spec.required_one_of
     )
+
     client = F5RestClient(**module.params)
 
     try:
