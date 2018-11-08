@@ -1,5 +1,95 @@
 ---
+- name: Issue 00650 - Create IPV4 network virtual server, mask specified - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 1.2.3.0
+    mask: 255.255.255.0
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
 
+- name: Issue 00650 - Create IPV64network virtual server, compressed mask specified - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Create IPV4 network virtual server, mask specified - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 1.2.3.0
+    mask: 255.255.255.0
+    port: 80
+    all_profiles:
+      - http
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Create IPV4 network virtual server, compressed mask specified - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 1.2.3.0/25
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 1.2.3.0/25
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00650 - Change IPV4 network VS, mask missing, destination not in CIDR - Provider
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 1.2.3.0
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV4 network VS, mask missing, destination not in CIDR - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider - Idempotent check
+  bigip_virtual_server:
+    name: myvip_issue650
+    destination: 1.2.3.0
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - name: Issue 00650 - Remove IPV4 network virtual server - Provider
   bigip_virtual_server:
