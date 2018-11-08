@@ -1,0 +1,18 @@
+---
+datacenter: issue-00950-dc
+server_name: issue-00950
+server_name_2: issue-00950_2
+
+
+preference_1: inside-datacenter
+preference_2: outside-datacenter
+preference_3: pool
+
+fallback_1: inside-datacenter
+fallback_2: outside-datacenter
+fallback_3: pool
+fallback_4: none
+fallback_5: any
+
+prober_name_1: /Common/issue_00950
+prober_name_2: issue_00950

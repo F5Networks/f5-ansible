@@ -179,6 +179,23 @@ options:
       - inherit
       - pool
     version_added: 2.8
+  prober_fallback:
+    description:
+      - Specifies the type of prober to use to monitor this server's resources 
+        when the preferred prober is not available.
+      - This option is ignored in C(TMOS) version C(12.x).
+      - From C(TMOS) version C(13.x) and up, when prober_preference is set to C(pool)
+        a C(prober_pool) parameter must be specified.
+      - The choices are mutually exclusive with prober_preference parameter, 
+        with the exception of C(any-available) or C(none) option.
+    choices:
+      - any
+      - inside-datacenter
+      - outside-datacenter
+      - inherit
+      - pool
+      - none
+    version_added: 2.8
   prober_pool:
     description:
       - Specifies the name of the prober pool to use to monitor this server's resources.
@@ -325,6 +342,7 @@ class Parameters(AnsibleF5Parameters):
         'monitor': 'monitors',
         'proberPreference': 'prober_preference',
         'proberPool': 'prober_pool',
+        'proberFallback': 'prober_fallback',
     }
 
     api_attributes = [
@@ -341,6 +359,7 @@ class Parameters(AnsibleF5Parameters):
         'monitor',
         'proberPreference',
         'proberPool',
+        'proberFallback',
     ]
 
     updatables = [
@@ -355,6 +374,7 @@ class Parameters(AnsibleF5Parameters):
         'monitors',
         'prober_preference',
         'prober_pool',
+        'prober_fallback',
     ]
 
     returnables = [
@@ -371,6 +391,7 @@ class Parameters(AnsibleF5Parameters):
         'availability_requirements',
         'prober_preference',
         'prober_pool',
+        'prober_fallback',
     ]
 
 
@@ -690,6 +711,12 @@ class ModuleParameters(Parameters):
         result = fq_name(self.partition, self._values['prober_pool'])
         return result
 
+    @property
+    def prober_fallback(self):
+        if self._values['prober_fallback'] == 'any':
+            return 'any-available'
+        return self._values['prober_fallback']
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -844,6 +871,12 @@ class ReportableChanges(Changes):
         result['number_of_probers'] = self.number_of_probers
         result['number_of_probes'] = self.number_of_probes
         return result
+
+    @property
+    def prober_fallback(self):
+        if self._values['prober_fallback'] == 'any-available':
+            return 'any'
+        return self._values['prober_fallback']
 
 
 class Difference(object):
@@ -1023,6 +1056,70 @@ class Difference(object):
         if self.want.prober_pool != self.have.prober_pool:
             return self.want.prober_pool
 
+    @property
+    def prober_preference(self):
+        if self.want.prober_preference is None:
+            return None
+        if self.want.prober_preference == self.have.prober_preference:
+            return None
+        if self.want.prober_preference == 'pool' and self.want.prober_pool is None:
+            raise F5ModuleError(
+                "A prober_pool needs to be set if prober_preference is set to 'pool'"
+            )
+        if self.want.prober_preference != 'pool' and self.have.prober_preference == 'pool':
+            if self.want.prober_fallback != 'pool' and self.want.prober_pool != '':
+                raise F5ModuleError(
+                    "To change prober_preference from {0} to {1}, set prober_pool to an empty string".format(
+                        self.have.prober_preference,
+                        self.want.prober_preference
+                    )
+                )
+        if self.want.prober_preference == self.want.prober_fallback:
+            raise F5ModuleError(
+                "Prober_preference and prober_fallback must not be equal."
+            )
+        if self.want.prober_preference == self.have.prober_fallback:
+            raise F5ModuleError(
+                "Cannot set prober_preference to {0} if prober_fallback on device is set to {1}.".format(
+                    self.want.prober_preference,
+                    self.have.prober_fallback
+                )
+            )
+        if self.want.prober_preference != self.have.prober_preference:
+            return self.want.prober_preference
+
+    @property
+    def prober_fallback(self):
+        if self.want.prober_fallback is None:
+            return None
+        if self.want.prober_fallback == self.have.prober_fallback:
+            return None
+        if self.want.prober_fallback == 'pool' and self.want.prober_pool is None:
+            raise F5ModuleError(
+                "A prober_pool needs to be set if prober_fallback is set to 'pool'"
+            )
+        if self.want.prober_fallback != 'pool' and self.have.prober_fallback == 'pool':
+            if self.want.prober_preference != 'pool' and self.want.prober_pool != '':
+                raise F5ModuleError(
+                    "To change prober_fallback from {0} to {1}, set prober_pool to an empty string".format(
+                        self.have.prober_fallback,
+                        self.want.prober_fallback
+                    )
+                )
+        if self.want.prober_preference == self.want.prober_fallback:
+            raise F5ModuleError(
+                "Prober_preference and prober_fallback must not be equal."
+            )
+        if self.want.prober_fallback == self.have.prober_preference:
+            raise F5ModuleError(
+                "Cannot set prober_fallback to {0} if prober_preference on device is set to {1}.".format(
+                    self.want.prober_fallback,
+                    self.have.prober_preference
+                )
+            )
+        if self.want.prober_fallback != self.have.prober_fallback:
+            return self.want.prober_fallback
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
@@ -1141,7 +1238,7 @@ class BaseManager(object):
                 "You must provide an initial device."
             )
         self._assign_creation_defaults()
-        self.handle_prober_preference()
+        self.handle_prober_settings()
         self._set_changed_options()
         if self.module.check_mode:
             return True
@@ -1171,16 +1268,6 @@ class BaseManager(object):
             else:
                 raise F5ModuleError(resp.content)
         return response['selfLink']
-
-    def update(self):
-        self.have = self.read_current_from_device()
-        self.handle_prober_preference()
-        if not self.should_update():
-            return False
-        if self.module.check_mode:
-            return True
-        self.update_on_device()
-        return True
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/server/{2}".format(
@@ -1290,12 +1377,33 @@ class V1Manager(BaseManager):
         if len(self.want.devices) > 1 and self.want.server_type == 'bigip':
             self.want.update({'server_type': 'redundant-bigip'})
 
-    def handle_prober_preference(self):
+    def update(self):
+        self.have = self.read_current_from_device()
+        self.handle_prober_settings()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
+            return True
+        self.update_on_device()
+        return True
+
+    def handle_prober_settings(self):
         if self.want.prober_preference is not None:
             self.want._values.pop('prober_preference')
+        if self.want.prober_fallback is not None:
+            self.want._values.pop('prober_fallback')
 
 
 class V2Manager(BaseManager):
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
+            return True
+        self.update_on_device()
+        return True
+
     def _assign_creation_defaults(self):
         if self.want.server_type is None:
             self.want.update({'server_type': 'bigip'})
@@ -1308,18 +1416,19 @@ class V2Manager(BaseManager):
     def adjust_server_type_by_version(self):
         pass
 
-    def handle_prober_preference(self):
-        if self.want.prober_preference != 'pool':
-            if self.have.prober_pool is not None and self.want.prober_pool != '':
-                raise F5ModuleError(
-                    "To change prober_preference from {0} to {1}, you need to set prober_pool to ''.".format(
-                        self.have.prober_preference,
-                        self.want.prober_preference
-                    )
-                )
+    def handle_prober_settings(self):
         if self.want.prober_preference == 'pool' and self.want.prober_pool is None:
             raise F5ModuleError(
                 "A prober_pool needs to be set if prober_preference is set to 'pool'"
+            )
+        if self.want.prober_preference is not None and self.want.prober_fallback is not None:
+            if self.want.prober_preference == self.want.prober_fallback:
+                raise F5ModuleError(
+                    "The parameters for prober_preference and prober_fallback must not be the same."
+                )
+        if self.want.prober_fallback == 'pool' and self.want.prober_pool is None:
+            raise F5ModuleError(
+                "A prober_pool needs to be set if prober_fallback is set to 'pool'"
             )
 
 
@@ -1400,6 +1509,10 @@ class ArgumentSpec(object):
             monitors=dict(type='list'),
             prober_preference=dict(
                 choices=['inside-datacenter', 'outside-datacenter', 'inherit', 'pool']
+            ),
+            prober_fallback=dict(
+                choices=['inside-datacenter', 'outside-datacenter',
+                         'inherit', 'pool', 'any', 'none']
             ),
             prober_pool=dict()
 
