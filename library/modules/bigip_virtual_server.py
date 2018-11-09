@@ -1463,7 +1463,8 @@ class ModuleParameters(Parameters):
         if self._values['destination'] is None:
             result = Destination(ip=None, port=None, route_domain=None, mask=None)
             return result
-        addr = compress_address(self._values['destination'].split("%")[0].split('/')[0])
+        sanitized = self._values['destination'].split("%")[0].split('/')[0]
+        addr = compress_address(u'{0}'.format(sanitized))
         result = Destination(ip=addr, port=self.port, route_domain=self.route_domain, mask=self.mask)
         return result
 
@@ -1477,8 +1478,8 @@ class ModuleParameters(Parameters):
         if addr in ['::', '::/0', '::/any6']:
             return 'any6'
         if self._values['mask'] is None:
-            return get_netmask(addr)
-        return compress_address(self._values['mask'])
+            return get_netmask(u'{0}'.format(addr))
+        return compress_address(u'{0}'.format(self._values['mask']))
 
     @property
     def port(self):

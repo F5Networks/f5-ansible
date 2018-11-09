@@ -257,18 +257,23 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     updatables = [
-        'active'
+        'active',
     ]
 
     returnables = [
-        'name', 'template', 'file', 'active'
+        'name',
+        'template',
+        'file',
+        'active',
     ]
 
     api_attributes = [
-        'name', 'file', 'active'
+        'name',
+        'file',
+        'active',
     ]
     api_map = {
-        'filename': 'file'
+        'filename': 'file',
     }
 
     @property
@@ -558,6 +563,8 @@ class BaseManager(object):
 
     def _file_is_missing(self):
         if self.want.template and self.want.file is None:
+            return False
+        if self.want.template is None and self.want.file is None:
             return False
         if not os.path.exists(self.want.file):
             return True
@@ -855,6 +862,9 @@ class BaseManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
+        # we need to remove active from params as API will raise an error if the active is set to True,
+        # policies can only be activated via apply-policy task endpoint.
+        params.pop('active')
         uri = "https://{0}:{1}/mgmt/tm/asm/policies/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -866,12 +876,11 @@ class BaseManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
+        if 'code' in response and response['code'] in [400, 401, 403]:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-
         time.sleep(2)
         return response['selfLink']
 
