@@ -1,0 +1,320 @@
+---
+
+- name: Issue 00950 - Include issue variables
+  include_vars:
+    file: issue-00950.yaml
+
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
+- name: Issue 00950 - Provision GTM
+  bigip_provision:
+    name: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 00950 - Create Prober Pool
+  bigip_command:
+    commands:
+      - tmsh create gtm prober-pool issue_00950
+
+- name: Issue 00950 - Create datacenters
+  bigip_gtm_datacenter:
+    name: "{{ datacenter }}"
+
+- name: Issue 00950 - Create GTM server with prober_pool
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    devices:
+      - name: foo
+        address: 1.1.1.1
+        translation: 2.2.2.2
+    prober_pool: "{{ prober_name_1 }}"
+    datacenter: "{{ datacenter }}"
+    state: present
+  register: result
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Issue 00950 - Change GTM server, test ignoring prober_fallback
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    prober_fallback: "{{ fallback_1 }}"
+  register: result
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Issue 00950 - Assert Change GTM server, test ignoring prober_fallback
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Issue 00950 - Create GTM server with prober preference and prober fallback
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    devices:
+      - name: foo
+        address: 1.1.1.1
+        translation: 2.2.2.2
+    prober_preference: "{{ preference_1 }}"
+    prober_fallback: "{{ fallback_5 }}"
+    datacenter: "{{ datacenter }}"
+    state: present
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Create GTM server with prober preference and prober fallback
+  assert:
+    that:
+      - result is changed
+      - result.prober_preference == preference_1
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Create GTM server with prober preference and prober fallback - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    devices:
+      - name: foo
+        address: 1.1.1.1
+        translation: 2.2.2.2
+    prober_preference: "{{ preference_1 }}"
+    prober_fallback: "{{ fallback_5 }}"
+    datacenter: "{{ datacenter }}"
+    state: present
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Create GTM server with prober preference and prober fallback - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Change GTM server prober fallback, prober_pool missing - Expect failure
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    prober_fallback: "{{ fallback_3 }}"
+  register: result
+  failed_when: "'A prober_pool needs to be set if' not in result['msg']"
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Change GTM server prober fallback, prober_pool missing - Expect failure
+  assert:
+    that:
+      - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Change GTM server prober fallback, add prober pool
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    prober_fallback: "{{ fallback_3 }}"
+    prober_pool: "{{ prober_name_2 }}"
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Change GTM server prober fallback, add prober pool
+  assert:
+    that:
+      - result is changed
+      - result.prober_fallback == fallback_3
+      - result.prober_pool == "/Common/issue_00950"
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Change GTM server prober fallback, add prober pool - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    prober_fallback: "{{ fallback_3 }}"
+    prober_pool: "{{ prober_name_2 }}"
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Change GTM server prober fallback, add prober pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Change GTM server prober fallback, pool not set - Expect failure
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    prober_fallback: "{{ fallback_4 }}"
+  register: result
+  failed_when: "'To change prober_fallback from' not in result['msg']"
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Change GTM server prober fallback, pool not set - Expect failure
+  assert:
+    that:
+      - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Change GTM server prober fallback, remove pool
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    prober_fallback: "{{ fallback_4 }}"
+    prober_pool: ""
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Change GTM server prober fallback, remove pool
+  assert:
+    that:
+      - result is changed
+      - result.prober_fallback == fallback_4
+      - result.prober_pool == ""
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Change GTM server prober fallback, remove pool - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    prober_fallback: "{{ fallback_4 }}"
+    prober_pool: ""
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Change GTM server prober fallback, remove pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Create GTM server with prober pool fallback and prober preference
+  bigip_gtm_server:
+    name: "{{ server_name_2 }}"
+    devices:
+      - name: foo
+        address: 1.1.1.2
+        translation: 2.2.2.3
+    prober_fallback: "{{ fallback_3 }}"
+    prober_preference: "{{ preference_2 }}"
+    prober_pool: "{{ prober_name_1 }}"
+    datacenter: "{{ datacenter }}"
+    state: present
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Create GTM server with prober pool fallback and prober preference
+  assert:
+    that:
+      - result is changed
+      - result.prober_fallback == fallback_3
+      - result.prober_preference == preference_2
+      - result.prober_pool == "/Common/issue_00950"
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Create GTM server with prober pool fallback and prober preference - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name_2 }}"
+    devices:
+      - name: foo
+        address: 1.1.1.2
+        translation: 2.2.2.3
+    prober_fallback: "{{ fallback_3 }}"
+    prober_preference: "{{ preference_2 }}"
+    prober_pool: "{{ prober_name_1 }}"
+    datacenter: "{{ datacenter }}"
+    state: present
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Create GTM server with prober pool fallback and prober preference - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Set GTM server prober preference to same value - Expect failure
+  bigip_gtm_server:
+    name: "{{ server_name_2 }}"
+    prober_fallback: "{{ fallback_2 }}"
+    prober_preference: "{{ preference_2 }}"
+    prober_pool: ""
+  register: result
+  failed_when: "'Prober_preference and prober_fallback must not be equal' not in result['msg']"
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Set GTM server prober preference to same value - Expect failure
+  assert:
+    that:
+      - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Set GTM server prober preference to diffrent value, remove prober pool
+  bigip_gtm_server:
+    name: "{{ server_name_2 }}"
+    prober_fallback: "{{ fallback_5 }}"
+    prober_preference: "{{ preference_1 }}"
+    prober_pool: ""
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Set GTM server prober settings to diffrent values, remove prober pool
+  assert:
+    that:
+      - result is changed
+      - result.prober_fallback == fallback_5
+      - result.prober_preference == preference_1
+      - result.prober_pool == ""
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Set GTM server prober settings to diffrent values, remove prober pool - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name_2 }}"
+    prober_fallback: "{{ fallback_5 }}"
+    prober_preference: "{{ preference_1 }}"
+    prober_pool: ""
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Set GTM server prober settings to diffrent values, remove prober pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Set GTM server prober fallback to same value as prober preference on device - Expect failure
+  bigip_gtm_server:
+    name: "{{ server_name_2 }}"
+    prober_fallback: "{{ fallback_1 }}"
+  register: result
+  failed_when: "'if prober_preference on device is set to' not in result['msg']"
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Assert Set GTM server prober fallback to same value as prober preference on device - Expect failure
+  assert:
+    that:
+      - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 00950 - Remove GTM servers
+  bigip_gtm_server:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ server_name }}"
+    - "{{ server_name_2 }}"
+
+- name: Issue 00950 - Delete Prober Pool
+  bigip_command:
+    commands:
+      - tmsh delete gtm prober-pool issue_00950
+
+- name: Issue 00950 - Remove datacenters
+  bigip_gtm_datacenter:
+    name: "{{ datacenter }}"
+    state: absent
+
+- name: Issue 00950 - De-provision GTM
+  bigip_provision:
+    name: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

@@ -226,7 +226,7 @@
 
 - name: Issue 00771 - Create GTM server with prober pool preference
   bigip_gtm_server:
-    name: "{{ server_name }}"
+    name: "{{ server_name_2 }}"
     devices:
       - name: foo
         address: 1.1.1.1
@@ -246,9 +246,9 @@
       - result.prober_pool == "/Common/issue_00771"
   when: f.system_info.product_version >= "13.0.0"
 
-- name: Issue 00771 - Create GTM server with prober pool preference- Idempotent check
+- name: Issue 00771 - Create GTM server with prober pool preference - Idempotent check
   bigip_gtm_server:
-    name: "{{ server_name }}"
+    name: "{{ server_name_2 }}"
     devices:
       - name: foo
         address: 1.1.1.1
