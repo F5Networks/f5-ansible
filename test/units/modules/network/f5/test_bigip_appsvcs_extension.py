@@ -69,13 +69,13 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            content='foo',
+            content='{ "foo": "bar" }',
             force=True,
             targets=['T1', 'T2']
         )
 
         p = ModuleParameters(params=args)
-        assert p.content == 'foo'
+        assert 'foo' in p.content
         assert p.force is True
         assert p.targets == ['T1', 'T2']
 
@@ -89,7 +89,7 @@ class TestManager(unittest.TestCase):
 
     def test_create(self, *args):
         set_module_args(dict(
-            content='foo',
+            content='{ "foo": "bar" }',
             server='localhost',
             user='admin',
             password='password'
