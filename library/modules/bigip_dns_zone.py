@@ -26,7 +26,7 @@ options:
     description:
       - Specifies the name of the DNS zone.
       - The name must begin with a letter and contain only letters, numbers,
-        and the underscore ( _ ) character.
+        and the underscore character.
     required: True
   dns_express:
     description:
