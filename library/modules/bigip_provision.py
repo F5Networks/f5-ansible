@@ -326,7 +326,7 @@ class ModuleManager(object):
     def should_reboot(self):
         for x in range(0, 24):
             try:
-                uri = "https://{0}:{1}/mgmt/tm/sys/db/{2)".format(
+                uri = "https://{0}:{1}/mgmt/tm/sys/db/{2}".format(
                     self.client.provider['server'],
                     self.client.provider['server_port'],
                     'provision.action'
