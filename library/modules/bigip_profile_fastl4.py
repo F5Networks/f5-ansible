@@ -184,6 +184,11 @@ options:
       - When C(yes), specifies that the system uses TCP timestamp options to measure
         the round-trip time to the client.
     type: bool
+  rtt_from_server:
+    description:
+      - When C(yes), specifies that the system uses TCP timestamp options to measure
+        the round-trip time to the server.
+    type: bool
   server_sack:
     description:
       - Specifies whether the BIG-IP system processes Selective ACK (Sack) packets
