@@ -141,10 +141,18 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('library.modules.bigip_gtm_virtual_server.module_provisioned',
-           return_value=True, create=True)
-    @patch('ansible.modules.network.f5.bigip_gtm_virtual_server.module_provisioned',
-           return_value=True, create=True)
+        try:
+            self.p1 = patch('library.modules.bigip_gtm_virtual_server.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+        except Exception:
+            self.p1 = patch('ansible.modules.network.f5.bigip_gtm_virtual_server.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
+
     def test_create_datacenter(self, *args):
         set_module_args(dict(
             server_name='foo',
