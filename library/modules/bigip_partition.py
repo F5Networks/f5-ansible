@@ -121,6 +121,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.compare import cmp_str_with_none
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -129,6 +130,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
@@ -137,20 +139,29 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'description', 'defaultRouteDomain',
+        'description',
+        'defaultRouteDomain',
     ]
 
     returnables = [
-        'description', 'route_domain',
+        'description',
+        'route_domain',
+        'folder_description',
     ]
 
     updatables = [
-        'description', 'route_domain',
+        'description',
+        'route_domain',
+        'folder_description',
     ]
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
 
 
 class ModuleParameters(Parameters):
@@ -164,6 +175,14 @@ class ModuleParameters(Parameters):
         if self._values['route_domain'] is None:
             return None
         return int(self._values['route_domain'])
+
+    @property
+    def description(self):
+        if self._values['description'] is None:
+            return None
+        elif self._values['description'] in ['none', '']:
+            return ''
+        return self._values['description']
 
 
 class Changes(Parameters):
@@ -207,6 +226,13 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def description(self):
+        if cmp_str_with_none(self.want.description, self.have.description) is None:
+            return cmp_str_with_none(self.want.description, self.have.folder_description)
+        else:
+            return self.want.description
 
 
 class ModuleManager(object):
@@ -279,6 +305,8 @@ class ModuleManager(object):
         if self.module.check_mode:
             return True
         self.create_on_device()
+        if self.changes.description:
+            self.update_folder_on_device()
         if not self.exists():
             raise F5ModuleError("Failed to create the partition.")
         return True
@@ -296,6 +324,8 @@ class ModuleManager(object):
         if self.module.check_mode:
             return True
         self.update_on_device()
+        if self.changes.description:
+            self.update_folder_on_device()
         return True
 
     def absent(self):
@@ -328,7 +358,25 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        result = ApiParameters(params=response)
+        uri = "https://{0}:{1}/mgmt/tm/sys/folder/~{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.name
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result.update({'folder_description': response.get('description', None)})
+        return result
 
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/auth/partition/{2}".format(
@@ -367,6 +415,25 @@ class ModuleManager(object):
     def update_on_device(self):
         params = self.changes.api_params()
         uri = "https://{0}:{1}/mgmt/tm/auth/partition/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.name
+        )
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+    def update_folder_on_device(self):
+        params = dict(description=self.changes.description)
+        uri = "https://{0}:{1}/mgmt/tm/sys/folder/~{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             self.want.name
