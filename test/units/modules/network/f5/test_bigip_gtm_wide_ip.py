@@ -126,14 +126,21 @@ class TestParameters(unittest.TestCase):
         assert 'The provided name must be a valid FQDN' in str(excinfo)
 
 
-@patch('library.modules.bigip_gtm_wide_ip.module_provisioned',
-       return_value=True, create=True)
-@patch('ansible.modules.network.f5.bigip_gtm_wide_ip.module_provisioned',
-       return_value=True, create=True)
 class TestUntypedManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
+        try:
+            self.p1 = patch('library.modules.bigip_gtm_wide_ip.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+        except Exception:
+            self.p1 = patch('ansible.modules.network.f5.bigip_gtm_wide_ip.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
 
     def test_create_wideip(self, *args):
         set_module_args(dict(
@@ -167,14 +174,21 @@ class TestUntypedManager(unittest.TestCase):
         assert results['lb_method'] == 'round-robin'
 
 
-@patch('library.modules.bigip_gtm_wide_ip.module_provisioned',
-       return_value=True, create=True)
-@patch('ansible.modules.network.f5.bigip_gtm_wide_ip.module_provisioned',
-       return_value=True, create=True)
 class TestTypedManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
+        try:
+            self.p1 = patch('library.modules.bigip_gtm_wide_ip.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+        except Exception:
+            self.p1 = patch('ansible.modules.network.f5.bigip_gtm_wide_ip.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
 
     def test_create_wideip(self, *args):
         set_module_args(dict(
