@@ -234,7 +234,6 @@ options:
       - rate_limit
   threshold_mode:
     description:
-      - Specifies whether 
       - The C(dns-malformed) vector does not support C(fully-automatic), or C(stress-based-mitigation)
         for this parameter.
       - The C(qdcount) vector does not support C(fully-automatic), or C(stress-based-mitigation)
@@ -354,7 +353,7 @@ threshold_mode:
   description: The new Mitigation Threshold EPS setting.
   returned: changed
   type: string
-  sample: infinite  
+  sample: infinite
 simulate_auto_threshold:
   description: The new Simulate Auto Threshold setting.
   returned: changed
@@ -1180,9 +1179,66 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            name=dict(required=True),
+            name=dict(
+                required=True,
+                choices=[
+                    'ext-hdr-too-large',
+                    'hop-cnt-low',
+                    'host-unreachable',
+                    'icmp-frag',
+                    'icmpv4-flood',
+                    'icmpv6-flood',
+                    'ip-frag-flood',
+                    'ip-low-ttl',
+                    'ip-opt-frames',
+                    'ipv6-frag-flood',
+                    'opt-present-with-illegal-len',
+                    'sweep',
+                    'tcp-bad-urg',
+                    'tcp-half-open',
+                    'tcp-opt-overruns-tcp-hdr',
+                    'tcp-psh-flood',
+                    'tcp-rst-flood',
+                    'tcp-syn-flood',
+                    'tcp-syn-oversize',
+                    'tcp-synack-flood',
+                    'tcp-window-size',
+                    'tidcmp',
+                    'too-many-ext-hdrs',
+                    'udp-flood',
+                    'unk-tcp-opt-type',
+                    'a',
+                    'aaaa',
+                    'any',
+                    'axfr',
+                    'cname',
+                    'dns-malformed',
+                    'ixfr',
+                    'mx',
+                    'ns',
+                    'other',
+                    'ptr',
+                    'qdcount',
+                    'soa',
+                    'srv',
+                    'txt',
+                    'ack',
+                    'bye',
+                    'cancel',
+                    'invite',
+                    'message',
+                    'notify',
+                    'options',
+                    'other',
+                    'prack',
+                    'publish',
+                    'register',
+                    'sip-malformed',
+                    'subscribe',
+                    'uri-limit',
+                ]
+            ),
             profile=dict(required=True),
-
             allow_advertisement=dict(type='bool'),
             auto_blacklist=dict(type='bool'),
             simulate_auto_threshold=dict(type='bool'),

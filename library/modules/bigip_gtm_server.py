@@ -181,12 +181,12 @@ options:
     version_added: 2.8
   prober_fallback:
     description:
-      - Specifies the type of prober to use to monitor this server's resources 
+      - Specifies the type of prober to use to monitor this server's resources
         when the preferred prober is not available.
       - This option is ignored in C(TMOS) version C(12.x).
       - From C(TMOS) version C(13.x) and up, when prober_preference is set to C(pool)
         a C(prober_pool) parameter must be specified.
-      - The choices are mutually exclusive with prober_preference parameter, 
+      - The choices are mutually exclusive with prober_preference parameter,
         with the exception of C(any-available) or C(none) option.
     choices:
       - any
