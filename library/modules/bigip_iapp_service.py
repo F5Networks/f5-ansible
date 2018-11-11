@@ -603,10 +603,10 @@ class ModuleParameters(Parameters):
 
     @property
     def strict_updates(self):
-        if self.param_strict_updates is not None:
-            result = self.param_strict_updates
-        elif self._values['strict_updates'] is not None and self.param_strict_updates is None:
+        if self._values['strict_updates'] is not None:
             result = flatten_boolean(self._values['strict_updates'])
+        elif self.param_strict_updates is not None:
+            result = flatten_boolean(self.param_strict_updates)
         else:
             return None
         if result == 'yes':
