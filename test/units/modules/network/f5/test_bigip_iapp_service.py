@@ -85,7 +85,7 @@ class TestParameters(unittest.TestCase):
 
     def test_module_parameters_lists(self):
         args = load_fixture('create_iapp_service_parameters_f5_http.json')
-        p = Parameters(params=args)
+        p = ModuleParameters(params=args)
 
         assert 'lists' in p._values
 
@@ -101,7 +101,7 @@ class TestParameters(unittest.TestCase):
 
     def test_module_parameters_tables(self):
         args = load_fixture('create_iapp_service_parameters_f5_http.json')
-        p = Parameters(params=args)
+        p = ModuleParameters(params=args)
 
         assert 'tables' in p._values
 
@@ -200,13 +200,13 @@ class TestParameters(unittest.TestCase):
         args = dict(
             strictUpdates='enabled'
         )
-        p = Parameters(params=args)
+        p = ApiParameters(params=args)
         assert p.strict_updates == 'enabled'
 
         args = dict(
             strictUpdates='disabled'
         )
-        p = Parameters(params=args)
+        p = ApiParameters(params=args)
         assert p.strict_updates == 'disabled'
 
     def test_api_parameters_variables(self):
@@ -219,7 +219,7 @@ class TestParameters(unittest.TestCase):
                 )
             ]
         )
-        p = Parameters(params=args)
+        p = ApiParameters(params=args)
         assert p.variables[0]['name'] == 'client__http_compression'
 
     def test_api_parameters_tables(self):
@@ -271,21 +271,21 @@ class TestParameters(unittest.TestCase):
         args = dict(
             inheritedTrafficGroup='true'
         )
-        p = Parameters(params=args)
+        p = ApiParameters(params=args)
         assert p.inheritedTrafficGroup == 'true'
 
     def test_api_parameters_inherited_devicegroup(self):
         args = dict(
             inheritedDevicegroup='true'
         )
-        p = Parameters(params=args)
+        p = ApiParameters(params=args)
         assert p.inheritedDevicegroup == 'true'
 
     def test_api_parameters_traffic_group(self):
         args = dict(
             trafficGroup='/Common/traffic-group-local-only'
         )
-        p = Parameters(params=args)
+        p = ApiParameters(params=args)
         assert p.traffic_group == '/Common/traffic-group-local-only'
 
     def test_module_template_same_partition(self):
