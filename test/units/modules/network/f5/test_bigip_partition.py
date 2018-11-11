@@ -125,6 +125,7 @@ class TestManagerEcho(unittest.TestCase):
         mm = ModuleManager(module=module)
         mm.exists = Mock(side_effect=[False, True])
         mm.create_on_device = Mock(return_value=True)
+        mm.update_folder_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
@@ -140,6 +141,7 @@ class TestManagerEcho(unittest.TestCase):
         ))
 
         current = ApiParameters(params=load_fixture('load_tm_auth_partition.json'))
+        current.update({'folder_description': 'my description'})
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -174,6 +176,7 @@ class TestManagerEcho(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.read_current_from_device = Mock(return_value=current)
         mm.update_on_device = Mock(return_value=True)
+        mm.update_folder_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 

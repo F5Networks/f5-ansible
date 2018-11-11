@@ -79,6 +79,34 @@
     that:
       - result is not changed
 
+- name: Create partition with description
+  bigip_partition:
+    name: "{{ partition }}"
+    description: "{{ description }}"
+  register: result
+
+- name: Assert Create partition with description
+  assert:
+    that:
+      - result is changed
+
+- name: Create partition with description - Idempotent check
+  bigip_partition:
+    name: "{{ partition }}"
+    description: "{{ description }}"
+  register: result
+
+- name: Assert Create partition with description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete other partition
+  bigip_partition:
+    name: "{{ partition }}"
+    state: absent
+  register: result
+
 - import_tasks: teardown.yaml
 
 - import_tasks: issue-01052.yaml
