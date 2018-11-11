@@ -34,6 +34,7 @@ options:
       - arcsight
       - splunk
       - management-port
+      - ipfix
     required: True
   description:
     description:
