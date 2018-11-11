@@ -180,11 +180,6 @@ connections_limit:
   returned: changed
   type: int
   sample: 100
-connections_limit:
-  description: The new connections_limit limit.
-  returned: changed
-  type: int
-  sample: 100
 disabled:
   description: Whether the pool member is disabled or not.
   returned: changed
