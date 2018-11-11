@@ -89,8 +89,8 @@ options:
       - VLANs for the system to use in the route domain.
   fw_enforced_policy:
     description:
-      - Specfies AFM policy to be attached to route domain.
-    version_added: 2.8 
+      - Specifies AFM policy to be attached to route domain.
+    version_added: 2.8
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
