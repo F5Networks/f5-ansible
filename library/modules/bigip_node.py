@@ -157,6 +157,25 @@ options:
       - When creating a new node, if this parameter is not specified, the default of
         C(1) will be used.
     version_added: 2.7
+  availability_requirements:
+    description:
+      - Specifies, if you activate more than one health monitor, the number of health
+        monitors that must receive successful responses in order for the link to be
+        considered available.
+    suboptions:
+      type:
+        description:
+          - Monitor rule type when C(monitors) is specified.
+          - When creating a new pool, if this value is not specified, the default of
+            'all' will be used.
+        choices: ['all', 'at_least']
+      at_least:
+        description:
+          - Specifies the minimum number of active health monitors that must be successful
+            before the link is considered up.
+          - This parameter is only relevant when a C(type) of C(at_least) is used.
+          - This parameter will be ignored if a type of C(all) is used.
+    version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.
