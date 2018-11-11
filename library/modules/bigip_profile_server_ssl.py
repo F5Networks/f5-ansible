@@ -27,8 +27,8 @@ options:
   parent:
     description:
       - The parent template of this monitor template. Once this value has
-        been set, it cannot be changed. By default, this value is the C(clientssl)
-        parent on the C(Common) partition.
+        been set, it cannot be changed.
+    default: /Common/serverssl
   ciphers:
     description:
       - Specifies the list of ciphers that the system supports. When creating a new
@@ -66,7 +66,7 @@ options:
         effect when C(sni_default) is C(yes). When creating a new profile, the setting
         is provided by the parent profile.
     type: bool
-  server_certifcate:
+  server_certificate:
     description:
       - Specifies the way the system handles server certificates.
       - When C(ignore), specifies that the system ignores certificates from server systems.
@@ -615,6 +615,10 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['present', 'absent']
             ),
+            update_password=dict(
+                default='always',
+                choices=['always', 'on_create']
+            ),
             sni_default=dict(type='bool'),
             sni_require=dict(type='bool'),
             server_name=dict(),
@@ -628,7 +632,7 @@ class ArgumentSpec(object):
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.required_together = [
-            'certificate', 'key'
+            ['certificate', 'key']
         ]
 
 
