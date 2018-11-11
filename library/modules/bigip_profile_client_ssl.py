@@ -98,6 +98,7 @@ options:
       - pkcs1-check-2
       - netscape-ca-dn-bug
       - netscape-demo-cipher-change-bug
+      - "none"
     version_added: 2.7
   secure_renegotiation:
     description:
@@ -126,7 +127,7 @@ options:
       - Specifies the fully qualified DNS hostname of the server used in Server Name Indication communications.
         When creating a new profile, the setting is provided by the parent profile.
       - The server name can also be a wildcard string containing the asterisk C(*) character.
-    version_added: 2.7
+    version_added: 2.8
   sni_default:
     description:
       - Indicates that the system uses this profile as the default SSL profile when there is no match to the
@@ -134,13 +135,13 @@ options:
       - When creating a new profile, the setting is provided by the parent profile.
       - There can be only one SSL profile with this setting enabled.
     type: bool
-    version_added: 2.7
+    version_added: 2.8
   sni_require:
     description:
       - Requires that the network peers also provide SNI support. This setting only takes effect when C(sni_default) is
         set to C(true). When creating a new profile, the setting is provided by the parent profile.
     type: bool
-    version_added: 2.7
+    version_added: 2.8
   client_certificate:
     description:
       - Specifies the way the system handles client certificates.
@@ -170,6 +171,7 @@ options:
     description:
       - When C(yes), client certificate is retained in SSL session.
     type: bool
+    version_added: 2.8
   cert_auth_depth:
     description:
       - Specifies the maximum number of certificates to be traversed in a client
