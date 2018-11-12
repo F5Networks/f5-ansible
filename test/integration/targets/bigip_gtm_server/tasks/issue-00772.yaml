@@ -21,17 +21,17 @@
 
 - name: Issue 00772 - Create a GTM server with non-default monitors, all
   bigip_gtm_server:
-     name: "{{ server_name }}"
-     datacenter: "{{ datacenter }}"
-     server_type: generic-host
-     link_discovery: disabled
-     virtual_server_discovery: disabled
-     devices:
-       - name: server_1
-         address: 1.1.1.1
-     monitors: "{{ monitors_1 }}"
-     availability_requirements:
-       type: all
+    name: "{{ server_name }}"
+    datacenter: "{{ datacenter }}"
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_1
+        address: 1.1.1.1
+    monitors: "{{ monitors_1 }}"
+    availability_requirements:
+      type: all
   register: result
 
 - name: Issue 00772 - Assert Create a GTM server with non-default monitors, all
@@ -43,17 +43,17 @@
 
 - name: Issue 00772 - Create a GTM server with non-default monitors, all  - Idempotent check
   bigip_gtm_server:
-     name: "{{ server_name }}"
-     datacenter: "{{ datacenter }}"
-     server_type: generic-host
-     link_discovery: disabled
-     virtual_server_discovery: disabled
-     devices:
-       - name: server_1
-         address: 1.1.1.1
-     monitors: "{{ monitors_1 }}"
-     availability_requirements:
-       type: all
+    name: "{{ server_name }}"
+    datacenter: "{{ datacenter }}"
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_1
+        address: 1.1.1.1
+    monitors: "{{ monitors_1 }}"
+    availability_requirements:
+      type: all
   register: result
 
 - name: Issue 00772 - Assert Create a GTM server with non-default monitors, all  - Idempotent check
@@ -64,8 +64,8 @@
 
 - name: Issue 00772 - Remove monitor, all
   bigip_gtm_server:
-     name: "{{ server_name }}"
-     monitors: "{{ monitors_2 }}"
+    name: "{{ server_name }}"
+    monitors: "{{ monitors_2 }}"
   register: result
 
 - name: Issue 00772 - Assert Remove monitor, all
@@ -76,8 +76,8 @@
 
 - name: Issue 00772 - Remove monitor, all - Idempotent check
   bigip_gtm_server:
-     name: "{{ server_name }}"
-     monitors: "{{ monitors_2 }}"
+    name: "{{ server_name }}"
+    monitors: "{{ monitors_2 }}"
   register: result
 
 - name: Issue 00772 - Assert Remove monitor, all - Idempotent check
@@ -151,8 +151,8 @@
 
 - name: Issue 00772 - Update monitors, revert to default
   bigip_gtm_server:
-     name: "{{ server_name }}"
-     monitors: "{{ monitors_3 }}"
+    name: "{{ server_name }}"
+    monitors: "{{ monitors_3 }}"
   register: result
 
 - name: Issue 00772 - Assert Update monitors, revert to default
@@ -163,8 +163,8 @@
 
 - name: Issue 00772 - Update monitors, revert to default - Idempotent check
   bigip_gtm_server:
-     name: issue-00772
-     monitors: "{{ monitors_3 }}"
+    name: issue-00772
+    monitors: "{{ monitors_3 }}"
   register: result
 
 - name: Issue 00772 - Assert Update monitors, revert to default - Idempotent check
@@ -175,16 +175,16 @@
 
 - name: Issue 00772 - Create a GTM server with non-default monitors, at_least
   bigip_gtm_server:
-     name: "{{ server_name_2 }}"
-     datacenter: "{{ datacenter }}"
-     server_type: generic-host
-     link_discovery: disabled
-     virtual_server_discovery: disabled
-     devices:
-       - name: server_2
-         address: 2.2.2.2
-     monitors: "{{ monitors_1 }}"
-     availability_requirements:
+    name: "{{ server_name_2 }}"
+    datacenter: "{{ datacenter }}"
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_2
+        address: 2.2.2.2
+    monitors: "{{ monitors_1 }}"
+    availability_requirements:
       type: at_least
       at_least: 1
   register: result
@@ -199,16 +199,16 @@
 
 - name: Issue 00772 - Create a GTM server with non-default monitors, at_least - Idempotent check
   bigip_gtm_server:
-     name: "{{ server_name_2 }}"
-     datacenter: "{{ datacenter }}"
-     server_type: generic-host
-     link_discovery: disabled
-     virtual_server_discovery: disabled
-     devices:
-       - name: server_2
-         address: 2.2.2.2
-     monitors: "{{ monitors_1 }}"
-     availability_requirements:
+    name: "{{ server_name_2 }}"
+    datacenter: "{{ datacenter }}"
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_2
+        address: 2.2.2.2
+    monitors: "{{ monitors_1 }}"
+    availability_requirements:
       type: at_least
       at_least: 1
   register: result
@@ -229,20 +229,20 @@
 
 - name: Issue 00772 - Create a GTM server with monitors, require
   bigip_gtm_server:
-     name: "{{ server_name }}"
-     datacenter: "{{ datacenter }}"
-     server_type: generic-host
-     link_discovery: disabled
-     virtual_server_discovery: disabled
-     devices:
-       - name: server_1
-         address: 1.1.1.1
-     monitors:
-       - gateway_icmp
-     availability_requirements:
-       type: require
-       number_of_probes: 10
-       number_of_probers: 20
+    name: "{{ server_name }}"
+    datacenter: "{{ datacenter }}"
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_1
+        address: 1.1.1.1
+    monitors:
+      - gateway_icmp
+    availability_requirements:
+      type: require
+      number_of_probes: 10
+      number_of_probers: 20
   register: result
   when: f.system_info.product_version >= "13.0.0"
 
@@ -258,20 +258,20 @@
 
 - name: Issue 00772 - Create a GTM server with monitors, require - Idempotent check
   bigip_gtm_server:
-     name: "{{ server_name }}"
-     datacenter: "{{ datacenter }}"
-     server_type: generic-host
-     link_discovery: disabled
-     virtual_server_discovery: disabled
-     devices:
-       - name: server_1
-         address: 1.1.1.1
-     monitors:
-       - gateway_icmp
-     availability_requirements:
-       type: require
-       number_of_probes: 10
-       number_of_probers: 20
+    name: "{{ server_name }}"
+    datacenter: "{{ datacenter }}"
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_1
+        address: 1.1.1.1
+    monitors:
+      - gateway_icmp
+    availability_requirements:
+      type: require
+      number_of_probes: 10
+      number_of_probers: 20
   register: result
   when: f.system_info.product_version >= "13.0.0"
 
@@ -284,8 +284,8 @@
 
 - name: Issue 00772 - Remove a GTM server, require test
   bigip_gtm_server:
-     name: "{{ server_name }}"
-     state: absent
+    name: "{{ server_name }}"
+    state: absent
   register: result
   when: f.system_info.product_version >= "13.0.0"
 
