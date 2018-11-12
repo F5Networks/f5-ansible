@@ -1,0 +1,140 @@
+---
+
+- name: Issue 00773 - Provision GTM
+  bigip_provision:
+    name: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 00773 - Create datacenters
+  bigip_gtm_datacenter:
+    name: issue-00773-dc
+
+- name: Issue 00773 - Create a GTM server with limits
+  bigip_gtm_server:
+    name: issue-00773
+    datacenter: issue-00773-dc
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_1
+        address: 1.1.1.1
+    limits:
+      bits_enabled: yes
+      packets_enabled: yes
+      connections_enabled: yes
+      cpu_enabled: yes
+      memory_enabled: yes
+      bits_limit: 100
+      packets_limit: 100
+      connections_limit: 100
+      cpu_limit: 100
+      memory_limit: 100
+  register: result
+
+- name: Issue 00773 - Assert Create a GTM server with limits
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00773 - Change limits
+  bigip_gtm_server:
+    name: issue-00773
+    datacenter: issue-00773-dc
+    server_type: generic-host
+    limits:
+      bits_enabled: yes
+      packets_enabled: yes
+      connections_enabled: yes
+      cpu_enabled: yes
+      memory_enabled: yes
+      bits_limit: 50
+      packets_limit: 50
+      connections_limit: 50
+      cpu_limit: 50
+      memory_limit: 50
+  register: result
+
+- name: Issue 00773 - Assert Change limits
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00773 - Change limits - Idempotent check
+  bigip_gtm_server:
+    name: issue-00773
+    datacenter: issue-00773-dc
+    server_type: generic-host
+    limits:
+      bits_enabled: yes
+      packets_enabled: yes
+      connections_enabled: yes
+      cpu_enabled: yes
+      memory_enabled: yes
+      bits_limit: 50
+      packets_limit: 50
+      connections_limit: 50
+      cpu_limit: 50
+      memory_limit: 50
+  register: result
+
+- name: Issue 00773 - Assert Change limits - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00773 - Disable limits
+  bigip_gtm_server:
+    name: issue-00773
+    datacenter: issue-00773-dc
+    server_type: generic-host
+    limits:
+      bits_enabled: no
+      packets_enabled: no
+      connections_enabled: no
+      cpu_enabled: no
+      memory_enabled: no
+  register: result
+
+- name: Issue 00773 - Assert Disable limits
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00773 - Disable limits - Idempotent check
+  bigip_gtm_server:
+    name: issue-00773
+    datacenter: issue-00773-dc
+    server_type: generic-host
+    limits:
+      bits_enabled: no
+      packets_enabled: no
+      connections_enabled: no
+      cpu_enabled: no
+      memory_enabled: no
+  register: result
+
+- name: Issue 00773 - Assert Disable limits - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00773 - Remove GTM server
+  bigip_gtm_server:
+    name: issue-00773
+    state: absent
+
+- name: Issue 00773 - Remove datacenters
+  bigip_gtm_datacenter:
+    name: issue-00773-dc
+    state: absent
+
+- name: Issue 00772 - De-provision GTM
+  bigip_provision:
+    name: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
