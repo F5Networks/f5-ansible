@@ -12,14 +12,14 @@
 
 - name: Issue 00728 - Create a GTM server
   bigip_gtm_server:
-     name: issue-00728
-     datacenter: issue-00728-dc
-     server_type: generic-host
-     link_discovery: disabled
-     virtual_server_discovery: disabled
-     devices:
-       - name: server_1
-         address: 1.1.1.1
+    name: issue-00728
+    datacenter: issue-00728-dc
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_1
+        address: 1.1.1.1
   register: result
 
 - name: Gather facts to verify change
@@ -36,14 +36,14 @@
 
 - name: Issue 00728 - Create a GTM server - Idempotent check
   bigip_gtm_server:
-     name: issue-00728
-     datacenter: issue-00728-dc
-     server_type: generic-host
-     link_discovery: disabled
-     virtual_server_discovery: disabled
-     devices:
-       - name: server_1
-         address: 1.1.1.1
+    name: issue-00728
+    datacenter: issue-00728-dc
+    server_type: generic-host
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_1
+        address: 1.1.1.1
   register: result
 
 - name: Issue 00728 - Assert Create a GTM server - Idempotent check
@@ -53,8 +53,8 @@
 
 - name: Issue 00728 - Remove a GTM server
   bigip_gtm_server:
-     name: issue-00728
-     state: absent
+    name: issue-00728
+    state: absent
   register: result
 
 - name: Issue 00728 - Remove datacenters
