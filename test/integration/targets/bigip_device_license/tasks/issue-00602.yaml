@@ -1,0 +1,35 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Revoke license
+  bigip_device_license:
+    license_key: "{{ license_key_to_use }}"
+    license_server: "{{ license_server }}"
+    state: revoked
+  register: result
+
+- name: Assert Revoke license
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Revoke license - Idempotent check
+  bigip_device_license:
+    license_key: "{{ license_key_to_use }}"
+    license_server: "{{ license_server }}"
+    state: revoked
+  register: result
+
+- name: Assert Revoke license - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Re-license device
+  bigip_device_license:
+    license_key: "{{ license_key_to_use }}"
+    license_server: "{{ license_server }}"
+    accept_eula: yes
