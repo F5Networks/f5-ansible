@@ -1,0 +1,137 @@
+---
+
+- name: Issue 00592 - Include issue variables
+  include_vars:
+    file: issue-00592.yaml
+
+- name: Issue 00592 - Provision vCMP
+  bigip_provision:
+    module: vcmp
+    level: dedicated
+  tags:
+    - module-provisioning
+
+- name: Issue 00592 - Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - f5-vlan1
+    - f5-vlan2
+    - f5-vlan3
+
+- name: Issue 00592 - Configure vCMP guest
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    initial_image: "{{ initial_image|basename }}"
+    mgmt_network: bridged
+    mgmt_address: 10.20.30.41/24
+    mgmt_route: 10.20.30.1
+    state: configured
+    vlans:
+      - f5-vlan1
+  register: result
+
+- name: Issue 00592 - Assert Configure vCMP guest
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00592 - Configure vCMP guest - Idempotent check
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    initial_image: "{{ initial_image|basename }}"
+    mgmt_network: bridged
+    mgmt_address: 10.20.30.41/24
+    mgmt_route: 10.20.30.1
+    state: configured
+    vlans:
+      - f5-vlan1
+  register: result
+
+- name: Issue 00592 - Assert Configure vCMP guest - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00592 - Change VLANs - add
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    state: configured
+    vlans:
+      - f5-vlan1
+      - f5-vlan2
+  register: result
+
+- name: Issue 00592 - Assert Change VLANs - add
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00592 - Change VLANs - add - Idempotent check
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    state: configured
+    vlans:
+      - f5-vlan1
+      - f5-vlan2
+  register: result
+
+- name: Issue 00592 - Assert Change VLANs - add - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00592 - Change VLANs - remove
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    state: configured
+    vlans:
+      - f5-vlan2
+  register: result
+
+- name: Issue 00592 - Assert Change VLANs - remove
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00592 - Change VLANs - remove - Idempotent check
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    state: configured
+    vlans:
+      - f5-vlan2
+  register: result
+
+- name: Issue 00592 - Assert Change VLANs - remove - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00592 - Remove vCMP guest
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    state: absent
+    delete_virtual_disk: yes
+
+- name: Issue 00592 - Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - f5-vlan1
+    - f5-vlan2
+    - f5-vlan3
+
+- name: De-provision vCMP
+  bigip_provision:
+    module: vcmp
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
