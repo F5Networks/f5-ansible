@@ -1,0 +1,411 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create an IP Subnet and an ISP based topology record
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_1 }}"
+    destination:
+      isp: "{{ isp_1 }}"
+    weight: 10
+  register: result
+
+- name: Assert Create an IP Subnet and an ISP based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create an IP Subnet and an ISP based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_1 }}"
+    destination:
+      isp: "{{ isp_1 }}"
+    weight: 10
+  register: result
+
+- name: Assert Create an IP Subnet and an ISP based topology record  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove an IP Subnet and an ISP based topology record
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_1 }}"
+    destination:
+      isp: "{{ isp_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove an IP Subnet and an ISP based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove an IP Subnet and an ISP based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_1 }}"
+    destination:
+      isp: "{{ isp_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove an IP Subnet and an ISP based topology record  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a region and a pool based topology record
+  bigip_gtm_topology_records:
+    source:
+      region: "{{ region }}"
+    destination:
+      pool: "{{ pool_name }}"
+  register: result
+
+- name: Assert Create a region and a pool based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a region and a pool based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      region: "{{ region }}"
+    destination:
+      pool: "{{ pool_name }}"
+  register: result
+
+- name: Assert Create a region and a pool based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify weight on a region and a pool based topology record
+  bigip_gtm_topology_records:
+    source:
+      region: "{{ region }}"
+    destination:
+      pool: "{{ pool_name }}"
+    weight: 10
+  register: result
+
+- name: Assert Create a region and a pool based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify weight on a region and a pool based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      region: "{{ region }}"
+    destination:
+      pool: "{{ pool_name }}"
+    weight: 10
+  register: result
+
+- name: Assert Modify weight on a region and a pool based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove a region and a pool based topology record
+  bigip_gtm_topology_records:
+    source:
+      region: "{{ region }}"
+    destination:
+      pool: "{{ pool_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a region and a pool based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove a region and a pool based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      region: "{{ region }}"
+    destination:
+      pool: "{{ pool_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a region and a pool based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a negative continent and a negative data center based topology record
+  bigip_gtm_topology_records:
+    source:
+      continent: "{{ continent_1 }}"
+      negate: yes
+    destination:
+      datacenter: "{{ dc_name1 }}"
+      negate: yes
+  register: result
+
+- name: Assert Create a negative continent and a negative data center based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a negative continent and a negative data center based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      continent: "{{ continent_1 }}"
+      negate: yes
+    destination:
+      datacenter: "{{ dc_name1 }}"
+      negate: yes
+  register: result
+
+- name: Assert Create a negative continent and a negative data center based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove a negative continent and a negative data center based topology record
+  bigip_gtm_topology_records:
+    source:
+      continent: "{{ continent_1 }}"
+      negate: yes
+    destination:
+      datacenter: "{{ dc_name1 }}"
+      negate: yes
+    state: absent
+  register: result
+
+- name: Assert Remove a negative continent and a negative data center based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove a negative continent and a negative data center based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      continent: "{{ continent_1 }}"
+      negate: yes
+    destination:
+      datacenter: "{{ dc_name1 }}"
+      negate: yes
+    state: absent
+  register: result
+
+- name: Assert Remove a negative continent and a negative data center based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create an IP Subnet and a negative state based topology record, country missing - Expect Failure
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_2 }}"
+    destination:
+      state: "{{ state_1 }}"
+      negate: yes
+  register: result
+  failed_when: "'Country needs to be provided when specifying state' not in result['msg']"
+
+- name: Create an IP Subnet and a negative state based topology record
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_2 }}"
+    destination:
+      country: "{{ country_2 }}"
+      state: "{{ state_1 }}"
+      negate: yes
+  register: result
+
+- name: Assert Create an IP Subnet and a negative state based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create an IP Subnet and a negative state based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_2 }}"
+    destination:
+      country: "{{ country_2 }}"
+      state: "{{ state_1 }}"
+      negate: yes
+  register: result
+
+- name: Assert Create an IP Subnet and a negative state based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove an IP Subnet and a negative state based topology record
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_2 }}"
+    destination:
+      country: "{{ country_2 }}"
+      state: "{{ state_1 }}"
+      negate: yes
+    state: absent
+  register: result
+
+- name: Assert Remove an IP Subnet and a negative state based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove an IP Subnet and a negative state based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      subnet: "{{ net_2 }}"
+    destination:
+      country: "{{ country_2 }}"
+      state: "{{ state_1 }}"
+      negate: yes
+    state: absent
+  register: result
+
+- name: Assert Remove an IP Subnet and a negative state based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create an ISP and a continent based topology record
+  bigip_gtm_topology_records:
+    source:
+      isp: "{{ isp_2 }}"
+    destination:
+      continent: "{{ continent_2 }}"
+  register: result
+
+- name: Assert Create an ISP and a continent based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create an ISP and a continent based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      isp: "{{ isp_2 }}"
+    destination:
+      continent: "{{ continent_2 }}"
+  register: result
+
+- name: Assert Create an ISP and a continent based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove an ISP and a continent based topology record
+  bigip_gtm_topology_records:
+    source:
+      isp: "{{ isp_2 }}"
+    destination:
+      continent: "{{ continent_2 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove an ISP and a continent based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove an ISP and a continent based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      isp: "{{ isp_2 }}"
+    destination:
+      continent: "{{ continent_2 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove an ISP and a continent based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a country and an geo isp based topology record
+  bigip_gtm_topology_records:
+    source:
+      country: "{{ country_1 }}"
+    destination:
+      geo_isp: "{{ geo_isp }}"
+  register: result
+
+- name: Assert Create a country and an geo isp based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a country and an geo isp based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      country: "{{ country_1 }}"
+    destination:
+      geo_isp: "{{ geo_isp }}"
+  register: result
+
+- name: Assert Create a country and an geo isp based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove a country and an geo isp based topology record
+  bigip_gtm_topology_records:
+    source:
+      country: "{{ country_1 }}"
+    destination:
+      geo_isp: "{{ geo_isp }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a country and an geo isp based topology record
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove a country and an geo isp based topology record - Idempotent check
+  bigip_gtm_topology_records:
+    source:
+      country: "{{ country_1 }}"
+    destination:
+      geo_isp: "{{ geo_isp }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a country and an geo isp based topology record - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
