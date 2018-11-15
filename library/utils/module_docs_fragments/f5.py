@@ -102,7 +102,6 @@ options:
         description:
           - Configures the transport connection to use when connecting to the
             remote device.
-        required: true
         choices:
           - rest
           - cli
