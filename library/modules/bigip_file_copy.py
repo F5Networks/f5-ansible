@@ -28,7 +28,7 @@ options:
   source:
     description:
       - Specifies the path of the file to upload.
-    required: True
+      - This parameter is required if C(state) is C(present).
     aliases:
       - src
   datastore:
@@ -635,7 +635,6 @@ class ArgumentSpec(object):
             name=dict(),
             source=dict(
                 type='path',
-                required=True,
                 aliases=['src'],
             ),
             datastore=dict(
@@ -659,6 +658,9 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
+        self.required_if = [
+            ['state', 'present', ['source']]
+        ]
 
 
 def main():
@@ -667,6 +669,7 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
+        required_if=spec.required_if,
     )
 
     client = F5RestClient(**module.params)
