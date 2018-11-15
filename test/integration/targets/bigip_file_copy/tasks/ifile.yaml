@@ -1,0 +1,131 @@
+---
+
+- name: Upload iFile
+  bigip_file_copy:
+    source: "{{ role_path }}/files/ifile1.txt"
+  register: result
+
+- name: Assert Upload iFile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload iFile - Idempotent check
+  bigip_file_copy:
+    source: "{{ role_path }}/files/ifile1.txt"
+  register: result
+
+- name: Assert Upload iFile
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Upload iFile - force yes
+  bigip_file_copy:
+    source: "{{ role_path }}/files/ifile1.txt"
+    force: yes
+  register: result
+
+- name: Assert Upload iFile - force yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload iFile - force no
+  bigip_file_copy:
+    source: "{{ role_path }}/files/ifile1.txt"
+    force: no
+  register: result
+
+- name: Assert Upload iFile - force yes
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove iFile via source
+  bigip_file_copy:
+    source: "{{ role_path }}/files/ifile1.txt"
+    state: absent
+  register: result
+
+- name: Assert Remove iFile via source
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove iFile via source - Idempotent check
+  bigip_file_copy:
+    source: "{{ role_path }}/files/ifile1.txt"
+    state: absent
+  register: result
+
+- name: Assert Remove iFile via source
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Upload iFile with different name
+  bigip_file_copy:
+    name: foo
+    source: "{{ role_path }}/files/ifile1.txt"
+  register: result
+
+- name: Assert Upload iFile with different name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload iFile with different name - Idempotent check
+  bigip_file_copy:
+    name: foo
+    source: "{{ role_path }}/files/ifile1.txt"
+  register: result
+
+- name: Assert Upload iFile with different name
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove iFile via source that doesnt exist - Expected no change
+  bigip_file_copy:
+    source: "{{ role_path }}/files/ifile1.txt"
+    state: absent
+  register: result
+
+- name: Assert Remove iFile via source that doesnt exist - Expected no change
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove iFile via name
+  bigip_file_copy:
+    source: foo
+    state: absent
+  register: result
+
+- name: Assert Remove iFile via name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove iFile via name - Idempotent check
+  bigip_file_copy:
+    source: foo
+    state: absent
+  register: result
+
+- name: Assert Remove iFile via name
+  assert:
+    that:
+      - result is not changed
+      - result is success

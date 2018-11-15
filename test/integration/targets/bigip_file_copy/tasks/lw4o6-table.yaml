@@ -1,0 +1,142 @@
+---
+
+- name: Upload lw4o6 File Object
+  bigip_file_copy:
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+  register: result
+
+- name: Assert Upload lw4o6 File Object
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload lw4o6 File Object - Idempotent check
+  bigip_file_copy:
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+  register: result
+
+- name: Assert Upload lw4o6 File Object
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Upload lw4o6 File Object - force yes
+  bigip_file_copy:
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+    force: yes
+  register: result
+
+- name: Assert Upload lw4o6 File Object - force yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload lw4o6 File Object - force no
+  bigip_file_copy:
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+    force: no
+  register: result
+
+- name: Assert Upload lw4o6 File Object - force yes
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove lw4o6 File Object via source
+  bigip_file_copy:
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+    state: absent
+  register: result
+
+- name: Assert Remove lw4o6 File Object via source
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove lw4o6 File Object via source - Idempotent check
+  bigip_file_copy:
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+    state: absent
+  register: result
+
+- name: Assert Remove lw4o6 File Object via source
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Upload lw4o6 File Object with different name
+  bigip_file_copy:
+    name: foo
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+  register: result
+
+- name: Assert Upload lw4o6 File Object with different name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload lw4o6 File Object with different name - Idempotent check
+  bigip_file_copy:
+    name: foo
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+  register: result
+
+- name: Assert Upload lw4o6 File Object with different name
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove lw4o6 File Object via source that doesnt exist - Expected no change
+  bigip_file_copy:
+    source: "{{ role_path }}/files/lw4o61.txt"
+    datastore: lw4o6-table
+    state: absent
+  register: result
+
+- name: Assert Remove lw4o6 File Object via source that doesnt exist - Expected no change
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove lw4o6 File Object via name
+  bigip_file_copy:
+    source: foo
+    datastore: lw4o6-table
+    state: absent
+  register: result
+
+- name: Assert Remove lw4o6 File Object via name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove lw4o6 File Object via name - Idempotent check
+  bigip_file_copy:
+    source: foo
+    datastore: lw4o6-table
+    state: absent
+  register: result
+
+- name: Assert Remove lw4o6 File Object via name
+  assert:
+    that:
+      - result is not changed
+      - result is success

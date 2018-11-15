@@ -1,0 +1,142 @@
+---
+
+- name: Upload external-monitor
+  bigip_file_copy:
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+  register: result
+
+- name: Assert Upload external-monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload external-monitor - Idempotent check
+  bigip_file_copy:
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+  register: result
+
+- name: Assert Upload external-monitor
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Upload external-monitor - force yes
+  bigip_file_copy:
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+    force: yes
+  register: result
+
+- name: Assert Upload external-monitor - force yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload external-monitor - force no
+  bigip_file_copy:
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+    force: no
+  register: result
+
+- name: Assert Upload external-monitor - force yes
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove external-monitor via source
+  bigip_file_copy:
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+    state: absent
+  register: result
+
+- name: Assert Remove external-monitor via source
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove external-monitor via source - Idempotent check
+  bigip_file_copy:
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+    state: absent
+  register: result
+
+- name: Assert Remove external-monitor via source
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Upload external-monitor with different name
+  bigip_file_copy:
+    name: foo
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+  register: result
+
+- name: Assert Upload external-monitor with different name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Upload external-monitor with different name - Idempotent check
+  bigip_file_copy:
+    name: foo
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+  register: result
+
+- name: Assert Upload external-monitor with different name
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove external-monitor via source that doesnt exist - Expected no change
+  bigip_file_copy:
+    source: "{{ role_path }}/files/monitor1.sh"
+    datastore: external-monitor
+    state: absent
+  register: result
+
+- name: Assert Remove external-monitor via source that doesnt exist - Expected no change
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove external-monitor via name
+  bigip_file_copy:
+    source: foo
+    datastore: external-monitor
+    state: absent
+  register: result
+
+- name: Assert Remove external-monitor via name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove external-monitor via name - Idempotent check
+  bigip_file_copy:
+    source: foo
+    datastore: external-monitor
+    state: absent
+  register: result
+
+- name: Assert Remove external-monitor via name
+  assert:
+    that:
+      - result is not changed
+      - result is success

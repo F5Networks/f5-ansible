@@ -1,0 +1,9 @@
+---
+
+- import_tasks: setup.yaml
+
+- import_tasks: ifile.yaml
+- import_tasks: external-monitor.yaml
+- import_tasks: lw4o6-table.yaml
+
+- import_tasks: teardown.yaml
