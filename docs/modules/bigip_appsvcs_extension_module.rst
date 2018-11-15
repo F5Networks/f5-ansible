@@ -21,12 +21,6 @@ Synopsis
 
 
 
-Requirements
-~~~~~~~~~~~~
-The below requirements are needed on the host that executes this module.
-
-- f5-sdk >= 3.0.16
-
 
 Parameters
 ----------
@@ -52,6 +46,7 @@ Parameters
                                                     <div>For anything advanced or with formatting consider using the <code>template</code> lookup.</div>
                                                     <div>This can additionally be used for specifying application service configurations directly in YAML, however that is not an encouraged practice and, if used at all, should only be used for the absolute smallest of configurations to prevent your Playbooks from becoming too large.</div>
                                                     <div>If you <code>content</code> includes encrypted values (such as ciphertexts, passphrases, etc), the returned <code>changed</code> value will always be true.</div>
+                                                    <div>If you are using the <code>to_nice_json</code> filter, it will cause this module to fail because the purpose of that filter is to format the JSON to be human-readable and this process includes inserting &quot;extra characters that break JSON validators.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -186,11 +181,11 @@ Parameters
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
                     <b>transport</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>rest</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>cli</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -284,7 +279,6 @@ Notes
 
 .. note::
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
 

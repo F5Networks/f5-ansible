@@ -1,14 +1,14 @@
-:source: bigip_smtp.py
+:source: bigip_file_copy.py
 
 :orphan:
 
-.. _bigip_smtp_module:
+.. _bigip_file_copy_module:
 
 
-bigip_smtp - Manages SMTP settings on the BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_file_copy - Manage files in datastores on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_smtp - Manages SMTP settings on the BIG-IP
 
 Synopsis
 --------
-- Allows configuring of the BIG-IP to send mail via an SMTP server by configuring the parameters of an SMTP server.
+- Manages files on a variety of datastores on a BIG-IP.
 
 
 
@@ -28,15 +28,34 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>authentication</b>
+                    <b>datastore</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>external-monitor</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>ifile</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>lw4o6-table</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the datastore to put the file in.</div>
+                                                    <div>There are several different datastores and each of them allows files to be exposed in different ways.</div>
+                                                    <div>When <code>external-monitor</code>, the specified file will be stored as an external monitor file and be available for use in external monitors</div>
+                                                    <div>When <code>ifile</code>, the specified file will be stored as an iFile.</div>
+                                                    <div>When <code>lw4o6-table</code>, the specified file will be store as an Lightweight 4 over 6 (lw4o6) tunnel binding table, which include an IPv6 address for the lwB4, public IPv4 address, and restricted port set.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>force</b>
                                                         </td>
                                 <td>
                                                                                                                                                                         <ul><b>Choices:</b>
@@ -45,54 +64,20 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Credentials can be set on an SMTP server&#x27;s configuration even if that authentication is not used (think staging configs or emergency changes). This parameter acts as a switch to make the specified <code>smtp_server_username</code> and <code>smtp_server_password</code> parameters active or not.</div>
-                                                    <div>When <code>yes</code>, the authentication parameters will be active.</div>
-                                                    <div>When <code>no</code>, the authentication parameters will be inactive.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>encryption</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>none</li>
-                                                                                                                                                                                                <li>ssl</li>
-                                                                                                                                                                                                <li>tls</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether the SMTP server requires an encrypted connection in order to send mail.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>from_address</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Email address that the email is being sent from. This is the &quot;Reply-to&quot; address that the recipient sees.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>local_host_name</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Host name used in SMTP headers in the format of a fully qualified domain name. This setting does not refer to the BIG-IP system&#x27;s hostname.</div>
+                                                                        <div>Force overwrite a file.</div>
+                                                    <div>By default, files will only be overwritten if the SHA of the file is different for the given filename. This parameter can be used to force overwrite the file even if it already exists and its SHA matches.</div>
+                                                    <div>The <code>lw4o6-table</code> datastore does not keep checksums of its file. Therefore, you would need to provide this argument to update any of these files.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
                     <b>name</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the SMTP server configuration.</div>
+                                                                        <div>The name of the file as it should reside on the BIG-IP.</div>
+                                                    <div>If this is not specified, then the filename provided in the <code>source</code> parameter is used instead.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -260,45 +245,15 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>smtp_server</b>
+                    <b>source</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>SMTP server host name in the format of a fully qualified domain name.</div>
-                                                    <div>This value is required when create a new SMTP configuration.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>smtp_server_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Password that the SMTP server requires when validating a user.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>smtp_server_port</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SMTP port number.</div>
-                                                    <div>When creating a new SMTP configuration, the default is <code>25</code> when <code>encryption</code> is <code>none</code> or <code>tls</code>. The default is <code>465</code> when <code>ssl</code> is selected.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>smtp_server_username</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>User name that the SMTP server requires when validating a user.</div>
-                                                                                </td>
+                                                                        <div>Specifies the path of the file to upload.</div>
+                                                    <div>This parameter is required if <code>state</code> is <code>present</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: src</div>
+                                    </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -311,24 +266,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the SMTP configuration exists.</div>
-                                                    <div>When <code>absent</code>, ensures that the SMTP configuration does not exist.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>update_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>on_create</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Passwords are stored encrypted, so the module cannot know if the supplied <code>smtp_server_password</code> is the same or different than the existing password. This parameter controls the updating of the <code>smtp_server_password</code> credential.</div>
-                                                    <div>When <code>always</code>, will always update the password.</div>
-                                                    <div>When <code>on_create</code>, will only set the password for newly created SMTP server configurations.</div>
+                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
+                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -376,115 +315,48 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a base SMTP server configuration
-      bigip_smtp:
-        name: my-smtp
-        smtp_server: 1.1.1.1
-        smtp_server_username: mail-admin
-        smtp_server_password: mail-secret
-        local_host_name: smtp.mydomain.com
-        from_address: no-reply@mydomain.com
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+    - name: Upload a file as an iFile
+      bigip_file_copy:
+        name: foo
+        source: /path/to/file.txt
+        datastore: ifile
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    # Upload a directory of files
+    - name: Recursively upload web related files in /var/tmp/project
+      find:
+        paths: /var/tmp/project
+        patterns: "^.*?\\.(?:html|?:css|?:js)$"
+      register: f
+
+    - name: Upload a directory of files as a set of iFiles
+      bigip_file_copy:
+        source: "{{ f.path }}"
+        datastore: ifile
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+        loop: f
+      delegate_to: localhost
+    # End upload a directory of files
+
+    - name: Upload a file to use in an external monitor
+      bigip_file_copy:
+        source: /path/to/files/external.sh
+        datastore: external-monitor
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
 
-
-Return Values
--------------
-Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html>`_, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
-            <th colspan="1">Key</th>
-            <th>Returned</th>
-            <th width="100%">Description</th>
-        </tr>
-                    <tr>
-                                <td colspan="1">
-                    <b>authentication</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Whether the authentication parameters are active or not.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>encryption</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>encryption</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tls</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>from_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>from_address</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">no-reply@mydomain.com</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>local_host_name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>local_host_name</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">smtp.mydomain.com</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>smtp_server</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>smtp_server</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">mail.mydomain.com</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>smtp_server_port</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>smtp_server_port</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">25</div>
-                                    </td>
-            </tr>
-                        </table>
-    <br/><br/>
 
 
 Status

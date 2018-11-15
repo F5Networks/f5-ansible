@@ -30,6 +30,7 @@ Modules Maintained by the Ansible Partners
   * :ref:`bigip_dns_resolver_module`
   * :ref:`bigip_dns_zone_module`
   * :ref:`bigip_facts_module` **(D)**
+  * :ref:`bigip_file_copy_module`
   * :ref:`bigip_firewall_address_list_module`
   * :ref:`bigip_firewall_dos_profile_module`
   * :ref:`bigip_firewall_dos_vector_module`
@@ -66,6 +67,7 @@ Modules Maintained by the Ansible Partners
   * :ref:`bigip_management_route_module`
   * :ref:`bigip_monitor_dns_module`
   * :ref:`bigip_monitor_external_module`
+  * :ref:`bigip_monitor_gateway_icmp_module`
   * :ref:`bigip_monitor_http_module`
   * :ref:`bigip_monitor_https_module`
   * :ref:`bigip_monitor_ldap_module`

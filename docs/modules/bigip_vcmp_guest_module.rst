@@ -21,12 +21,6 @@ Synopsis
 
 
 
-Requirements
-~~~~~~~~~~~~
-The below requirements are needed on the host that executes this module.
-
-- f5-sdk >= 3.0.16
-
 
 Parameters
 ----------
@@ -297,11 +291,11 @@ Parameters
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
                     <b>transport</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>rest</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>cli</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -402,7 +396,6 @@ Notes
     - This module can take a lot of time to deploy vCMP guests. This is an intrinsic limitation of the vCMP system because it is booting real VMs on the BIG-IP device. This boot time is very similar in length to the time it takes to boot VMs on any other virtualization platform; public or private.
     - When BIG-IP starts, the VMs are booted sequentially; not in parallel. This means that it is not unusual for a vCMP host with many guests to take a long time (60+ minutes) to reboot and bring all the guests online. The BIG-IP chassis will be available before all vCMP guests are online.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
 
@@ -416,26 +409,26 @@ Examples
     - name: Create a vCMP guest
       bigip_vcmp_guest:
         name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
         mgmt_network: bridge
         mgmt_address: 10.20.30.40/24
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Create a vCMP guest with specific VLANs
       bigip_vcmp_guest:
         name: foo
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
         mgmt_network: bridge
         mgmt_address: 10.20.30.40/24
         vlans:
           - vlan1
           - vlan2
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
     - name: Remove vCMP guest and disk
@@ -443,6 +436,10 @@ Examples
         name: guest1
         state: absent
         delete_virtual_disk: yes
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       register: result
 
 

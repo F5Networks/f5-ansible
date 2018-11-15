@@ -34,7 +34,6 @@ Requirements
 The below requirements are needed on the host that executes this module.
 
 - bigsuds
-- f5-sdk >= 3.0.16
 
 
 Parameters
@@ -207,11 +206,11 @@ Parameters
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
                     <b>transport</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>rest</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>cli</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -297,7 +296,6 @@ Notes
     - ``provision`` facts were added in 2.2
     - This module is deprecated. Use the ``bigip_device_facts`` module instead.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
 

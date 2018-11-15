@@ -25,7 +25,6 @@ Requirements
 ~~~~~~~~~~~~
 The below requirements are needed on the host that executes this module.
 
-- f5-sdk >= 3.0.16
 - requests
 
 
@@ -273,11 +272,11 @@ Parameters
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
                     <b>transport</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>rest</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>cli</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -394,7 +393,6 @@ Notes
 .. note::
     - Requires the requests Python package on the host. This is as easy as ``pip install requests``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
 
@@ -468,7 +466,7 @@ Examples
 
     - name: Set SSL protocols by string
       bigip_device_httpd:
-        ssl_cipher_suite: all -SSLv2 -SSLv3
+        ssl_protocols: all -SSLv2 -SSLv3
         provider:
           password: secret
           server: lb.mydomain.com
@@ -485,7 +483,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -616,6 +614,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>ssl_cipher_suite_list</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>List of the new ciphers that the system uses.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;ECDHE-RSA-AES256-GCM-SHA384&#x27;, &#x27;ECDHE-RSA-AES128-SHA&#x27;]</div>
                                     </td>
             </tr>
                                 <tr>
