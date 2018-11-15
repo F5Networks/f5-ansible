@@ -16,7 +16,6 @@ except ImportError:
 
 from ansible.module_utils.urls import urlparse
 from ansible.module_utils.urls import generic_urlparse
-from ansible.module_utils._text import to_native
 from ansible.module_utils.urls import Request
 
 try:
