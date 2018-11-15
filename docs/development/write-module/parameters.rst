@@ -21,7 +21,8 @@ for the more specialized ``ApiParameters`` and ``ModuleParameters`` classes. The
 this base class is to provide functionality and data that is used in both of the specialized
 classes.
 
-The ``Parameters`` classes implementation is a little boiler plate mixed with several module-specific changes. This means that for this tutorial (and for any custom modules that you
+The ``Parameters`` classes implementation is a little boiler plate mixed with several module-specific changes.
+This means that for this tutorial (and for any custom modules that you
 may write in the future) it is almost certain that you will be changing parts of it.
 
 For the tutorial's module, please refer `to this link`_ for the correct source code for the

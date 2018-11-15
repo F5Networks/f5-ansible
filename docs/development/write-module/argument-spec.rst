@@ -3,7 +3,8 @@ The ArgumentSpec
 
 The ``ArgumentSpec`` defines which arguments your module will accept.
 
-Earlier, when you were writing the ``DOCUMENTATION`` variable, you identified the arguments to the module and the values those arguments took.
+Earlier, when you were writing the ``DOCUMENTATION`` variable, you identified the arguments to
+the module and the values those arguments took.
 
 Now is the time you would concern yourself with implementing the code that reflects this documentation.
 
@@ -89,7 +90,9 @@ The check_mode declaration
 Typically, the first thing you find in an ``ArgumentSpec`` class is the creation of an
 instance variable named ``supports_check_mode``. This is *almost always* ``True``.
 
-Check mode lets the Ansible user ask a module to run without doing anything to a device. It's a way for the user to know (before they run Ansible in non-check mode) that the module is going to change something on their system.
+Check mode lets the Ansible user ask a module to run without doing anything to a device. It's a way
+for the user to know (before they run Ansible in non-check mode) that the module is going to change
+something on their system.
 
 A deficiency of this feature though, is that it is not implemented in Ansible core. It is
 instead left to the will of the module developer whether or not to support this functionality.

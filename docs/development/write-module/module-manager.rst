@@ -44,16 +44,21 @@ one point or another:
    The ``ModuleManager`` class will change over time as design standards change. The above
    examples are for historical reference and training.
 
-Most modules these days will "look" like version 3.1.1 (as of the time of this writing). The F5 module developers expect this to change as their needs change.
+Most modules these days will "look" like version 3.1.1 (as of the time of this writing). The F5 module
+developers expect this to change as their needs change.
 
-When a change in the coding standards happens, work must be undertaken to ensure that **all** modules are brought up to spec. This is an arduous task that will get more difficult as time goes on and the total number of F5 modules for Ansible increases.
+When a change in the coding standards happens, work must be undertaken to ensure that **all** modules are
+brought up to spec. This is an arduous task that will get more difficult as time goes on and the total
+number of F5 modules for Ansible increases.
 
-Nevertheless, it is more difficult to maintain the F5 Modules for Ansible code base if the modules are each in varying states of convention.
+Nevertheless, it is more difficult to maintain the F5 Modules for Ansible code base if the modules are each
+in varying states of convention.
 
 ModuleManager for bigip_policy_rule
 -----------------------------------
 
-The ``ModuleManager`` for this module is shown in its entirety `at this link`_. For this tutorial, you should reproduce this class in your own module file.
+The ``ModuleManager`` for this module is shown in its entirety `at this link`_. For this tutorial, you should
+reproduce this class in your own module file.
 
 The remainder of this content covers several things.
 
@@ -126,7 +131,8 @@ This method invokes the ``Difference`` class to check for updates.
 Use this method when requesting an update to an existing resource. When this method runs,
 the ``self.changes`` object is updated with the changes needed when updating the API.
 
-A key point about this method is the way the results of diff'ing parameters are interpreted. The return value of a ``compare`` operation of the ``Difference`` class is
+A key point about this method is the way the results of diff'ing parameters are interpreted. The
+return value of a ``compare`` operation of the ``Difference`` class is
 either a scalar value or a dictionary of values.
 
 If a scalar value is returned, it is just associated with the key that matches the parameter
@@ -148,7 +154,8 @@ For example:
 
 The should_update method
 ````````````````````````
-This method is very similar to the ``_update_changed_options``, except this method is used when creating a **new** resource only. In this case, there is no ``Difference`` class that
+This method is very similar to the ``_update_changed_options``, except this method is used when
+creating a **new** resource only. In this case, there is no ``Difference`` class that
 you need to invoke.
 
 The exec_module method
@@ -177,7 +184,8 @@ The exists method
 `````````````````
 This is the first method you will change.
 
-The purpose of this method is to determine if a resource currently exists. You **must** change this method to reflect the APIs of the module that you are writing. During unit
+The purpose of this method is to determine if a resource currently exists. You **must** change
+this method to reflect the APIs of the module that you are writing. During unit
 testing, you will be stubbing out this module because you will be driving code paths and
 have no need to communicate with a real device.
 
@@ -260,9 +268,10 @@ following methods.
 
 .. note::
 
-   While this method seems to be named after the special ``*_on_device`` methods mentioned earlier, it is in fact a module-specific method. The other ``*_on_device``
-   methods mentioned earlier are part of the common ``ModuleManager`` class and are stubbed out for you. The above method is not stubbed out for you and you would
-   need to add it.
+   While this method seems to be named after the special ``*_on_device`` methods mentioned earlier,
+   it is in fact a module-specific method. The other ``*_on_device``
+   methods mentioned earlier are part of the common ``ModuleManager`` class and are stubbed out for
+   you. The above method is not stubbed out for you and you would need to add it.
 
 Other times, these methods have no underscore, such as in the following methods.
 

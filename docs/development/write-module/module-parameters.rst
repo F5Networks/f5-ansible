@@ -29,7 +29,8 @@ functions that handle assist the developer in meeting their goal, are encouraged
 @property methods
 -----------------
 
-Like the ``ApiParameters`` class, the ``ModuleParameters`` will also be composed of (module-specific) ``@property`` decorators. The purpose is completely the same as the
+Like the ``ApiParameters`` class, the ``ModuleParameters`` will also be composed of (module-specific)
+``@property`` decorators. The purpose is completely the same as the
 ``ApiParameters``. This module is an implementation of the Adapter pattern, and therefore,
 it should be used to adapt the values that are received from the Ansible module (i.e., the user)
 into what is usable inside the module code.
