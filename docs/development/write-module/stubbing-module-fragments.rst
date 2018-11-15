@@ -9,16 +9,7 @@ Use the following command to run the development container:
 
 .. code-block:: shell
 
-    $ docker-compose -f devtools/docker-compose.yaml run py3.6
-
-
-.. note::
-
-   F5 employees should use the following command. This assumes that you have contacted a member of the development team to prepare your environment.
-
-   .. code-block:: shell
-
-      $ docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6
+    $ inv container.run -p 3.6
 
 Recreate the stubs
 ------------------
@@ -32,7 +23,7 @@ associated stubs.
 
 .. code-block:: bash
 
-   $ f5ansible unstub module bigip_policy_rule
+   $ inv module.stub -m bigip_policy_rule
 
 Use the ``git status`` command to see that a number of files are reported as deleted now. Now, recreate the stubs from scratch.
 
@@ -42,7 +33,7 @@ To create the necessary directories and files automatically, use this command:
 
 .. code-block:: shell
 
-    $ f5ansible stub module bigip_policy_rule
+    $ inv module.stub -m bigip_policy_rule
 
 When it finishes running, you will have the necessary files available to begin working on your module.
 
@@ -54,16 +45,16 @@ The stubber creates a number of files that you need to do some form of developme
 These files are:
 
 * ``docs/modules/bigip_policy_rule.rst``
-* ``library/bigip_policy_rule.py``
+* ``library/modules/bigip_policy_rule.py``
 * ``test/integration/bigip_policy_rule.yaml``
 * ``test/integration/targets/bigip_policy_rule/``
-* ``test/unit/bigip/test_bigip_policy_rule.py``
+* ``test/units/modules/network/f5/test_bigip_policy_rule.py``
 
 For now, disregard the first file there (the docs file) because you have tools in this container that will help you build all of those tools automatically.
 
 With these files in place, you're ready to begin re-creating the source for the ``bigip_policy_rule`` module.
 
-Open the ``library/bigip_policy_rule.py`` file.
+Open the ``library/modules/bigip_policy_rule.py`` file.
 
 Library stub
 ------------
@@ -71,7 +62,7 @@ Library stub
 The library file is the module itself. Inside this file is all of the work that you
 will be doing to make this add LTM policy rule functionality to Ansible.
 
-The ``f5ansible`` command provides you with a starting point.
+The ``inv`` command provides you with a starting point.
 
 As you scroll through the library file, take note of the names of the classes that you
 encounter. Take note of the imports near the top of the file and how there are different

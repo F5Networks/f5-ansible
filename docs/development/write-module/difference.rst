@@ -53,7 +53,8 @@ are used throughout the ``ModuleManager`` class that was explored earlier. When 
 The compare method
 ``````````````````
 
-This method is responsible for deciding whether a comparison should be done by using predefined properties or the default comparison method.
+This method is responsible for deciding whether a comparison should be done by using predefined
+properties or the default comparison method.
 
 The default comparison method is a simple ``if foo != bar: return foo`` comparison. It does
 not take into consideration things like datatypes, where a comparison such as the one done
@@ -67,7 +68,8 @@ above might fail.
    things like sorting or type casting your return values can go a **long** way in minimizing
    the problems you would otherwise have when implementing the ``Difference`` class.
 
-For more complex comparisons, implement your own comparison method instead of using the default method. To do this, follow the same methodology that you
+For more complex comparisons, implement your own comparison method instead of using the default
+method. To do this, follow the same methodology that you
 followed when writing the ``ApiParameters`` and ``ModuleParameters`` adapters: using the
 ``@property`` decorator on methods.
 

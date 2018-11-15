@@ -16,7 +16,7 @@ Filesystem location
 
 All unit tests are located in the following directory:
 
-* ``tests/unit/``
+* ``tests/units/modules/network/f5/``
 
 Changing to this directory will show a number of files that are named after different modules.
 For example:
@@ -30,7 +30,7 @@ For example:
    -rw-r--r--    1 trupp  OLYMPUS\Domain Users    4323 Jan 24 17:20 test_bigip_device_dns.py
    -rw-r--r--    1 trupp  OLYMPUS\Domain Users    5547 Jan 24 17:20 test_bigip_device_group.py
 
-These files are the unit test files themselves. The ``test/unit/`` directory also includes another
+These files are the unit test files themselves. The ``test/units/modules/network/f5/`` directory also includes another
 directory of interest:
 
 * ``fixtures/``
@@ -78,7 +78,8 @@ Writing a unit test
 -------------------
 
 Let's take the time now to write the unit tests for the module that was developed in this
-tutorial. During the initial stubber run, the ``f5ansible`` command produced a unit test file that included a sampling of what will need to be done.
+tutorial. During the initial stubber run, the ``inv`` command produced a unit test file that
+included a sampling of what will need to be done.
 
 Let's touch on those boilerplate blocks before investigating the actual testing code.
 
@@ -127,17 +128,14 @@ Next, the dev/prod import. This import is defined as such:
        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
        from test.unit.modules.utils import set_module_args
    except ImportError:
-       try:
-           from ansible.modules.network.f5.bigip_policy_rule import Parameters
-           from ansible.modules.network.f5.bigip_policy_rule import ModuleParameters
-           from ansible.modules.network.f5.bigip_policy_rule import ApiParameters
-           from ansible.modules.network.f5.bigip_policy_rule import ModuleManager
-           from ansible.modules.network.f5.bigip_policy_rule import ArgumentSpec
-           from ansible.module_utils.network.f5.common import F5ModuleError
-           from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-           from units.modules.utils import set_module_args
-       except ImportError:
-           raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
+       from ansible.modules.network.f5.bigip_policy_rule import Parameters
+       from ansible.modules.network.f5.bigip_policy_rule import ModuleParameters
+       from ansible.modules.network.f5.bigip_policy_rule import ApiParameters
+       from ansible.modules.network.f5.bigip_policy_rule import ModuleManager
+       from ansible.modules.network.f5.bigip_policy_rule import ArgumentSpec
+       from ansible.module_utils.network.f5.common import F5ModuleError
+       from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+       from units.modules.utils import set_module_args
 
 The purpose of this import block is the same as the purpose of a similar import block that
 existed in the actual module code. The content in the ``try`` section attempts to import

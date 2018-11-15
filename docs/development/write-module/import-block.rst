@@ -17,22 +17,19 @@ For this module, the import block is:
    from ansible.module_utils.basic import env_fallback
    from ansible.module_utils.six import iteritems
 
-   HAS_DEVEL_IMPORTS = False
-
    try:
        # Sideband repository used for dev
        from library.module_utils.network.f5.bigip import HAS_F5SDK
-       from library.module_utils.network.f5.bigip import F5Client
+       from library.module_utils.network.f5.bigip import F5RestClient
        from library.module_utils.network.f5.common import F5ModuleError
        from library.module_utils.network.f5.common import AnsibleF5Parameters
        from library.module_utils.network.f5.common import cleanup_tokens
        from library.module_utils.network.f5.common import fq_name
        from library.module_utils.network.f5.common import f5_argument_spec
-       HAS_DEVEL_IMPORTS = True
    except ImportError:
        # Upstream Ansible
        from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-       from ansible.module_utils.network.f5.bigip import F5Client
+       from ansible.module_utils.network.f5.bigip import F5RestClient
        from ansible.module_utils.network.f5.common import F5ModuleError
        from ansible.module_utils.network.f5.common import AnsibleF5Parameters
        from ansible.module_utils.network.f5.common import cleanup_tokens
@@ -40,7 +37,7 @@ For this module, the import block is:
        from ansible.module_utils.network.f5.common import f5_argument_spec
 
 In 90% of cases, this code is boilerplate and you can ignore it when writing a module.
-The ``f5ansible`` command takes care of this for you.
+The ``inv`` command takes care of this for you.
 
 Let's take a moment to walk through some of the things you see here and explain their
 purpose.
@@ -98,33 +95,6 @@ Python versions.
 This commitment enables the users of F5 modules to gradually move off of older Python versions
 over time.
 
-HAS_DEVEL_IMPORTS definition
-----------------------------
-
-This import happens on or around line #5. In this module's case, it happens exactly at
-line #5.
-
-When working with an Ansible module, there is a convention that constant-like things be
-defined in all capital letters. This is seen in most situations when the module author is
-interested in checking that an import happened, or did not happen.
-
-The same thinking applies here.
-
-The F5 module developers maintain a side-band repository that contains all of the F5 module
-code. In fact, the documentation you're reading is maintained in there, and you cloned that
-side-band repository to work on the module in this tutorial.
-
-Due to the way the developers structure their code, they want to be able to do all of the
-module development without requiring that they move all of their code directly to Ansible.
-
-This variable is defined so that they can know (during debugging) that they are indeed
-importing code from their side-band repository, and not from the Ansible installation that
-is on their system.
-
-By default, this value is ``False``. It assumes that you are *not* running from the
-side-band codebase. This value is set to boolean ``True`` when you are. Which leads us
-to the next import area.
-
 The dev/prod import try block
 -----------------------------
 
@@ -170,16 +140,16 @@ For example:
 
 .. code-block:: python
 
-   from library.module_utils.network.f5.bigip import HAS_F5SDK
+   from library.module_utils.network.f5.common import fq_name
 
 versus:
 
 .. code-block:: python
 
-   from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+   from ansible.module_utils.network.f5.common import fq_name
 
-In both cases, the ``HAS_F5SDK`` variable is attempted to be imported. It is the location
-of this variable that changes. The first attempt is in the side-band repository. The
+In both cases, the ``fq_name`` function is attempted to be imported. It is the location
+of this function that changes. The first attempt is in the side-band repository. The
 second attempt is in Ansible core.
 
 Key imports to recognize
@@ -191,11 +161,7 @@ imports and their purposes are outlined below.
 +-------------------------+---------------------------------------------------------------------+
 | Imported item           | Comment                                                             |
 +=========================+=====================================================================+
-| ``HAS_F5SDK``           | This variable that tells the module if the f5-sdk was found on your |
-|                         | Ansible controller. This variable may be overridden shortly in a    |
-|                         | subsequent import check.                                            |
-+-------------------------+---------------------------------------------------------------------+
-| ``F5Client``            | This variable contains a connection to your F5 device (BIG-IP,      |
+| ``F5RestClient``        | This variable contains a connection to your F5 device (BIG-IP,      |
 |                         | BIG-IQ, etc).                                                       |
 +-------------------------+---------------------------------------------------------------------+
 | ``F5ModuleError``       | This is a general purpose ``Exception`` class that all F5 modules   |
@@ -232,6 +198,7 @@ Conclusion
 
 The import block at the top of each module has a number of useful things injected into the module.
 
-The next section skips down to the bottom of the file and begins exploring some of the common classes of a module. ``ArgumentSpec`` will be the first class we visit.
+The next section skips down to the bottom of the file and begins exploring some of the common classes
+of a module. ``ArgumentSpec`` will be the first class we visit.
 
 .. _in Ansible here: https://github.com/ansible/ansible/blob/2f36b9e5ce0ec41a822752845d3b7c4afdf7eee9/lib/ansible/module_utils/basic.py#L801

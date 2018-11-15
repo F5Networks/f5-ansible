@@ -19,7 +19,8 @@ Internal methods
 Adapter classes like ``ApiParameters`` may have any number of internal methods added to them.
 
 In this module's implementation, the class has one method: ``_remove_internal_keywords``.
-Adding new internal methods is a great way to tease out common functionality that you may want to reuse across a wide variety of modules.
+Adding new internal methods is a great way to tease out common functionality that you may want to
+reuse across a wide variety of modules.
 
 The quintessential example is the ``fq_name`` method. You know it is common, because if you
 remember back to the :doc:`import block <import-block>` section, it was included in one of the imports:
@@ -154,8 +155,9 @@ The adapter needs to take this payload and turn it into something that the modul
 A lot of thought needs to go into the "that the module can use" part, because there is no
 prescribed way of handling data.
 
-The developer of this module needed to know about what was stored in the API so that they could do an accurate comparison. These things were outlined back in
-the ``DOCUMENTATION`` blob that you wrote. If you'll remember, that data was the following:
+The developer of this module needed to know about what was stored in the API so that they could
+do an accurate comparison. These things were outlined back in the ``DOCUMENTATION`` blob that
+you wrote. If you'll remember, that data was the following:
 
 .. code-block:: yaml
 

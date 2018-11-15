@@ -1,13 +1,19 @@
 DOCUMENTATION variable
 ======================
 
-The DOCUMENTATION variable is the first chunk of code that you will insert. It describes the module and names the parameters it accepts, who the authors/maintainers are, its dependencies, and a variety of other things.
+The DOCUMENTATION variable is the first chunk of code that you will insert. It describes the module
+and names the parameters it accepts, who the authors/maintainers are, its dependencies, and a variety
+of other things.
 
-This area of the module is near the top, but note that you were not instructed to change anything else near the top. This is because when fleshing out a stub, a lot of boilerplate is included for you automatically.
+This area of the module is near the top, but note that you were not instructed to change anything else
+near the top. This is because when fleshing out a stub, a lot of boilerplate is included for you automatically.
 
-This actually makes writing modules easier. You no longer need to concern yourself with writing this boilerplate; only changing it as necessary. This can really shorten your development time for a module that uses a good API.
+This actually makes writing modules easier. You no longer need to concern yourself with writing this
+boilerplate; only changing it as necessary. This can really shorten your development time for a module that
+uses a good API.
 
-The ``f5ansible`` tool created all of what you see, but you are concerned right now with only documenting this module. The stub includes some of that work for you. For example:
+The ``f5ansible`` tool created all of what you see, but you are concerned right now with only documenting
+this module. The stub includes some of that work for you. For example:
 
 .. code-block:: python
 
@@ -280,7 +286,8 @@ First, the top-level key for this block is called ``options``. Yours should be t
 This is how Ansible knows to report this section of documentation in the module's parameters
 table.
 
-The first parameter listed above is the ``description`` parameter. It has a ``description`` field that describes what the purpose of the ``description`` parameter is.
+The first parameter listed above is the ``description`` parameter. It has a ``description`` field
+that describes what the purpose of the ``description`` parameter is.
 
 The next parameter is called ``actions``. Like the previous parameter, this one also
 has a ``description`` field that describes what its purpose in the module is. In fact, it
