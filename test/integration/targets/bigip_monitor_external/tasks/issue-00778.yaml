@@ -1,0 +1,42 @@
+---
+
+- name: Issue 00778 - Upload external monitor
+  bigip_file_copy:
+    name: monitor1
+    source: "{{ role_path }}/files/monitor.sh"
+    datastore: external-monitor
+
+- name: Issue 00778 - Create External Monitor with custom monitor
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    external_program: monitor1
+  register: result
+
+- name: Issue 00778 - Assert Create External Monitor with custom monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00778 - Create External Monitor with custom monitor - Idempotent check
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    external_program: monitor1
+  register: result
+
+- name: Issue 00778 - Assert Create External Monitor with custom monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00778 - Remove monitor
+  bigip_monitor_external:
+    name: "{{ monitor_name }}"
+    state: absent
+
+- name: Issue 00778 - Remove uploaded monitor
+  bigip_file_copy:
+    name: monitor1
+    state: absent
+    datastore: external-monitor
