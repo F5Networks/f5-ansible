@@ -49,7 +49,7 @@ from six import iteritems, string_types
 
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_bytes, to_text
-from ansible.plugins.loader import fragment_loader
+from tasks.lib.docs import get_fragment_loader
 from ansible.utils import plugin_docs
 from ansible.utils.display import Display
 
@@ -578,14 +578,6 @@ def validate_options(options):
         sys.exit("--module-dir does not exist: %s" % options.module_dir, file=sys.stderr)
     if not options.template_dir:
         sys.exit("--template-dir must be specified")
-
-
-def get_fragment_loader():
-    # This is loaded as an import at the start of the script.
-    #
-    # This method allows one to override the fragment loader that is used
-    # by overloading this function.
-    return fragment_loader
 
 
 def main():
