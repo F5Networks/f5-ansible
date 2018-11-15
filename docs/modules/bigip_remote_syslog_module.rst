@@ -21,12 +21,6 @@ Synopsis
 
 
 
-Requirements
-~~~~~~~~~~~~
-The below requirements are needed on the host that executes this module.
-
-- f5-sdk >= 3.0.16
-
 
 Parameters
 ----------
@@ -47,7 +41,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the local IP address of the system that is logging. To provide no local IP, specify the value <code>none</code>. When creating a remote syslog, if this parameter is not specified, the default value <code>none</code> is used.</div>
+                                                                        <div>Specifies the local IP address of the system that is logging. To provide no local IP, specify the value <code>none</code>.</div>
+                                                    <div>When creating a remote syslog, if this parameter is not specified, the default value <code>none</code> is used.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -58,7 +53,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the name of the syslog object.</div>
-                                                    <div>The option is required when multiple <code>remote_host</code> with the same IP or hostname are present on the device.</div>
+                                                    <div>This option is required when multiple <code>remote_host</code> with the same IP or hostname are present on the device.</div>
                                                     <div>If <code>name</code> is not provided <code>remote_host</code> is used by default.</div>
                                                                                 </td>
             </tr>
@@ -179,11 +174,11 @@ Parameters
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
                     <b>transport</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>rest</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>cli</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -208,7 +203,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the port that the system uses to send messages to the remote logging server. When creating a remote syslog, if this parameter is not specified, the default value <code>514</code> is used.</div>
+                                                                        <div>Specifies the port that the system uses to send messages to the remote logging server.</div>
+                                                    <div>When creating a remote syslog, if this parameter is not specified, the default value <code>514</code> is used.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -284,7 +280,6 @@ Notes
 
 .. note::
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
 
@@ -298,20 +293,22 @@ Examples
     - name: Add a remote syslog server to log to
       bigip_remote_syslog:
         remote_host: 10.10.10.10
-        password: secret
-        server: lb.mydomain.com
-        user: admin
-        validate_certs: no
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+          validate_certs: no
       delegate_to: localhost
 
     - name: Add a remote syslog server on a non-standard port to log to
       bigip_remote_syslog:
         remote_host: 10.10.10.10
         remote_port: 1234
-        password: secret
-        server: lb.mydomain.com
-        user: admin
-        validate_certs: no
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+          validate_certs: no
       delegate_to: localhost
 
 

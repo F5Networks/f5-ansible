@@ -21,12 +21,6 @@ Synopsis
 
 
 
-Requirements
-~~~~~~~~~~~~
-The below requirements are needed on the host that executes this module.
-
-- f5-sdk >= 3.0.16
-
 
 Parameters
 ----------
@@ -34,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                     <tr>
@@ -202,6 +196,21 @@ Parameters
                                                     <div>When <code>type</code> is <code>internal</code>, this parameter will be ignored.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: all_rules</div>
                                     </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>mask</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the destination address network mask. This parameter will work with IPv4 and IPv6 tye of addresses.</div>
+                                                    <div>This is an optional parameter which can be specified when creating or updating virtual server.</div>
+                                                    <div>If <code>destination</code> is provided in CIDR notation format and <code>mask</code> is provided the mask parameter takes precedence.</div>
+                                                    <div>If catchall destination is specified, i.e. <code>0.0.0.0</code> for IPv4 <code>::</code> for IPv6, mask parameter is set to <code>any</code> or <code>any6</code> respectively)</div>
+                                                    <div>When the <code>destination</code> is provided not in CIDR notation and <code>mask</code> is not specified, <code>255.255.255.255</code> or <code>ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff</code> is set for IPv4 and IPv6 addresses respectively.</div>
+                                                    <div>When <code>destination</code> is provided in CIDR notation format and <code>mask</code> is not specified the mask parameter is inferred from <code>destination</code>.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -487,11 +496,11 @@ Parameters
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
                     <b>transport</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>rest</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>cli</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -723,7 +732,6 @@ Notes
 
 .. note::
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
-    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
 
