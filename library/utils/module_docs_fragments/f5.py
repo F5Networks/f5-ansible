@@ -106,7 +106,7 @@ options:
         choices:
           - rest
           - cli
-        default: cli
+        default: rest
 notes:
   - For more information on using Ansible to manage F5 Networks devices see U(https://www.ansible.com/integrations/networks/f5).
   - Requires BIG-IP software version >= 12.
