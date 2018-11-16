@@ -70,13 +70,13 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            source=[
-                dict(subnet='192.168.1.0/24'),
-                dict(negate=True)
-            ],
-            destination=[
-                dict(region='Foobar'),
-            ],
+            source=dict(
+                subnet='192.168.1.0/24',
+                negate=True
+            ),
+            destination=dict(
+                region='Foobar',
+            ),
             weight=10
         )
 
@@ -86,13 +86,13 @@ class TestParameters(unittest.TestCase):
 
     def test_api_parameters(self):
         args = dict(
-            source=[
-                dict(subnet='192.168.1.0/24'),
-                dict(negate=True)
-            ],
-            destination=[
-                dict(region='Foobar'),
-            ],
+            source=dict(
+                subnet='192.168.1.0/24',
+                negate=True
+            ),
+            destination=dict(
+                region='Foobar',
+            ),
             score=10
         )
 
@@ -107,14 +107,14 @@ class TestManager(unittest.TestCase):
 
     def test_create_topology_record(self, *args):
         set_module_args(dict(
-            source=[
-                dict(subnet='192.168.1.0/24'),
-                dict(negate=True)
-            ],
-            destination=[
-                dict(region='Foobar'),
-            ],
-            score=10
+            source=dict(
+                subnet='192.168.1.0/24',
+                negate=True
+            ),
+            destination=dict(
+                region='Foobar',
+            ),
+            weight=10
         ))
 
         module = AnsibleModule(
