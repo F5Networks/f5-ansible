@@ -9,6 +9,7 @@ __metaclass__ = type
 import os
 import json
 import sys
+import pytest
 
 from nose.plugins.skip import SkipTest
 if sys.version_info < (2, 7):
@@ -22,6 +23,8 @@ try:
     from library.modules.bigip_remote_syslog import ModuleManager
     from library.modules.bigip_remote_syslog import ArgumentSpec
 
+    from library.module_utils.network.f5.common import F5ModuleError
+
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
     from test.units.compat.mock import Mock
@@ -29,24 +32,20 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    try:
-        from ansible.modules.network.f5.bigip_remote_syslog import ApiParameters
-        from ansible.modules.network.f5.bigip_remote_syslog import ModuleParameters
-        from ansible.modules.network.f5.bigip_remote_syslog import ModuleManager
-        from ansible.modules.network.f5.bigip_remote_syslog import ArgumentSpec
+    from ansible.modules.network.f5.bigip_remote_syslog import ApiParameters
+    from ansible.modules.network.f5.bigip_remote_syslog import ModuleParameters
+    from ansible.modules.network.f5.bigip_remote_syslog import ModuleManager
+    from ansible.modules.network.f5.bigip_remote_syslog import ArgumentSpec
 
-        # Ansible 2.8 imports
-        from units.compat import unittest
-        from units.compat.mock import Mock
-        from units.compat.mock import patch
+    from ansible.module_utils.network.f5.common import F5ModuleError
 
-        from units.modules.utils import set_module_args
-    except ImportError:
-        raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
+    # Ansible 2.8 imports
+    from units.compat import unittest
+    from units.compat.mock import Mock
+    from units.compat.mock import patch
 
-    from ansible.modules.network.f5.bigip_remote_syslog import HAS_NETADDR
-    if not HAS_NETADDR:
-        raise SkipTest("F5 Ansible modules require the netaddr Python library")
+    from units.modules.utils import set_module_args
+
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -83,21 +82,6 @@ class TestParameters(unittest.TestCase):
         assert p.remote_port == 514
         assert p.local_ip == '1.1.1.1'
 
-    def test_api_parameters(self):
-        args = dict(
-            remoteServers=[
-                dict(
-                    name='/Common/remotesyslog1',
-                    host='10.10.10.10',
-                    localIp='none',
-                    remotePort=514
-                )
-            ]
-        )
-
-        p = ApiParameters(params=args)
-        assert len(p.remoteServers) == 1
-
 
 class TestManager(unittest.TestCase):
 
@@ -112,7 +96,9 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = ApiParameters(params=load_fixture('load_tm_sys_syslog.json'))
+        fixture = load_fixture('load_tm_sys_syslog_1.json')
+        current = fixture['remoteServers']
+
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -130,13 +116,16 @@ class TestManager(unittest.TestCase):
 
     def test_create_remote_syslog_idempotent(self, *args):
         set_module_args(dict(
+            name='remotesyslog1',
             remote_host='10.10.10.10',
             server='localhost',
             password='password',
             user='admin'
         ))
 
-        current = ApiParameters(params=load_fixture('load_tm_sys_syslog.json'))
+        fixture = load_fixture('load_tm_sys_syslog_1.json')
+        current = fixture['remoteServers']
+
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -160,7 +149,9 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = ApiParameters(params=load_fixture('load_tm_sys_syslog.json'))
+        fixture = load_fixture('load_tm_sys_syslog_1.json')
+        current = fixture['remoteServers']
+
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -186,7 +177,9 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = ApiParameters(params=load_fixture('load_tm_sys_syslog.json'))
+        fixture = load_fixture('load_tm_sys_syslog_1.json')
+        current = fixture['remoteServers']
+
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -202,3 +195,31 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['local_ip'] == '2.2.2.2'
+
+    def test_update_no_name_dupe_host(self, *args):
+        set_module_args(dict(
+            remote_host='10.10.10.10',
+            local_ip='2.2.2.2',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        fixture = load_fixture('load_tm_sys_syslog_2.json')
+        current = fixture['remoteServers']
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+        mm.update_on_device = Mock(return_value=True)
+
+        with pytest.raises(F5ModuleError) as ex:
+            mm.exec_module()
+
+        assert "Multiple occurrences of hostname" in str(ex)
