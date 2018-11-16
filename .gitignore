@@ -10,6 +10,7 @@ vault.txt
 **.cache/
 cache/
 local/ansible
+test/integration/targets/bigip_imish_config/backup
 
 # Byte-compiled files
 __pycache__/
