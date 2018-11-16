@@ -933,7 +933,7 @@ class RootUserManager(BaseManager):
         lines = content.split("\n")
         start = lines.index('-----BEGIN PUBLIC KEY-----')
         end = lines.index('-----END PUBLIC KEY-----')
-        result = "\n".join(lines[start:end+1])
+        result = "\n".join(lines[start:end + 1])
         return result
 
     def update_on_device(self):
