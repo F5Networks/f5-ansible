@@ -26,7 +26,7 @@ options:
     required: True
 extends_documentation_fragment: f5
 author:
-  - Tim Rupp (@caphrim007)
+  - Author Name (@github_handle)
 '''
 
 EXAMPLES = r'''
@@ -62,6 +62,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
+    from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
@@ -71,6 +72,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
+    from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
@@ -178,11 +180,13 @@ class ModuleManager(object):
             return True
         return False
 
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def exec_module(self):
         changed = False
@@ -201,26 +205,22 @@ class ModuleManager(object):
         self._announce_deprecations(result)
         return result
 
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
-        for warning in warnings:
-            self.client.module.deprecate(
-                msg=warning['msg'],
-                version=warning['version']
-            )
-
     def present(self):
         if self.exists():
             return self.update()
         else:
             return self.create()
 
-    def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        return result
+    def absent(self):
+        if self.exists():
+            return self.remove()
+        return False
+
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -246,42 +246,90 @@ class ModuleManager(object):
         self.create_on_device()
         return True
 
+    def exists(self):
+        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
+
     def create_on_device(self):
         params = self.changes.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        params['name'] = self.want.name
+        params['partition'] = self.want.partition
+        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 409]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return True
 
     def update_on_device(self):
         params = self.changes.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        resource.modify(**params)
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
 
-    def absent(self):
-        if self.exists():
-            return self.remove()
-        return False
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        if resource:
-            resource.delete()
+        response = self.client.api.delete(uri)
+        if response.status == 200:
+            return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name)
         )
-        result = resource.attrs
-        return ApiParameters(params=result)
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return ApiParameters(params=response)
 
 
 class ArgumentSpec(object):
