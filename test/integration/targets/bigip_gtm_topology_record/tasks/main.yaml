@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Create an IP Subnet and an ISP based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_1 }}"
     destination:
@@ -18,7 +18,7 @@
       - result is success
 
 - name: Create an IP Subnet and an ISP based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_1 }}"
     destination:
@@ -33,7 +33,7 @@
       - result is success
 
 - name: Remove an IP Subnet and an ISP based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_1 }}"
     destination:
@@ -48,7 +48,7 @@
       - result is success
 
 - name: Remove an IP Subnet and an ISP based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_1 }}"
     destination:
@@ -63,7 +63,7 @@
       - result is success
 
 - name: Create a region and a pool based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       region: "{{ region }}"
     destination:
@@ -77,7 +77,7 @@
       - result is success
 
 - name: Create a region and a pool based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       region: "{{ region }}"
     destination:
@@ -91,7 +91,7 @@
       - result is success
 
 - name: Modify weight on a region and a pool based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       region: "{{ region }}"
     destination:
@@ -106,7 +106,7 @@
       - result is success
 
 - name: Modify weight on a region and a pool based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       region: "{{ region }}"
     destination:
@@ -121,7 +121,7 @@
       - result is success
 
 - name: Remove a region and a pool based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       region: "{{ region }}"
     destination:
@@ -136,7 +136,7 @@
       - result is success
 
 - name: Remove a region and a pool based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       region: "{{ region }}"
     destination:
@@ -151,7 +151,7 @@
       - result is success
 
 - name: Create a negative continent and a negative data center based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       continent: "{{ continent_1 }}"
       negate: yes
@@ -167,7 +167,7 @@
       - result is success
 
 - name: Create a negative continent and a negative data center based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       continent: "{{ continent_1 }}"
       negate: yes
@@ -183,7 +183,7 @@
       - result is success
 
 - name: Remove a negative continent and a negative data center based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       continent: "{{ continent_1 }}"
       negate: yes
@@ -200,7 +200,7 @@
       - result is success
 
 - name: Remove a negative continent and a negative data center based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       continent: "{{ continent_1 }}"
       negate: yes
@@ -217,7 +217,7 @@
       - result is success
 
 - name: Create an IP Subnet and a negative state based topology record, country missing - Expect Failure
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_2 }}"
     destination:
@@ -227,7 +227,7 @@
   failed_when: "'Country needs to be provided when specifying state' not in result['msg']"
 
 - name: Create an IP Subnet and a negative state based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_2 }}"
     destination:
@@ -243,7 +243,7 @@
       - result is success
 
 - name: Create an IP Subnet and a negative state based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_2 }}"
     destination:
@@ -259,7 +259,7 @@
       - result is success
 
 - name: Remove an IP Subnet and a negative state based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_2 }}"
     destination:
@@ -276,7 +276,7 @@
       - result is success
 
 - name: Remove an IP Subnet and a negative state based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       subnet: "{{ net_2 }}"
     destination:
@@ -293,7 +293,7 @@
       - result is success
 
 - name: Create an ISP and a continent based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       isp: "{{ isp_2 }}"
     destination:
@@ -307,7 +307,7 @@
       - result is success
 
 - name: Create an ISP and a continent based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       isp: "{{ isp_2 }}"
     destination:
@@ -321,7 +321,7 @@
       - result is success
 
 - name: Remove an ISP and a continent based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       isp: "{{ isp_2 }}"
     destination:
@@ -336,7 +336,7 @@
       - result is success
 
 - name: Remove an ISP and a continent based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       isp: "{{ isp_2 }}"
     destination:
@@ -351,7 +351,7 @@
       - result is success
 
 - name: Create a country and an geo isp based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       country: "{{ country_1 }}"
     destination:
@@ -365,7 +365,7 @@
       - result is success
 
 - name: Create a country and an geo isp based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       country: "{{ country_1 }}"
     destination:
@@ -379,7 +379,7 @@
       - result is success
 
 - name: Remove a country and an geo isp based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       country: "{{ country_1 }}"
     destination:
@@ -394,7 +394,7 @@
       - result is success
 
 - name: Remove a country and an geo isp based topology record - Idempotent check
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       country: "{{ country_1 }}"
     destination:

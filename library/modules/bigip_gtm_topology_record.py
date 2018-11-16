@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_gtm_topology_records
+module: bigip_gtm_topology_record
 short_description: Manages GTM Topology Records
 description:
   - Manages GTM Topology Records. Once created, only topology record C(weight) can be modified.
