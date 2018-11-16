@@ -156,7 +156,7 @@ author:
 
 EXAMPLES = r'''
 - name: Create an IP Subnet and an ISP based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       - subnet: 192.168.1.0/24
     destination:
@@ -169,7 +169,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Create a region and a pool based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       - region: Foo
     destination:
@@ -182,7 +182,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Create a negative region and a negative data center based topology record
-  bigip_gtm_topology_records:
+  bigip_gtm_topology_record:
     source:
       - region: Baz
       - negate: yes
