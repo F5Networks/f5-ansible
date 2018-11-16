@@ -298,10 +298,9 @@ options:
    description:
       - Specifies the destination address network mask. This parameter will work with IPv4 and IPv6 tye of addresses.
       - This is an optional parameter which can be specified when creating or updating virtual server.
-      - If C(destination) is provided in CIDR notation format and C(mask) is provided the mask parameter takes
-        precedence.
+      - If C(destination) is set in CIDR notation format and C(mask) is provided the C(mask) parameter takes precedence.
       - If catchall destination is specified, i.e. C(0.0.0.0) for IPv4 C(::) for IPv6,
-        mask parameter is set to C(any) or C(any6) respectively)
+        mask parameter is set to C(any) or C(any6) respectively.
       - When the C(destination) is provided not in CIDR notation and C(mask) is not specified, C(255.255.255.255) or
         C(ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff) is set for IPv4 and IPv6 addresses respectively.
       - When C(destination) is provided in CIDR notation format and C(mask) is not specified the mask parameter is

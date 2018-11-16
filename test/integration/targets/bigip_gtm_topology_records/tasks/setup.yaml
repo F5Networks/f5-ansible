@@ -1,0 +1,24 @@
+---
+
+- name: Provision GTM
+  bigip_provision:
+    name: gtm
+  tags:
+    - module-provisioning
+
+- name: Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+
+- name: Create pool
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    state: present
+    type: a
+    max_answers_returned: 10
+
+- name: Create GTM region
+  bigip_command:
+    commands:
+      - tmsh create gtm region foo_region

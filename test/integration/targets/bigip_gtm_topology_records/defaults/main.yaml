@@ -1,0 +1,21 @@
+---
+
+dc_name1: foo_dc
+region: foo_region
+pool_name: foo.pool
+pool_lb_method: round-robin
+
+net_1: "192.168.1.0/24"
+net_2: "10.10.10.0/25"
+
+isp_1: AOL
+isp_2: CNC
+
+country_1: "PL"
+country_2: "United States"
+state_1: "Ohio"
+
+continent_1: "Unknown"
+continent_2: "Asia"
+
+geo_isp: foo_geo
