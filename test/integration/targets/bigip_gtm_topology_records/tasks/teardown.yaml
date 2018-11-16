@@ -1,3 +1,5 @@
+---
+
 - name: Remove gtm pool
   bigip_gtm_pool:
     name: "{{ pool_name }}"
