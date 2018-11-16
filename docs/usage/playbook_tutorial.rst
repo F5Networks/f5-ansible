@@ -10,16 +10,16 @@ Creating necessary directories
 ------------------------------
 
 Ansible expects a certain directory structure when it runs. We'll replicate below what that
-structure is and that will set us up for the remainder of this tutorial
+structure is and that will set us up for the remainder of this tutorial.
 
-.. code-block::
+.. code-block:: yaml
 
    $ mkdir -p ansible/inventory/
 
 The above set of directories includes the top-level ``ansible`` directory. This top-level
 directory can be named anything, so we chose to name it ``ansible``.
 
-Under that directory is where we'll put our inventory file (the ``inventory`` directory.
+Under that directory is where we'll put our inventory file.
 
 Creating an inventory file
 --------------------------
@@ -184,7 +184,7 @@ Refer to the command below.
 
 If you followed the above steps correctly, you should see output similar to what is shown below.
 
-.. code-block::
+.. code-block:: yaml
 
    PLAY [Create a VIP, pool and pool members] ***********************************************
 
