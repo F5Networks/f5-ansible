@@ -1,0 +1,25 @@
+---
+
+- name: Remove gtm pool
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    state: absent
+    type: a
+
+- name: Delete datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+    state: absent
+
+- name: Delete GTM region
+  bigip_command:
+    commands:
+      - tmsh delete gtm region foo_region
+
+- name: De-provision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
