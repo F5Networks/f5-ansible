@@ -1,16 +1,16 @@
 ---
 
-- name: Create a VIP, pool, pool members and nodes
-  hosts: f5-test
+- name: Create a VIP, pool and pool members
+  hosts: all
   connection: local
 
   vars:
     provider:
-      password: "{{ f5_password }}"
-      server: "{{ ansible_host }}"
-      user: "{{ f5_username }}"
-      validate_certs: "{{ validate_certs }}"
-      server_port: "{{ f5_server_port }}"
+      password: admin
+      server: localhost
+      user: admin
+      validate_certs: no
+      server_port: 10443
 
   tasks:
     - name: Create a pool

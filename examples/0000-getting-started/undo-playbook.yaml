@@ -1,16 +1,16 @@
 ---
 
 - name: Remove VIP, pool, pool members and nodes
-  hosts: f5-test
+  hosts: all
   connection: local
 
   vars:
     provider:
-      password: "{{ f5_password }}"
-      server: "{{ ansible_host }}"
-      user: "{{ f5_username }}"
-      validate_certs: "{{ validate_certs }}"
-      server_port: "{{ f5_server_port }}"
+      password: admin
+      server: 1.1.1.1
+      user: admin
+      validate_certs: no
+      server_port: 443
 
   tasks:
     - name: Destroy a VIP
