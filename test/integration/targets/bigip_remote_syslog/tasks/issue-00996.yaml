@@ -118,6 +118,7 @@
     state: absent
   loop:
     - "{{ remote_host2 }}"
+    - "{{ remote_host1 }}"
   register: result
 
 - name: Issue 00996 - Remove rest of Syslogs - verify removal

@@ -28,20 +28,22 @@ options:
   name:
     description:
       - Specifies the name of the syslog object.
-      - The option is required when multiple C(remote_host) with the same IP or hostname are present on the device.
+      - This option is required when multiple C(remote_host) with the same IP
+        or hostname are present on the device.
       - If C(name) is not provided C(remote_host) is used by default.
     version_added: 2.8
   remote_port:
     description:
       - Specifies the port that the system uses to send messages to the
-        remote logging server. When creating a remote syslog, if this parameter
-        is not specified, the default value C(514) is used.
+        remote logging server.
+      - When creating a remote syslog, if this parameter is not specified, the
+        default value C(514) is used.
   local_ip:
     description:
       - Specifies the local IP address of the system that is logging. To
-        provide no local IP, specify the value C(none). When creating a
-        remote syslog, if this parameter is not specified, the default value
-        C(none) is used.
+        provide no local IP, specify the value C(none).
+      - When creating a remote syslog, if this parameter is not specified, the
+        default value C(none) is used.
   state:
     description:
       - When C(present), guarantees that the remote syslog exists with the provided
@@ -61,20 +63,22 @@ EXAMPLES = r'''
 - name: Add a remote syslog server to log to
   bigip_remote_syslog:
     remote_host: 10.10.10.10
-    password: secret
-    server: lb.mydomain.com
-    user: admin
-    validate_certs: no
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+      validate_certs: no
   delegate_to: localhost
 
 - name: Add a remote syslog server on a non-standard port to log to
   bigip_remote_syslog:
     remote_host: 10.10.10.10
     remote_port: 1234
-    password: secret
-    server: lb.mydomain.com
-    user: admin
-    validate_certs: no
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+      validate_certs: no
   delegate_to: localhost
 '''
 
@@ -91,8 +95,6 @@ local_ip:
   sample: 10.10.10.10
 '''
 
-import re
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 
@@ -105,6 +107,8 @@ try:
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import compare_dictionary
+    from library.module_utils.network.f5.common import is_valid_hostname
+    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.ipaddress import is_valid_ip
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
@@ -115,43 +119,44 @@ except ImportError:
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.common import compare_dictionary
+    from ansible.module_utils.network.f5.common import is_valid_hostname
+    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'remoteServers': 'remote_servers',
+        'remotePort': 'remote_port',
+        'localIp': 'local_ip',
+        'host': 'remote_host',
     }
 
     updatables = [
-        'remote_port', 'local_ip', 'remote_servers',
+        'remote_port',
+        'local_ip',
+        'remote_host',
+        'name',
     ]
 
     returnables = [
-        'remote_port', 'local_ip', 'remote_servers',
+        'remote_port',
+        'local_ip',
+        'remote_host',
+        'name',
+        'remoteServers',
     ]
 
     api_attributes = [
+        'remotePort',
+        'localIp',
+        'host',
+        'name',
         'remoteServers',
     ]
 
 
 class ApiParameters(Parameters):
-    @property
-    def remote_servers(self):
-        if self._values['remote_servers'] is None:
-            return None
-        remote = [self._handle_none(d) for d in self._values['remote_servers']]
-        current_hosts = dict((d['name'], d) for (i, d) in enumerate(remote))
-        return current_hosts
-
-    def _handle_none(self, d):
-        result = {}
-        for k, v in d.items():
-            if v == 'none':
-                v = None
-            result[k] = v
-        return result
+    pass
 
 
 class ModuleParameters(Parameters):
@@ -159,34 +164,11 @@ class ModuleParameters(Parameters):
     def remote_host(self):
         if is_valid_ip(self._values['remote_host']):
             return self._values['remote_host']
-        elif self.is_valid_hostname(self._values['remote_host']):
+        elif is_valid_hostname(self._values['remote_host']):
             return str(self._values['remote_host'])
         raise F5ModuleError(
             "The provided 'remote_host' is not a valid IP or hostname"
         )
-
-    def is_valid_hostname(self, host):
-        """Reasonable attempt at validating a hostname
-
-        Compiled from various paragraphs outlined here
-        https://tools.ietf.org/html/rfc3696#section-2
-        https://tools.ietf.org/html/rfc1123
-
-        Notably,
-        * Host software MUST handle host names of up to 63 characters and
-          SHOULD handle host names of up to 255 characters.
-        * The "LDH rule", after the characters that it permits. (letters, digits, hyphen)
-        * If the hyphen is used, it is not permitted to appear at
-          either the beginning or end of a label
-
-        :param host:
-        :return:
-        """
-        if len(host) > 255:
-            return False
-        host = host.rstrip(".")
-        allowed = re.compile(r'(?!-)[A-Z0-9-]{1,63}(?<!-)$', re.IGNORECASE)
-        return all(allowed.match(x) for x in host.split("."))
 
     @property
     def remote_port(self):
@@ -215,23 +197,8 @@ class ModuleParameters(Parameters):
             return None
         if self._values['name'] is None:
             return None
-        name = '/{0}/{1}'.format(self.partition, self._values['name'])
+        name = fq_name(self.partition, self._values['name'])
         return name
-
-    @property
-    def remote_servers(self):
-        if self.remote_host is None:
-            return None
-        if self.remote_port is None:
-            remote_port = 514
-        else:
-            remote_port = self.remote_port
-        details = dict(host=self.remote_host,
-                       name=self.name,
-                       localIp=self.local_ip,
-                       remotePort=remote_port)
-        want_servers = {self.name: details}
-        return want_servers
 
 
 class Changes(Parameters):
@@ -257,11 +224,13 @@ class UsableChanges(Changes):
 class ReportableChanges(Changes):
     @property
     def remote_port(self):
-        return self._values['remote_port']
+        if self._values['remote_port'] is None:
+            return None
+        return int(self._values['remote_port'])
 
     @property
-    def local_ip(self):
-        return self._values['local_ip']
+    def remoteServers(self):
+        pass
 
 
 class Difference(object):
@@ -287,82 +256,6 @@ class Difference(object):
         except AttributeError:
             return attr1
 
-    def _hosts_diff(self, want_hosts, have_hosts):
-        try:
-            have = have_hosts[self.want.name]
-            diff = compare_dictionary(want_hosts, have)
-            return diff, self.want.name
-        except KeyError:
-            pass
-        for item in have_hosts:
-            if have_hosts[item]['host'] == self.want.remote_host:
-                diff = compare_dictionary(want_hosts, have_hosts[item])
-                return diff, have_hosts[item]['name']
-        return want_hosts, want_hosts['name']
-
-    @property
-    def remote_servers(self):
-        """Return changed list of remote servers
-
-        The order of this list does not matter as BIG-IP will send to all the
-        items in it.
-
-        :return:
-        """
-        changed = False
-
-        if self.want.remote_servers is None:
-            return None
-
-        if self.have.remote_servers is None:
-            result = list()
-            result.append(self.want.remote_servers[self.want.name])
-            return result
-
-        want_hosts = self.want.remote_servers[self.want.name]
-        have_hosts = self.have.remote_servers
-
-        if self.want.state == 'absent':
-            try:
-                del have_hosts[self.want.name]
-            except KeyError:
-                pass
-            for item in have_hosts:
-                if have_hosts[item]['host'] == self.want.remote_host:
-                    del have_hosts[item]
-                    break
-            result = [v for (k, v) in iteritems(have_hosts)]
-            return result
-
-        diff, name = self._hosts_diff(want_hosts, have_hosts)
-        if diff:
-            have_hosts[name] = diff
-            changed = True
-        if changed:
-            result = [v for (k, v) in iteritems(have_hosts)]
-            return result
-        return None
-
-    @property
-    def remote_port(self):
-        if self.have.remote_servers is None:
-            return self.want.remote_port
-        result, _ = self._hosts_diff(self.want.remote_servers[self.want.name], self.have.remote_servers)
-        if result:
-            if result['remotePort'] == self.want.remote_port:
-                return result['remotePort']
-        return None
-
-    @property
-    def local_ip(self):
-        if self.have.remote_servers is None:
-            return self.want.local_ip
-        result, _ = self._hosts_diff(self.want.remote_servers[self.want.name], self.have.remote_servers)
-        if result:
-            if result['localIp'] == self.want.local_ip:
-                return result['localIp']
-        return None
-
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
@@ -371,6 +264,12 @@ class ModuleManager(object):
         self.want = ModuleParameters(params=self.module.params)
         self.have = ApiParameters()
         self.changes = UsableChanges()
+
+        # A list of all the syslogs queried from the API when reading current info
+        # from the device. This is used when updating the API as the value that needs
+        # to be updated is a list of syslogs and PATCHing a list would override any
+        # default settings.
+        self.syslogs = dict()
 
     def _announce_deprecations(self, result):
         warnings = result.pop('__warnings', [])
@@ -398,15 +297,25 @@ class ModuleManager(object):
             return True
         return False
 
-    def exec_module(self):
-        changed = False
-        result = dict()
-        state = self.want.state
+    def format_syslogs(self, syslogs):
+        result = None
+        for x in syslogs:
+            syslog = ApiParameters(params=x)
+            self.syslogs[syslog.name] = x
 
-        if state == "present":
-            changed = self.present()
-        elif state == "absent":
-            changed = self.absent()
+            if syslog.name == self.want.name:
+                result = syslog
+            elif syslog.remote_host == self.want.remote_host:
+                result = syslog
+
+        if not result:
+            return ApiParameters()
+        return result
+
+    def exec_module(self):
+        result = dict()
+
+        changed = self.present()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
@@ -416,80 +325,77 @@ class ModuleManager(object):
         return result
 
     def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            return self.create()
-
-    def absent(self):
-        if self.exists():
-            return self.remove()
-        return False
-
-    def remove(self):
-        if self.module.check_mode:
-            return True
-        self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the remote syslog.")
-        return True
-
-    def create(self):
-        self._set_valid_name()
-        self._update_changed_options()
-        if self.module.check_mode:
-            return True
-
-        # This is an unnamed resource, so we only need to update
-        self.update_on_device()
-        return True
+        return self.update()
 
     def should_update(self):
-        self._set_valid_name()
         result = self._update_changed_options()
         if result:
             return True
         return False
 
     def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
+        self.have = self.format_syslogs(self.read_current_from_device())
+        if not self.should_update() and self.want.state != 'absent':
             return False
         if self.module.check_mode:
             return True
+
+        if self.want.name is None:
+            self.want.update({'name': self.want.remote_host})
+
+            syslogs = [v for k, v in iteritems(self.syslogs)]
+            dupes = [x for x in syslogs if x['host'] == self.want.remote_host]
+            if len(dupes) > 1:
+                raise F5ModuleError(
+                    "Multiple occurrences of hostname: {0} detected, please specify 'name' parameter". format(self.want.remote_host)
+                )
+
+        # A absent syslog does not appear in the list of existing syslogs
+        if self.want.state == 'absent':
+            if self.want.name not in self.syslogs:
+                return False
+
+        # At this point we know the existing syslog is not absent, so we need
+        # to change it in some way.
+        #
+        # First, if we see that the syslog is in the current list of syslogs,
+        # we are going to update it
+        changes = dict(self.changes.api_params())
+        if self.want.name in self.syslogs:
+            self.syslogs[self.want.name].update(changes)
+        else:
+            # else, we are going to add it to the list of syslogs
+            self.syslogs[self.want.name] = changes
+
+        # Since the name attribute is not a parameter tracked in the Parameter
+        # classes, we will add the name to the list of attributes so that when
+        # we update the API, it creates the correct vector
+        self.syslogs[self.want.name].update({'name': self.want.name})
+
+        # Finally, the absent state forces us to remove the syslog from the
+        # list.
+        if self.want.state == 'absent':
+            del self.syslogs[self.want.name]
+
+        # All of the syslogs must be re-assembled into a list of dictionaries
+        # so that when we PATCH the API endpoint, the syslogs list is filled
+        # correctly.
+        #
+        # There are **not** individual API endpoints for the individual syslogs.
+        # Instead, the endpoint includes a list of syslogs that is part of the
+        # system config
+        result = [v for k, v in iteritems(self.syslogs)]
+
+        self.changes = Changes(params=dict(remoteServers=result))
+        self.changes.update(self.want._values)
         self.update_on_device()
         return True
 
-    def _set_valid_name(self):
-        if self.want.name is None:
-            self.want._values['name'] = self.want.remote_host
-
-    def _check_for_duplicate_syslog(self):
-        count = 0
-        for item in self.have.remote_servers:
-            if self.have.remote_servers[item]['host'] == self.want.remote_host:
-                count += 1
-        return count
-
-    def exists(self):
-        self.have = self.read_current_from_device()
-        if self.have.remote_servers is None:
-            return False
-        count = self._check_for_duplicate_syslog()
-        if count == 1:
-            return True
-        if count > 1:
-            try:
-                if self.have.remote_servers[self.want.name]:
-                    return True
-            except KeyError:
-                raise F5ModuleError(
-                    "Multiple occurrences of hostname: {0} detected, please specify 'name' parameter". format(
-                        self.want.remote_host))
-        return False
-
     def update_on_device(self):
         params = self.changes.api_params()
+        params = dict(
+            remoteServers=params.get('remoteServers')
+        )
         uri = "https://{0}:{1}/mgmt/tm/sys/syslog/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -522,26 +428,8 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
-
-    def remove_from_device(self):
-        self._update_changed_options()
-        params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/tm/sys/syslog/".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.patch(uri, json=params)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        result = response.get('remoteServers', [])
+        return result
 
 
 class ArgumentSpec(object):
