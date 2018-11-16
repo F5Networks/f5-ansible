@@ -21,6 +21,10 @@ description:
     configuration sections in a deterministic way.
 version_added: 2.8
 options:
+  route_domain:
+    description:
+      - Route domain to manage BGP configuration on.
+    default: 0
   lines:
     description:
       - The ordered set of commands that should be configured in the
@@ -697,7 +701,7 @@ class ArgumentSpec(object):
 
             save_when=dict(choices=['always', 'never', 'modified', 'changed'], default='never'),
 
-            diff_against=dict(choices=['running', 'startup', 'intended']),
+            diff_against=dict(choices=['running', 'startup', 'intended'], default='startup'),
             diff_ignore_lines=dict(type='list'),
         )
         self.argument_spec = {}
