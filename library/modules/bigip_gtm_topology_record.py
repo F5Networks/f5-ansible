@@ -531,7 +531,7 @@ class ModuleParameters(Parameters):
 
     @property
     def src_negate(self):
-        src_negate = self._values['source']['negate']
+        src_negate = self._values['source'].get('negate', None)
         result = flatten_boolean(src_negate)
         if result == 'yes':
             return 'not'
@@ -598,7 +598,7 @@ class ModuleParameters(Parameters):
 
     @property
     def dst_negate(self):
-        dst_negate = self._values['destination']['negate']
+        dst_negate = self._values['destination'].get('negate', None)
         result = flatten_boolean(dst_negate)
         if result == 'yes':
             return 'not'
