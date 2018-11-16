@@ -18,10 +18,10 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_gtm_topology_records import ApiParameters
-    from library.modules.bigip_gtm_topology_records import ModuleParameters
-    from library.modules.bigip_gtm_topology_records import ModuleManager
-    from library.modules.bigip_gtm_topology_records import ArgumentSpec
+    from library.modules.bigip_gtm_topology_record import ApiParameters
+    from library.modules.bigip_gtm_topology_record import ModuleParameters
+    from library.modules.bigip_gtm_topology_record import ModuleManager
+    from library.modules.bigip_gtm_topology_record import ArgumentSpec
 
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
@@ -31,10 +31,10 @@ try:
     from test.units.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_gtm_topology_records import ApiParameters
-        from ansible.modules.network.f5.bigip_gtm_topology_records import ModuleParameters
-        from ansible.modules.network.f5.bigip_gtm_topology_records import ModuleManager
-        from ansible.modules.network.f5.bigip_gtm_topology_records import ArgumentSpec
+        from ansible.modules.network.f5.bigip_gtm_topology_record import ApiParameters
+        from ansible.modules.network.f5.bigip_gtm_topology_record import ModuleParameters
+        from ansible.modules.network.f5.bigip_gtm_topology_record import ModuleManager
+        from ansible.modules.network.f5.bigip_gtm_topology_record import ArgumentSpec
 
         # Ansible 2.8 imports
         from units.compat import unittest
