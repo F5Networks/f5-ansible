@@ -839,6 +839,11 @@
     state: absent
 
 - import_tasks: issue-00833.yaml
-  tags: issue-00833
+  tags:
+    - issue-00833
+
+- import_tasks: issue-01074.yaml
+  tags:
+    - issue-01074
 
 - import_tasks: teardown.yaml

@@ -1,0 +1,35 @@
+---
+
+- name: Issue 01074 - Create Monitor
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name1 }}"
+    ip: '*'
+    port: '*'
+  register: result
+
+- name: Issue 01074 - Assert Create Monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01074 - Create Monitor - Idempotent check
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name1 }}"
+    ip: '*'
+    port: '*'
+  register: result
+
+- name: Issue 01074 - Assert Create Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01074 - Remove monitor
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
