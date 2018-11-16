@@ -1,0 +1,97 @@
+---
+
+- name: Issue 01064 - Include issue variables
+  include_vars:
+    file: issue-01064.yaml
+
+- name: Issue 01064 - Create Parent RD
+  bigip_routedomain:
+    name: "{{ route_domain1_name }}"
+    id: "{{ route_domain1_id }}"
+
+- name: Issue 01064 - Create Child RD
+  bigip_routedomain:
+    name: "{{ route_domain2_name }}"
+    id: "{{ route_domain2_id }}"
+    parent: "{{ route_domain1_name }}"
+  register: result
+
+- name: Issue 01064 - Assert Create Child RD
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01064 - Create Child RD - Idempotent check
+  bigip_routedomain:
+    name: "{{ route_domain2_name }}"
+    id: "{{ route_domain2_id }}"
+    parent: "{{ route_domain1_name }}"
+  register: result
+
+- name: Issue 01064 - Assert Create Child RD - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01064 - Remove Child RD
+  bigip_routedomain:
+    name: "{{ route_domain2_name }}"
+    state: absent
+  register: result
+
+- name: Issue 01064 - Assert Remove Child RD
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01064 - Remove Child RD - Idempotent check
+  bigip_routedomain:
+    name: "{{ route_domain2_name }}"
+    state: absent
+  register: result
+
+- name: Issue 01064 - Assert Remove Child RD - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01064 - Create Child RD no parent set
+  bigip_routedomain:
+    name: "{{ route_domain2_name }}"
+    id: "{{ route_domain2_id }}"
+
+- name: Issue 01064 - Modify Child RD set parent
+  bigip_routedomain:
+    name: "{{ route_domain2_name }}"
+    parent: "{{ route_domain1_name }}"
+  register: result
+
+- name: Issue 01064 - Modify Child RD set parent
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01064 - Modify Child RD set parent - Idempotent check
+  bigip_routedomain:
+    name: "{{ route_domain2_name }}"
+    parent: "{{ route_domain1_name }}"
+  register: result
+
+- name: Issue 01064 - Modify Child RD set parent - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01064 - Cleanup
+  bigip_routedomain:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ route_domain2_name }}"
+    - "{{ route_domain1_name }}"

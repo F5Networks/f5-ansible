@@ -1,0 +1,5 @@
+---
+route_domain1_id: 22
+route_domain2_id: 25
+route_domain1_name: parent_foo_01064
+route_domain2_name: child_foo_01064
