@@ -126,7 +126,7 @@ options:
     required: True
   weight:
      description:
-       - Specifies the weight of the topology record. 
+       - Specifies the weight of the topology record.
        - The system finds the weight of the first topology record that matches the server object (pool or pool member)
          and the local DNS. The system then assigns that weight as the topology score for that server object.
        - The system load balances to the server object with the highest topology score.
@@ -148,7 +148,7 @@ options:
     choices:
       - present
       - absent
-    default: present             
+    default: present
 extends_documentation_fragment: f5
 author:
   - Wojciech Wypior (@wojtek0806)
