@@ -18,10 +18,10 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_dns_cache import ApiParameters
-    from library.modules.bigip_dns_cache import ModuleParameters
-    from library.modules.bigip_dns_cache import ModuleManager
-    from library.modules.bigip_dns_cache import ArgumentSpec
+    from library.modules.bigip_dns_cache_resolver import ApiParameters
+    from library.modules.bigip_dns_cache_resolver import ModuleParameters
+    from library.modules.bigip_dns_cache_resolver import ModuleManager
+    from library.modules.bigip_dns_cache_resolver import ArgumentSpec
 
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
@@ -30,20 +30,17 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    try:
-        from ansible.modules.network.f5.bigip_dns_cache import ApiParameters
-        from ansible.modules.network.f5.bigip_dns_cache import ModuleParameters
-        from ansible.modules.network.f5.bigip_dns_cache import ModuleManager
-        from ansible.modules.network.f5.bigip_dns_cache import ArgumentSpec
+    from ansible.modules.network.f5.bigip_dns_cache_resolver import ApiParameters
+    from ansible.modules.network.f5.bigip_dns_cache_resolver import ModuleParameters
+    from ansible.modules.network.f5.bigip_dns_cache_resolver import ModuleManager
+    from ansible.modules.network.f5.bigip_dns_cache_resolver import ArgumentSpec
 
-        # Ansible 2.8 imports
-        from units.compat import unittest
-        from units.compat.mock import Mock
-        from units.compat.mock import patch
+    # Ansible 2.8 imports
+    from units.compat import unittest
+    from units.compat.mock import Mock
+    from units.compat.mock import patch
 
-        from units.modules.utils import set_module_args
-    except ImportError:
-        raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
+    from units.modules.utils import set_module_args
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
