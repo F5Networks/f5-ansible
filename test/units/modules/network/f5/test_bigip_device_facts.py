@@ -24,9 +24,6 @@ try:
     from library.modules.bigip_device_facts import ArgumentSpec
     from library.modules.bigip_device_facts import ModuleManager
 
-    from f5.bigip.tm.gtm.pool import A
-    from f5.utils.responses.handlers import Stats
-
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
     from test.units.compat.mock import Mock
@@ -39,9 +36,6 @@ except ImportError:
     from ansible.modules.network.f5.bigip_device_pool import VirtualAddressesParameters
     from ansible.modules.network.f5.bigip_device_pool import ArgumentSpec
     from ansible.modules.network.f5.bigip_device_pool import ModuleManager
-
-    from f5.bigip.tm.gtm.pool import A
-    from f5.utils.responses.handlers import Stats
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -73,9 +67,9 @@ def load_fixture(name):
     return data
 
 
-class FakeVirtualAddress(A):
+class FakeVirtualAddress:
     def __init__(self, *args, **kwargs):
-        attrs = kwargs.pop('attrs', {})
+        attrs = kwargs.pop('params', {})
         for key, value in iteritems(attrs):
             setattr(self, key, value)
 
@@ -94,6 +88,18 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
+        try:
+            self.p1 = patch('library.modules.bigip_device_facts.modules_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = ['ltm', 'gtm', 'asm']
+        except Exception:
+            self.p1 = patch('ansible.modules.network.f5.bigip_device_facts.modules_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = ['ltm', 'gtm', 'asm']
+
+    def tearDown(self):
+        self.p1.stop()
+
     def test_get_trunk_facts(self, *args):
         set_module_args(dict(
             gather_subset=['virtual-addresses'],
@@ -103,7 +109,7 @@ class TestManager(unittest.TestCase):
         ))
 
         fixture1 = load_fixture('load_ltm_virtual_address_collection_1.json')
-        collection = [FakeVirtualAddress(attrs=x) for x in fixture1['items']]
+        collection = fixture1['items']
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
