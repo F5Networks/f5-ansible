@@ -20,7 +20,6 @@ try:
     from library.modules.bigip_device_trust import Parameters
     from library.modules.bigip_device_trust import ModuleManager
     from library.modules.bigip_device_trust import ArgumentSpec
-    from library.modules.bigip_device_trust import HAS_F5SDK
 
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
@@ -32,7 +31,6 @@ except ImportError:
     from ansible.modules.network.f5.bigip_device_trust import Parameters
     from ansible.modules.network.f5.bigip_device_trust import ModuleManager
     from ansible.modules.network.f5.bigip_device_trust import ArgumentSpec
-    from ansible.modules.network.f5.bigip_device_trust import HAS_F5SDK
 
     # Ansible 2.8 imports
     from units.compat import unittest
