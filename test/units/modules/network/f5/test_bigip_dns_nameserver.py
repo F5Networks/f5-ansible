@@ -93,8 +93,6 @@ class TestParameters(unittest.TestCase):
         assert p.tsig_key == '/Common/key1'
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
