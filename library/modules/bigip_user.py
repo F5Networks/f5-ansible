@@ -199,6 +199,8 @@ shell:
 import os
 import tempfile
 
+from builtins import bytes
+
 try:
     from BytesIO import BytesIO
 except ImportError:
