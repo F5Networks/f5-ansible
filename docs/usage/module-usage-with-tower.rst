@@ -16,7 +16,7 @@ The net effect is that when files are saved by the job, they are saved (by defau
 chrooted environment. When the job finishes, that environment is cleaned up (ie, deleted) and
 your downloaded files will be deleted with it.
 
-More background on the above can be `found here`_.
+More background on the above can be `found here`_ and `here`_.
 
 In AWX, the situation is slightly different. AWX is distributed in the form of a set of Docker
 containers. Roughly the same restriction on the worker applies here, except that the worker is
@@ -100,3 +100,4 @@ using ``docker-compose``.
    $ docker-compose start
 
 .. _found here: https://docs.ansible.com/ansible-tower/2.3.1/html/userguide/security.html#playbook-access-and-information-sharing
+.. _here: https://docs.ansible.com/ansible-tower/2.2.0/html/installandreference/known_issues.html#playbooks-missing-access-to-necessary-data-due-to-proot-issues
