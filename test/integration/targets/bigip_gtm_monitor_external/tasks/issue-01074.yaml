@@ -1,0 +1,33 @@
+---
+
+- name: Issue 01074 - Create Monitor
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    ip: '*'
+    port: '*'
+  register: result
+
+- name: Issue 01074 - Assert Create Monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01074 - Create Monitor - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    ip: '*'
+    port: '*'
+  register: result
+
+- name: Issue 01074 - Assert Create Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01074 - Remove monitor
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
