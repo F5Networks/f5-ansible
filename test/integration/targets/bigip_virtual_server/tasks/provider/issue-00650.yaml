@@ -1,4 +1,5 @@
 ---
+
 - name: Issue 00650 - Create IPV4 network virtual server, mask specified - Provider
   bigip_virtual_server:
     name: myvip_issue650

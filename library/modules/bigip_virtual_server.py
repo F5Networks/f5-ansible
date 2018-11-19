@@ -388,6 +388,12 @@ options:
           - When specified, the route domain policy overrides the device policy, and
             is overridden by a virtual server policy.
         type: bool
+  ip_intelligence_policy:
+    description:
+      - Specifies the IP intelligence policy applied to the virtual server.
+      - This parameter requires that a valid BIG-IP security module such as ASM or AFM
+        be provisioned.
+    version_added: 2.8
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -666,6 +672,11 @@ security_log_profiles:
   returned: changed
   type: list
   sample: ['/Common/profile1', '/Common/profile2']
+ip_intelligence_policy:
+  description: The new IP Intelligence Policy assigned to the virtual.
+  returned: changed
+  type: string
+  sample: /Common/ip-intelligence
 '''
 import os
 import re
@@ -696,6 +707,7 @@ try:
     from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
     from library.module_utils.network.f5.ipaddress import get_netmask
     from library.module_utils.network.f5.ipaddress import compress_address
+    from library.module_utils.network.f5.icontrol import modules_provisioned
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import MANAGED_BY_ANNOTATION_VERSION
@@ -717,6 +729,7 @@ except ImportError:
     from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
     from ansible.module_utils.network.f5.ipaddress import get_netmask
     from ansible.module_utils.network.f5.ipaddress import compress_address
+    from ansible.module_utils.network.f5.icontrol import modules_provisioned
 
 
 class Parameters(AnsibleF5Parameters):
@@ -737,6 +750,7 @@ class Parameters(AnsibleF5Parameters):
         'securityLogProfiles': 'security_log_profiles',
         'securityNatPolicy': 'security_nat_policy',
         'sourcePort': 'source_port',
+        'ipIntelligencePolicy': 'ip_intelligence_policy',
     }
 
     api_attributes = [
@@ -772,6 +786,7 @@ class Parameters(AnsibleF5Parameters):
         'sourcePort',
         'mirror',
         'mask',
+        'ipIntelligencePolicy',
     ]
 
     updatables = [
@@ -801,6 +816,7 @@ class Parameters(AnsibleF5Parameters):
         'source_port',
         'mirror',
         'mask',
+        'ip_intelligence_policy',
     ]
 
     returnables = [
@@ -834,6 +850,7 @@ class Parameters(AnsibleF5Parameters):
         'source_port',
         'mirror',
         'mask',
+        'ip_intelligence_policy',
     ]
 
     profiles_mutex = [
@@ -1736,6 +1753,14 @@ class ModuleParameters(Parameters):
         if self._values['firewall_staged_policy'] is None:
             return None
         return fq_name(self.partition, self._values['firewall_staged_policy'])
+
+    @property
+    def ip_intelligence_policy(self):
+        if self._values['ip_intelligence_policy'] is None:
+            return None
+        if self._values['ip_intelligence_policy'] in ['', 'none']:
+            return ''
+        return fq_name(self.partition, self._values['ip_intelligence_policy'])
 
     @property
     def security_log_profiles(self):
@@ -2756,6 +2781,17 @@ class Difference(object):
             )
 
     @property
+    def ip_intelligence_policy(self):
+        if self.want.ip_intelligence_policy is None:
+            return None
+        if self.want.ip_intelligence_policy == '' and self.have.ip_intelligence_policy is not None:
+            return ""
+        if self.want.ip_intelligence_policy == '' and self.have.ip_intelligence_policy is None:
+            return None
+        if self.want.ip_intelligence_policy != self.have.ip_intelligence_policy:
+            return self.want.ip_intelligence_policy
+
+    @property
     def policies(self):
         if self.want.policies is None:
             return None
@@ -2872,11 +2908,14 @@ class ModuleManager(object):
         self.have = ApiParameters(client=self.client)
         self.want = ModuleParameters(client=self.client, params=self.module.params)
         self.changes = UsableChanges()
+        self.provisioned_modules = []
 
     def exec_module(self):
         changed = False
         result = dict()
         state = self.want.state
+
+        self.provisioned_modules = modules_provisioned(self.client)
 
         if state in ['present', 'enabled', 'disabled']:
             changed = self.present()
@@ -2906,6 +2945,12 @@ class ModuleManager(object):
             module=self.module, client=self.client, have=self.have, want=self.want
         )
         validator.check_update()
+
+        if self.want.ip_intelligence_policy is not None:
+            if not any(x for x in self.provisioned_modules if x in ['afm', 'asm']):
+                raise F5ModuleError(
+                    "AFM must be provisioned to configure an IP Intelligence policy."
+                )
 
         if not self.should_update():
             return False
@@ -2978,6 +3023,12 @@ class ModuleManager(object):
             module=self.module, client=self.client, have=self.have, want=self.want
         )
         validator.check_create()
+
+        if self.want.ip_intelligence_policy is not None:
+            if not any(x for x in self.provisioned_modules if x in ['afm', 'asm']):
+                raise F5ModuleError(
+                    "AFM must be provisioned to configure an IP Intelligence policy."
+                )
 
         self._set_changed_options()
         if self.module.check_mode:
@@ -3138,6 +3189,7 @@ class ArgumentSpec(object):
             mask=dict(),
             firewall_staged_policy=dict(),
             firewall_enforced_policy=dict(),
+            ip_intelligence_policy=dict(),
             security_log_profiles=dict(type='list'),
             security_nat_policy=dict(
                 type='dict',

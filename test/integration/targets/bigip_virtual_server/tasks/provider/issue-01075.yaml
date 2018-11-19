@@ -1,0 +1,84 @@
+---
+
+- name: Issue 01075 - Provision ASM
+  bigip_provision:
+    module: asm
+  tags:
+    - module-provisioning
+
+- name: Issue 01075 - Create virtual server - Provider
+  bigip_virtual_server:
+    name: virt1
+    destination: 2.1.3.4
+    port: 9000
+    ip_intelligence_policy: ip-intelligence
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00882 - Create virtual server - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01075 - Create virtual server - Provider - Idempotent check
+  bigip_virtual_server:
+    name: virt1
+    destination: 2.1.3.4
+    port: 9000
+    ip_intelligence_policy: ip-intelligence
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01075 - Create virtual server - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01075 - Change IP Intelligence to none - Provider
+  bigip_virtual_server:
+    name: virt1
+    ip_intelligence_policy: none
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01075 - Change IP Intelligence to none - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01075 - Change IP Intelligence to none - Provider - Idempotent check
+  bigip_virtual_server:
+    name: virt1
+    ip_intelligence_policy: none
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01075 - Change IP Intelligence to none - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01075 - Remove virtual
+  bigip_virtual_server:
+    name: virt1
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01075 - Remove virtual
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01075 - De-provision ASM
+  bigip_provision:
+    module: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
