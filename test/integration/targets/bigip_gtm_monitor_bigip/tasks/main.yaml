@@ -148,13 +148,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
 - name: Change aggregate_dynamic_ratios - Average Nodes
   bigip_gtm_monitor_bigip:
     name: "{{ monitor_name }}"
@@ -176,11 +169,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
 
 - name: Change aggregate_dynamic_ratios - Sum Nodes
   bigip_gtm_monitor_bigip:
@@ -204,17 +192,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
-
-
 - name: Change aggregate_dynamic_ratios - Average Members
   bigip_gtm_monitor_bigip:
     name: "{{ monitor_name }}"
@@ -236,16 +213,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
-
-
-
 
 - name: Change aggregate_dynamic_ratios - Sum Members
   bigip_gtm_monitor_bigip:
@@ -269,12 +236,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
 - name: Change aggregate_dynamic_ratios - None
   bigip_gtm_monitor_bigip:
     name: "{{ monitor_name }}"
@@ -296,11 +257,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
 
 - name: Remove Monitor
   bigip_gtm_monitor_bigip:
@@ -324,4 +280,7 @@
     that:
       - result is not changed
 
-#- import_tasks: teardown.yaml
+- import_tasks: teardown.yaml
+
+- import_tasks: issue-01074.yaml
+  tags: issue-01074
