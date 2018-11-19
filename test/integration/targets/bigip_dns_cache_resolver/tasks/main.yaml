@@ -2,6 +2,296 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create a DNS Cache resolver
+  bigip_dns_cache_resolver:
+    name: foo
+  register: result
+
+- name: Assert Create a DNS Cache resolver
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a DNS Cache resolver - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+  register: result
+
+- name: Assert Create a DNS Cache resolver - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+- name: Change route domain
+  bigip_dns_cache_resolver:
+    name: foo
+    route_domain: 10
+  register: result
+
+- name: Assert Change route domain
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change route domain - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+    route_domain: 10
+  register: result
+
+- name: Assert Change route domain - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+- name: Change answer_default_zones - yes
+  bigip_dns_cache_resolver:
+    name: foo
+    answer_default_zones: yes
+  register: result
+
+- name: Assert Change answer_default_zones - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change answer_default_zones - yes - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+    answer_default_zones: yes
+  register: result
+
+- name: Assert Change answer_default_zones - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+- name: Change answer_default_zones - no
+  bigip_dns_cache_resolver:
+    name: foo
+    answer_default_zones: no
+  register: result
+
+- name: Assert Change answer_default_zones - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change answer_default_zones - no - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+    answer_default_zones: no
+  register: result
+
+- name: Assert Change answer_default_zones - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
+- name: Change forward_zones - some
+  bigip_dns_cache_resolver:
+    name: foo
+    forward_zones:
+      - name: foo.bar.com
+        nameservers:
+          - address: 1.2.3.4
+            port: 53
+          - address: 5.6.7.8
+  register: result
+
+- name: Assert Change forward_zones - some
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change forward_zones - some - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+    forward_zones:
+      - name: foo.bar.com
+        nameservers:
+          - address: 1.2.3.4
+            port: 53
+          - address: 5.6.7.8
+  register: result
+
+- name: Assert Change forward_zones - some - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
+
+
+
+
+- name: Change forward_zones - add
+  bigip_dns_cache_resolver:
+    name: foo
+    forward_zones:
+      - name: foo.bar.com
+        nameservers:
+          - address: 1.2.3.4
+            port: 53
+          - address: 5.6.7.8
+          - address: 7.7.7.7
+  register: result
+
+- name: Assert Change forward_zones - add
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change forward_zones - add - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+    forward_zones:
+      - name: foo.bar.com
+        nameservers:
+          - address: 1.2.3.4
+            port: 53
+          - address: 5.6.7.8
+          - address: 7.7.7.7
+  register: result
+
+- name: Assert Change forward_zones - add - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Change forward_zones - remove
+  bigip_dns_cache_resolver:
+    name: foo
+    forward_zones:
+      - name: foo.bar.com
+        nameservers:
+          - address: 1.2.3.4
+            port: 53
+          - address: 7.7.7.7
+  register: result
+
+- name: Assert Change forward_zones - remove
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change forward_zones - remove - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+    forward_zones:
+      - name: foo.bar.com
+        nameservers:
+          - address: 1.2.3.4
+            port: 53
+          - address: 7.7.7.7
+  register: result
+
+- name: Assert Change forward_zones - remove - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
+
+
+
+
+- name: Change forward_zones - none
+  bigip_dns_cache_resolver:
+    name: foo
+    forward_zones: none
+  register: result
+
+- name: Assert Change forward_zones - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change forward_zones - none - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+    forward_zones: none
+  register: result
+
+- name: Assert Change forward_zones - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Remove resolver
+  bigip_dns_cache_resolver:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove resolver
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove resolver - Idempotent check
+  bigip_dns_cache_resolver:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove resolver - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
 
 - import_tasks: teardown.yaml
