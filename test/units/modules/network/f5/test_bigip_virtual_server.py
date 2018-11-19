@@ -355,6 +355,18 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
+        try:
+            self.p1 = patch('library.modules.bigip_virtual_server.modules_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = ['ltm', 'gtm', 'asm']
+        except Exception:
+            self.p1 = patch('ansible.modules.network.f5.bigip_virtual_server.modules_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = ['ltm', 'gtm', 'asm']
+
+    def tearDown(self):
+        self.p1.stop()
+
     def test_create_virtual_server(self, *args):
         set_module_args(dict(
             all_profiles=[
