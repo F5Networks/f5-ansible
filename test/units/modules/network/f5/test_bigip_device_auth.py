@@ -30,11 +30,11 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_sys_auth import TacacsApiParameters
-    from ansible.modules.network.f5.bigip_sys_auth import TacacsModuleParameters
-    from ansible.modules.network.f5.bigip_sys_auth import TacacsManager
-    from ansible.modules.network.f5.bigip_sys_auth import ModuleManager
-    from ansible.modules.network.f5.bigip_sys_auth import ArgumentSpec
+    from ansible.modules.network.f5.bigip_device_auth import TacacsApiParameters
+    from ansible.modules.network.f5.bigip_device_auth import TacacsModuleParameters
+    from ansible.modules.network.f5.bigip_device_auth import TacacsManager
+    from ansible.modules.network.f5.bigip_device_auth import ModuleManager
+    from ansible.modules.network.f5.bigip_device_auth import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
