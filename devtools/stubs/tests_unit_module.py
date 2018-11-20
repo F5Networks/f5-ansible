@@ -94,8 +94,6 @@ class TestParameters(unittest.TestCase):
         # assert p.service_down_action == 'drop'
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestManager(unittest.TestCase):
     def test_create(self, *args):
         raise SkipTest('You must write a creation test')
