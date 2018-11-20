@@ -30,17 +30,17 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-     from ansible.modules.network.f5.bigip_sys_daemon_log_tmm import ApiParameters
-     from ansible.modules.network.f5.bigip_sys_daemon_log_tmm import ModuleParameters
-     from ansible.modules.network.f5.bigip_sys_daemon_log_tmm import ModuleManager
-     from ansible.modules.network.f5.bigip_sys_daemon_log_tmm import ArgumentSpec
+    from ansible.modules.network.f5.bigip_sys_daemon_log_tmm import ApiParameters
+    from ansible.modules.network.f5.bigip_sys_daemon_log_tmm import ModuleParameters
+    from ansible.modules.network.f5.bigip_sys_daemon_log_tmm import ModuleManager
+    from ansible.modules.network.f5.bigip_sys_daemon_log_tmm import ArgumentSpec
 
-     # Ansible 2.8 imports
-     from units.compat import unittest
-     from units.compat.mock import Mock
-     from units.compat.mock import patch
+    # Ansible 2.8 imports
+    from units.compat import unittest
+    from units.compat.mock import Mock
+    from units.compat.mock import patch
 
-     from units.modules.utils import set_module_args
+    from units.modules.utils import set_module_args
 
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')

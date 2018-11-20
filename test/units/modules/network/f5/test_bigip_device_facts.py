@@ -31,11 +31,11 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_device_pool import Parameters
-    from ansible.modules.network.f5.bigip_device_pool import VirtualAddressesFactManager
-    from ansible.modules.network.f5.bigip_device_pool import VirtualAddressesParameters
-    from ansible.modules.network.f5.bigip_device_pool import ArgumentSpec
-    from ansible.modules.network.f5.bigip_device_pool import ModuleManager
+    from ansible.modules.network.f5.bigip_device_facts import Parameters
+    from ansible.modules.network.f5.bigip_device_facts import VirtualAddressesFactManager
+    from ansible.modules.network.f5.bigip_device_facts import VirtualAddressesParameters
+    from ansible.modules.network.f5.bigip_device_facts import ArgumentSpec
+    from ansible.modules.network.f5.bigip_device_facts import ModuleManager
 
     # Ansible 2.8 imports
     from units.compat import unittest
