@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_dns_cache
+module: bigip_dns_cache_resolver
 short_description: Manage DNS resolver cache configurations on BIG-IP
 description:
   - Manage DNS resolver cache configurations on BIG-IP.
