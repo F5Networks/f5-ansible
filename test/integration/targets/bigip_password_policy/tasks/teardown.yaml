@@ -1,0 +1,15 @@
+---
+
+- name: Reset to defaults
+  bigip_password_policy:
+    expiration_warning: 7
+    max_duration: 99999
+    max_login_failures: 0
+    min_duration: 0
+    min_length: 6
+    password_memory: 0
+    policy_enforcement: no
+    required_lowercase: 0
+    required_numeric: 0
+    required_special: 0
+    required_uppercase: 0
