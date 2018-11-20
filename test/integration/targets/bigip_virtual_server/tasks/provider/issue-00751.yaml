@@ -1,0 +1,168 @@
+---
+
+- name: Issue 00751 - Include issue variables - Provider
+  include_vars:
+    file: issue-00751.yaml
+
+- name: Issue 00751 - Create RD - Provider
+  bigip_routedomain:
+    name: test-rd-00751
+    id: 1234
+    provider: "{{ provider }}"
+
+- name: Issue 00751 - Create Virtual Addresses RD0 - Provider
+  bigip_virtual_address:
+    name: "{{ item.name }}"
+    address: "{{ item.address }}"
+    provider: "{{ provider }}"
+  loop: "{{ addr1 + addr3 }}"
+
+- name: Issue 00751 - Create Virtual Address RD1234 - Provider
+  bigip_virtual_address:
+    name: "{{ item.name }}"
+    address: "{{ item.address}}"
+    netmask: "{{ item.mask }}"
+    route_domain: "{{ item.rd }}"
+    provider: "{{ provider }}"
+  loop: "{{ addr2 }}"
+
+- name: Issue 00751 - Create VS with named VIP - IPV4 - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name1 }}"
+    destination: "{{ item.name }}"
+    mask: "{{ mask1 }}"
+    port: 8181
+    provider: "{{ provider }}"
+  loop: "{{ addr1 }}"
+  register: result
+
+- name: Issue 00751 - Assert Create VS with named VIP - IPV4 - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00751 - Create VS with named VIP - IPV4 - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name1 }}"
+    destination: "{{ item.name }}"
+    mask: "{{ mask1 }}"
+    port: 8181
+    provider: "{{ provider }}"
+  loop: "{{ addr1 }}"
+  register: result
+
+- name: Issue 00751 - Assert Create VS with named VIP - IPV4 - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00751 - Create VS with named VIP - IPV6 - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name3 }}"
+    destination: "{{ item.name }}"
+    port: 8080
+    provider: "{{ provider }}"
+  loop: "{{ addr3 }}"
+  register: result
+
+- name: Issue 00751 - Assert Create VS with named VIP - IPV6 - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00751 - Create VS with named VIP - IPV6 - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name3 }}"
+    destination: "{{ item.name }}"
+    port: 8080
+    provider: "{{ provider }}"
+  loop: "{{ addr3 }}"
+  register: result
+
+- name: Issue 00751 - Assert Create VS with named VIP - IPV6 - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00751 - Add source to VS with named VIP - IPV6 - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name3 }}"
+    source: "{{ source3 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00751 - Assert Add source to VS with named VIP - IPV6 - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00751 - Add source to VS with named VIP - IPV6 - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name3 }}"
+    source: "{{ source3 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00751 - Assert Add source to VS with named VIP - IPV6 - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00751 - Create VS with named VIP - RD1234 - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name2 }}"
+    destination: "{{ item.name }}%{{ item.rd }}"
+    mask: "{{ item.mask }}"
+    port: 8080
+    provider: "{{ provider }}"
+  loop: "{{ addr2 }}"
+  register: result
+
+- name: Issue 00751 - Assert Create VS with named VIP - RD1234 - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00751 - Create VS with named VIP - RD1234 - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name2 }}"
+    destination: "{{ item.name }}%{{ item.rd }}"
+    mask: "{{ item.mask }}"
+    port: 8080
+    provider: "{{ provider }}"
+  loop: "{{ addr2 }}"
+  register: result
+
+- name: Issue 00751 - Assert Create VS with named VIP - RD1234 - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00751 - Remove VS1 - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name2 }}"
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 00751 - Remove VS2 and VS3  - Provider
+  bigip_virtual_server:
+    name: "{{ item }}"
+    state: absent
+    provider: "{{ provider }}"
+  loop:
+    - "{{ vs_name1 }}"
+    - "{{ vs_name3 }}"
+
+- name: Issue 00751 - Remove RD - Provider
+  bigip_routedomain:
+    name: test-rd-00751
+    state: absent
+    provider: "{{ provider }}"
