@@ -1,0 +1,269 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Change expiration warning
+  bigip_password_policy:
+    expiration_warning: 4
+  register: result
+
+- name: Assert Change expiration warning
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change expiration warning - Idempotent check
+  bigip_password_policy:
+    expiration_warning: 4
+  register: result
+
+- name: Assert Change expiration warning - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change max duration
+  bigip_password_policy:
+    max_duration: 4
+  register: result
+
+- name: Assert Change max duration
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change max duration - Idempotent check
+  bigip_password_policy:
+    max_duration: 4
+  register: result
+
+- name: Assert Change max duration - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change max login failures
+  bigip_password_policy:
+    max_login_failures: 4
+  register: result
+
+- name: Assert Change max login failures
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change max login failures - Idempotent check
+  bigip_password_policy:
+    max_login_failures: 4
+  register: result
+
+- name: Assert Change max login failures - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change min duration
+  bigip_password_policy:
+    min_duration: 4
+  register: result
+
+- name: Assert Change min duration
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change min duration - Idempotent check
+  bigip_password_policy:
+    min_duration: 4
+  register: result
+
+- name: Assert Change min duration - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change min length
+  bigip_password_policy:
+    min_length: 7
+  register: result
+
+- name: Assert Change min length
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change min length - Idempotent check
+  bigip_password_policy:
+    min_length: 7
+  register: result
+
+- name: Assert Change min length - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change password memory
+  bigip_password_policy:
+    password_memory: 4
+  register: result
+
+- name: Assert Change password memory
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change password memory - Idempotent check
+  bigip_password_policy:
+    password_memory: 4
+  register: result
+
+- name: Assert Change password memory - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change policy enforcement - yes
+  bigip_password_policy:
+    policy_enforcement: yes
+  register: result
+
+- name: Assert Change policy enforcement - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change policy enforcement - yes - Idempotent check
+  bigip_password_policy:
+    policy_enforcement: yes
+  register: result
+
+- name: Assert Change policy enforcement - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change policy enforcement - no
+  bigip_password_policy:
+    policy_enforcement: no
+  register: result
+
+- name: Assert Change policy enforcement - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change policy enforcement - no - Idempotent check
+  bigip_password_policy:
+    policy_enforcement: no
+  register: result
+
+- name: Assert Change policy enforcement - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change required lowercase
+  bigip_password_policy:
+    required_lowercase: 1
+  register: result
+
+- name: Assert Change required lowercase
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change required lowercase - Idempotent check
+  bigip_password_policy:
+    required_lowercase: 1
+  register: result
+
+- name: Assert Change required lowercase - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change required numeric
+  bigip_password_policy:
+    required_numeric: 1
+  register: result
+
+- name: Assert Change required numeric
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change required numeric - Idempotent check
+  bigip_password_policy:
+    required_numeric: 1
+  register: result
+
+- name: Assert Change required numeric - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change required special
+  bigip_password_policy:
+    required_special: 1
+  register: result
+
+- name: Assert Change required special
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change required special - Idempotent check
+  bigip_password_policy:
+    required_special: 1
+  register: result
+
+- name: Assert Change required special - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change required uppercase
+  bigip_password_policy:
+    required_uppercase: 1
+  register: result
+
+- name: Assert Change required uppercase
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change required uppercase - Idempotent check
+  bigip_password_policy:
+    required_uppercase: 1
+  register: result
+
+- name: Assert Change required uppercase - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
