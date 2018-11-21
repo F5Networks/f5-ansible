@@ -1153,14 +1153,6 @@ class ApiParameters(Parameters):
             result = Destination(ip=None, port=None, route_domain=None, mask=None)
             return result
         destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
-        if is_valid_ip(destination):
-            result = Destination(
-                ip=destination,
-                port=None,
-                route_domain=None,
-                mask=self.mask
-            )
-            return result
 
         # Covers the following examples
         #
@@ -1228,6 +1220,16 @@ class ApiParameters(Parameters):
                 mask=self.mask
             )
             return result
+        # this check needs to be the last as for some reason IPv6 addr with %2 %2.port were also caught
+        if is_valid_ip(destination):
+            result = Destination(
+                ip=destination,
+                port=None,
+                route_domain=None,
+                mask=self.mask
+            )
+            return result
+
         else:
             result = Destination(ip=None, port=None, route_domain=None, mask=None)
             return result
