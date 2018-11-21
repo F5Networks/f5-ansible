@@ -76,8 +76,8 @@ options:
     description:
       - Specifies whether the system uses an SSL port to communicate with the LDAP server.
     choices:
-      - yes
-      - no
+      - "yes"
+      - "no"
       - start-tls
   ssl_ca_cert:
     description:
@@ -248,7 +248,6 @@ class Parameters(AnsibleF5Parameters):
         'ssl_client_key',
         'user_template',
     ]
-
 
     @property
     def ssl_ca_cert(self):
