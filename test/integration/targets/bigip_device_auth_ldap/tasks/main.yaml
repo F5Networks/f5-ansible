@@ -1,0 +1,623 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create an LDAP device configuration
+  bigip_device_auth_ldap:
+    servers:
+      - 1.1.1.1
+  register: result
+
+- name: Assert Create an LDAP device configuration
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create an LDAP device configuration - Idempotent check
+  bigip_device_auth_ldap:
+    servers:
+      - 1.1.1.1
+  register: result
+
+- name: Assert Create an LDAP device configuration - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change scope - one
+  bigip_device_auth_ldap:
+    scope: one
+  register: result
+
+- name: Assert Change scope - one
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change scope - one - Idempotent check
+  bigip_device_auth_ldap:
+    scope: one
+  register: result
+
+- name: Assert Change scope - one - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change scope - sub
+  bigip_device_auth_ldap:
+    scope: sub
+  register: result
+
+- name: Assert Change scope - sub
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change scope - sub - Idempotent check
+  bigip_device_auth_ldap:
+    scope: sub
+  register: result
+
+- name: Assert Change scope - sub - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change scope - base
+  bigip_device_auth_ldap:
+    scope: base
+  register: result
+
+- name: Assert Change scope - base
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change scope - base - Idempotent check
+  bigip_device_auth_ldap:
+    scope: base
+  register: result
+
+- name: Assert Change scope - base - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change port
+  bigip_device_auth_ldap:
+    port: 300
+  register: result
+
+- name: Assert Change port
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change port - Idempotent check
+  bigip_device_auth_ldap:
+    port: 300
+  register: result
+
+- name: Assert Change port - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change login attribute
+  bigip_device_auth_ldap:
+    login_ldap_attr: samaccountname
+  register: result
+
+- name: Assert Change login attribute
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change login attribute - Idempotent check
+  bigip_device_auth_ldap:
+    login_ldap_attr: samaccountname
+  register: result
+
+- name: Assert Change login attribute - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change login attribute - none
+  bigip_device_auth_ldap:
+    login_ldap_attr: none
+  register: result
+
+- name: Assert Change login attribute - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change login attribute - none - Idempotent check
+  bigip_device_auth_ldap:
+    login_ldap_attr: none
+  register: result
+
+- name: Assert Change login attribute - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change check_member_attr - yes
+  bigip_device_auth_ldap:
+    check_member_attr: yes
+  register: result
+
+- name: Assert Change check_member_attr - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change check_member_attr - yes - Idempotent check
+  bigip_device_auth_ldap:
+    check_member_attr: yes
+  register: result
+
+- name: Assert Change check_member_attr - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change check_member_attr - no
+  bigip_device_auth_ldap:
+    check_member_attr: no
+  register: result
+
+- name: Assert Change check_member_attr - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change check_member_attr - no - Idempotent check
+  bigip_device_auth_ldap:
+    check_member_attr: no
+  register: result
+
+- name: Assert Change check_member_attr - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change bind_dn
+  bigip_device_auth_ldap:
+    bind_dn: ou=foo,cn=bar,cn=org
+  register: result
+
+- name: Assert Change bind_dn
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change bind_dn - Idempotent check
+  bigip_device_auth_ldap:
+    bind_dn: ou=foo,cn=bar,cn=org
+  register: result
+
+- name: Assert Change bind_dn - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change user template
+  bigip_device_auth_ldap:
+    user_template: foo-%s-bar
+  register: result
+
+- name: Assert Change user template
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change user template - Idempotent check
+  bigip_device_auth_ldap:
+    user_template: foo-%s-bar
+  register: result
+
+- name: Assert Change user template - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change user template - none
+  bigip_device_auth_ldap:
+    user_template: none
+  register: result
+
+- name: Assert Change user template - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change user template - none - Idempotent check
+  bigip_device_auth_ldap:
+    user_template: none
+  register: result
+
+- name: Assert Change user template - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl_ca_cert
+  bigip_device_auth_ldap:
+    ssl_ca_cert: default.crt
+  register: result
+
+- name: Assert Change ssl_ca_cert
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl_ca_cert - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_ca_cert: default.crt
+  register: result
+
+- name: Assert Change ssl_ca_cert - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl_ca_cert - none
+  bigip_device_auth_ldap:
+    ssl_ca_cert: none
+  register: result
+
+- name: Assert Change ssl_ca_cert - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl_ca_cert - none - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_ca_cert: none
+  register: result
+
+- name: Assert Change ssl_ca_cert - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl_client_key
+  bigip_device_auth_ldap:
+    ssl_client_key: default.key
+  register: result
+
+- name: Assert Change ssl_client_key
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl_client_key - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_client_key: default.key
+  register: result
+
+- name: Assert Change ssl_client_key - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl_client_key - none
+  bigip_device_auth_ldap:
+    ssl_client_key: none
+  register: result
+
+- name: Assert Change ssl_client_key - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl_client_key - none - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_client_key: none
+  register: result
+
+- name: Assert Change ssl_client_key - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl_client_cert
+  bigip_device_auth_ldap:
+    ssl_client_cert: default.crt
+  register: result
+
+- name: Assert Change ssl_client_cert
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl_client_cert - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_client_cert: default.crt
+  register: result
+
+- name: Assert Change ssl_client_cert - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl_client_cert - none
+  bigip_device_auth_ldap:
+    ssl_client_cert: none
+  register: result
+
+- name: Assert Change ssl_client_cert - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl_client_cert - none - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_client_cert: none
+  register: result
+
+- name: Assert Change ssl_client_cert - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl - yes
+  bigip_device_auth_ldap:
+    ssl: yes
+  register: result
+
+- name: Assert Change ssl - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl - yes - Idempotent check
+  bigip_device_auth_ldap:
+    ssl: yes
+  register: result
+
+- name: Assert Change ssl - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl - no
+  bigip_device_auth_ldap:
+    ssl: no
+  register: result
+
+- name: Assert Change ssl - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl - no - Idempotent check
+  bigip_device_auth_ldap:
+    ssl: no
+  register: result
+
+- name: Assert Change ssl - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl - start-tls
+  bigip_device_auth_ldap:
+    ssl: start-tls
+  register: result
+
+- name: Assert Change ssl - start-tls
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl - start-tls - Idempotent check
+  bigip_device_auth_ldap:
+    ssl: start-tls
+  register: result
+
+- name: Assert Change ssl - start-tls - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl_check_peer - yes
+  bigip_device_auth_ldap:
+    ssl_check_peer: yes
+  register: result
+
+- name: Assert Change ssl_check_peer - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl_check_peer - yes - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_check_peer: yes
+  register: result
+
+- name: Assert Change ssl_check_peer - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ssl_check_peer - no
+  bigip_device_auth_ldap:
+    ssl_check_peer: no
+  register: result
+
+- name: Assert Change ssl_check_peer - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ssl_check_peer - no - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_check_peer: no
+  register: result
+
+- name: Assert Change ssl_check_peer - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change bind_password - always
+  bigip_device_auth_ldap:
+    bind_password: secret
+    update_password: always
+  register: result
+
+- name: Assert Change bind_password - always
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change bind_password - always - Idempotent check expected change
+  bigip_device_auth_ldap:
+    bind_password: secret
+    update_password: always
+  register: result
+
+- name: Assert Change bind_password - always - Idempotent check expected change
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change bind_password - on_create - Expected no change
+  bigip_device_auth_ldap:
+    bind_password: secret
+    update_password: on_create
+  register: result
+
+- name: Assert Change bind_password - on_create - Expected no change
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+
+- name: Change fallback_to_local - yes
+  bigip_device_auth_ldap:
+    fallback_to_local: yes
+  register: result
+
+- name: Assert Change fallback_to_local - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change fallback_to_local - yes - Idempotent check
+  bigip_device_auth_ldap:
+    fallback_to_local: yes
+  register: result
+
+- name: Assert Change fallback_to_local - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+- name: Change fallback_to_local - no
+  bigip_device_auth_ldap:
+    fallback_to_local: no
+  register: result
+
+- name: Assert Change fallback_to_local - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change fallback_to_local - no - Idempotent check
+  bigip_device_auth_ldap:
+    fallback_to_local: no
+  register: result
+
+- name: Assert Change fallback_to_local - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+- name: Remove LDAP device auth
+  bigip_device_auth_ldap:
+    state: absent
+  register: result
+
+- name: Assert Remove LDAP device auth
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove LDAP device auth - Idempotent check
+  bigip_device_auth_ldap:
+    state: absent
+  register: result
+
+- name: Assert Remove LDAP device auth - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- import_tasks: teardown.yaml
