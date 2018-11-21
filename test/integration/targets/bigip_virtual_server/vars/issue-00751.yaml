@@ -1,0 +1,23 @@
+---
+addr1:
+  - name: "foo.bar"
+    address: "10.10.10.0"
+
+addr2:
+  - name: "foo-bar._"
+    address: "192.168.1.0"
+    mask: "255.255.255.224"
+    rd: 1234
+
+addr3:
+  - name: "foo_bar.-"
+    address: "2700:bc00:1f10:101::6"
+
+vs_name1: "vs1_00751"
+mask1: "255.255.255.0"
+
+vs_name2: "vs2_00751"
+
+vs_name3: "vs3_00751"
+source3: "2700:bc00:1f10:100::/64"
+
