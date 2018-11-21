@@ -306,7 +306,7 @@ options:
         C(ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff) is set for IPv4 and IPv6 addresses respectively.
       - When C(destination) is provided in CIDR notation format and C(mask) is not specified the mask parameter is
         inferred from C(destination).
-      - When C(destination) is provided as Virtual Address name, and C(mask) is not specified, 
+      - When C(destination) is provided as Virtual Address name, and C(mask) is not specified,
         the mask will be C(None) allowing device set it with its internal defaults.
    version_added: 2.8
   ip_protocol:
