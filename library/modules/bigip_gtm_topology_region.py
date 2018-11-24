@@ -14,24 +14,31 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_gtm_topology_record
-short_description: Manages GTM Topology Records
+module: bigip_gtm_topology_region
+short_description: Manages GTM Topology Regions
 description:
-  - Manages GTM Topology Records. Once created, only topology record C(weight) can be modified.
+  - Manages GTM Topology Regions.
 version_added: 2.8
 options:
-  source:
+  name:
     description:
-      - Specifies the origination of an incoming DNS request.
+      - Specifies the name of the region.
+    required: True
+  region_members:
+    description:
+      - Specifies the list of region members.
+      - This list of members is all or nothing, in order to add or remove a member,
+        you must specify the entire list of members.
+      - The list will override what is on the device if different.
+      - If C(none) value is specified the region members list will be removed.
+    type: raw
     suboptions:
       negate:
         description:
-          - When set to c(yes) the system selects this topology record, when the request source does not match.
+          - When set to c(yes) the system selects this topology region, when the request source does not match.
+          - Only a single list entry can be specified together with negate.
         type: bool
         default: no
-      subnet:
-        description:
-          - An IP address and network mask in the CIDR format.
       region:
         description:
           - Specifies the name of region already defined in the configuration.
@@ -43,63 +50,13 @@ options:
           - Full continent names and their abbreviated versions are supported.
       country:
         description:
-          - Specifies a country.
+          - The country name, or code to use.
           - In addition to the country full names, you may also specify their abbreviated
             form, such as C(US) instead of C(United States).
           - Valid country codes can be found here https://countrycode.org/.
       state:
         description:
           - Specifies a state in a given country.
-          - This parameter requires country option to be provided.
-      isp:
-        description:
-          - Specifies an Internet service provider.
-        choices:
-          - AOL
-          - BeijingCNC
-          - CNC
-          - ChinaEducationNetwork
-          - ChinaMobilNetwork
-          - ChinaRailwayTelcom
-          - ChinaTelecom
-          - ChinaUnicom
-          - Comcast
-          - Earthlink
-          - ShanghaiCNC
-          - ShanghaiTelecom
-      geo_isp:
-        description:
-          - Specifies a geolocation ISP
-    required: True
-  destination:
-    description:
-      - Specifies where the system directs the incoming DNS request.
-    suboptions:
-      negate:
-        description:
-          - When set to c(yes) the system selects this topology record, when the request destination does not match.
-        type: bool
-        default: no
-      subnet:
-        description:
-          - An IP address and network mask in the CIDR format.
-      region:
-        description:
-          - Specifies the name of region already defined in the configuration.
-      continent:
-        description:
-          - Specifies one of the seven continents, along with the C(Unknown) setting.
-          - Specifying C(Unknown) forces the system to use a default resolution
-            if the system cannot determine the location of the local DNS making the request.
-          - Full continent names and their abbreviated versions are supported.
-      country:
-        description:
-          - Specifies a country.
-          - Full continent names and their abbreviated versions are supported.
-      state:
-        description:
-          - Specifies a state in a given country.
-          - This parameter requires country option to be provided.
       pool:
         description:
           - Specifies the name of GTM pool already defined in the configuration.
@@ -125,28 +82,16 @@ options:
       geo_isp:
         description:
           - Specifies a geolocation ISP
-    required: True
-  weight:
-     description:
-       - Specifies the weight of the topology record.
-       - The system finds the weight of the first topology record that matches the server object (pool or pool member)
-         and the local DNS. The system then assigns that weight as the topology score for that server object.
-       - The system load balances to the server object with the highest topology score.
-       - If the system finds no topology record that matches both the server object and the local DNS,
-         then the system assigns that server object a zero score.
-       - If the option is not specified when the record is created the system will set it at a default value of C(1)
-       - Valid range is (0 - 4294967295)
-     type: int
   partition:
     description:
       - Device partition to manage resources on.
-      - Partition parameter is taken into account when used in conjunction with C(pool), C(data_center),
-        and C(region) parameters, it is ignored otherwise.
+      - Partition parameter is also taken into account when used in conjunction with C(pool), C(data_center),
+        and C(region) parameters.
     default: Common
   state:
     description:
-      - When C(state) is C(present), ensures that the record exists.
-      - When C(state) is C(absent), ensures that the record is removed.
+      - When C(state) is C(present), ensures that the region exists.
+      - When C(state) is C(absent), ensures that the region is removed.
     choices:
       - present
       - absent
@@ -156,41 +101,27 @@ author:
   - Wojciech Wypior (@wojtek0806)
 '''
 
+
 EXAMPLES = r'''
-- name: Create an IP Subnet and an ISP based topology record
-  bigip_gtm_topology_record:
-    source:
-      - subnet: 192.168.1.0/24
-    destination:
-      - isp: AOL
-    weight: 10
+- name: Create topology region
+  bigip_gtm_topology_region:
+    name: foobar
+    region_members:
+      - country: CN
+        negate: yes
+      - datacenter: baz
     provider:
       password: secret
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
 
-- name: Create a region and a pool based topology record
-  bigip_gtm_topology_record:
-    source:
-      - region: Foo
-    destination:
-      - pool: FooPool
-    partition: FooBar
-    provider:
-      password: secret
-      server: lb.mydomain.com
-      user: admin
-  delegate_to: localhost
-
-- name: Create a negative region and a negative data center based topology record
-  bigip_gtm_topology_record:
-    source:
-      - region: Baz
-      - negate: yes
-    destination:
-      - datacenter: Baz-DC
-      - negate: yes
+- name: Modify topology region
+  bigip_gtm_topology_region:
+    name: foobar
+    region_members:
+      - continent: EU
+      - country: PL
     provider:
       password: secret
       server: lb.mydomain.com
@@ -199,15 +130,22 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-weight:
-  description: The weight of the topology record.
+name:
+  description: The name value of the GTM region.
   returned: changed
-  type: int
-  sample: 20
+  type: str
+  sample: foobar
+region_members:
+  description: The list of members of the GTM region.
+  returned: changed
+  type: list
+  sample: [{ "continent": "EU" }, {"country": "PL"}],
 '''
 
+import copy
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.six import string_types
 from ansible.module_utils.six import iteritems
 
 try:
@@ -216,47 +154,54 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
+    from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import flatten_boolean
-    from library.module_utils.network.f5.ipaddress import is_valid_ip_network
+    from library.module_utils.network.f5.compare import cmp_simple_list
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
+    from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip_network
+    from ansible.module_utils.network.f5.compare import cmp_simple_list
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'score': 'weight',
+        'regionMembers': 'region_members',
     }
 
     api_attributes = [
-        'score',
+        'regionMembers',
     ]
 
     returnables = [
-        'weight',
-        'name'
+        'region_members',
     ]
 
     updatables = [
-        'weight',
+        'region_members',
     ]
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def region_members(self):
+        members = self._values['region_members']
+        if members is None:
+            return None
+        result = [member['name'] for member in members]
+        return result
 
 
 class ModuleParameters(Parameters):
@@ -532,215 +477,57 @@ class ModuleParameters(Parameters):
     }
 
     @property
-    def src_negate(self):
-        src_negate = self._values['source'].get('negate', None)
-        result = flatten_boolean(src_negate)
-        if result == 'yes':
-            return 'not'
-        return None
-
-    @property
-    def src_subnet(self):
-        src_subnet = self._values['source'].get('subnet', None)
-        if src_subnet is None:
-            return None
-        if is_valid_ip_network(src_subnet):
-            return src_subnet
-        raise F5ModuleError(
-            "Specified 'subnet' is not a valid subnet."
-        )
-
-    @property
-    def src_region(self):
-        src_region = self._values['source'].get('region', None)
-        if src_region is None:
-            return None
-        return fq_name(self.partition, src_region)
-
-    @property
-    def src_continent(self):
-        src_continent = self._values['source'].get('continent', None)
-        if src_continent is None:
-            return None
-        result = self.continents.get(src_continent, src_continent)
-        return result
-
-    @property
-    def src_country(self):
-        src_country = self._values['source'].get('country', None)
-        if src_country is None:
-            return None
-        result = self.countries.get(src_country, src_country)
-        return result
-
-    @property
-    def src_state(self):
-        src_country = self._values['source'].get('country', None)
-        src_state = self._values['source'].get('state', None)
-        if src_state is None:
-            return None
-        if src_country is None:
-            raise F5ModuleError(
-                'Country needs to be provided when specifying state'
-            )
-        result = '{0}/{1}'.format(src_country, src_state)
-        return result
-
-    @property
-    def src_isp(self):
-        src_isp = self._values['source'].get('isp', None)
-        if src_isp is None:
-            return None
-        return fq_name('Common', src_isp)
-
-    @property
-    def src_geo_isp(self):
-        src_geo_isp = self._values['source'].get('geo_isp', None)
-        return src_geo_isp
-
-    @property
-    def dst_negate(self):
-        dst_negate = self._values['destination'].get('negate', None)
-        result = flatten_boolean(dst_negate)
-        if result == 'yes':
-            return 'not'
-        return None
-
-    @property
-    def dst_subnet(self):
-        dst_subnet = self._values['destination'].get('subnet', None)
-        if dst_subnet is None:
-            return None
-        if is_valid_ip_network(dst_subnet):
-            return dst_subnet
-        raise F5ModuleError(
-            "Specified 'subnet' is not a valid subnet."
-        )
-
-    @property
-    def dst_region(self):
-        dst_region = self._values['destination'].get('region', None)
-        if dst_region is None:
-            return None
-        return fq_name(self.partition, dst_region)
-
-    @property
-    def dst_continent(self):
-        dst_continent = self._values['destination'].get('continent', None)
-        if dst_continent is None:
-            return None
-        result = self.continents.get(dst_continent, dst_continent)
-        return result
-
-    @property
-    def dst_country(self):
-        dst_country = self._values['destination'].get('country', None)
-        if dst_country is None:
-            return None
-        result = self.countries.get(dst_country, dst_country)
-        return result
-
-    @property
-    def dst_state(self):
-        dst_country = self.dst_country
-        dst_state = self._values['destination'].get('state', None)
-        if dst_state is None:
-            return None
-        if dst_country is None:
-            raise F5ModuleError(
-                'Country needs to be provided when specifying state'
-            )
-        result = '{0}/{1}'.format(dst_country, dst_state)
-        return result
-
-    @property
-    def dst_isp(self):
-        dst_isp = self._values['destination'].get('isp', None)
-        if dst_isp is None:
-            return None
-        return fq_name('Common', dst_isp)
-
-    @property
-    def dst_geo_isp(self):
-        dst_geo_isp = self._values['destination'].get('geo_isp', None)
-        return dst_geo_isp
-
-    @property
-    def dst_pool(self):
-        dst_pool = self._values['destination'].get('pool', None)
-        if dst_pool is None:
-            return None
-        return fq_name(self.partition, dst_pool)
-
-    @property
-    def dst_datacenter(self):
-        dst_datacenter = self._values['destination'].get('datacenter', None)
-        if dst_datacenter is None:
-            return None
-        return fq_name(self.partition, dst_datacenter)
-
-    @property
-    def source(self):
-        options = {
-            'negate': self.src_negate,
-            'subnet': self.src_subnet,
-            'region': self.src_region,
-            'continent': self.src_continent,
-            'country': self.src_country,
-            'state': self.src_state,
-            'isp': self.src_isp,
-            'geoip-isp': self.src_geo_isp,
-        }
-        result = 'ldns: {0}'.format(self._format_options(options))
-        return result
-
-    @property
-    def destination(self):
-        options = {
-            'negate': self.dst_negate,
-            'subnet': self.dst_subnet,
-            'region': self.dst_region,
-            'continent': self.dst_continent,
-            'country': self.dst_country,
-            'state': self.dst_state,
-            'datacenter': self.dst_datacenter,
-            'pool': self.dst_pool,
-            'isp': self.dst_isp,
-            'geoip-isp': self.dst_geo_isp,
-        }
-        result = 'server: {0}'.format(self._format_options(options))
-        return result
-
-    @property
-    def name(self):
-        result = '{0} {1}'.format(self.source, self.destination)
-        return result
-
-    def _format_options(self, options):
+    def region_members(self):
+        result = list()
         negate = None
-        cleaned = dict((k, v) for k, v in iteritems(options) if v is not None)
-        if 'country' and 'state' in cleaned.keys():
-            del cleaned['country']
-        if 'negate' in cleaned.keys():
-            negate = cleaned['negate']
-            del cleaned['negate']
-        name, value = cleaned.popitem()
-        if negate:
-            result = '{0} {1} {2}'.format(negate, name, value)
-            return result
-        result = '{0} {1}'.format(name, value)
+        if self._values['region_members'] is None:
+            return None
+        if isinstance(self._values['region_members'], string_types):
+            return self._values['region_members']
+        if not isinstance(self._values['region_members'], list):
+            raise F5ModuleError(
+                'Region members must be either type of string or list.'
+            )
+        members = copy.deepcopy(self._values['region_members'])
+        for member in members:
+            if 'negate' in member.keys():
+                if len(member.keys()) > 2:
+                    raise F5ModuleError(
+                        'You cannot specify negate and more than one option together.'
+                    )
+                negate = self._flatten_negate(member)
+
+            for key, value in iteritems(member):
+                if negate:
+                    output = self._change_value(key, value)
+                    item = "{0} {1} {2}".format(negate, output[0], output[1])
+                    result.append(item)
+                    negate = None
+                else:
+                    output = self._change_value(key, value)
+                    item = "{0} {1}".format(output[0], output[1])
+                    result.append(item)
         return result
 
-    @property
-    def weight(self):
-        weight = self._values['weight']
-        if weight is None:
-            return None
-        if 0 <= weight <= 4294967295:
-            return weight
-        raise F5ModuleError(
-            "Valid weight must be in range 0 - 4294967295"
-        )
+    def _flatten_negate(self, item):
+        result = flatten_boolean(item['negate'])
+        item.pop('negate')
+        if result == 'yes':
+            return 'not'
+        return None
+
+    def _change_value(self, key, value):
+        if key in ['region', 'pool', 'datacenter']:
+            return key, fq_name(self.partition, value)
+        if key == 'isp':
+            return key, fq_name('Common', value)
+        if key == 'continent':
+            return key, self.continents.get(value, value)
+        if key == 'country':
+            return key, self.countries.get(value, value)
+        if key == 'geo_isp':
+            return 'geoip-isp', value
+        return key, value
 
 
 class Changes(Parameters):
@@ -756,7 +543,14 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def region_members(self):
+        members = self._values['region_members']
+        if members is None:
+            return None
+        if not members:
+            return 'none'
+        return ' '.join(members)
 
 
 class ReportableChanges(Changes):
@@ -783,6 +577,10 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def region_members(self):
+        return cmp_simple_list(self.want.region_members, self.have.region_members)
 
 
 class ModuleManager(object):
@@ -819,18 +617,20 @@ class ModuleManager(object):
             return True
         return False
 
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def exec_module(self):
         changed = False
         result = dict()
         state = self.want.state
 
-        if state == "present":
+        if state in ["present", "remove"]:
             changed = self.present()
         elif state == "absent":
             changed = self.absent()
@@ -842,14 +642,6 @@ class ModuleManager(object):
         self._announce_deprecations(result)
         return result
 
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
-        for warning in warnings:
-            self.client.module.deprecate(
-                msg=warning['msg'],
-                version=warning['version']
-            )
-
     def present(self):
         if self.exists():
             return self.update()
@@ -859,6 +651,12 @@ class ModuleManager(object):
     def absent(self):
         if self.exists():
             return self.remove()
+        return False
+
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
         return False
 
     def update(self):
@@ -886,11 +684,10 @@ class ModuleManager(object):
         return True
 
     def exists(self):
-        name = self.want.name
-        uri = "https://{0}:{1}/mgmt/tm/gtm/topology/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/gtm/region/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            name.replace(' ', '%20').replace('/', '~')
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.get(uri)
         try:
@@ -902,18 +699,30 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        params = self.changes.api_params()
-        params['name'] = self.want.name
-        uri = "https://{0}:{1}/mgmt/tm/gtm/topology/".format(
+        if self.changes.region_members:
+            command = 'tmsh create gtm region {0} region-members add {{ {1} }} '.format(
+                fq_name(self.want.partition, self.want.name),
+                self.changes.region_members
+            )
+        else:
+            command = 'tmsh create gtm region {0}'.format(
+                fq_name(self.want.partition, self.want.name)
+            )
+        payload = {
+            "command": "run",
+            "utilCmdArgs": '-c "{0}"'.format(command)
+        }
+        uri = "https://{0}:{1}/mgmt/tm/util/bash".format(
             self.client.provider['server'],
-            self.client.provider['server_port'],
+            self.client.provider['server_port']
         )
-        resp = self.client.api.post(uri, json=params)
+        resp = self.client.api.post(uri, json=payload)
         try:
             response = resp.json()
+            if 'commandResult' in response:
+                raise F5ModuleError(response['commandResult'])
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if 'code' in response and response['code'] in [400, 403]:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
@@ -922,31 +731,50 @@ class ModuleManager(object):
         return True
 
     def update_on_device(self):
-        params = self.changes.api_params()
-        name = self.want.name
-        uri = "https://{0}:{1}/mgmt/tm/gtm/topology/{2}".format(
+        param = self.changes.region_members
+        if param:
+            if param != 'none':
+                command = 'tmsh modify gtm region {0} region-members replace-all-with {{ {1} }} '.format(
+                    fq_name(self.want.partition, self.want.name),
+                    param
+                )
+            else:
+                command = 'tmsh modify gtm region {0} region-members {1} '.format(
+                    fq_name(self.want.partition, self.want.name),
+                    param
+                )
+        else:
+            command = 'tmsh create gtm region {0}'.format(
+                fq_name(self.want.partition, self.want.name)
+            )
+
+        payload = {
+            "command": "run",
+            "utilCmdArgs": '-c "{0}"'.format(command)
+        }
+
+        uri = "https://{0}:{1}/mgmt/tm/util/bash".format(
             self.client.provider['server'],
-            self.client.provider['server_port'],
-            name.replace(' ', '%20').replace('/', '~')
+            self.client.provider['server_port']
         )
-        resp = self.client.api.patch(uri, json=params)
+        resp = self.client.api.post(uri, json=payload)
         try:
             response = resp.json()
+            if 'commandResult' in response:
+                raise F5ModuleError(response['commandResult'])
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] in [400, 403]:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
-        name = self.want.name
-        uri = "https://{0}:{1}/mgmt/tm/gtm/topology/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/gtm/region/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            name.replace(' ', '%20').replace('/', '~')
+            transform_name(self.want.partition, self.want.name)
         )
         response = self.client.api.delete(uri)
         if response.status == 200:
@@ -954,11 +782,10 @@ class ModuleManager(object):
         raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
-        name = self.want.name
-        uri = "https://{0}:{1}/mgmt/tm/gtm/topology/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/gtm/region/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            name.replace(' ', '%20').replace('/', '~')
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.get(uri)
         try:
@@ -971,7 +798,6 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-
         return ApiParameters(params=response)
 
 
@@ -985,33 +811,12 @@ class ArgumentSpec(object):
             'ShanghaiTelecom',
         ]
         argument_spec = dict(
-            source=dict(
-                required=True,
-                type='dict',
-                options=dict(
-                    subnet=dict(),
-                    region=dict(),
-                    continent=dict(),
-                    country=dict(),
-                    state=dict(),
-                    isp=dict(
-                        choices=self.choices
-                    ),
-                    geo_isp=dict(),
-                    negate=dict(
-                        type='bool',
-                        default='no'
-                    ),
-                ),
-                mutually_exclusive=[
-                    ['subnet', 'region', 'continent', 'country', 'isp', 'geo_isp']
-                ]
+            name=dict(
+                required=True
             ),
-            destination=dict(
-                required=True,
-                type='dict',
+            region_members=dict(
+                type='raw',
                 options=dict(
-                    subnet=dict(),
                     region=dict(),
                     continent=dict(),
                     country=dict(),
@@ -1026,12 +831,8 @@ class ArgumentSpec(object):
                         type='bool',
                         default='no'
                     ),
-                ),
-                mutually_exclusive=[
-                    ['subnet', 'region', 'continent', 'country', 'pool', 'datacenter', 'isp', 'geo_isp']
-                ]
+                )
             ),
-            weight=dict(type='int'),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

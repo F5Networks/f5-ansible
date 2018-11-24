@@ -1,0 +1,17 @@
+---
+
+dc_name1: foo_dc
+region: foo_region
+pool_name: foo.pool
+pool_lb_method: round-robin
+
+name1: region_foo1
+name2: region_foo2
+
+isp_1: AOL
+
+country_1: PL
+country_2: "United States"
+state_1: "US/Ohio"
+
+geo_isp: foo_geo

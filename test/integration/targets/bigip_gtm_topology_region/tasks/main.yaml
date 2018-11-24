@@ -1,0 +1,230 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create topology region
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members:
+      - country: CN
+        negate: yes
+      - isp: "{{ isp_1 }}"
+  register: result
+
+- name: Assert Create topology region
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create topology region - Idempotent check
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members:
+      - country: CN
+        negate: yes
+      - isp: "{{ isp_1 }}"
+  register: result
+
+- name: Assert Create topology region - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify topology region
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members:
+      - continent: EU
+      - country: PL
+  register: result
+
+- name: Assert Modify topology region
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify topology region - Idempotent check
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members:
+      - continent: EU
+      - country: PL
+  register: result
+
+- name: Assert Modify topology region - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove topology region
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove topology region
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove topology region - Idempotent check
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove topology region - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create topology region with pool and data center
+  bigip_gtm_topology_region:
+    name: "{{ name2 }}"
+    region_members:
+      - pool: "{{ pool_name }}"
+      - datacenter: "{{ dc_name1 }}"
+        negate: yes
+  register: result
+
+- name: Assert Create topology region with pool and data center
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create topology region with pool and data center - Idempotent check
+  bigip_gtm_topology_region:
+    name: "{{ name2 }}"
+    region_members:
+      - pool: "{{ pool_name }}"
+      - datacenter: "{{ dc_name1 }}"
+        negate: yes
+  register: result
+
+- name: Assert Create topology region with pool and data center - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify topology region negate state, negate geo isp
+  bigip_gtm_topology_region:
+    name: "{{ name2 }}"
+    region_members:
+      - state: "{{ state_1 }}"
+        negate: yes
+      - geo_isp: "{{ geo_isp }}"
+        negate: yes
+  register: result
+
+- name: Assert Modify topology region negate state, negate geo isp
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify topology region negate state, negate geo isp - Idempotent check
+  bigip_gtm_topology_region:
+    name: "{{ name2 }}"
+    region_members:
+      - state: "{{ state_1 }}"
+        negate: yes
+      - geo_isp: "{{ geo_isp }}"
+        negate: yes
+  register: result
+
+- name: Assert Modify topology region negate state, negate geo isp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create topology negate region and country
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members:
+      - country: "{{ country_2 }}"
+      - region: "{{ region }}"
+        negate: yes
+  register: result
+
+- name: Assert Create topology negate region and country
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create topology negate region and country - Idempotent check
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members:
+      - country: "{{ country_2 }}"
+      - region: "{{ region }}"
+        negate: yes
+  register: result
+
+- name: Assert Create topology negate region and country - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Zero region members
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members: ""
+  register: result
+
+- name: Assert Zero region members
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Zero region members - Idempotent check
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members: ""
+  register: result
+
+- name: Assert Zero region members - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify topology region negate error - Expect Failure
+  bigip_gtm_topology_region:
+    name: "{{ name2 }}"
+    region_members:
+      - pool: "{{ pool_name }}"
+      - datacenter: "{{ dc_name1 }}"
+        country: "{{ country_2 }}"
+        negate: yes
+  register: result
+  failed_when: "'You cannot specify negate and more than one option together.' not in result['msg']"
+
+- name: Invalid region members value - Expect Failure
+  bigip_gtm_topology_region:
+    name: "{{ name1 }}"
+    region_members:
+      country: "{{ country_2 }}"
+  register: result
+  failed_when: "'Region members must be either type of string or list.' not in result['msg']"
+
+- name: Remove topology regions
+  bigip_gtm_topology_region:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ name1 }}"
+    - "{{ name2 }}"
+
+- import_tasks: teardown.yaml
