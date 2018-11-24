@@ -37,7 +37,8 @@ That release schedule is in the `ROADMAP files` near the top of each file.
 
 Depending on which version is currently stable, upstreamed modules will be part of the next major stable release.
 
-For example, if 2.3 is the current stable version and F5 upstreamed a module to core, the module would not appear as part of `pip install ansible` until version 2.4 releases.
+For example, if 2.3 is the current stable version and F5 upstreamed a module to core, the module would not appear
+as part of `pip install ansible` until version 2.4 releases.
 
 You can get the modules before that point in time, but you must do so manually. The link to the |stable_modules|.
 
@@ -49,7 +50,8 @@ A summary of the upstreaming process is below. Only one person needs to know how
 Complete GitHub template
 ------------------------
 
-Ansible provides an Issue template that you receive when you create a new PR in GitHub. You should fill out the various fields, making sure to include the following information in the "Summary", "Description", or related fields.
+Ansible provides an Issue template that you receive when you create a new PR in GitHub. You should fill out the various
+fields, making sure to include the following information in the "Summary", "Description", or related fields.
 
 Here is an example:
 
@@ -68,7 +70,8 @@ Here is an example:
    * https://github.com/F5Networks/f5-ansible/blob/devel/test/integration/bigip_user.yaml
    * https://github.com/F5Networks/f5-ansible/tree/devel/test/integration/targets/bigip_user/tasks
 
-When you include this extra information, it shows your due diligence in writing and testing the module. It helps assure the Ansible maintainers, and F5 customers, that you wrote the code well.
+When you include this extra information, it shows your due diligence in writing and testing the module. It helps
+assure the Ansible maintainers, and F5 customers, that you wrote the code well.
 
 Attend the upstream meeting
 ---------------------------

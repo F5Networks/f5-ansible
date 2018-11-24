@@ -1,12 +1,12 @@
-:source: bigip_dns_cache.py
+:source: bigip_dns_cache_resolver.py
 
 :orphan:
 
-.. _bigip_dns_cache_module:
+.. _bigip_dns_cache_resolver_module:
 
 
-bigip_dns_cache - Manage DNS cache configurations on BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_dns_cache_resolver - Manage DNS resolver cache configurations on BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.8
 
@@ -17,7 +17,7 @@ bigip_dns_cache - Manage DNS cache configurations on BIG-IP
 
 Synopsis
 --------
-- Manage DNS cache configurations on BIG-IP. This module can manage different cache types. These types support different parameters, so be sure to refer to the documentation for which types support which parameters.
+- Manage DNS resolver cache configurations on BIG-IP.
 
 
 
@@ -28,10 +28,10 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                
-                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                
+                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="3">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -48,6 +48,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies whether the system answers DNS queries for the default zones localhost, reverse 127.0.0.1 and ::1, and AS112.</div>
+                                                    <div>When creating a new cache resolver, if this parameter is not specified, the default is <code>no</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -58,9 +59,21 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Forward zones associated with the cache.</div>
+                                                    <div>To remove all forward zones, specify a value of <code>none</code>.</div>
                                                                                 </td>
             </tr>
                                                             <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a FQDN for the forward zone.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
                     <b>nameservers</b>
@@ -75,6 +88,18 @@ Parameters
                                                     <td class="elbow-placeholder"></td>
                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
+                    <b>address</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Address of recursive nameserver.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
                     <b>port</b>
                                                         </td>
                                 <td>
@@ -84,31 +109,8 @@ Parameters
                                                     <div>When specifying new nameservers, if this value is not provided, the default is <code>53</code>.</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>address</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Address of recursive nameserver.</div>
-                                                                                </td>
-            </tr>
                     
-                                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a FQDN for the forward zone.</div>
-                                                                                </td>
-            </tr>
-                    
+                                    
                                                 <tr>
                                                                 <td colspan="3">
                     <b>name</b>
@@ -117,6 +119,17 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the name of the cache.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="3">
+                    <b>partition</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Device partition to manage resources on.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -145,26 +158,15 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
-                    <b>ssh_keyfile</b>
-                                                        </td>
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -176,18 +178,6 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -206,15 +196,14 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
-                    <b>password</b>
+                    <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -235,6 +224,30 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>ssh_keyfile</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
                     <b>transport</b>
                                                         </td>
                                 <td>
@@ -249,6 +262,16 @@ Parameters
             </tr>
                     
                                                 <tr>
+                                                                <td colspan="3">
+                    <b>route_domain</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the route domain the resolver uses for outbound traffic.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="3">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
@@ -273,13 +296,17 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="3">
-                    <b>type</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>state</b>
+                                                        </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>absent</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Type of cache.</div>
-                                                    <div>This parameter cannot be changed after it is set.</div>
+                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
+                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -327,7 +354,7 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Create a DNS resolver cache
       bigip_dns_cache:
         name: foo
         answer_default_zones: yes
@@ -337,6 +364,7 @@ Examples
               - address: 1.2.3.4
                 port: 53
               - address: 5.6.7.8
+        route_domain: 0
         provider:
           password: secret
           server: lb.mydomain.com

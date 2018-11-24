@@ -28,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                     <tr>
@@ -85,6 +85,7 @@ Parameters
                                                                         <div>Destination IP of the virtual server.</div>
                                                     <div>Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div>
                                                     <div>When <code>type</code> is <code>internal</code>, this parameter is ignored. For all other types, it is required.</div>
+                                                    <div>Destination can also be specified as a name for an existing Virtual Address.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: address, ip</div>
                                     </td>
             </tr>
@@ -147,6 +148,17 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>ip_intelligence_policy</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the IP intelligence policy applied to the virtual server.</div>
+                                                    <div>This parameter requires that a valid BIG-IP security module such as ASM or AFM be provisioned.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>ip_protocol</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
                                 <td>
@@ -204,12 +216,13 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the destination address network mask. This parameter will work with IPv4 and IPv6 tye of addresses.</div>
+                                                                        <div>Specifies the destination address network mask. This parameter will work with IPv4 and IPv6 type of addresses.</div>
                                                     <div>This is an optional parameter which can be specified when creating or updating virtual server.</div>
-                                                    <div>If <code>destination</code> is provided in CIDR notation format and <code>mask</code> is provided the mask parameter takes precedence.</div>
-                                                    <div>If catchall destination is specified, i.e. <code>0.0.0.0</code> for IPv4 <code>::</code> for IPv6, mask parameter is set to <code>any</code> or <code>any6</code> respectively)</div>
+                                                    <div>If <code>destination</code> is set in CIDR notation format and <code>mask</code> is provided the <code>mask</code> parameter takes precedence.</div>
+                                                    <div>If catchall destination is specified, i.e. <code>0.0.0.0</code> for IPv4 <code>::</code> for IPv6, mask parameter is set to <code>any</code> or <code>any6</code> respectively.</div>
                                                     <div>When the <code>destination</code> is provided not in CIDR notation and <code>mask</code> is not specified, <code>255.255.255.255</code> or <code>ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff</code> is set for IPv4 and IPv6 addresses respectively.</div>
                                                     <div>When <code>destination</code> is provided in CIDR notation format and <code>mask</code> is not specified the mask parameter is inferred from <code>destination</code>.</div>
+                                                    <div>When <code>destination</code> is provided as Virtual Address name, and <code>mask</code> is not specified, the mask will be <code>None</code> allowing device set it with its internal defaults.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -405,26 +418,15 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>ssh_keyfile</b>
-                                                        </td>
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -436,18 +438,6 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -466,15 +456,14 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>password</b>
+                    <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -490,6 +479,30 @@ Parameters
                                                                 <td>
                                                                         <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>ssh_keyfile</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -548,22 +561,6 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>use_route_domain_policy</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specify that the virtual server uses the route domain policy, as specified in the Route Domain Security settings.</div>
-                                                    <div>When specified, the route domain policy overrides the device policy, and is overridden by a virtual server policy.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
                     <b>use_device_policy</b>
                                                         </td>
                                 <td>
@@ -575,6 +572,22 @@ Parameters
                                                                 <td>
                                                                         <div>Specify that the virtual server uses the device NAT policy, as specified in the Firewall Options.</div>
                                                     <div>The device policy is used if no route domain or virtual server NAT setting is specified.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>use_route_domain_policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specify that the virtual server uses the route domain policy, as specified in the Route Domain Security settings.</div>
+                                                    <div>When specified, the route domain policy overrides the device policy, and is overridden by a virtual server policy.</div>
                                                                                 </td>
             </tr>
                     
@@ -901,7 +914,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -1049,6 +1062,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
+                    <b>ip_intelligence_policy</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new IP Intelligence Policy assigned to the virtual.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/ip-intelligence</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
                     <b>ip_protocol</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
@@ -1083,7 +1109,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                             <div>The new value of the virtual.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;key2&#x27;: &#x27;bar&#x27;, &#x27;key1&#x27;: &#x27;foo&#x27;}</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;key1&#x27;: &#x27;foo&#x27;, &#x27;key2&#x27;: &#x27;bar&#x27;}</div>
                                     </td>
             </tr>
                                 <tr>

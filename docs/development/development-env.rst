@@ -10,7 +10,8 @@ Getting Started
 
 This document assumes that you are working on a \*nix, or \*nix-like environment.
 
-The workstation in the examples is a Mac running Sierra (10.12.6). Some of the steps will not be relevant to other environments. When that happens, it will be noted.
+The workstation in the examples is a Mac running Sierra (10.12.6). Some of the steps will not be relevant
+to other environments. When that happens, it will be noted.
 
 Amongst the topics of this document are the following:
 
@@ -21,7 +22,8 @@ Amongst the topics of this document are the following:
 - Getting the source
 - sudo ifconfig lo0 -alias 1.2.3.4
 
-This document ultimately serves as a gateway to all the other development-related documents on this site. You will be unable to follow the other development documents without having the setup outlined here.
+This document ultimately serves as a gateway to all the other development-related documents on this site.
+You will be unable to follow the other development documents without having the setup outlined here.
 
 Choosing an IDE
 ---------------
@@ -52,7 +54,9 @@ You can download Postman from the following URL.
 
 - https://www.getpostman.com/
 
-It comes in two parts. First, there is the `postman` tool itself which is a GUI tool that you can use to interact with remote REST APIs. Second, there is a CLI tool called `newman` which you can use to run batches of API calls. These batches are usually in the form of what Postman refers to as "Collections".
+It comes in two parts. First, there is the `postman` tool itself which is a GUI tool that you can use to interact
+with remote REST APIs. Second, there is a CLI tool called `newman` which you can use to run batches of API calls.
+These batches are usually in the form of what Postman refers to as "Collections".
 
 We do not use `newman`.
 
@@ -66,7 +70,8 @@ To run these VE products, you have two options:
 - OpenStack
 - Virtualbox/VMWare/some local solution
 
-You options are limited to the platform that you choose to do development on. Mac and hardware-based Linux installations have the largest breadth of options. We'll explain why this is, shortly.
+You options are limited to the platform that you choose to do development on. Mac and hardware-based Linux
+installations have the largest breadth of options. We'll explain why this is, shortly.
 
 As mentioned, all development platforms can support OpenStack. This is because our
 usage of OpenStack's client libraries is constrained to the Docker dev/test
@@ -74,7 +79,8 @@ containers. Once you are in the container, you should have all the tools necessa
 to perform your work.
 
 You can use the OpenStack tools by using the "plumbing" commands;
-`openstack stack create`, `openstack server create`, etc. Or, you can use the porcelain commands; `f5ansible harness-create`, `f5ansible harness-delete`,
+`openstack stack create`, `openstack server create`, etc. Or, you can use the porcelain commands; `f5ansible harness-create`,
+`f5ansible harness-delete`,
 etc. F5 recommends that you use the porcelain commands.
 
 I also mentioned that, for certain platforms, you have access to local dev tools.
@@ -206,11 +212,13 @@ Local Ansible source copy
 It is required that you have a locally available source copy of the Ansible upstream
 codebase. To do this, you must do the following
 
-1. In Github, create a fork of the Ansible codebase. You can find this codebase here https://github.com/ansible/ansible. You can use the `Fork` button in the top right of
+1. In Github, create a fork of the Ansible codebase. You can find this codebase here https://github.com/ansible/ansible.
+   You can use the `Fork` button in the top right of
    the screen to fork it. Please fork it to your __personal__ Github
    account.
 
-2. Clone your fork to the `local/` directory in this (f5-ansible) source tree. You can do this like so. `git clone git@github.com:USERNAME/ansible.git local/ansible`.
+2. Clone your fork to the `local/` directory in this (f5-ansible) source tree. You can do this like so.
+   `git clone git@github.com:USERNAME/ansible.git local/ansible`.
    Replace `USERNAME` with your Github username.
 
 3. Add a `git` remote pointing to the "upstream" ansible source tree. You can do this

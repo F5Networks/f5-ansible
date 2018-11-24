@@ -22,6 +22,7 @@ F5
   * :ref:`bigip_configsync_action_module`
   * :ref:`bigip_data_group_module`
   * :ref:`bigip_device_auth_module`
+  * :ref:`bigip_device_auth_ldap_module`
   * :ref:`bigip_device_connectivity_module`
   * :ref:`bigip_device_dns_module`
   * :ref:`bigip_device_facts_module`
@@ -33,7 +34,7 @@ F5
   * :ref:`bigip_device_sshd_module`
   * :ref:`bigip_device_syslog_module`
   * :ref:`bigip_device_trust_module`
-  * :ref:`bigip_dns_cache_module`
+  * :ref:`bigip_dns_cache_resolver_module`
   * :ref:`bigip_dns_nameserver_module`
   * :ref:`bigip_dns_resolver_module`
   * :ref:`bigip_dns_zone_module`
@@ -60,6 +61,8 @@ F5
   * :ref:`bigip_gtm_pool_module`
   * :ref:`bigip_gtm_pool_member_module`
   * :ref:`bigip_gtm_server_module`
+  * :ref:`bigip_gtm_topology_record_module`
+  * :ref:`bigip_gtm_topology_region_module`
   * :ref:`bigip_gtm_virtual_server_module`
   * :ref:`bigip_gtm_wide_ip_module`
   * :ref:`bigip_hostname_module`
@@ -86,6 +89,7 @@ F5
   * :ref:`bigip_monitor_udp_module`
   * :ref:`bigip_node_module`
   * :ref:`bigip_partition_module`
+  * :ref:`bigip_password_policy_module`
   * :ref:`bigip_policy_module`
   * :ref:`bigip_policy_rule_module`
   * :ref:`bigip_pool_module`

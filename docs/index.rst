@@ -42,7 +42,6 @@ The code is open source and |f5_ansible_github|. Additionally, some modules have
 
    /development/cla-landing
    /development/getting-involved
-   /development/guidelines
    /development/write-module/index
    /development/code-conventions
    /development/parameters
@@ -50,7 +49,6 @@ The code is open source and |f5_ansible_github|. Additionally, some modules have
    /development/ssh-functionality-for-modules
    /development/tests
    /development/upstreaming
-   /development/securing-sensitive-information
    /development/playbook-metadata
    /development/deprecating-code
    Backporting Changes <https://docs.ansible.com/ansible/latest/community/development_process.html#backport-pull-request-process>
