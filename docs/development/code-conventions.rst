@@ -1,9 +1,12 @@
 Code conventions
 ================
 
-The F5 modules follow a set of coding conventions that apply to all new and existing modules. These conventions help new contributors quickly develop new modules, and they help existing contributors maintain the current modules.
+The F5 modules follow a set of coding conventions that apply to all new and existing modules. These
+conventions help new contributors quickly develop new modules, and they help existing contributors
+maintain the current modules.
 
-Where possible, F5 tries to automate the validation of these coding conventions so you are aware of mistakes and can fix them yourself.
+Where possible, F5 tries to automate the validation of these coding conventions so you are aware of
+mistakes and can fix them yourself.
 
 For more information on the tools that perform these checks, refer to the :doc:`tests` page.
 
@@ -19,11 +22,12 @@ In reference to Jeff Geerling's page |geerling|, this format looks like this:
    - name: Create a UCS
      bigip_ucs_fetch:
         dest: "/tmp/{{ ucs_name }}"
-        password: "{{ bigip_password }}"
-        server: "{{ inventory_hostname }}"
         src: "{{ ucs_name }}"
-        user: "{{ bigip_username }}"
-        validate_certs: "{{ validate_certs }}"
+        provider:
+          password: "{{ bigip_password }}"
+          server: "{{ inventory_hostname }}"
+          user: "{{ bigip_username }}"
+          validate_certs: "{{ validate_certs }}"
      register: result
 
 F5 uses this format for several reasons, including Geerling's.
@@ -31,7 +35,8 @@ F5 uses this format for several reasons, including Geerling's.
 - The structure is all valid YAML that uses the structured list/map syntax.
 - Strings, booleans, integers, octals, etc. are all preserved (instead of converted to strings).
 - Each parameter must be on its own line, so you can't chain together ``mode: 0755, owner: root, user: root`` to save space.
-- YAML syntax highlighting works slightly better for this format than ``key=value``, since it highlights each key and displays values as constants, strings, etc.
+- YAML syntax highlighting works slightly better for this format than ``key=value``, since it
+highlights each key and displays values as constants, strings, etc.
 
 In addition, some situations will raise syntax errors if you use the simple ``key=value`` format.
 
@@ -53,9 +58,9 @@ The parameters must be in alphabetic order.
 
    - name: My task
      bigip_module:
-         alpha: "foo"
-         beta: "bar"
-         gamma: "baz"
+       alpha: "foo"
+       beta: "bar"
+       gamma: "baz"
 
 
 **BAD**
@@ -64,9 +69,9 @@ The parameters must be in alphabetic order.
 
    - name: My task
      bigip_module:
-         alpha: "foo"
-         gamma: "baz"
-         beta: "bar"
+       alpha: "foo"
+       gamma: "baz"
+       beta: "bar"
 
 This provides consistency between module usage and a way to see at a glance if a module has the correct parameters.
 
@@ -81,8 +86,8 @@ Ansible supports a simple parameter format. If a value is a string, represent it
 
    - name: My task
      bigip_module:
-         alpha: "foo"
-         beta: "bar"
+       alpha: "foo"
+       beta: "bar"
 
 **BAD**
 
@@ -90,13 +95,14 @@ Ansible supports a simple parameter format. If a value is a string, represent it
 
    - name: My task
      bigip_module:
-         alpha: foo
-         beta: bar
+       alpha: foo
+       beta: bar
 
 Do not use quotes for numbers
 -----------------------------
 
-For numeric characters, do not use quotes. If the expected value is a number and you provide a number wrapped in quotes, some modules will raise 'type' errors.
+For numeric characters, do not use quotes. If the expected value is a number and you provide a number
+wrapped in quotes, some modules will raise 'type' errors.
 
 **GOOD**
 
@@ -104,8 +110,8 @@ For numeric characters, do not use quotes. If the expected value is a number and
 
    - name: My task
      bigip_module:
-         alpha: 1
-         beta: 100
+       alpha: 1
+       beta: 100
 
 **BAD**
 
@@ -113,8 +119,8 @@ For numeric characters, do not use quotes. If the expected value is a number and
 
    - name: My task
      bigip_module:
-         alpha: "1"
-         beta: "100"
+       alpha: "1"
+       beta: "100"
 
 Begin YAML files with a triple-dash
 -----------------------------------
@@ -129,8 +135,8 @@ A YAML file usually begins with three dashes. As such, you should have that as p
 
    - name: My task
      bigip_module:
-         alpha: 1
-         beta: 100
+       alpha: 1
+       beta: 100
 
 **BAD**
 
@@ -138,13 +144,14 @@ A YAML file usually begins with three dashes. As such, you should have that as p
 
    - name: My task
      bigip_module:
-         alpha: "1"
-         beta: "100"
+       alpha: "1"
+       beta: "100"
 
 Give each task a name
 ---------------------
 
-When your Playbooks encounter errors, the name of the task is always called out in the failure. If you do not provide a name, Ansible creates a name by using the module call itself.
+When your Playbooks encounter errors, the name of the task is always called out in the failure. If
+you do not provide a name, Ansible creates a name by using the module call itself.
 
 Naming your tasks allows you to quickly reference where a failure occurred.
 
@@ -154,16 +161,16 @@ Naming your tasks allows you to quickly reference where a failure occurred.
 
    - name: My task
      bigip_module:
-         alpha: 1
-         beta: 100
+       alpha: 1
+       beta: 100
 
 **BAD**
 
 .. code-block:: yaml
 
    - bigip_module:
-         alpha: "1"
-         beta: "100"
+       alpha: "1"
+       beta: "100"
 
 Always include a DOCUMENTATION variable
 ---------------------------------------
@@ -200,7 +207,10 @@ Always include an EXAMPLES variable
 
 Useful and valid examples are crucial for people new to Ansible and for the module itself.
 
-When providing examples, be mindful of what you provide. If you developed the module with a specific use case in mind, be sure to include that use case. It may be applicable to a large majority of users and may eliminate a significant portion of time that they would otherwise spend figuring out what is or is not needed.
+When providing examples, be mindful of what you provide. If you developed the module with a specific
+use case in mind, be sure to include that use case. It may be applicable to a large majority of users
+and may eliminate a significant portion of time that they would otherwise spend figuring out what is
+or is not needed.
 
 **GOOD**
 
@@ -209,11 +219,11 @@ When providing examples, be mindful of what you provide. If you developed the mo
    EXAMPLES = '''
    - name: Set the banner for the SSHD service from a string
      bigip_device_sshd:
-         banner: "enabled"
-         banner_text: "banner text goes here"
-         password: "admin"
-         server: "bigip.localhost.localdomain"
-         user: "admin"
+       banner: "enabled"
+       banner_text: "banner text goes here"
+       password: "admin"
+       server: "bigip.localhost.localdomain"
+       user: "admin"
      delegate_to: localhost
    '''
 
@@ -231,7 +241,8 @@ The RETURN variable provides documentation essential to determining what, if any
 
 Other users will reference this documentation when they want to use the ``register`` keyword.
 
-The ``RETURN`` field should include the parameters that your module has changed. If nothing has changed, then the module does not need to return any values.
+The ``RETURN`` field should include the parameters that your module has changed. If nothing has changed,
+then the module does not need to return any values.
 
 **GOOD**
 
@@ -239,10 +250,10 @@ The ``RETURN`` field should include the parameters that your module has changed.
 
    RETURN = '''
    full_name:
-       description: Full name of the user
-       returned: changed
-       type: string
-       sample: "John Doe"
+     description: Full name of the user
+     returned: changed
+     type: string
+     sample: "John Doe"
    '''
 
 
@@ -285,7 +296,8 @@ Multiple people will probably maintain the module over time, so it is a good ide
 Use GitHub handle for the author name
 -------------------------------------
 
-Both Ansible and the F5 Ansible repository are on GitHub. Therefore, for maintenance reasons, F5 requires your GitHub handle. Additionally, your email address may change over time.
+Both Ansible and the F5 Ansible repository are on GitHub. Therefore, for maintenance reasons, F5 requires your
+GitHub handle. Additionally, your email address may change over time.
 
 **GOOD**
 
@@ -338,9 +350,11 @@ Use Ansible lookup plugins where appropriate
 
 Ansible provides existing facilities that you can use to read in file contents to a module's parameters.
 
-If your module can accept a string or a file containing a string, then assume that users will be using the lookup plugins.
+If your module can accept a string or a file containing a string, then assume that users will be using
+the lookup plugins.
 
-For example, SSL files are typically strings. SSH keys are also strings, even if they are in a file. Therefore, you would delegate the fetching of the string data to a lookup plugin.
+For example, SSL files are typically strings. SSH keys are also strings, even if they are in a file.
+Therefore, you would delegate the fetching of the string data to a lookup plugin.
 
 There should be no need to use the python ``open`` facility to read in the file.
 
@@ -418,9 +432,11 @@ If your module requires functionality greater than 12.0.0 it is also acceptable 
 Never raise a general exception
 -------------------------------
 
-General exceptions are bad because they hide unknown errors from you, the developer. If a bug report comes in and an exception that you do not handle causes the exception, the issue will be exceedingly difficult to debug.
+General exceptions are bad because they hide unknown errors from you, the developer. If a bug report comes
+in and an exception that you do not handle causes the exception, the issue will be exceedingly difficult to debug.
 
-Instead, only catch the `F5ModuleError` exception that the `f5-sdk` provides. Specifically raise this module and handle those errors. If an unknown error occurs, a full traceback will allow you to debug the problem more easily.
+Instead, only catch the `F5ModuleError` exception that the `f5-sdk` provides. Specifically raise this module
+and handle those errors. If an unknown error occurs, a full traceback will allow you to debug the problem more easily.
 
 **GOOD**
 
@@ -428,7 +444,7 @@ Instead, only catch the `F5ModuleError` exception that the `f5-sdk` provides. Sp
 
    try:
        // do some things here that can cause an Exception
-   except bigsuds.OperationFailed as e:
+   except IOError as e:
        raise F5ModuleError('Error on setting profiles : %s' % e)
 
 **GOOD**
@@ -446,7 +462,7 @@ Instead, only catch the `F5ModuleError` exception that the `f5-sdk` provides. Sp
 
    try:
        // do some things here that can cause an Exception
-   except bigsuds.OperationFailed as e:
+   except IOError as e:
        raise Exception('Error on setting profiles : %s' % e)
 
 **BAD**
@@ -461,7 +477,8 @@ Instead, only catch the `F5ModuleError` exception that the `f5-sdk` provides. Sp
 Support check mode
 ------------------
 
-Check mode allows Ansible to run your Playbooks in a dry-run sort of operation. This is handy when you want to run a set of tasks but are not sure what will happen when you do.
+Check mode allows Ansible to run your Playbooks in a dry-run sort of operation. This is handy when you want
+to run a set of tasks but are not sure what will happen when you do.
 
 Because BIG-IPs are usually considered a sensitive device to handle, you should always implement a check mode.
 
@@ -474,7 +491,8 @@ Because BIG-IPs are usually considered a sensitive device to handle, you should 
 Do not use local_action in your EXAMPLES
 ----------------------------------------
 
-Some people prefer local_action and some people prefer delegation. Delegation is more applicable to general-purpose Ansible, so you should get in the habit of using and understanding it.
+Some people prefer local_action and some people prefer delegation. Delegation is more applicable to general-purpose
+Ansible, so you should get in the habit of using and understanding it.
 
 Therefore, do not use `local_action` when defining examples. Instead, use `delegate_to`.
 
@@ -519,11 +537,11 @@ For consistency, always use the following values for the given parameters, so yo
 
    - name: Reset the initial setup screen
      bigip_sys_db:
-         user: "admin"
-         password: "secret"
-         server: "lb.mydomain.com"
-         key: "setup.run"
-         state: "reset"
+       user: "admin"
+       password: "secret"
+       server: "lb.mydomain.com"
+       key: "setup.run"
+       state: "reset"
      delegate_to: localhost
 
 **BAD**
@@ -532,11 +550,11 @@ For consistency, always use the following values for the given parameters, so yo
 
    - name: Reset the initial setup screen
      bigip_sys_db:
-         user: "joe_user"
-         password: "admin"
-         server: "bigip.host"
-         key: "setup.run"
-         state: "reset"
+       user: "joe_user"
+       password: "admin"
+       server: "bigip.host"
+       key: "setup.run"
+       state: "reset"
      delegate_to: localhost
 
 Assign values before returning them
@@ -581,11 +599,13 @@ When the code does not do an assignment, then you must change the code before yo
 Create a functional test for each code fix
 ------------------------------------------
 
-When you fix an issue and it requires changes to code, you should create a new functional test YAML file in the module's `test/integration/PRODUCT/targets` directory.
+When you fix an issue and it requires changes to code, you should create a new functional test YAML file
+in the module's `test/integration/PRODUCT/targets` directory.
 
 For example, consider `Github Issue 59`_, which is relevant to the `bigip_virtual_server` module.
 
-The developer added new code to the module. To verify that someone tested the new code, the developer should add a new file to the module's `targets` directory here:
+The developer added new code to the module. To verify that someone tested the new code, the developer
+should add a new file to the module's `targets` directory here:
 
 - `test/functional/bigip/bigip_virtual_server/tasks`
 
@@ -620,7 +640,9 @@ You should use this to include the various `*_on_device` and `*_from_device` met
 Put exception message on a new line
 -----------------------------------
 
-This convention helps eliminate the total number of columns in use, but also increases readability when long lines tend to scroll off screen. Even with a 160 column limit for this project, long lines, and many lines, can begin to grow less compact.
+This convention helps eliminate the total number of columns in use, but also increases readability when long lines
+tend to scroll off screen. Even with a 160 column limit for this project, long lines, and many lines, can begin to
+grow less compact.
 
 **GOOD**
 
@@ -691,12 +713,14 @@ Here is the common license header.
 
 If the module under development is your original work, then you can include your name in the copyright above.
 
-If you are only contributing to an existing module, then it is not necessary to include a copyright line at the top. Instead, accepting the F5 CLA is sufficient to get code merged into the F5 branch.
+If you are only contributing to an existing module, then it is not necessary to include a copyright line at the
+top. Instead, accepting the F5 CLA is sufficient to get code merged into the F5 branch.
 
 Include the ANSIBLE_METADATA variable
 -------------------------------------
 
-The ANSIBLE_METADATA variable should be first in your module. It specifies metadata for the module itself. It can always look the same.
+The ANSIBLE_METADATA variable should be first in your module. It specifies metadata for the module itself. It
+can always look the same.
 
 Here is how it's defined in code.
 
@@ -711,7 +735,9 @@ The stubber creates this for you automatically.
 Do not include required key for non-required parameters
 -------------------------------------------------------
 
-This convention comes to us courtesy of Ansible module-authoring rules. This convention limits the amount of verbosity in module code. Additionally, conflict can occur if you do not follow this convention (who is right? docs or code?).
+This convention comes to us courtesy of Ansible module-authoring rules. This convention limits the amount of
+verbosity in module code. Additionally, conflict can occur if you do not follow this convention (who is right?
+docs or code?).
 
 Ansible, by default, makes parameters not required. It is redundant to provide it again in your documentation.
 
@@ -747,7 +773,9 @@ Ansible, by default, makes parameters not required. It is redundant to provide i
 Do not include default key for parameters without defaults
 ----------------------------------------------------------
 
-Another convention from Ansible, similar to the `required: False` convention, is applying the rule to the `default` value. Since `default: None` is already the value that Ansible uses (in code), it is redundant to provide it again in the docs.
+Another convention from Ansible, similar to the `required: False` convention, is applying the rule to the
+`default` value. Since `default: None` is already the value that Ansible uses (in code), it is redundant to
+provide it again in the docs.
 
 **GOOD**
 
@@ -784,11 +812,14 @@ Do not decompose to a \*_device method if the using method is itself a \*_device
 
 This convention is in place to limit the total amount of function decomposition that you will inevitably try to put into the code.
 
-Some level of decomposition is good because it isolates the code that targets the device (called `*_device` methods) from the code that does not communicate with the device.
+Some level of decomposition is good because it isolates the code that targets the device (called `*_device`
+methods) from the code that does not communicate with the device.
 
-This method of isolation is how you extend modules when the API code diverges, or when the means of transporting information from and to the device changes.
+This method of isolation is how you extend modules when the API code diverges, or when the means of transporting
+information from and to the device changes.
 
-You can take this decomposition too far, though. Refer to the examples below for an illustration of this. When you go to far, the correction is to merge the two methods.
+You can take this decomposition too far, though. Refer to the examples below for an illustration of this. When you
+go to far, the correction is to merge the two methods.
 
 **GOOD**
 
@@ -821,6 +852,7 @@ You can take this decomposition too far, though. Refer to the examples below for
        return result
    ...
 
-This convention remains valid when the code you are using is a single line. Therefore, if you use the `upload_file` line in many places in the code, it is **still** correct to merge the methods instead of having a different method for it.
+This convention remains valid when the code you are using is a single line. Therefore, if you use the `upload_file`
+line in many places in the code, it is **still** correct to merge the methods instead of having a different method for it.
 
 The only time when it would be correct to decompose it is if the "other" methods were **not** `*_device` methods.
