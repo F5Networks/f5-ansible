@@ -630,7 +630,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        if state in ["present", "remove"]:
+        if state == "present":
             changed = self.present()
         elif state == "absent":
             changed = self.absent()
