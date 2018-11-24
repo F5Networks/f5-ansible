@@ -8,7 +8,8 @@ To keep up with the latest version of Ansible and the F5 modules, F5 recommends 
 Install virtualenv
 ------------------
 
-.. note:: To install Python virtualenv, you need administrative/root access. Use caution if you are installing on a shared system to ensure you do not impact your co-workers.
+.. note:: To install Python virtualenv, you need administrative/root access. Use caution if you are
+installing on a shared system to ensure you do not impact your co-workers.
 
 Mac OS
 ``````
@@ -162,7 +163,4 @@ The following example shows how to install the latest development version of Ans
    virtualenv ansibledev
    . ansibledev/bin/activate
    pip install git+git://github.com/ansible/ansible.git@devel
-   git clone -b devel https://github.com/F5Networks/f5-ansible
-   mkdir library
-   echo -n "[default]\nlibrary=./library\n" > ansible.cfg
-   cp f5-ansible/library/*.py library
+   ansible-galaxy install f5devcentral.f5ansible

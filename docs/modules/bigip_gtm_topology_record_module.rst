@@ -1,14 +1,14 @@
-:source: bigip_snmp_community.py
+:source: bigip_gtm_topology_record.py
 
 :orphan:
 
-.. _bigip_snmp_community_module:
+.. _bigip_gtm_topology_record_module:
 
 
-bigip_snmp_community - Manages SNMP communities on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_topology_record - Manages GTM Topology Records
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_snmp_community - Manages SNMP communities on a BIG-IP.
 
 Synopsis
 --------
-- Assists in managing SNMP communities on a BIG-IP. Different SNMP versions are supported by this module. Take note of the different parameters offered by this module, as different parameters work for different versions of SNMP. Typically this becomes an interest if you are mixing versions ``v2c`` and ``3``.
+- Manages GTM Topology Records. Once created, only topology record ``weight`` can be modified.
 
 
 
@@ -28,83 +28,158 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>access</b>
+                    <b>destination</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies where the system directs the incoming DNS request.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>negate</b>
                                                         </td>
                                 <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>ro</li>
-                                                                                                                                                                                                <li>rw</li>
-                                                                                                                                                                                                <li>read-only</li>
-                                                                                                                                                                                                <li>read-write</li>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the user&#x27;s access level to the MIB.</div>
-                                                    <div>When creating a new community, if this parameter is not specified, the default is <code>ro</code>.</div>
-                                                    <div>When <code>ro</code>, specifies that the user can view the MIB, but cannot modify the MIB.</div>
-                                                    <div>When <code>rw</code>, specifies that the user can view and modify the MIB.</div>
+                                                                        <div>When set to c(yes) the system selects this topology record, when the request destination does not match.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>community</b>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>subnet</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the community string (password) for access to the MIB.</div>
-                                                    <div>This parameter is only relevant when <code>version</code> is <code>v1</code>, or <code>v2c</code>. If <code>version</code> is something else, this parameter is ignored.</div>
+                                                                        <div>An IP address and network mask in the CIDR format.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>ip_version</b>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>region</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of region already defined in the configuration.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>continent</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies one of the seven continents, along with the <code>Unknown</code> setting.</div>
+                                                    <div>Specifying <code>Unknown</code> forces the system to use a default resolution if the system cannot determine the location of the local DNS making the request.</div>
+                                                    <div>Full continent names and their abbreviated versions are supported.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>country</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a country.</div>
+                                                    <div>Full continent names and their abbreviated versions are supported.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>state</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a state in a given country.</div>
+                                                    <div>This parameter requires country option to be provided.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>pool</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of GTM pool already defined in the configuration.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>datacenter</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of GTM data center already defined in the configuration.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>isp</b>
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>4</li>
-                                                                                                                                                                                                <li>6</li>
+                                                                                                                                                                <li>AOL</li>
+                                                                                                                                                                                                <li>BeijingCNC</li>
+                                                                                                                                                                                                <li>CNC</li>
+                                                                                                                                                                                                <li>ChinaEducationNetwork</li>
+                                                                                                                                                                                                <li>ChinaMobilNetwork</li>
+                                                                                                                                                                                                <li>ChinaRailwayTelcom</li>
+                                                                                                                                                                                                <li>ChinaTelecom</li>
+                                                                                                                                                                                                <li>ChinaUnicom</li>
+                                                                                                                                                                                                <li>Comcast</li>
+                                                                                                                                                                                                <li>Earthlink</li>
+                                                                                                                                                                                                <li>ShanghaiCNC</li>
+                                                                                                                                                                                                <li>ShanghaiTelecom</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies whether the record applies to IPv4 or IPv6 addresses.</div>
-                                                    <div>When creating a new community, if this value is not specified, the default of <code>4</code> will be used.</div>
-                                                    <div>This parameter is only relevant when <code>version</code> is <code>v1</code>, or <code>v2c</code>. If <code>version</code> is something else, this parameter is ignored.</div>
+                                                                        <div>Specifies an Internet service provider.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>name</b>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>geo_isp</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Name that identifies the SNMP community.</div>
-                                                    <div>When <code>version</code> is <code>v1</code> or <code>v2c</code>, this parameter is required.</div>
-                                                    <div>The name <code>public</code> is a reserved name on the BIG-IP. This module handles that name differently than others. Functionally, you should not see a difference however.</div>
+                                                                        <div>Specifies a geolocation ISP</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>oid</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the object identifier (OID) for the record.</div>
-                                                    <div>When <code>version</code> is <code>v3</code>, this parameter is required.</div>
-                                                    <div>When <code>version</code> is either <code>v1</code> or <code>v2c</code>, if this value is specified, then <code>source</code> must not be set to <code>all</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
                     <b>partition</b>
                                                         </td>
@@ -113,6 +188,7 @@ Parameters
                                     </td>
                                                                 <td>
                                                                         <div>Device partition to manage resources on.</div>
+                                                    <div>Partition parameter is taken into account when used in conjunction with <code>pool</code>, <code>data_center</code>, and <code>region</code> parameters, it is ignored otherwise.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -126,17 +202,6 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>port</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the port for the trap destination.</div>
-                                                    <div>This parameter is only relevant when <code>version</code> is <code>v1</code>, or <code>v2c</code>. If <code>version</code> is something else, this parameter is ignored.</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -280,95 +345,127 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>snmp_auth_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the password for the user.</div>
-                                                    <div>When creating a new SNMP <code>v3</code> community, this parameter is required.</div>
-                                                    <div>This value must be at least 8 characters long.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>snmp_auth_protocol</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>md5</li>
-                                                                                                                                                                                                <li>sha</li>
-                                                                                                                                                                                                <li>none</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the authentication method for the user.</div>
-                                                    <div>When <code>md5</code>, specifies that the system uses the MD5 algorithm to authenticate the user.</div>
-                                                    <div>When <code>sha</code>, specifies that the secure hash algorithm (SHA) to authenticate the user.</div>
-                                                    <div>When <code>none</code>, specifies that user does not require authentication.</div>
-                                                    <div>When creating a new SNMP <code>v3</code> community, if this parameter is not specified, the default of <code>sha</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>snmp_privacy_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the password for the user.</div>
-                                                    <div>When creating a new SNMP <code>v3</code> community, this parameter is required.</div>
-                                                    <div>This value must be at least 8 characters long.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>snmp_privacy_protocol</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>aes</li>
-                                                                                                                                                                                                <li>des</li>
-                                                                                                                                                                                                <li>none</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the encryption protocol.</div>
-                                                    <div>When <code>aes</code>, specifies that the system encrypts the user information using AES (Advanced Encryption Standard).</div>
-                                                    <div>When <code>des</code>, specifies that the system encrypts the user information using DES (Data Encryption Standard).</div>
-                                                    <div>When <code>none</code>, specifies that the system does not encrypt the user information.</div>
-                                                    <div>When creating a new SNMP <code>v3</code> community, if this parameter is not specified, the default of <code>aes</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>snmp_username</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of the user for whom you want to grant access to the SNMP v3 MIB.</div>
-                                                    <div>This parameter is only relevant when <code>version</code> is <code>v3</code>. If <code>version</code> is something else, this parameter is ignored.</div>
-                                                    <div>When creating a new SNMP <code>v3</code> community, this parameter is required.</div>
-                                                    <div>This parameter cannot be changed once it has been set.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>source</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the origination of an incoming DNS request.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>negate</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When set to c(yes) the system selects this topology record, when the request source does not match.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>subnet</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the source address for access to the MIB.</div>
-                                                    <div>This parameter can accept a value of <code>all</code>.</div>
-                                                    <div>If this parameter is not specified, the value <code>all</code> is used.</div>
-                                                    <div>This parameter is only relevant when <code>version</code> is <code>v1</code>, or <code>v2c</code>. If <code>version</code> is something else, this parameter is ignored.</div>
-                                                    <div>If <code>source</code> is set to <code>all</code>, then it is not possible to specify an <code>oid</code>. This will raise an error.</div>
-                                                    <div>This parameter should be provided when <code>state</code> is <code>absent</code>, so that the correct community is removed. To remove the <code>public</code> SNMP community that comes with a BIG-IP, this parameter should be set to <code>default</code>.</div>
+                                                                        <div>An IP address and network mask in the CIDR format.</div>
                                                                                 </td>
             </tr>
                                 <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>region</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of region already defined in the configuration.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>continent</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies one of the seven continents, along with the <code>Unknown</code> setting.</div>
+                                                    <div>Specifying <code>Unknown</code> forces the system to use a default resolution if the system cannot determine the location of the local DNS making the request.</div>
+                                                    <div>Full continent names and their abbreviated versions are supported.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>country</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a country.</div>
+                                                    <div>In addition to the country full names, you may also specify their abbreviated form, such as <code>US</code> instead of <code>United States</code>.</div>
+                                                    <div>Valid country codes can be found here https://countrycode.org/.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>state</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a state in a given country.</div>
+                                                    <div>This parameter requires country option to be provided.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>isp</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>AOL</li>
+                                                                                                                                                                                                <li>BeijingCNC</li>
+                                                                                                                                                                                                <li>CNC</li>
+                                                                                                                                                                                                <li>ChinaEducationNetwork</li>
+                                                                                                                                                                                                <li>ChinaMobilNetwork</li>
+                                                                                                                                                                                                <li>ChinaRailwayTelcom</li>
+                                                                                                                                                                                                <li>ChinaTelecom</li>
+                                                                                                                                                                                                <li>ChinaUnicom</li>
+                                                                                                                                                                                                <li>Comcast</li>
+                                                                                                                                                                                                <li>Earthlink</li>
+                                                                                                                                                                                                <li>ShanghaiCNC</li>
+                                                                                                                                                                                                <li>ShanghaiTelecom</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies an Internet service provider.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>geo_isp</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a geolocation ISP</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
                     <b>state</b>
                                                         </td>
@@ -379,22 +476,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the address list and entries exists.</div>
-                                                    <div>When <code>absent</code>, ensures the address list is removed.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>update_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>on_create</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created resources.</div>
+                                                                        <div>When <code>state</code> is <code>present</code>, ensures that the record exists.</div>
+                                                    <div>When <code>state</code> is <code>absent</code>, ensures that the record is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -425,17 +508,17 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>version</b>
+                    <b>weight</b>
                                                         </td>
                                 <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>v1</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>v2c</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>v3</li>
-                                                                                    </ul>
-                                                                            </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies to which Simple Network Management Protocol (SNMP) version the trap destination applies.</div>
+                                                                        <div>Specifies the weight of the topology record.</div>
+                                                    <div>The system finds the weight of the first topology record that matches the server object (pool or pool member) and the local DNS. The system then assigns that weight as the topology score for that server object.</div>
+                                                    <div>The system load balances to the server object with the highest topology score.</div>
+                                                    <div>If the system finds no topology record that matches both the server object and the local DNS, then the system assigns that server object a zero score.</div>
+                                                    <div>If the option is not specified when the record is created the system will set it at a default value of <code>1</code></div>
+                                                    <div>Valid range is (0 - 4294967295)</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -457,41 +540,40 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create an SMNP v2c read-only community
-      bigip_snmp_community:
-        name: foo
-        version: v2c
-        source: all
-        oid: .1
-        access: ro
+    - name: Create an IP Subnet and an ISP based topology record
+      bigip_gtm_topology_record:
+        source:
+          - subnet: 192.168.1.0/24
+        destination:
+          - isp: AOL
+        weight: 10
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
       delegate_to: localhost
 
-    - name: Create an SMNP v3 read-write community
-      bigip_snmp_community:
-        name: foo
-        version: v3
-        snmp_username: foo
-        snmp_auth_protocol: sha
-        snmp_auth_password: secret
-        snmp_privacy_protocol: aes
-        snmp_privacy_password: secret
-        oid: .1
-        access: rw
+    - name: Create a region and a pool based topology record
+      bigip_gtm_topology_record:
+        source:
+          - region: Foo
+        destination:
+          - pool: FooPool
+        partition: FooBar
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
       delegate_to: localhost
 
-    - name: Remove the default 'public' SNMP community
-      bigip_snmp_community:
-        name: public
-        source: default
-        state: absent
+    - name: Create a negative region and a negative data center based topology record
+      bigip_gtm_topology_record:
+        source:
+          - region: Baz
+          - negate: yes
+        destination:
+          - datacenter: Baz-DC
+          - negate: yes
         provider:
           password: secret
           server: lb.mydomain.com
@@ -508,139 +590,22 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>access</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>weight</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new access level for the MIB.</div>
+                                            <div>The weight of the topology record.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ro</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>community</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new community value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">community1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ip_version</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new IP version value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>oid</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new OID value.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">0.1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>snmp_auth_password</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new password of the given snmp_username.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">secret1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>snmp_auth_protocol</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new SNMP auth protocol.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">sha</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>snmp_privacy_password</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new password of the given snmp_username.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">secret2</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>snmp_privacy_protocol</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new SNMP privacy protocol.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">aes</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>snmp_username</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new SNMP username.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">user1</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>source</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new source address to access the MIB.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.1.1.1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">20</div>
                                     </td>
             </tr>
                         </table>
@@ -660,6 +625,5 @@ This module is **preview** which means that it is not guaranteed to have a backw
 Author
 ~~~~~~
 
-- Tim Rupp (@caphrim007)
 - Wojciech Wypior (@wojtek0806)
 

@@ -96,24 +96,24 @@ Parameters
                                                     <td class="elbow-placeholder"></td>
                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>key</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a key name.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
                     <b>cert</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies a cert name for use.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>key</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a key name.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -180,6 +180,18 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
+                    <b>address</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
+                                                    <div>This parameter is required when creating a new application.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
                     <b>netmask</b>
                                                         </td>
                                 <td>
@@ -200,18 +212,6 @@ Parameters
                                                                 <td>
                                                                         <div>The port that the virtual listens for connections on.</div>
                                                     <div>When creating a new application, if this parameter is not specified, the default value of <code>443</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>address</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
-                                                    <div>This parameter is required when creating a new application.</div>
                                                                                 </td>
             </tr>
                     
@@ -251,26 +251,15 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
-                    <b>ssh_keyfile</b>
-                                                        </td>
+                    <b>password</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-                                                                <td>
-                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -282,18 +271,6 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP host.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -312,15 +289,14 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
-                    <b>password</b>
+                    <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
+                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
@@ -336,6 +312,30 @@ Parameters
                                                                 <td>
                                                                         <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>timeout</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
+                    <b>ssh_keyfile</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -369,6 +369,18 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
+                    <b>address</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
+                                                    <div>This parameter is required when creating a new application.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
                     <b>netmask</b>
                                                         </td>
                                 <td>
@@ -389,18 +401,6 @@ Parameters
                                                                 <td>
                                                                         <div>The port that the virtual listens for connections on.</div>
                                                     <div>When creating a new application, if this parameter is not specified, the default value of <code>80</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>address</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
-                                                    <div>This parameter is required when creating a new application.</div>
                                                                                 </td>
             </tr>
                     
@@ -442,6 +442,17 @@ Parameters
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="2">
+                    <b>address</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The IP address of the server.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="2">
                     <b>port</b>
                                                         </td>
                                 <td>
@@ -449,17 +460,6 @@ Parameters
                                     </td>
                                                                 <td>
                                                                         <div>The port of the server.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="2">
-                    <b>address</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The IP address of the server.</div>
                                                                                 </td>
             </tr>
                     
@@ -658,20 +658,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>port</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The port that the server listens on.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8080</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
                     <b>address</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
@@ -681,6 +667,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The port that the server listens on.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8080</div>
                                     </td>
             </tr>
                     

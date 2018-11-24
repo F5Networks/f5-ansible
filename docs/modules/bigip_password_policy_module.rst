@@ -1,14 +1,14 @@
-:source: bigip_smtp.py
+:source: bigip_password_policy.py
 
 :orphan:
 
-.. _bigip_smtp_module:
+.. _bigip_password_policy_module:
 
 
-bigip_smtp - Manages SMTP settings on the BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_password_policy - Manages the authentication password policy on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_smtp - Manages SMTP settings on the BIG-IP
 
 Synopsis
 --------
-- Allows configuring of the BIG-IP to send mail via an SMTP server by configuring the parameters of an SMTP server.
+- Manages the authentication password policy on a BIG-IP.
 
 
 
@@ -28,82 +28,63 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>authentication</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Credentials can be set on an SMTP server&#x27;s configuration even if that authentication is not used (think staging configs or emergency changes). This parameter acts as a switch to make the specified <code>smtp_server_username</code> and <code>smtp_server_password</code> parameters active or not.</div>
-                                                    <div>When <code>yes</code>, the authentication parameters will be active.</div>
-                                                    <div>When <code>no</code>, the authentication parameters will be inactive.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>encryption</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>none</li>
-                                                                                                                                                                                                <li>ssl</li>
-                                                                                                                                                                                                <li>tls</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether the SMTP server requires an encrypted connection in order to send mail.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>from_address</b>
+                    <b>expiration_warning</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Email address that the email is being sent from. This is the &quot;Reply-to&quot; address that the recipient sees.</div>
+                                                                        <div>Specifies the number of days before a password expires.</div>
+                                                    <div>Based on this value, the BIG-IP system automatically warns users when their password is about to expire.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>local_host_name</b>
+                    <b>max_duration</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Host name used in SMTP headers in the format of a fully qualified domain name. This setting does not refer to the BIG-IP system&#x27;s hostname.</div>
+                                                                        <div>Specifies the maximum number of days a password is valid.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>max_login_failures</b>
+                                                        </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the SMTP server configuration.</div>
+                                                                        <div>Specifies the number of consecutive unsuccessful login attempts that the system allows before locking out the user.</div>
+                                                    <div>Specify zero (0) to disable this parameter.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>partition</b>
+                    <b>min_duration</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>Device partition to manage resources on.</div>
+                                                                        <div>Specifies the minimum number of days a password is valid.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>min_length</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the minimum number of characters in a valid password.</div>
+                                                    <div>This value must be between 6 and 255.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -117,6 +98,30 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>password_memory</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the user has configured the BIG-IP system to remember a password on a specific computer and how many passwords to remember.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>policy_enforcement</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the password policy on the BIG-IP system.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -237,6 +242,46 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
+                    <b>required_lowercase</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the number of lowercase alpha characters that must be present in a password for the password to be valid.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>required_numeric</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the number of numeric characters that must be present in a password for the password to be valid.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>required_special</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the number of special characters that must be present in a password for the password to be valid.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>required_uppercase</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the number of uppercase alpha characters that must be present in a password for the password to be valid.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -256,79 +301,6 @@ Parameters
                                                                 <td>
                                                                         <div>The BIG-IP server port.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>smtp_server</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>SMTP server host name in the format of a fully qualified domain name.</div>
-                                                    <div>This value is required when create a new SMTP configuration.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>smtp_server_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Password that the SMTP server requires when validating a user.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>smtp_server_port</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the SMTP port number.</div>
-                                                    <div>When creating a new SMTP configuration, the default is <code>25</code> when <code>encryption</code> is <code>none</code> or <code>tls</code>. The default is <code>465</code> when <code>ssl</code> is selected.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>smtp_server_username</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>User name that the SMTP server requires when validating a user.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>state</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>absent</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>When <code>present</code>, ensures that the SMTP configuration exists.</div>
-                                                    <div>When <code>absent</code>, ensures that the SMTP configuration does not exist.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>update_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>on_create</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Passwords are stored encrypted, so the module cannot know if the supplied <code>smtp_server_password</code> is the same or different than the existing password. This parameter controls the updating of the <code>smtp_server_password</code> credential.</div>
-                                                    <div>When <code>always</code>, will always update the password.</div>
-                                                    <div>When <code>on_create</code>, will only set the password for newly created SMTP server configurations.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -376,18 +348,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a base SMTP server configuration
-      bigip_smtp:
-        name: my-smtp
-        smtp_server: 1.1.1.1
-        smtp_server_username: mail-admin
-        smtp_server_password: mail-secret
-        local_host_name: smtp.mydomain.com
-        from_address: no-reply@mydomain.com
-        password: secret
-        server: lb.mydomain.com
-        state: present
-        user: admin
+    - name: Change password policy to require 2 numeric characters
+      bigip_password_policy:
+        required_numeric: 2
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -400,19 +367,91 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>authentication</b>
+                    <b>expiration_warning</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new expiration warning.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">7</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>max_duration</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new max duration.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">99999</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>max_login_failures</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new max login failures.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>min_duration</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new min duration.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>min_length</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new min password length.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">6</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>password_memory</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new number of remembered passwords</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>policy_enforcement</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Whether the authentication parameters are active or not.</div>
+                                            <div>The new policy enforcement setting.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -420,67 +459,54 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>encryption</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>encryption</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tls</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>from_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>from_address</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">no-reply@mydomain.com</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>local_host_name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>local_host_name</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">smtp.mydomain.com</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>smtp_server</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new <code>smtp_server</code> value of the SMTP configuration.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">mail.mydomain.com</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>smtp_server_port</b>
+                    <b>required_lowercase</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new <code>smtp_server_port</code> value of the SMTP configuration.</div>
+                                            <div>The lowercase requirement.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">25</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>required_numeric</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The numeric requirement.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>required_special</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The special character requirement.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>required_uppercase</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The uppercase character requirement.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
                                     </td>
             </tr>
                         </table>
