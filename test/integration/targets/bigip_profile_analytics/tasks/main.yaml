@@ -2,6 +2,764 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create analytics profile
+  bigip_profile_analytics:
+    name: foo
+  register: result
+
+- name: Assert Create analytics profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create analytics profile - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+  register: result
+
+- name: Assert Create analytics profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description
+  bigip_profile_analytics:
+    name: foo
+    description: description 1
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    description: description 1
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description - none
+  bigip_profile_analytics:
+    name: foo
+    description: none
+  register: result
+
+- name: Assert Change description - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change description - none - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    description: none
+  register: result
+
+- name: Assert Change description - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change description - empty - Expected no change
+  bigip_profile_analytics:
+    name: foo
+    description: ''
+  register: result
+
+- name: Assert Change description - empty - Expected no change
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_geo - yes
+  bigip_profile_analytics:
+    name: foo
+    collect_geo: yes
+  register: result
+
+- name: Assert Change collect_geo - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_geo - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_geo: yes
+  register: result
+
+- name: Assert Change collect_geo - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_geo - no
+  bigip_profile_analytics:
+    name: foo
+    collect_geo: no
+  register: result
+
+- name: Assert Change collect_geo - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_geo - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_geo: no
+  register: result
+
+- name: Assert Change collect_geo - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_ip - yes
+  bigip_profile_analytics:
+    name: foo
+    collect_ip: yes
+  register: result
+
+- name: Assert Change collect_ip - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_ip - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_ip: yes
+  register: result
+
+- name: Assert Change collect_ip - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_ip - no
+  bigip_profile_analytics:
+    name: foo
+    collect_ip: no
+  register: result
+
+- name: Assert Change collect_ip - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_ip - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_ip: no
+  register: result
+
+- name: Assert Change collect_ip - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_max_tps_and_throughput - yes
+  bigip_profile_analytics:
+    name: foo
+    collect_max_tps_and_throughput: yes
+  register: result
+
+- name: Assert Change collect_max_tps_and_throughput - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_max_tps_and_throughput - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_max_tps_and_throughput: yes
+  register: result
+
+- name: Assert Change collect_max_tps_and_throughput - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_max_tps_and_throughput - no
+  bigip_profile_analytics:
+    name: foo
+    collect_max_tps_and_throughput: no
+  register: result
+
+- name: Assert Change collect_max_tps_and_throughput - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_max_tps_and_throughput - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_max_tps_and_throughput: no
+  register: result
+
+- name: Assert Change collect_max_tps_and_throughput - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_page_load_time - yes
+  bigip_profile_analytics:
+    name: foo
+    collect_page_load_time: yes
+  register: result
+
+- name: Assert Change collect_page_load_time - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_page_load_time - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_page_load_time: yes
+  register: result
+
+- name: Assert Change collect_page_load_time - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_page_load_time - no
+  bigip_profile_analytics:
+    name: foo
+    collect_page_load_time: no
+  register: result
+
+- name: Assert Change collect_page_load_time - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_page_load_time - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_page_load_time: no
+  register: result
+
+- name: Assert Change collect_page_load_time - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_url - yes
+  bigip_profile_analytics:
+    name: foo
+    collect_url: yes
+  register: result
+
+- name: Assert Change collect_url - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_url - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_url: yes
+  register: result
+
+- name: Assert Change collect_url - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_url - no
+  bigip_profile_analytics:
+    name: foo
+    collect_url: no
+  register: result
+
+- name: Assert Change collect_url - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_url - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_url: no
+  register: result
+
+- name: Assert Change collect_url - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_user_agent - yes
+  bigip_profile_analytics:
+    name: foo
+    collect_user_agent: yes
+  register: result
+
+- name: Assert Change collect_user_agent - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_user_agent - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_user_agent: yes
+  register: result
+
+- name: Assert Change collect_user_agent - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_user_agent - no
+  bigip_profile_analytics:
+    name: foo
+    collect_user_agent: no
+  register: result
+
+- name: Assert Change collect_user_agent - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_user_agent - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_user_agent: no
+  register: result
+
+- name: Assert Change collect_user_agent - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_user_sessions - yes
+  bigip_profile_analytics:
+    name: foo
+    collect_user_sessions: yes
+  register: result
+
+- name: Assert Change collect_user_sessions - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_user_sessions - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_user_sessions: yes
+  register: result
+
+- name: Assert Change collect_user_sessions - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collect_user_sessions - no
+  bigip_profile_analytics:
+    name: foo
+    collect_user_sessions: no
+  register: result
+
+- name: Assert Change collect_user_sessions - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collect_user_sessions - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collect_user_sessions: no
+  register: result
+
+- name: Assert Change collect_user_sessions - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collected_stats_external_logging - yes
+  bigip_profile_analytics:
+    name: foo
+    collected_stats_external_logging: yes
+  register: result
+
+- name: Assert Change collected_stats_external_logging - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collected_stats_external_logging - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collected_stats_external_logging: yes
+  register: result
+
+- name: Assert Change collected_stats_external_logging - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collected_stats_external_logging - no
+  bigip_profile_analytics:
+    name: foo
+    collected_stats_external_logging: no
+  register: result
+
+- name: Assert Change collected_stats_external_logging - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collected_stats_external_logging - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collected_stats_external_logging: no
+  register: result
+
+- name: Assert Change collected_stats_external_logging - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collected_stats_internal_logging - no
+  bigip_profile_analytics:
+    name: foo
+    collected_stats_internal_logging: no
+  register: result
+
+- name: Assert Change collected_stats_internal_logging - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collected_stats_internal_logging - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collected_stats_internal_logging: no
+  register: result
+
+- name: Assert Change collected_stats_internal_logging - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change collected_stats_internal_logging - yes
+  bigip_profile_analytics:
+    name: foo
+    collected_stats_internal_logging: yes
+  register: result
+
+- name: Assert Change collected_stats_internal_logging - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change collected_stats_internal_logging - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    collected_stats_internal_logging: yes
+  register: result
+
+- name: Assert Change collected_stats_internal_logging - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change notification_by_syslog - yes
+  bigip_profile_analytics:
+    name: foo
+    notification_by_syslog: yes
+  register: result
+
+- name: Assert Change notification_by_syslog - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change notification_by_syslog - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    notification_by_syslog: yes
+  register: result
+
+- name: Assert Change notification_by_syslog - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change notification_by_syslog - no
+  bigip_profile_analytics:
+    name: foo
+    notification_by_syslog: no
+  register: result
+
+- name: Assert Change notification_by_syslog - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change notification_by_syslog - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    notification_by_syslog: no
+  register: result
+
+- name: Assert Change notification_by_syslog - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change notification_by_email - yes
+  bigip_profile_analytics:
+    name: foo
+    notification_by_email: yes
+  register: result
+
+- name: Assert Change notification_by_email - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change notification_by_email - yes - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    notification_by_email: yes
+  register: result
+
+- name: Assert Change notification_by_email - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change notification_by_email - no
+  bigip_profile_analytics:
+    name: foo
+    notification_by_email: no
+  register: result
+
+- name: Assert Change notification_by_email - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change notification_by_email - no - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    notification_by_email: no
+  register: result
+
+- name: Assert Change notification_by_email - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change external_logging_publisher
+  bigip_profile_analytics:
+    name: foo
+    external_logging_publisher: default-ipsec-log-publisher
+  register: result
+
+- name: Assert Change external_logging_publisher
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change external_logging_publisher - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    external_logging_publisher: default-ipsec-log-publisher
+  register: result
+
+- name: Assert Change external_logging_publisher - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change external_logging_publisher - none
+  bigip_profile_analytics:
+    name: foo
+    external_logging_publisher: none
+  register: result
+
+- name: Assert Change external_logging_publisher - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change external_logging_publisher - none - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    external_logging_publisher: none
+  register: result
+
+- name: Assert Change external_logging_publisher - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change external_logging_publisher - empty - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    external_logging_publisher: ''
+  register: result
+
+- name: Assert Change external_logging_publisher - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change notification_email_addresses
+  bigip_profile_analytics:
+    name: foo
+    notification_email_addresses:
+      - foo@bar.com
+      - bar@baz.com
+      - alice@bob.com
+  register: result
+
+- name: Assert Change notification_email_addresses
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change notification_email_addresses - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    notification_email_addresses:
+      - foo@bar.com
+      - bar@baz.com
+      - alice@bob.com
+  register: result
+
+- name: Assert Change notification_email_addresses - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change notification_email_addresses - none
+  bigip_profile_analytics:
+    name: foo
+    notification_email_addresses: none
+  register: result
+
+- name: Assert Change notification_email_addresses - none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change notification_email_addresses - none - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    notification_email_addresses: none
+  register: result
+
+- name: Assert Change notification_email_addresses - none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change notification_email_addresses - empty - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    notification_email_addresses: ''
+  register: result
+
+- name: Assert Change notification_email_addresses - empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove analytics profile
+  bigip_profile_analytics:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove analytics profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove analytics profile - Idempotent check
+  bigip_profile_analytics:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove analytics profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - import_tasks: teardown.yaml
