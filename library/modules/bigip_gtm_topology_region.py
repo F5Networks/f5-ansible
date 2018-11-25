@@ -139,7 +139,7 @@ region_members:
   description: The list of members of the GTM region.
   returned: changed
   type: list
-  sample: [{ "continent": "EU" }, {"country": "PL"}]
+  sample: [{"continent": "EU"}, {"country": "PL"}]
 '''
 
 import copy
