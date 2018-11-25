@@ -1,0 +1,7 @@
+---
+
+- name: Provision AVR
+  bigip_provision:
+    module: avr
+  tags:
+    - module-provisioning

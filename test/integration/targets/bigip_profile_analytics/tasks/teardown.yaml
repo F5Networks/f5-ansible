@@ -1,0 +1,9 @@
+---
+
+- name: Deprovision AVR
+  bigip_provision:
+    module: avr
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
