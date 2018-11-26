@@ -1,0 +1,82 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Export ASM policy in binary format
+  bigip_asm_policy_fetch:
+    name: "{{ policy }}"
+    file: "{{ file1 }}"
+    dest: "{{ role_path }}/files/"
+    binary: yes
+  register: result
+
+- name: Assert Export ASM policy in binary format
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Export ASM policy in binary format, override existing file
+  bigip_asm_policy_fetch:
+    name: "{{ policy }}"
+    file: "{{ file1 }}"
+    dest: "{{ role_path }}/files/"
+    binary: yes
+  register: result
+
+- name: Assert Export ASM policy in binary format, override existing file
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Export ASM policy inline, compact format, base64 encoded
+  bigip_asm_policy_fetch:
+    name: "{{ policy }}"
+    inline: yes
+    base64: yes
+    compact: yes
+  register: result
+  failed_when: "'inline_policy' not in result"
+
+- name: Export ASM policy in XML format
+  bigip_asm_policy_fetch:
+    name: "{{ policy }}"
+    file: "{{ file2 }}"
+    dest: "{{ role_path }}/files/"
+  register: result
+
+- name: Assert Export ASM policy in XML format
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Export ASM policy in XML compact format
+  bigip_asm_policy_fetch:
+    name: "{{ policy }}"
+    file: "{{ file2 }}"
+    dest: "{{ role_path }}/files/"
+    compact: yes
+  register: result
+
+- name: Assert Export ASM policy in XML compact format
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Export ASM policy in binary format, autogenerate name
+  bigip_asm_policy_fetch:
+    name: "{{ policy }}"
+    dest: "{{ role_path }}/files/"
+    binary: yes
+  register: result
+
+- name: Assert Export ASM policy in binary format, autogenerate name
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- import_tasks: teardown.yaml

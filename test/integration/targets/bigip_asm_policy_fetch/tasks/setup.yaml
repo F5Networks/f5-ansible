@@ -1,0 +1,13 @@
+---
+
+- name: Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
+- name: Create blank ASM policy
+  bigip_asm_policy:
+    name: "{{ policy }}"
+    state: present
+  register: result

@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_profile_analytics
-short_description: Manage HTTP analytics profiles on a BIG-IP 
+short_description: Manage HTTP analytics profiles on a BIG-IP
 description:
   - Manage HTTP analytics profiles on a BIG-IP.
 version_added: 2.8
