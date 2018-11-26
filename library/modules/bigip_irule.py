@@ -528,13 +528,9 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            content=dict(
-                required=False,
-                default=None
-            ),
+            content=dict(),
             src=dict(
-                required=False,
-                default=None
+                type='path',
             ),
             name=dict(required=True),
             module=dict(
