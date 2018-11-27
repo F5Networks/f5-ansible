@@ -1,0 +1,136 @@
+---
+
+- name: Issue 01082 - Provision AFM on the device
+  bigip_provision:
+    module: afm
+    provider: "{{ provider }}"
+  tags:
+    - module-provisioning
+
+- name: Issue 01082 - Test VS 1
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: vs_test
+    destination: 1.1.1.1
+    port: 443
+    ip_intelligence_policy: ip-intelligence
+    profiles:
+      - f5-tcp-progressive
+      - http
+  register: result
+
+- name: Issue 01082 - Assert Test VS 1
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01082 - Delete Test VS 1
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: vs_test
+    state: absent
+
+- name: Issue 01082 - Test VS 2 - Expected failure
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: vs_test
+    destination: 1.1.1.1
+    port: 443
+    ip_intelligence_policy: ip-intelligence
+    profiles:
+      - f5-tcp-progressive
+      - http
+      - { name: serverssl, context: server-side }
+      - { name: star.sherwin.com, context: client-side }
+  register: result
+  failed_when: result is success
+
+- name: Issue 01082 - Assert Test VS 2 - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01082 - Test VS 3 - Expected failure
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: vs_test
+    destination: 1.1.1.1
+    port: 443
+    ip_intelligence_policy: ip-intelligence
+    profiles:
+      - f5-tcp-progressive
+      - http
+      - { name: star.sherwin.com, context: client-side }
+      - { name: serverssl, context: client-side }
+  register: result
+  failed_when: result is success
+
+- name: Issue 01082 - Assert Test VS 3 - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01082 - Test VS 4 - Expected failure
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: vs_test
+    destination: 1.1.1.1
+    port: 443
+    ip_intelligence_policy: ip-intelligence
+    profiles:
+      - f5-tcp-progressive
+      - http
+      - { name: star.sherwin.com, context: client-side }
+      - { name: serverssl, context: server-side }
+  register: result
+  failed_when: result is success
+
+- name: Issue 01082 - Assert Test VS 4 - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01082 - Delete Test VS 4 - Expected failure
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: vs_test
+    state: absent
+
+- name: Issue 01082 - Test VS 5 - Expected failure
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: vs_test
+    destination: 1.1.1.1
+    port: 443
+    ip_intelligence_policy: ip-intelligence
+    profiles:
+      - f5-tcp-progressive
+      - http
+      - { name: serverssl, context: client-side }
+  register: result
+  failed_when: result is success
+
+- name: Issue 01082 - Assert Test VS 5 - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01082 - Delete Test VS 5 - Expected failure
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    name: vs_test
+    state: absent
+
+- name: Issue 01082 - De-provision AFM on the device
+  bigip_provision:
+    module: afm
+    state: absent
+    provider: "{{ provider }}"
+  tags:
+    - module-provisioning
+    - deprovision-module
