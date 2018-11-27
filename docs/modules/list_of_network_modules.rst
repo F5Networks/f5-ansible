@@ -15,6 +15,7 @@ F5
 
   * :ref:`bigip_appsvcs_extension_module`
   * :ref:`bigip_asm_policy_module`
+  * :ref:`bigip_asm_policy_fetch_module`
   * :ref:`bigip_cli_alias_module`
   * :ref:`bigip_cli_script_module`
   * :ref:`bigip_command_module`
@@ -94,6 +95,7 @@ F5
   * :ref:`bigip_policy_rule_module`
   * :ref:`bigip_pool_module`
   * :ref:`bigip_pool_member_module`
+  * :ref:`bigip_profile_analytics_module`
   * :ref:`bigip_profile_client_ssl_module`
   * :ref:`bigip_profile_dns_module`
   * :ref:`bigip_profile_fastl4_module`
