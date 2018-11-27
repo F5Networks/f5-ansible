@@ -1,0 +1,18 @@
+---
+
+- name: Issue 01078 - Create virtual server - bad fallback profile
+  bigip_virtual_server:
+    name: issue-01078
+    destination: 1.1.1.1
+    port: 80
+    fallback_persistence_profile: source-address
+    provider: "{{ provider }}"
+  failed_when: result|success
+  register: result
+
+- name: Issue 01078 - Assert Create virtual server - bad fallback profile
+  assert:
+    that:
+      - result is success
+      - result is not changed
+      - "'was not found' in result.msg"
