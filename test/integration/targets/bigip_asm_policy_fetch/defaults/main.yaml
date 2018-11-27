@@ -1,0 +1,5 @@
+---
+
+policy: new_blank_policy
+file1: "foobar.plc"
+file2: "foobar.xml"
