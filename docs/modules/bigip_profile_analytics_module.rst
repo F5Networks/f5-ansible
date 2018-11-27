@@ -1,14 +1,14 @@
-:source: bigip_user.py
+:source: bigip_profile_analytics.py
 
 :orphan:
 
-.. _bigip_user_module:
+.. _bigip_profile_analytics_module:
 
 
-bigip_user - Manage user accounts and user attributes on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_analytics - Manage HTTP analytics profiles on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_user - Manage user accounts and user attributes on a BIG-IP
 
 Synopsis
 --------
-- Manage user accounts and user attributes on a BIG-IP. Typically this module operates only on the REST API users and not the CLI users. When specifying ``root``, you may only change the password. Your other parameters will be ignored in this case. Changing the ``root`` password is not an idempotent operation. Therefore, it will change it every time this module attempts to change it.
+- Manage HTTP analytics profiles on a BIG-IP.
 
 
 
@@ -28,43 +28,226 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>full_name</b>
+                    <b>collect_geo</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the collection of the names of the countries from where the traffic was sent.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>collect_ip</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the collection of client IPs statistics.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>collect_max_tps_and_throughput</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the collection of maximum TPS and throughput for all collected entities.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>collect_page_load_time</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the collection of the page load time statistics.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>collect_url</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the collection of requested URL statistics.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>collect_user_agent</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the collection of user agents.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>collect_user_sessions</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the collection of the unique user sessions.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>collected_stats_external_logging</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the external logging of the collected statistics.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>collected_stats_internal_logging</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables the internal logging of the collected statistics.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>description</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Full name of the user.</div>
+                                                                        <div>Description of the profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>external_logging_publisher</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the external logging publisher used to send statistical data to one or more destinations.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>notification_by_email</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables sending the analytics alerts by email.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>notification_by_syslog</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables logging of the analytics alerts into the Syslog.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>notification_email_addresses</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies which email addresses receive alerts by email when <code>notification_by_email</code> is enabled.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>parent</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the profile from which this profile inherits settings.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>analytics</code> profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
                     <b>partition</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
+                                                        </td>
                                 <td>
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
                                                                         <div>Device partition to manage resources on.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>partition_access</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the administrative partition to which the user has access. <code>partition_access</code> is required when creating a new account. Should be in the form &quot;partition:role&quot;.</div>
-                                                    <div>Valid roles include <code>acceleration-policy-editor</code>, <code>admin</code>, <code>application-editor</code>, <code>auditor</code>, <code>certificate-manager</code>, <code>guest</code>, <code>irule-manager</code>, <code>manager</code>, <code>no-access</code>, <code>operator</code>, <code>resource-admin</code>, <code>user-manager</code>, <code>web-application-security-administrator</code>, and <code>web-application-security-editor</code>.</div>
-                                                    <div>Partition portion of tuple should be an existing partition or the value &#x27;all&#x27;.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -78,16 +261,6 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>password_credential</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div>
-                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -231,21 +404,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>shell</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>bash</li>
-                                                                                                                                                                                                <li>none</li>
-                                                                                                                                                                                                <li>tmsh</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Optionally set the users shell.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
@@ -255,22 +413,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Whether the account should exist or not, taking action if the state is different from what is stated.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>update_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>on_create</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created users.</div>
-                                                    <div>When <code>username_credential</code> is <code>root</code>, this value will be forced to <code>always</code>.</div>
+                                                                        <div>When <code>present</code>, ensures that the profile exists.</div>
+                                                    <div>When <code>absent</code>, ensures the profile is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -283,18 +427,6 @@ Parameters
                                                                         <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
                                                     <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
                                                                                 </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>username_credential</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Name of the user to create, remove or modify.</div>
-                                                    <div>The <code>root</code> user may not be removed.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: name</div>
-                                    </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -319,7 +451,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP versions >= 12.0.0
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
@@ -331,92 +462,13 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Add the user 'johnd' as an admin
-      bigip_user:
-        username_credential: johnd
-        password_credential: password
-        full_name: John Doe
-        partition_access: all:admin
-        update_password: on_create
-        state: present
+    - name: Create a profile
+      bigip_profile_analytics:
+        name: profile1
         provider:
+          password: secret
           server: lb.mydomain.com
           user: admin
-          password: secret
-      delegate_to: localhost
-
-    - name: Change the user "johnd's" role and shell
-      bigip_user:
-        username_credential: johnd
-        partition_access: NewPartition:manager
-        shell: tmsh
-        state: present
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
-
-    - name: Make the user 'johnd' an admin and set to advanced shell
-      bigip_user:
-        name: johnd
-        partition_access: all:admin
-        shell: bash
-        state: present
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
-
-    - name: Remove the user 'johnd'
-      bigip_user:
-        name: johnd
-        state: absent
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
-
-    - name: Update password
-      bigip_user:
-        state: present
-        username_credential: johnd
-        password_credential: newsupersecretpassword
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
-
-    # Note that the second time this task runs, it would fail because
-    # The password has been changed. Therefore, it is recommended that
-    # you either,
-    #
-    #   * Put this in its own playbook that you run when you need to
-    #   * Put this task in a `block`
-    #   * Include `ignore_errors` on this task
-    - name: Change the Admin password
-      bigip_user:
-        state: present
-        username_credential: admin
-        password_credential: NewSecretPassword
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
-
-    - name: Change the root user's password
-      bigip_user:
-        username_credential: root
-        password_credential: secret
-        state: present
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
 
@@ -429,48 +481,35 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>full_name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>param1</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed and success</td>
+                <td>changed</td>
                 <td>
-                                            <div>Full name of the user</div>
+                                            <div>The new param1 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">John Doe</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>partition_access</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed and success</td>
-                <td>
-                                                                        <div>List of strings containing the user&#x27;s roles and which partitions they are applied to. They are specified in the form &quot;partition:role&quot;.</div>
-                                                                <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;all:admin&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>shell</b>
+                    <b>param2</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
-                <td>changed and success</td>
+                <td>changed</td>
                 <td>
-                                            <div>The shell assigned to the user account</div>
+                                            <div>The new param2 value of the resource.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tmsh</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
                                     </td>
             </tr>
                         </table>
@@ -491,5 +530,4 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
-- Wojciech Wypior (@wojtek0806)
 
