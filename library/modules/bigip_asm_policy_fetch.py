@@ -23,13 +23,13 @@ options:
   name:
     description:
       - The name of the policy exported to create a file on the remote device for downloading.
-  required: True
+    required: True
   dest:
     description:
       - A directory to save the policy file into.
       - Di
       - This option is ignored when C(inline) is set to c(yes).
-  type: path
+    type: path
   file:
     description:
       - The name of the file to be create on the remote device for downloading.
@@ -205,7 +205,6 @@ class Parameters(AnsibleF5Parameters):
         'filename': 'file',
         'minimal': 'compact',
         'isBase64': 'base64',
-
     }
 
     api_attributes = [
@@ -214,7 +213,6 @@ class Parameters(AnsibleF5Parameters):
         'isBase64',
         'policyReference',
         'filename',
-
     ]
 
     returnables = [
