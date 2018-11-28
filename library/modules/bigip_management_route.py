@@ -214,6 +214,8 @@ class Difference(object):
     def network(self):
         if self.want.network is None:
             return None
+        if self.want.network == '0.0.0.0/0' and self.have.network == 'default':
+            return None
         if self.want.network != self.have.network:
             raise F5ModuleError(
                 "'network' cannot be changed after it is set."
