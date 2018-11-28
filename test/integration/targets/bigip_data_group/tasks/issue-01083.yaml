@@ -1,0 +1,179 @@
+---
+
+- name: Issue 01083 - Generic string internal data group file
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    description: This is my desc
+    records_src: "{{ role_path }}/files/string1.txt"
+  register: result
+
+- name: Issue 01083 - Assert Generic string internal data group file
+  assert:
+    that:
+      result is changed
+
+- name: Issue 01083 - Generic string internal data group file - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    description: This is my desc
+    records_src: "{{ role_path }}/files/string1.txt"
+  register: result
+
+- name: Issue 01083 - Assert Generic string internal data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Issue 01083 - Change description
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    description: This is my other desc
+  register: result
+
+- name: Issue 01083 - Assert Change description
+  assert:
+    that:
+      result is changed
+
+- name: Issue 01083 - Change description - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    description: This is my other desc
+  register: result
+
+- name: Issue 01083 - Assert Change description - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Issue 01083 - Change description - none
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    description: none
+  register: result
+
+- name: Issue 01083 - Assert Change description - none
+  assert:
+    that:
+      result is changed
+
+- name: Issue 01083 - Change description - none - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    description: none
+  register: result
+
+- name: Issue 01083 - Assert Change description - none - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Issue 01083 - Change description - empty - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    description: ''
+  register: result
+
+- name: Issue 01083 - Assert Change description - empty - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Generic string external data group file
+  bigip_data_group:
+    name: external-dg1
+    description: This is my desc
+    records_src: "{{ role_path }}/files/string1.txt"
+  register: result
+
+- name: Assert Generic string external data group file
+  assert:
+    that:
+      result is changed
+
+- name: Generic string external data group file - Idempotent check
+  bigip_data_group:
+    name: external-dg1
+    description: This is my desc
+    records_src: "{{ role_path }}/files/string1.txt"
+  register: result
+
+- name: Assert Generic string external data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Issue 01083 - Change external description
+  bigip_data_group:
+    name: external-dg1
+    description: This is my other desc
+  register: result
+
+- name: Issue 01083 - Assert Change external description
+  assert:
+    that:
+      result is changed
+
+- name: Issue 01083 - Change external description - Idempotent check
+  bigip_data_group:
+    name: external-dg1
+    description: This is my other desc
+  register: result
+
+- name: Issue 01083 - Assert Change external description - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Issue 01083 - Change external description - none
+  bigip_data_group:
+    name: external-dg1
+    description: none
+  register: result
+
+- name: Issue 01083 - Assert Change external description - none
+  assert:
+    that:
+      result is changed
+
+- name: Issue 01083 - Change external description - none - Idempotent check
+  bigip_data_group:
+    name: external-dg1
+    description: none
+  register: result
+
+- name: Issue 01083 - Assert Change external description - none - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Issue 01083 - Change external description - empty - Idempotent check
+  bigip_data_group:
+    name: external-dg1
+    description: ''
+  register: result
+
+- name: Issue 01083 - Assert Change external description - empty - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Issue 01083 - Remove data groups
+  bigip_data_group:
+    name: "{{ item.name }}"
+    internal: "{{ item.internal }}"
+    delete_data_group_file: "{{ item.delete_data_group_file|default(omit) }}"
+    state: absent
+  loop:
+    - name: external-dg1
+      internal: no
+      delete_data_group_file: yes
+    - name: internal-dg1
+      internal: yes
