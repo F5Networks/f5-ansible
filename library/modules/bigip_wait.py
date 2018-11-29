@@ -88,16 +88,26 @@ try:
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import is_cli
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import is_cli
+
+try:
+    from ansible.module_utils.network.f5.common import run_commands
+    HAS_CLI_TRANSPORT = True
+except ImportError:
+    HAS_CLI_TRANSPORT = False
 
 
 def hard_timeout(module, want, start):
@@ -145,7 +155,7 @@ class Changes(Parameters):
     pass
 
 
-class ModuleManager(object):
+class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
@@ -171,9 +181,6 @@ class ModuleManager(object):
                 msg=warning['msg'],
                 version=warning['version']
             )
-
-    def _get_client_connection(self):
-        return F5RestClient(**self.module.params)
 
     def execute(self):
         signal.signal(
@@ -245,6 +252,55 @@ class ModuleManager(object):
         self.changes.update({'elapsed': elapsed.seconds})
         return False
 
+    def _wait_for_module_provisioning(self):
+        # To prevent things from running forever, the hack is to check
+        # for mprov's status twice. If mprov is finished, then in most
+        # cases (not ASM) the provisioning is probably ready.
+        nops = 0
+        # Sleep a little to let provisioning settle and begin properly
+        time.sleep(5)
+        while nops < 4:
+            try:
+                if not self._is_mprov_running_on_device():
+                    nops += 1
+                else:
+                    nops = 0
+            except Exception as ex:
+                # This can be caused by restjavad restarting.
+                pass
+            time.sleep(10)
+
+
+class V1Manager(BaseManager):
+    def _get_client_connection(self):
+        return True
+
+    def _device_is_rebooting(self):
+        command = dict(
+            command="tmsh run /util bash -c 'runlevel'"
+        )
+        result = run_commands(self.module, command)
+        import q;
+        q.q(result)
+        if any(x for x in result if '6' in x):
+            return True
+        return False
+
+    def _is_mprov_running_on_device(self):
+        command = dict(
+            command="tmsh run /util bash -c 'ps aux | grep \'[m]prov\''"
+        )
+        result = run_commands(self.module, command)
+        import q; q.q(result)
+        if any(x for x in result if len(x) > 1):
+            return True
+        return False
+
+
+class V2Manager(BaseManager):
+    def _get_client_connection(self):
+        return F5RestClient(**self.module.params)
+
     def _device_is_rebooting(self):
         params = {
             "command": "run",
@@ -312,6 +368,26 @@ class ModuleManager(object):
         return False
 
 
+class ModuleManager(object):
+    def __init__(self, *args, **kwargs):
+        self.kwargs = kwargs
+        self.module = kwargs.get('module', None)
+
+    def exec_module(self):
+        if is_cli(self.module) and HAS_CLI_TRANSPORT:
+            manager = self.get_manager('v1')
+        else:
+            manager = self.get_manager('v2')
+        result = manager.exec_module()
+        return result
+
+    def get_manager(self, type):
+        if type == 'v1':
+            return V1Manager(**self.kwargs)
+        elif type == 'v2':
+            return V2Manager(**self.kwargs)
+
+
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
@@ -339,8 +415,12 @@ def main():
     try:
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
+        if not is_cli(module):
+            cleanup_tokens(client)
         exit_json(module, results, client)
     except F5ModuleError as ex:
+        if not is_cli(module):
+            cleanup_tokens(client)
         fail_json(module, ex, client)
 
 
