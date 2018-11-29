@@ -841,7 +841,6 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-        return response['selfLink']
 
     def update_on_device(self):
         params = self.changes.api_params()
