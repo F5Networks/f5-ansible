@@ -5,33 +5,12 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = """
-    lookup: Select a random license key from a file and remove it from future lookups
-    author: Tim Rupp <caphrim007@gmail.com>
-    version_added: "2.5"
-    short_description: Return random license from list
-    description:
-      - Select a random license key from a file and remove it from future lookups
-      - Can optionally remove the key if C(remove=True) is specified
 """
 
 EXAMPLES = """
-- name: Get a regkey license from a stash without deleting it
-  bigiq_regkey_license:
-    key: "{{ lookup('license_hopper', 'filename=/path/to/licenses.txt') }}"
-    state: present
-    pool: regkey1
-
-- name: Get a regkey license from a stash and delete the key from the file
-  bigiq_regkey_license:
-    key: "{{ lookup('license_hopper', 'filename=/path/to/licenses.txt', remove=True) }}"
-    state: present
-    pool: regkey1
 """
 
 RETURN = """
-  _raw:
-    description:
-      - random item
 """
 
 import random
@@ -54,8 +33,9 @@ class LookupModule(LookupBase):
         self.pool_name = None
         self.port = 443
         self.client = None
+        self.params = None
 
-    def _validate_params(self, **kwargs):
+    def _validate_and_merge_params(self, **kwargs):
         self.username = kwargs.pop('username', 'admin')
         self.password = kwargs.pop('password', 'admin')
         self.validate_certs = kwargs.pop('validate_certs', True)
@@ -67,6 +47,15 @@ class LookupModule(LookupBase):
             raise AnsibleError('A valid hostname or IP for BIGIQ needs to be provided')
         if self.pool_name is None:
             raise AnsibleError('License pool name needs to be specified')
+        self.params = dict(
+            provider=dict(
+                server=self.host,
+                server_port=self.port,
+                validate_certs=self.validate_certs,
+                user=self.username,
+                password=self.password
+            )
+        )
 
     def _get_pool_uuid(self):
         uri = "https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses".format(self.host, self.port)
@@ -115,8 +104,8 @@ class LookupModule(LookupBase):
         return regkeys
 
     def run(self, terms, variables=None, **kwargs):
-        self._validate_params(**kwargs)
-        self.client = F5RestClient(user**module.params)
+        self._validate_and_merge_params(**kwargs)
+        self.client = F5RestClient(self.params)
         pool_id = self._get_pool_uuid()
         regkeys = self._get_registation_keys(pool_id)
         keys = []
