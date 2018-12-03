@@ -1,6 +1,10 @@
-# (c) 2013, Michael DeHaan <michael.dehaan@gmail.com>
-# (c) 2017 Ansible Project
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright: (c) 2017, F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
@@ -19,8 +23,6 @@ from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
 from ansible.module_utils.network.f5.bigiq import F5RestClient
 from ansible.plugins.lookup import LookupBase
-
-BOOLEANS_TRUE = frozenset(('y', 'yes', 'on', '1', 'true', 'True', 't', 1, 1.0, True))
 
 
 class LookupModule(LookupBase):
