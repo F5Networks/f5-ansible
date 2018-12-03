@@ -1,0 +1,11 @@
+---
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
+- name: Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
