@@ -43,14 +43,14 @@ and at the bottom of it, add the following
 Next, create that directory on your Tower VM and change the permissions of it to mirror those of
 the ``/tmp`` directory.
 
-.. code-block::
+.. code-block:: bash
 
    $ mkdir /scratch
    $ chmod 777
 
 Finally, restart Tower and wait for it to come back online
 
-.. code-block::
+.. code-block:: bash
 
    $ ansible-tower-service restart
 
@@ -73,7 +73,7 @@ on the AWX host, you can include a new bind mount to a location of your choice.
 
 For instance, in the definition of my ``task`` service, I can specify the following
 
-.. code-block::
+.. code-block:: yaml
 
    volumes:
      - "/scratch:/scratch:rw"
@@ -84,7 +84,7 @@ on the AWX VM.
 Note that I additionally include the bind-mount shown below so that I can make use of the
 docker modules from within my AWX installation
 
-.. code-block::
+.. code-block:: yaml
 
    volumes:
      - /var/run/docker.sock:/var/run/docker.sock
@@ -94,7 +94,7 @@ The above is handy to have.
 After changing the ``docker-compose.yaml`` file, you can restart AWX by restarting the containers
 using ``docker-compose``.
 
-.. code-block::
+.. code-block:: bash
 
    $ docker-compose stop
    $ docker-compose start
