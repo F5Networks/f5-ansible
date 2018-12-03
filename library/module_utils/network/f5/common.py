@@ -341,6 +341,9 @@ def transform_name(partition='', name='', sub_path=''):
     if name and partition:
         name = '~' + name
 
+    if name.startswith(partition):
+        partition = ''
+
     result = partition + sub_path + name
     return result
 
