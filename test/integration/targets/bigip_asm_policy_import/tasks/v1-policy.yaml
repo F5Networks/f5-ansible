@@ -1,0 +1,164 @@
+---
+
+- name: Import ASM policy, compact XML file
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Assert Import ASM policy, compact XML file
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import ASM policy, compact XML file  - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Assert Import ASM policy, compact XML file  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Override existing ASM policy, compact XML file, force overwrite
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
+    force: yes
+  register: result
+
+- name: Assert Override existing ASM policy, compact XML file, force overwrite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import ASM policy, non-compact XML file
+  bigip_asm_policy_import:
+    name: foo-policy2
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_disabled.xml"
+  register: result
+
+- name: Assert Import ASM policy, non-compact XML file
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import ASM policy, non-compact XML file - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy2
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_disabled.xml"
+  register: result
+
+- name: Assert Import ASM policy, non-compact XML file - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Override existing ASM policy, compact XML file, force overwrite
+  bigip_asm_policy_import:
+    name: foo-policy2
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_disabled.xml"
+    force: yes
+  register: result
+
+- name: Assert Override existing ASM policy, compact XML file, force overwrite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import ASM policy, binary
+  bigip_asm_policy_import:
+    name: foo-policy3
+    source: "{{ role_path }}/files/v1_policy_default_binary.plc"
+  register: result
+
+- name: Assert Import ASM policy, binary
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import ASM policy, binary - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy3
+    source: "{{ role_path }}/files/v1_policy_default_binary.plc"
+  register: result
+
+- name: Assert Import ASM policy, binary - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Override existing ASM policy, binary, force overwrite
+  bigip_asm_policy_import:
+    name: foo-policy3
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_disabled.xml"
+    force: yes
+  register: result
+
+- name: Assert Override existing ASM policy, binary, force overwrite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Export ASM policy inline, compact format
+  bigip_asm_policy_fetch:
+    name: foo-policy3
+    inline: yes
+    compact: yes
+  register: p
+
+- name: Import ASM policy inline
+  bigip_asm_policy_import:
+    name: foo-policy4
+    inline: "{{ p.inline_policy }}"
+  register: result
+
+- name: Assert Import ASM policy inline
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import ASM policy inline - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy4
+    inline: "{{ p.inline_policy }}"
+  register: result
+
+- name: Assert Import ASM policy inline - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Import ASM policy inline, force overwrite
+  bigip_asm_policy_import:
+    name: foo-policy4
+    inline: "{{ p.inline_policy }}"
+    force: yes
+  register: result
+
+- name: Assert Import ASM policy inline, force overwrite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete ASM Policies
+  bigip_command:
+    commands:
+      - tmsh delete asm policy foo-policy
+      - tmsh delete asm policy foo-policy2
+      - tmsh delete asm policy foo-policy3
+      - tmsh delete asm policy foo-policy4
