@@ -243,7 +243,7 @@ class ModuleParameters(Parameters):
             self.client.provider['server_port'],
         )
         query = '?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name'.format(self.want.name, self.want.partition)
-        resp = self.client.api.get(uri+query)
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
@@ -533,7 +533,7 @@ class ModuleManager(object):
             self.client.provider['server_port'],
         )
         query = '?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name'.format(self.want.name, self.want.partition)
-        resp = self.client.api.get(uri+query)
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
