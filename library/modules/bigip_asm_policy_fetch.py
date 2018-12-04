@@ -238,17 +238,17 @@ class ApiParameters(Parameters):
 
 class ModuleParameters(Parameters):
     def _policy_exists(self):
-        uri = "https://{0}:{1}/mgmt/tm/asm/policies/".format(
+        uri = 'https://{0}:{1}/mgmt/tm/asm/policies/'.format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.get(uri)
-
+        query = '?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name'.format(self.want.name, self.want.partition)
+        resp = self.client.api.get(uri+query)
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if any(p['name'] == self._values['name'] and p['partition'] == self.partition for p in response['items']):
+        if 'items' in response and response['items'] != []:
             return True
         return False
 
@@ -527,22 +527,20 @@ class ModuleManager(object):
                 return True, response['result']
 
     def _set_policy_link(self):
-        name = self.want.name
-        partition = self.want.partition
-        uri = "https://{0}:{1}/mgmt/tm/asm/policies/".format(
+        policy_link = None
+        uri = 'https://{0}:{1}/mgmt/tm/asm/policies/'.format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.get(uri)
-
+        query = '?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name'.format(self.want.name, self.want.partition)
+        resp = self.client.api.get(uri+query)
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        policy_link = next(
-            (p['selfLink'] for p in response['items'] if p['name'] == name and p['partition'] == partition), None
-        )
+        if 'items' in response and response['items'] != []:
+            policy_link = response['items'][0]['selfLink']
 
         if not policy_link:
             raise F5ModuleError("The policy was not found")
