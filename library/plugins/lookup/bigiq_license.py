@@ -9,12 +9,33 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = """
+    lookup: Select a random license key from a pool of biqiq available licenses
+    author: Wojciech Wypior <w.wypior@f5.com>
+    version_added: "2.8"
+    short_description: Return random license from list
+    description:
+      - Select a random license key from a pool of biqiq available licenses
+      - Requires specifying BIGIQ license pool name and connection parameters    
 """
 
 EXAMPLES = """
+- name: Get a regkey license from a license pool
+  bigiq_regkey_license:
+    key: "{{ lookup('bigiq_license', pool_name='foo_pool', username=baz, password=bar, host=192.168.1.1, port=10443}}"
+    state: present
+    pool: foo_pool
+
+- name: Get a regkey license from a license pool, use default credentials and port, disable SSL verification
+  bigiq_regkey_license:
+    key: "{{ lookup('bigiq_license', pool_name='foo_pool', host=192.168.1.1, validate_certs=false}}"
+    state: present
+    pool: foo_pool
 """
 
 RETURN = """
+  _raw:
+    description:
+      - random item
 """
 
 import random
