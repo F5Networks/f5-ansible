@@ -280,8 +280,6 @@ class V1Manager(BaseManager):
             command="tmsh run /util bash -c 'runlevel'"
         )
         result = run_commands(self.module, command)
-        import q;
-        q.q(result)
         if any(x for x in result if '6' in x):
             return True
         return False
@@ -291,7 +289,6 @@ class V1Manager(BaseManager):
             command="tmsh run /util bash -c 'ps aux | grep \'[m]prov\''"
         )
         result = run_commands(self.module, command)
-        import q; q.q(result)
         if any(x for x in result if len(x) > 1):
             return True
         return False
