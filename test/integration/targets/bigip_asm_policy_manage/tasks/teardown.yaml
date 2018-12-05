@@ -1,0 +1,9 @@
+
+
+- name: Deprovision ASM
+  bigip_provision:
+    module: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
