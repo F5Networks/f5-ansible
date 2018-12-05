@@ -96,6 +96,14 @@ options:
     description:
       - Device partition to manage resources on.
     default: Common
+deprecated:
+  removed_in: '2.12'
+  alternative: bigip_asm_policy_manage
+  why: >
+    The bigip_asm_policy module has been split into three new modules to handle import, export and general policy
+    management. This will allow scalability of the asm policy management as well as ease of maintenance. 
+    Additionally to further reduce the burden of having multiple smaller module F5 has created asm_policy
+    role in Ansible Galaxy for a more declarative way of ASM policy management.
 extends_documentation_fragment: f5
 author:
   - Wojciech Wypior (@wojtek0806)
@@ -500,7 +508,16 @@ class BaseManager(object):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def _set_changed_options(self):
         changed = {}
