@@ -393,6 +393,7 @@ class Changes(Parameters):
         }
         return template_map[self._values['template']]
 
+
 class Difference(object):
     def __init__(self, want, have=None):
         self.want = want

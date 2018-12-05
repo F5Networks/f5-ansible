@@ -1,4 +1,3 @@
-
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
@@ -15,7 +14,7 @@ DOCUMENTATION = """
     short_description: Return random license from list
     description:
       - Select a random license key from a pool of biqiq available licenses
-      - Requires specifying BIGIQ license pool name and connection parameters    
+      - Requires specifying BIGIQ license pool name and connection parameters
 """
 
 EXAMPLES = """
@@ -156,6 +155,3 @@ class LookupModule(LookupBase):
 
         result = random.choice(keys)
         return result
-
-
-
