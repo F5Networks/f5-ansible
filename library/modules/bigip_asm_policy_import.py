@@ -60,7 +60,7 @@ EXAMPLES = r'''
       user: admin
       password: secret
   delegate_to: localhost
-  
+
 - name: Import ASM policy inline
   bigip_asm_policy_import:
     name: foo-policy4
@@ -271,7 +271,7 @@ class ModuleManager(object):
         )
 
         query = '?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name'.format(self.want.name, self.want.partition)
-        resp = self.client.api.get(uri+query)
+        resp = self.client.api.get(uri + query)
 
         try:
             response = resp.json()
@@ -300,7 +300,7 @@ class ModuleManager(object):
         )
 
         query = '?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name'.format(self.want.name, self.want.partition)
-        resp = self.client.api.get(uri+query)
+        resp = self.client.api.get(uri + query)
 
         try:
             response = resp.json()
