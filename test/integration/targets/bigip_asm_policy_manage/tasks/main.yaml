@@ -1,0 +1,166 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create ASM policy from template
+  bigip_asm_policy_manage:
+    name: "{{ policy_4 }}"
+    template: SharePoint 2007 (http)
+  register: result
+
+- name: Assert Create ASM policy from template
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create ASM policy from template - Idempotent check
+  bigip_asm_policy_manage:
+    name: "{{ policy_4 }}"
+    template: SharePoint 2007 (http)
+  register: result
+
+- name: Assert Import ASM policy from template - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove ASM policy
+  bigip_asm_policy_manage:
+    name: "{{ policy_4 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove ASM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove ASM policy - Idempotent check
+  bigip_asm_policy_manage:
+    name: "{{ policy_4 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove ASM policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create ASM policy from template and activate
+  bigip_asm_policy_manage:
+    name: "{{ policy_4 }}"
+    template: SharePoint 2007 (http)
+    active: yes
+  register: result
+
+- name: Assert Create ASM policy from template and activate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create ASM policy from template and activate - Idempotent check
+  bigip_asm_policy_manage:
+    name: "{{ policy_4 }}"
+    template: SharePoint 2007 (http)
+    active: yes
+  register: result
+
+- name: Assert Create ASM policy from template and activate - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create blank ASM policy, no activation
+  bigip_asm_policy_manage:
+    name: "{{ policy }}"
+    state: present
+  register: result
+
+- name: Assert Create blank ASM policy, no activation
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create blank ASM policy, no activation - Idempotent check
+  bigip_asm_policy_manage:
+    name: "{{ policy }}"
+    state: present
+  register: result
+
+- name: Assert Create blank ASM policy, no activation - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create blank ASM policy, and activate
+  bigip_asm_policy_manage:
+    name: "{{ policy_2 }}"
+    active: yes
+    state: present
+  register: result
+
+- name: Assert Create blank ASM policy, and activate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create blank ASM policy, and activate - Idempotent check
+  bigip_asm_policy_manage:
+    name: "{{ policy_2 }}"
+    active: yes
+    state: present
+  register: result
+
+- name: Assert Create blank ASM policy, and activate - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Activate imported ASM policy
+  bigip_asm_policy_manage:
+    name: "{{ policy_3 }}"
+    active: yes
+    state: present
+  register: result
+
+- name: Assert Activate imported ASM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Activate imported ASM policy - Idempotent check
+  bigip_asm_policy_manage:
+    name: "{{ policy_3 }}"
+    active: yes
+    state: present
+  register: result
+
+- name: Assert Activate imported ASM policy  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove ASM policy
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ policy }}"
+    - "{{ policy_2 }}"
+    - "{{ policy_3 }}"
+    - "{{ policy_4 }}"
+
+
+- import_tasks: teardown.yaml

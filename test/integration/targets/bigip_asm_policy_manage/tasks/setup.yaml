@@ -1,0 +1,12 @@
+
+- name: Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
+- name: Import ASM policy
+  bigip_asm_policy_import:
+    name: "{{ policy_3 }}"
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
+  register: result
