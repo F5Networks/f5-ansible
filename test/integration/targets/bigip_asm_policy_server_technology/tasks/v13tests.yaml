@@ -1,0 +1,85 @@
+---
+- import_tasks: setup.yaml
+
+- name: Add First Server Technology to ASM Policy
+  bigip_asm_policy_server_technology:
+    name: "{{ tech_1 }}"
+    policy_name: "{{ policy }}"
+  register: result
+
+- name: Assert Add First Server Technology to ASM Policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add First Server Technology to ASM Policy - Idempotent check
+  bigip_asm_policy_server_technology:
+    name: "{{ tech_1 }}"
+    policy_name: "{{ policy }}"
+  register: result
+
+- name: Assert Add First Server Technology to ASM Policy - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add Second Server Technology to ASM Policy
+  bigip_asm_policy_server_technology:
+    name: "{{ tech_2 }}"
+    policy_name: "{{ policy }}"
+  register: result
+
+- name: Assert Add Second Server Technology to ASM Policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add Second Server Technology to ASM Policy - Idempotent check
+  bigip_asm_policy_server_technology:
+    name: "{{ tech_2 }}"
+    policy_name: "{{ policy }}"
+  register: result
+
+- name: Assert Add Second Server Technology to ASM Policy - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove Server Technology from ASM Policy
+  bigip_asm_policy_server_technology:
+    name: "{{ tech_1 }}"
+    policy_name: "{{ policy }}"
+    state: absent
+  register: result
+
+- name: Assert Remove Server Technology from ASM Policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove Server Technology from ASM Policy - Idempotent check
+  bigip_asm_policy_server_technology:
+    name: "{{ tech_1 }}"
+    policy_name: "{{ policy }}"
+    state: absent
+  register: result
+
+- name: Assert Remove Server Technology from ASM Policy- Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add Second Server Technology to non existent ASM Policy - Expect Failure
+  bigip_asm_policy_server_technology:
+    name: "{{ tech_3 }}"
+    policy_name: FooBar
+  register: result
+  failed_when: "'The policy with the name' not in result.msg"
+
+- import_tasks: teardown.yaml
