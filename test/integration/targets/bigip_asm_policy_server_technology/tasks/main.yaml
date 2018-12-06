@@ -1,0 +1,9 @@
+---
+
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
+- import_tasks: v13tests.yaml
+  when: f.system_info.product_version >= "13.0.0"
