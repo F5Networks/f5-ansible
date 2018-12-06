@@ -53,6 +53,7 @@ def get_fixtures(c, module):
 def get_all_module_names():
     files = get_all_module_files()
     result = [os.path.splitext(x)[0] for x in files]
+    result.sort()
     return result
 
 
