@@ -1,0 +1,62 @@
+---
+- name: Issue 01091 - Include issue variables
+  include_vars:
+    file: issue-01091.yaml
+
+- name: Issue 01091 - Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
+- name: Issue 01091 - Create blank ASM policy
+  bigip_asm_policy_manage:
+    name: "{{ policy_name }}"
+    state: present
+  register: result
+
+- name: Issue 01091 - Select ASM policies facts
+  bigip_device_facts:
+    include:
+      - asm-policies
+  register: result
+
+- name: Issue 01091 - Assert Select ASM policies facts
+  assert:
+    that:
+      - result is success
+      - result.asm_policy_facts | json_query("[?name=='" + policy_name + "'].inspect_http_uploads") | first == "no"
+      - result.asm_policy_facts | json_query("[?name=='" + policy_name + "'].active") | first == "no"
+
+- name: Issue 01091 - Activate ASM policy
+  bigip_asm_policy_manage:
+    name: "{{ policy_name }}"
+    active: yes
+    state: present
+  register: result
+
+- name: Issue 01091 - Update ASM policies facts
+  bigip_device_facts:
+    include:
+      - asm-policies
+  register: result
+
+- name: Issue 01091 - Assert Update ASM policies facts
+  assert:
+    that:
+      - result is success
+      - result.asm_policy_facts | json_query("[?name=='" + policy_name + "'].active") | first == "yes"
+
+- name: Issue 01091 - Remove ASM policy
+  bigip_asm_policy_manage:
+    name: "{{ policy_name }}"
+    state: absent
+  register: result
+
+- name: Issue 01091 - De-provision ASM
+  bigip_provision:
+    name: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
