@@ -33,6 +33,7 @@ options:
       - monitors
       - profiles
       - asm-policy-stats
+      - asm-policies
       - client-ssl-profiles
       - devices
       - device-groups
@@ -92,6 +93,7 @@ options:
       - "!monitors"
       - "!profiles"
       - "!asm-policy-stats"
+      - "!asm-policies"
       - "!client-ssl-profiles"
       - "!devices"
       - "!device-groups"
@@ -223,6 +225,245 @@ asm_policy_stats:
       returned: changed
       type: int
       sample: 3
+  sample: hash/dictionary of values
+asm_policies:
+  description: Detailed facts for ASM policies present on device.
+  returned: When C(asm-policies) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: string
+      sample: /Common/foo_policy
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: string
+      sample: foo_policy
+    policy_id:
+      description:
+        - Generated ID of the ASM policy resource.
+      returned: changed
+      type: string
+      sample: l0Ckxe-7yHsXp8U5tTgbFQ
+    active:
+      description:
+        - Indicates if an ASM policy is active.
+      returned: changed
+      type: bool
+      sample: yes
+    protocol_independent:
+      description:
+        - Indicates if the ASM policy differentiates between HTTP/WS and HTTPS/WSS URLs.
+      returned: changed
+      type: bool
+      sample: no
+    has_parent:
+      description:
+        - Indicates if the ASM policy is a child of another ASM policy.
+      returned: changed
+      type: bool
+      sample: no
+    type:
+      description:
+        - The type of policy, can be C(Security) or C(Parent).
+      returned: changed
+      type: string
+      sample: security
+    virtual_servers:
+      description:
+        - Virtual server or servers which have this policy assigned to them.
+      returned: changed
+      type: list
+      sample: ['/Common/foo_VS/']
+    allowed_response_codes:
+      description:
+        - Lists the response status codes between 400 and 599 that the security profile considers legal.
+      returned: changed
+      type: list
+      sample: ['400', '404]
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: string
+      sample: Significant Policy Description
+    learning_mode:
+      description:
+        - Determine how the policy is built.
+      returned: changed
+      type: string
+      sample: manual
+    enforcement_mode:
+      description:
+        - Specifies whether blocking is active or inactive for the ASM policy.
+      returned: changed
+      type: string
+      sample: blocking
+    trust_xff:
+      description:
+        - Indicates the system has confidence in an XFF (X-Forwarded-For) header in the request.
+      returned: changed
+      type: bool
+      sample: yes
+    custom_xff_headers:
+      description:
+        - List of custom XFF headers trusted by the system.
+      returned: changed
+      type: string
+      sample: asm-proxy1
+    case_insensitive:
+      description:
+        - Indicates if the ASM policy treats file types, URLs, and parameters as case sensitive.
+      returned: changed
+      type: bool
+      sample: yes
+    signature_staging:
+      description:
+        - Specifies if the staging feature is active on the ASM policy.
+      returned: changed
+      type: bool
+      sample: yes
+    place_signatures_in_staging:
+      description:
+        - Specifies if the system places new or updated signatures in staging
+          for the number of days specified in the enforcement readiness period.
+      returned: changed
+      type: bool
+      sample: no
+    enforcement_readiness_period:
+      description:
+        - Period in days both security policy entities and attack signatures
+          remain in staging mode before the system suggests to enforce them.
+      returned: changed
+      type: int
+      sample: 8
+    path_parameter_handling:
+      description:
+        - Specifies how the system handles path parameters that are attached to path segments in URIs.
+      returned: changed
+      type: string
+      sample: ignore
+    trigger_asm_irule_event:
+      description:
+        - Indicates if iRule event is enabled.
+      returned: changed
+      type: string
+      sample: disabled
+    inspect_http_uploads:
+      description:
+        - Specify if the system should inspect all http uploads.
+      returned: changed
+      type: bool
+      sample: yes
+    mask_credit_card_numbers_in_request:
+      description:
+        - Indicates if the system masks credit card numbers.
+      returned: changed
+      type: bool
+      sample: no
+    maximum_http_header_length:
+      description:
+        - Maximum length of an HTTP header name and value that the system processes.
+      returned: changed
+      type: int
+      sample: 8192
+    use_dynamic_session_id_in_url:
+      description:
+        - Specifies how the security policy processes URLs that use dynamic sessions.
+      returned: changed
+      type: bool
+      sample: no
+    maximum_cookie_header_length:
+      description:
+        - Maximum length of a cookie header name and value that the system processes.
+      returned: changed
+      type: int
+      sample: 8192
+    application_language:
+      description:
+        - The language encoding for the web application.
+      returned: changed
+      type: string
+      sample: utf-8
+    disallowed_geolocations:
+      description:
+        - Displays countries that may not access the web application.
+      returned: changed
+      type: string
+      sample: Argentina
+    csrf_protection_enabled:
+      description:
+        - Specifies if CSRF protection is active on the ASM policy.
+      returned: changed
+      type: bool
+      sample: yes
+    csrf_protection_ssl_only:
+      description:
+        - Specifies that only HTTPS URLs will be checked for CSRF protection.
+      returned: changed
+      type: bool
+      sample: yes
+    csrf_protection_expiration_time_in_seconds:
+      description:
+        - Specifies how long, in seconds, a configured CSRF token is valid before it expires.
+      returned: changed
+      type: int
+      sample: 600
+    csrf_urls:
+      description:
+        - Specifies a list of URLs for CSRF token verification.
+        - In version 13.0.0 and above this has become a sub-collection and a list of dictionaries.
+        - In version 12.x this is a list of simple strings.
+      returned: changed
+      type: complex
+      contains:
+        csrf_url_required_parameters:
+          description:
+            - Indicates whether to ignore or require one of the specified parameters is present
+              in a request when checking if the URL entry matches the request.
+          returned: changed
+          type: string
+          sample: ignore
+        csrf_url_parameters_list:
+          description:
+            - List of parameters to look for in a request when checking if the URL entry matches the request.
+          returned: changed
+          type: list
+          sample: ['fooparam']
+        csrf_url:
+          description:
+            - Specifies an URL to protect.
+          returned: changed
+          type: string
+          sample: ['/foo.html']
+        csrf_url_method:
+          description:
+            - Method for the specified URL.
+          returned: changed
+          type: string
+          sample: POST
+        csrf_url_enforcement_action:
+          description:
+            - Indicates the action specified for the system to take when the URL entry matches.
+          returned: changed
+          type: string
+          sample: none
+        csrf_url_id:
+          description:
+            - Specified the generated ID for the configured CSRF url resource.
+          returned: changed
+          type: string
+          sample: l0Ckxe-7yHsXp8U5tTgbFQ
+        csrf_url_wildcard_order:
+          description:
+            - Specified the order in which the wildcard URLs are enforced.
+          returned: changed
+          type: string
+          sample: 1
   sample: hash/dictionary of values
 client_ssl_profiles:
   description: Client SSL Profile related facts.
@@ -6130,6 +6371,7 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.six import string_types
 from collections import namedtuple
+from distutils.version import LooseVersion
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -6142,6 +6384,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.icontrol import modules_provisioned
+    from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.urls import parseStats
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
@@ -6154,6 +6397,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.network.f5.icontrol import modules_provisioned
+    from ansible.module_utils.network.f5.icontrol import tmos_version
     from ansible.module_utils.network.f5.urls import parseStats
 
 
@@ -6318,10 +6562,473 @@ class AsmPolicyStatsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-
         return dict(
             policies=response['items']
         )
+
+
+class AsmPolicyFactParameters(BaseParameters):
+    api_map = {
+        'hasParent': 'has_parent',
+        'protocolIndependent': 'protocol_independent',
+        'virtualServers': 'virtual_servers',
+        'allowedResponseCodes': 'allowed_response_codes',
+        'learningMode': 'learning_mode',
+        'enforcementMode': 'enforcement_mode',
+        'customXffHeaders': 'custom_xff_headers',
+        'caseInsensitive': 'case_insensitive',
+        'stagingSettings': 'staging_settings',
+        'applicationLanguage': 'application_language',
+        'trustXff': 'trust_xff',
+        'geolocation-enforcement': 'geolocation_enforcement',
+        'disallowedLocations': 'disallowed_locations',
+        'signature-settings': 'signature_settings',
+        'header-settings': 'header_settings',
+        'cookie-settings': 'cookie_settings',
+        'policy-builder': 'policy_builder',
+        'disallowed-geolocations': 'disallowed_geolocations',
+        'whitelist-ips': 'whitelist_ips',
+        'fullPath': 'full_path',
+        'csrf-protection': 'csrf_protection',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'policy_id',
+        'active',
+        'protocol_independent',
+        'has_parent',
+        'type',
+        'virtual_servers',
+        'allowed_response_codes',
+        'description',
+        'learning_mode',
+        'enforcement_mode',
+        'custom_xff_headers',
+        'case_insensitive',
+        'signature_staging',
+        'place_signatures_in_staging',
+        'enforcement_readiness_period',
+        'path_parameter_handling',
+        'trigger_asm_irule_event',
+        'inspect_http_uploads',
+        'mask_credit_card_numbers_in_request',
+        'maximum_http_header_length',
+        'use_dynamic_session_id_in_url',
+        'maximum_cookie_header_length',
+        'application_language',
+        'trust_xff',
+        'disallowed_geolocations',
+        'csrf_urls',
+        'csrf_protection_enabled',
+        'csrf_protection_ssl_only',
+        'csrf_protection_expiration_time_in_seconds',
+    ]
+
+    def _morph_keys(self, key_map, item):
+        for k, v in iteritems(key_map):
+            item[v] = item.pop(k, None)
+        result = self._filter_params(item)
+        return result
+
+    @property
+    def active(self):
+        return flatten_boolean(self._values['active'])
+
+    @property
+    def case_insensitive(self):
+        return flatten_boolean(self._values['case_insensitive'])
+
+    @property
+    def has_parent(self):
+        return flatten_boolean(self._values['has_parent'])
+
+    @property
+    def policy_id(self):
+        if self._values['id'] is None:
+            return None
+        return self._values['id']
+
+    @property
+    def signature_staging(self):
+        if 'staging_settings' in self._values:
+            if self._values['staging_settings'] is None:
+                return None
+            if 'signatureStaging' in self._values['staging_settings']:
+                return flatten_boolean(self._values['staging_settings']['signatureStaging'])
+        if 'signature_settings' in self._values:
+            if self._values['signature_settings'] is None:
+                return None
+            if 'signatureStaging' in self._values['signature_settings']:
+                return flatten_boolean(self._values['signature_settings']['signatureStaging'])
+
+    @property
+    def place_signatures_in_staging(self):
+        if 'staging_settings' in self._values:
+            if self._values['staging_settings'] is None:
+                return None
+            if 'placeSignaturesInStaging' in self._values['staging_settings']:
+                return flatten_boolean(self._values['staging_settings']['placeSignaturesInStaging'])
+        if 'signature_settings' in self._values:
+            if self._values['signature_settings'] is None:
+                return None
+            if 'signatureStaging' in self._values['signature_settings']:
+                return flatten_boolean(self._values['signature_settings']['placeSignaturesInStaging'])
+
+    @property
+    def enforcement_readiness_period(self):
+        if 'staging_settings' in self._values:
+            if self._values['staging_settings'] is None:
+                return None
+            if 'enforcementReadinessPeriod' in self._values['staging_settings']:
+                return self._values['staging_settings']['enforcementReadinessPeriod']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'signatureStaging' in self._values['general']:
+                return self._values['general']['enforcementReadinessPeriod']
+
+    @property
+    def path_parameter_handling(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'pathParameterHandling' in self._values['attributes']:
+                return self._values['attributes']['pathParameterHandling']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'pathParameterHandling' in self._values['general']:
+                return self._values['general']['pathParameterHandling']
+
+    @property
+    def trigger_asm_irule_event(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'triggerAsmIruleEvent' in self._values['attributes']:
+                return self._values['attributes']['triggerAsmIruleEvent']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'triggerAsmIruleEvent' in self._values['general']:
+                return self._values['general']['triggerAsmIruleEvent']
+
+    @property
+    def inspect_http_uploads(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'inspectHttpUploads' in self._values['attributes']:
+                return flatten_boolean(self._values['attributes']['inspectHttpUploads'])
+        if 'antivirus' in self._values:
+            if self._values['antivirus'] is None:
+                return None
+            if 'inspectHttpUploads' in self._values['antivirus']:
+                return flatten_boolean(self._values['antivirus']['inspectHttpUploads'])
+
+    @property
+    def mask_credit_card_numbers_in_request(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'maskCreditCardNumbersInRequest' in self._values['attributes']:
+                return flatten_boolean(self._values['attributes']['maskCreditCardNumbersInRequest'])
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'maskCreditCardNumbersInRequest' in self._values['general']:
+                return flatten_boolean(self._values['general']['maskCreditCardNumbersInRequest'])
+
+    @property
+    def maximum_http_header_length(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'maximumHttpHeaderLength' in self._values['attributes']:
+                if self._values['attributes']['maximumHttpHeaderLength'] == 'any':
+                    return 'any'
+                return int(self._values['attributes']['maximumHttpHeaderLength'])
+
+        if 'header_settings' in self._values:
+            if self._values['header_settings'] is None:
+                return None
+            if 'maximumHttpHeaderLength' in self._values['header_settings']:
+                if self._values['header_settings']['maximumHttpHeaderLength'] == 'any':
+                    return 'any'
+                return int(self._values['header_settings']['maximumHttpHeaderLength'])
+
+    @property
+    def use_dynamic_session_id_in_url(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'useDynamicSessionIdInUrl' in self._values['attributes']:
+                return flatten_boolean(self._values['attributes']['useDynamicSessionIdInUrl'])
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'useDynamicSessionIdInUrl' in self._values['general']:
+                return flatten_boolean(self._values['general']['useDynamicSessionIdInUrl'])
+
+    @property
+    def maximum_cookie_header_length(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'maximumCookieHeaderLength' in self._values['attributes']:
+                if self._values['attributes']['maximumCookieHeaderLength'] == 'any':
+                    return 'any'
+                return int(self._values['attributes']['maximumCookieHeaderLength'])
+        if 'cookie_settings' in self._values:
+            if self._values['cookie_settings'] is None:
+                return None
+            if 'maximumCookieHeaderLength' in self._values['cookie_settings']:
+                if self._values['cookie_settings']['maximumCookieHeaderLength'] == 'any':
+                    return 'any'
+                return int(self._values['cookie_settings']['maximumCookieHeaderLength'])
+
+    @property
+    def trust_xff(self):
+        if 'trust_xff' in self._values:
+            if self._values['trust_xff'] is None:
+                return None
+            return flatten_boolean(self._values['trust_xff'])
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'trustXff' in self._values['general']:
+                return flatten_boolean(self._values['general']['trustXff'])
+
+    @property
+    def custom_xff_headers(self):
+        if 'custom_xff_headers' in self._values:
+            if self._values['custom_xff_headers'] is None:
+                return None
+            return self._values['custom_xff_headers']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'customXffHeaders' in self._values['general']:
+                return self._values['general']['customXffHeaders']
+
+    @property
+    def allowed_response_codes(self):
+        if 'allowed_response_codes' in self._values:
+            if self._values['allowed_response_codes'] is None:
+                return None
+            return self._values['allowed_response_codes']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'allowedResponseCodes' in self._values['general']:
+                return self._values['general']['allowedResponseCodes']
+
+    @property
+    def learning_mode(self):
+        if 'policy_builder' in self._values:
+            if self._values['policy_builder'] is None:
+                return None
+            if 'learningMode' in self._values['policy_builder']:
+                return self._values['policy_builder']['learningMode']
+
+    @property
+    def disallowed_locations(self):
+        if 'geolocation_enforcement' in self._values:
+            if self._values['geolocation_enforcement'] is None:
+                return None
+            return self._values['geolocation_enforcement']['disallowedLocations']
+
+    @property
+    def disallowed_geolocations(self):
+        if 'disallowed_geolocations' in self._values:
+            if self._values['disallowed_geolocations'] is None:
+                return None
+            return self._values['disallowed_geolocations']
+
+    @property
+    def csrf_protection_enabled(self):
+        if 'csrf_protection' in self._values:
+            return flatten_boolean(self._values['csrf_protection']['enabled'])
+
+    @property
+    def csrf_protection_ssl_only(self):
+        if 'csrf_protection' in self._values:
+            if 'sslOnly' in self._values['csrf_protection']:
+                return flatten_boolean(self._values['csrf_protection']['sslOnly'])
+
+    @property
+    def csrf_protection_expiration_time_in_seconds(self):
+        if 'csrf_protection' in self._values:
+            if 'expirationTimeInSeconds' in self._values['csrf_protection']:
+                if self._values['csrf_protection']['expirationTimeInSeconds'] is None:
+                    return None
+                if self._values['csrf_protection']['expirationTimeInSeconds'] == 'disabled':
+                    return 'disabled'
+                return int(self._values['csrf_protection']['expirationTimeInSeconds'])
+
+    def format_csrf_collection(self, items):
+        result = list()
+        key_map = {
+            'requiredParameters': 'csrf_url_required_parameters',
+            'url': 'csrf_url',
+            'method': 'csrf_url_method',
+            'enforcementAction': 'csrf_url_enforcement_action',
+            'id': 'csrf_url_id',
+            'wildcardOrder': 'csrf_url_wildcard_order',
+            'parametersList': 'csrf_url_parameters_list'
+        }
+        for item in items:
+            self._remove_internal_keywords(item)
+            item.pop('lastUpdateMicros')
+            output = self._morph_keys(key_map, item)
+            result.append(output)
+        return result
+
+    @property
+    def csrf_urls(self):
+        if 'csrfUrls' in self._values:
+            if self._values['csrfUrls'] is None:
+                return None
+            return self._values['csrfUrls']
+        if 'csrf-urls' in self._values:
+            if self._values['csrf-urls'] is None:
+                return None
+            return self.format_csrf_collection(self._values['csrf-urls'])
+
+    @property
+    def protocol_independent(self):
+        return flatten_boolean(self._values['protocol_independent'])
+
+
+# TODO include: web-scraping,ip-intelligence,session-tracking,
+# TODO login-enforcement,data-guard,redirection-protection,vulnerability-assessment, parentPolicyReference
+
+
+class AsmPolicyFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(AsmPolicyFactManager, self).__init__(**kwargs)
+        self.want = AsmPolicyFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(asm_policy_facts=facts)
+        return result
+
+    def _exec_module(self):
+        if 'asm' not in self.provisioned_modules:
+            return []
+        manager = self.get_manager()
+        return manager._exec_module()
+
+    def get_manager(self):
+        if self.version_is_less_than_13():
+            return AsmPolicyFactManagerV12(**self.kwargs)
+        else:
+            return AsmPolicyFactManagerV13(**self.kwargs)
+
+    def version_is_less_than_13(self):
+        version = tmos_version(self.client)
+        if LooseVersion(version) < LooseVersion('13.0.0'):
+            return True
+        else:
+            return False
+
+    def read_facts(self):
+        results = []
+        collection = self.increment_read()
+        for resource in collection:
+            params = AsmPolicyFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 10
+        return result
+
+
+class AsmPolicyFactManagerV12(AsmPolicyFactManager):
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_collection_from_device(self, skip=0):
+        uri = "https://{0}:{1}/mgmt/tm/asm/policies".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+
+        to_expand = 'policy-builder,geolocation-enforcement,csrf-protection'
+        query = '?$top=10&$skip={0}&$expand={1}'.format(skip, to_expand)
+
+        resp = self.client.api.get(uri + query)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return None
+        return response['items']
+
+
+class AsmPolicyFactManagerV13(AsmPolicyFactManager):
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_collection_from_device(self, skip=0):
+        uri = "https://{0}:{1}/mgmt/tm/asm/policies".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        to_expand = 'general,signature-settings,header-settings,cookie-settings,antivirus,' \
+                    'policy-builder,csrf-protection,csrf-urls'
+        query = '?$top=10&$skip={0}&$expand={1}'.format(skip, to_expand)
+        resp = self.client.api.get(uri + query)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return None
+
+        return response['items']
 
 
 class ClientSslProfilesParameters(BaseParameters):
@@ -14125,6 +14832,7 @@ class ModuleManager(object):
         self.want = Parameters(params=self.module.params)
         self.managers = {
             'asm-policy-stats': AsmPolicyStatsFactManager,
+            'asm-policies': AsmPolicyFactManager,
             'client-ssl-profiles': ClientSslProfilesFactManager,
             'devices': DevicesFactManager,
             'device-groups': DeviceGroupsFactManager,
@@ -14320,6 +15028,7 @@ class ArgumentSpec(object):
                     'gtm-wide-ips',
 
                     # Non-meta choices
+                    'asm-policies',
                     'asm-policy-stats',
                     'client-ssl-profiles',
                     'devices',
@@ -14384,6 +15093,7 @@ class ArgumentSpec(object):
 
                     # Negations of non-meta-choices
                     '!asm-policy-stats',
+                    '!asm-policies',
                     '!client-ssl-profiles',
                     '!devices',
                     '!device-groups',
