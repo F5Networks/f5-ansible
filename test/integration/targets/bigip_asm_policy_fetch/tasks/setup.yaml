@@ -7,7 +7,6 @@
     - module-provisioning
 
 - name: Create blank ASM policy
-  bigip_asm_policy:
+  bigip_asm_policy_manage:
     name: "{{ policy }}"
     state: present
-  register: result
