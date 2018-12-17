@@ -164,5 +164,3 @@
 
 
 - import_tasks: teardown.yaml
-- import_tasks: issue-01030.yaml
-  tags: issue-01030
