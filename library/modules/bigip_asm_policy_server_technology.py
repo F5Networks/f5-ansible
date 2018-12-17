@@ -294,14 +294,12 @@ class ModuleManager(object):
             self.client.provider['server_port'],
             policy_id,
         )
-
         resp = self.client.api.get(uri)
 
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if 'items' in response and response['items'] != []:
             for st in response['items']:
                 if st['serverTechnologyReference']['link'] == server_link:
@@ -315,9 +313,8 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=name+eq+'{0}'+and+partition+eq+'{1}'&$select=name,id".format(
-            self.want.policy_name,
-            self.want.partition,
+        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,id".format(
+            self.want.policy_name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
 
@@ -341,19 +338,22 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-
-        resp = self.client.api.get(uri)
-
+        query = "?$filter=contains(serverTechnologyName,'{0}')".format(self.want.name)
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
+        if 'code' in response and response['code'] in [400, 409, 404]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
         if 'items' in response:
-            for st in response['items']:
-                if st['serverTechnologyName'] == self.want.name:
-                    link = st['selfLink']
-                    return link
+            link = response['items'][0]['selfLink']
+            return link
         return link
 
     def create_on_device(self):
