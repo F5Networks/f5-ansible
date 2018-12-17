@@ -4,10 +4,9 @@
   shell: find "{{ role_path }}/files/" -mindepth 1 -maxdepth 1 -print0 | xargs -0 rm -rf
 
 - name: Remove blank ASM policy
-  bigip_asm_policy:
+  bigip_asm_policy_manage:
     name: "{{ policy }}"
     state: absent
-  register: result
 
 - name: De-provision ASM
   bigip_provision:
