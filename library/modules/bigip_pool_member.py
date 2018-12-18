@@ -301,7 +301,7 @@ monitors:
   type: list
   sample: ['/Common/monitor1', '/Common/monitor2']
 '''
-import q
+
 import os
 import re
 
