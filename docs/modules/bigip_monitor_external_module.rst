@@ -366,11 +366,10 @@ Examples
     - name: Create an external monitor
       bigip_monitor_external:
         name: foo
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Create an external monitor with variables
@@ -380,11 +379,10 @@ Examples
         variables:
           var1: foo
           var2: bar
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Add a variable to an existing set
@@ -395,11 +393,10 @@ Examples
           var1: foo
           var2: bar
           cat: dog
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

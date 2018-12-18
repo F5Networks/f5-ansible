@@ -284,11 +284,10 @@ Examples
     - name: Create a traffic group
       bigip_traffic_group:
         name: foo
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

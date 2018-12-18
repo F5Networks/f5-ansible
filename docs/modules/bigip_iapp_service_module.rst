@@ -369,29 +369,32 @@ Examples
         name: foo-service
         template: f5.http
         parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Upgrade foo-service to v1.2.0rc4 of the f5.http template
       bigip_iapp_service:
         name: foo-service
         template: f5.http.v1.2.0rc4
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Configure a service using parameters in YAML
       bigip_iapp_service:
         name: tests
         template: web_frontends
+        password: admin
+        server: "{{ inventory_hostname }}"
+        server_port: "{{ bigip_port }}"
+        validate_certs: "{{ validate_certs }}"
         state: present
+        user: admin
         parameters:
           variables:
             - name: var__vs_address
@@ -400,18 +403,19 @@ Examples
               value: 2.2.2.1:80
             - name: pm__apache_servers_for_https
               value: 2.2.2.2:80
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
       delegate_to: localhost
 
     - name: Re-configure a service whose underlying iApp was updated in place
       bigip_iapp_service:
         name: tests
         template: web_frontends
+        password: admin
         force: yes
+        server: "{{ inventory_hostname }}"
+        server_port: "{{ bigip_port }}"
+        validate_certs: "{{ validate_certs }}"
         state: present
+        user: admin
         parameters:
           variables:
             - name: var__vs_address
@@ -420,20 +424,12 @@ Examples
               value: 2.2.2.1:80
             - name: pm__apache_servers_for_https
               value: 2.2.2.2:80
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
       delegate_to: localhost
 
     - name: Try to remove the iApp template before the associated Service is removed
       bigip_iapp_template:
         name: web_frontends
         state: absent
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
       register: result
       failed_when:
         - result is not success
@@ -443,11 +439,12 @@ Examples
       bigip_iapp_service:
         name: tests
         template: web_frontends
+        password: admin
+        server: "{{ inventory_hostname }}"
+        server_port: "{{ bigip_port }}"
+        validate_certs: "{{ validate_certs }}"
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
         parameters:
           variables:
             - name: var__vs_address
@@ -494,11 +491,10 @@ Examples
             name: data 1
           - persist: yes
             name: data 2
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

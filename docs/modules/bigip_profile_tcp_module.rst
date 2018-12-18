@@ -313,11 +313,10 @@ Examples
         parent: f5-tcp-progressive
         time_wait_recycle: no
         idle_timeout: 300
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

@@ -336,11 +336,10 @@ Examples
         managed: no
         device_username: admin
         device_password: secret
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Register a managed device, by name
@@ -349,11 +348,10 @@ Examples
         key: XXXX-XXXX-XXXX-XXXX-XXXX
         device: bigi1.foo.com
         managed: yes
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Register a managed device, by UUID
@@ -362,11 +360,10 @@ Examples
         key: XXXX-XXXX-XXXX-XXXX-XXXX
         device: 7141a063-7cf8-423f-9829-9d40599fa3e0
         managed: yes
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

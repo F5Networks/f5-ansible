@@ -293,11 +293,10 @@ Examples
         destinations:
           - hsl1
           - security-log-servers-logging
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

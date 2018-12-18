@@ -700,32 +700,20 @@ Examples
     
     - name: Create server "GTM_Server"
       bigip_gtm_server:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
         name: GTM_Server
         datacenter: /Common/New York
         server_type: bigip
         link_discovery: disabled
         virtual_server_discovery: disabled
         devices:
-          - name: server_1
-            address: 1.1.1.1
-          - name: server_2
-            address: 2.2.2.1
-            translation: 192.168.2.1
-          - name: server_2
-            address: 2.2.2.2
-          - name: server_3
-            addresses:
-              - address: 3.3.3.1
-              - address: 3.3.3.2
-          - name: server_4
-            addresses:
-              - address: 4.4.4.1
-                translation: 192.168.14.1
-              - address: 4.4.4.2
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+          - {'name': 'server_1', 'address': '1.1.1.1'}
+          - {'name': 'server_2', 'address': '2.2.2.1', 'translation':'192.168.2.1'}
+          - {'name': 'server_2', 'address': '2.2.2.2'}
+          - {'name': 'server_3', 'addresses': [{'address':'3.3.3.1'},{'address':'3.3.3.2'}]}
+          - {'name': 'server_4', 'addresses': [{'address':'4.4.4.1','translation':'192.168.14.1'}, {'address':'4.4.4.2'}]}
       delegate_to: localhost
 
     - name: Create server "GTM_Server" with expanded keys
@@ -755,10 +743,6 @@ Examples
               - address: 4.4.4.1
                 translation: 192.168.14.1
               - address: 4.4.4.2
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
       delegate_to: localhost
 
 

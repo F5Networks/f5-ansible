@@ -306,11 +306,10 @@ Examples
         description: Route to TACACS
         gateway: 10.10.10.10
         network: 11.11.11.0/24
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

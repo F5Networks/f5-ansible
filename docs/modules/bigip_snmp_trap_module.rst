@@ -337,10 +337,9 @@ Examples
         network: management
         port: 9000
         snmp_version: 1
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
+        server: lb.mydomain.com
+        user: admin
+        password: secret
       delegate_to: localhost
 
     - name: Create snmp v2 trap
@@ -351,10 +350,9 @@ Examples
         network: default
         port: 7000
         snmp_version: 2c
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
+        server: lb.mydomain.com
+        user: admin
+        password: secret
       delegate_to: localhost
 
 
