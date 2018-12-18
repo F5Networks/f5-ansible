@@ -457,3 +457,6 @@
 
 - import_tasks: issue-01091.yaml
   tags: issue-01091
+
+- import_tasks: issue-01094.yaml
+  tags: issue-01094
