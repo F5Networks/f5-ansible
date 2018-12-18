@@ -460,3 +460,6 @@
 
 - import_tasks: issue-01094.yaml
   tags: issue-01094
+
+- import_tasks: issue-01095.yaml
+  tags: issue-01095
