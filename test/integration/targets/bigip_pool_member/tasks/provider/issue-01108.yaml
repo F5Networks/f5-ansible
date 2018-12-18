@@ -1,0 +1,68 @@
+---
+
+- name: Issue 01108 - Create Pool
+  bigip_pool:
+    name: "TestPool-issue01108"
+    state: present
+    provider: "{{ provider }}"
+
+- name: Issue 01108 - Create Pool members
+  bigip_pool_member:
+    pool: "TestPool-issue01108"
+    fqdn_auto_populate: no
+    preserve_node: no
+    name: "{{ item.Name }}"
+    port: "{{ item.Port }}"
+    availability_requirements:
+      type: all
+    priority_group: 0
+    state: present
+    provider: "{{ provider }}"
+  with_items:
+    - { Name: Svr1.test.com, Address: 1.1.1.1, Port: 80 }
+    - { Name: Svr2.test.com, Address: 1.1.1.2, Port: 80 }
+  register: result
+
+- name: Issue 01108 - Create Pool members
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01108 - Create Pool members - Idempotent check
+  bigip_pool_member:
+    pool: "TestPool-issue01108"
+    fqdn_auto_populate: no
+    preserve_node: no
+    name: "{{ item.Name }}"
+    port: "{{ item.Port }}"
+    availability_requirements:
+      type: all
+    priority_group: 0
+    state: present
+    provider: "{{ provider }}"
+  with_items:
+    - { Name: Svr1.test.com, Address: 1.1.1.1, Port: 80 }
+    - { Name: Svr2.test.com, Address: 1.1.1.2, Port: 80 }
+  register: result
+
+- name: Issue 01108 - Create Pool members - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01108 - Remove pool
+  bigip_pool:
+    name: "TestPool-issue01108"
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01108 - Remove nodes
+  bigip_node:
+    name: "{{ item }}"
+    state: absent
+    provider: "{{ provider }}"
+  loop:
+      - Svr1.test.com
+      - Svr2.test.com
