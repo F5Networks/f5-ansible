@@ -29,7 +29,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -357,6 +357,18 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>up_interval</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the interval for the system to use to perform the health check when a resource is up.</div>
+                                                    <div>When <code>0</code>, specifies that the system uses the interval specified in <code>interval</code> to check the health of the resource.</div>
+                                                    <div>When any other number, enables specification of a different interval to use when checking the health of a resource that is up.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>user</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -432,7 +444,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -513,6 +525,17 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>up_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Interval for the system to use to perform the health check when a resource is up.</div>
+                                        <br/>
                                     </td>
             </tr>
                         </table>

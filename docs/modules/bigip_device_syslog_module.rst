@@ -589,7 +589,7 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Create a syslog config
       bigip_device_syslog:
         name: foo
         provider:
