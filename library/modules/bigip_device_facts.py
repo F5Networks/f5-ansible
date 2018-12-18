@@ -34,6 +34,7 @@ options:
       - profiles
       - asm-policy-stats
       - asm-policies
+      - asm-server-technologies
       - client-ssl-profiles
       - devices
       - device-groups
@@ -94,6 +95,7 @@ options:
       - "!profiles"
       - "!asm-policy-stats"
       - "!asm-policies"
+      - "!asm-server-technologies"
       - "!client-ssl-profiles"
       - "!devices"
       - "!device-groups"
@@ -464,6 +466,35 @@ asm_policies:
           returned: changed
           type: string
           sample: 1
+  sample: hash/dictionary of values
+asm-server-technologies:
+  description: Detailed facts for ASM server technologies present on device.
+  returned: When C(asm-server-technologies) is specified in C(gather_subset).
+  type: complex
+  contains:
+    id:
+      description:
+        - Displays the generated ID for the server technology resource.
+      returned: changed
+      type: string
+      sample: l0Ckxe-7yHsXp8U5tTgbFQ
+    server_technology_name:
+      description:
+        - Human friendly name of the server technology resource.
+      returned: changed
+      type: string
+      sample: Wordpress
+    server_technology_references:
+      description:
+        - List of dictionaries containing API self links of the associated technology resources.
+      returned: changed
+      type: complex
+      contains:
+        link:
+          description:
+            - A self link to an associated server technology.
+      type: string
+      sample: https://localhost/mgmt/tm/asm/server-technologies/NQG7CT02OBC2cQWbnP7T-A?ver=13.1.0"
   sample: hash/dictionary of values
 client_ssl_profiles:
   description: Client SSL Profile related facts.
@@ -6915,7 +6946,7 @@ class AsmPolicyFactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(asm_policy_facts=facts)
+        result = dict(asm_policies=facts)
         return result
 
     def _exec_module(self):
@@ -7029,6 +7060,80 @@ class AsmPolicyFactManagerV13(AsmPolicyFactManager):
             return None
 
         return response['items']
+
+
+class AsmServerTechnologyFactParameters(BaseParameters):
+    api_map = {
+        'serverTechnologyName': 'server_technology_name',
+        'serverTechnologyReferences': 'server_technology_references',
+    }
+
+    returnables = [
+        'id',
+        'server_technology_name',
+        'server_technology_references',
+    ]
+
+
+class AsmServerTechnologyFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(AsmServerTechnologyFactManager, self).__init__(**kwargs)
+        self.want = AsmServerTechnologyFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(asm_server_technologies=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        if 'asm' not in self.provisioned_modules:
+            return results
+        if self.version_is_less_than_13():
+            return results
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['server_technology_name'])
+        return results
+
+    def version_is_less_than_13(self):
+        version = tmos_version(self.client)
+        if LooseVersion(version) < LooseVersion('13.0.0'):
+            return True
+        else:
+            return False
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = AsmServerTechnologyFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/asm/server-technologies".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
 
 
 class ClientSslProfilesParameters(BaseParameters):
@@ -14833,6 +14938,7 @@ class ModuleManager(object):
         self.managers = {
             'asm-policy-stats': AsmPolicyStatsFactManager,
             'asm-policies': AsmPolicyFactManager,
+            'asm-server-technologies': AsmServerTechnologyFactManager,
             'client-ssl-profiles': ClientSslProfilesFactManager,
             'devices': DevicesFactManager,
             'device-groups': DeviceGroupsFactManager,
@@ -15030,6 +15136,7 @@ class ArgumentSpec(object):
                     # Non-meta choices
                     'asm-policies',
                     'asm-policy-stats',
+                    'asm-server-technologies',
                     'client-ssl-profiles',
                     'devices',
                     'device-groups',
@@ -15094,6 +15201,7 @@ class ArgumentSpec(object):
                     # Negations of non-meta-choices
                     '!asm-policy-stats',
                     '!asm-policies',
+                    '!asm-server-technologies',
                     '!client-ssl-profiles',
                     '!devices',
                     '!device-groups',

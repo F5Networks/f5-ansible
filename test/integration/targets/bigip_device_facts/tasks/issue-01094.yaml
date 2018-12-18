@@ -1,0 +1,26 @@
+---
+- name: Issue 01094 - Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
+- name: Issue 01094 - Select ASM server technology facts
+  bigip_device_facts:
+    include:
+      - asm-server-technologies
+  register: result
+
+- name: Issue 01094 - Assert Select ASM server technology facts
+  assert:
+    that:
+      - result is success
+      - result.asm_server_technologies | json_query("[?server_technology_name=='Django'].server_technology_name") | first == 'Django'
+
+- name: Issue 01094 - De-provision ASM
+  bigip_provision:
+    name: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

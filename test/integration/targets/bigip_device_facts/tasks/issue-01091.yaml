@@ -25,8 +25,8 @@
   assert:
     that:
       - result is success
-      - result.asm_policy_facts | json_query("[?name=='" + policy_name + "'].inspect_http_uploads") | first == "no"
-      - result.asm_policy_facts | json_query("[?name=='" + policy_name + "'].active") | first == "no"
+      - result.asm_policies | json_query("[?name=='" + policy_name + "'].inspect_http_uploads") | first == "no"
+      - result.asm_policies | json_query("[?name=='" + policy_name + "'].active") | first == "no"
 
 - name: Issue 01091 - Activate ASM policy
   bigip_asm_policy_manage:
@@ -45,7 +45,7 @@
   assert:
     that:
       - result is success
-      - result.asm_policy_facts | json_query("[?name=='" + policy_name + "'].active") | first == "yes"
+      - result.asm_policies | json_query("[?name=='" + policy_name + "'].active") | first == "yes"
 
 - name: Issue 01091 - Remove ASM policy
   bigip_asm_policy_manage:
