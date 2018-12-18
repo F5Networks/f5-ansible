@@ -1,4 +1,4 @@
-:source: _bigip_asm_policy.py
+:source: bigip_asm_policy.py
 
 :orphan:
 
@@ -13,14 +13,6 @@ bigip_asm_policy - Manage BIG-IP ASM policies
 .. contents::
    :local:
    :depth: 2
-
-DEPRECATED
-----------
-:Removed in Ansible: version: 2.12
-:Why: The bigip_asm_policy module has been split into three new modules to handle import, export and general policy management. This will allow scalability of the asm policy management as well as ease of maintenance. Additionally to further reduce the burden of having multiple smaller module F5 has created asm_policy role in Ansible Galaxy for a more declarative way of ASM policy management.
-
-:Alternative: bigip_asm_policy_manage
-
 
 
 Synopsis
@@ -526,7 +518,11 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 Status
 ------
 
-This module is **deprecated** and will be removed in version 2.12. For more information see `DEPRECATED`_.
+
+
+This module is **preview** which means that it is not guaranteed to have a backwards compatible interface.
+
+
 
 
 Author

@@ -353,7 +353,7 @@ Examples
       bigip_asm_policy_fetch:
         name: foobar
         file: export_foo
-        dest: /root/download
+        dst: /root/download
         binary: yes
         provider:
           password: secret
@@ -376,7 +376,7 @@ Examples
       bigip_asm_policy_fetch:
         name: foobar
         file: export_foo
-        dest: /root/download
+        dst: /root/download
         provider:
           password: secret
           server: lb.mydomain.com
@@ -387,7 +387,7 @@ Examples
       bigip_asm_policy_fetch:
         name: foobar
         file: export_foo.xml
-        dest: /root/download/
+        dst: /root/download/
         compact: yes
         provider:
           password: secret
@@ -398,7 +398,7 @@ Examples
     - name: Export policy in binary format, autogenerate name
       bigip_asm_policy_fetch:
         name: foobar
-        dest: /root/download/
+        dst: /root/download/
         binary: yes
         provider:
           password: secret
@@ -458,7 +458,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>dest</b>
+                    <b>dst</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>

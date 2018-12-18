@@ -244,10 +244,9 @@ Examples
     - name: Set the hostname of the BIG-IP
       bigip_hostname:
         hostname: bigip.localhost.localdomain
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        password: secret
+        server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

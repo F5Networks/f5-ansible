@@ -277,11 +277,10 @@ Examples
     - name: Create a registration key (regkey) pool to hold individual device licenses
       bigiq_regkey_pool:
         name: foo-pool
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

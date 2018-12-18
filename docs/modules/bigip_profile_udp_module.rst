@@ -312,11 +312,10 @@ Examples
         parent: udp
         idle_timeout: 300
         datagram_load_balancing: no
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

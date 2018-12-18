@@ -379,22 +379,20 @@ Examples
             idle_timeout: 200
             destination_ports:
               - 21
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          password: secret
-          server: lb.mydomain.com
-          user: admin
+        user: admin
       delegate_to: localhost
 
     - name: Remove a timer policy and all its associated rules
       bigip_timer_policy:
         name: timer1
         description: My timer policy
+        password: secret
+        server: lb.mydomain.com
         state: absent
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

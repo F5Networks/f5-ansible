@@ -429,31 +429,28 @@ Examples
         name: my_monitor
         ip: 1.1.1.1
         port: 80
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Remove FirePass Monitor
       bigip_gtm_monitor_firepass:
         name: my_monitor
         state: absent
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        server: lb.mydomain.com
+        user: admin
+        password: secret
       delegate_to: localhost
 
     - name: Add FirePass monitor for all addresses, port 514
       bigip_gtm_monitor_firepass:
         name: my_monitor
+        server: lb.mydomain.com
+        user: admin
         port: 514
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        password: secret
       delegate_to: localhost
 
 

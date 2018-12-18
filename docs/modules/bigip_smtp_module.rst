@@ -384,11 +384,10 @@ Examples
         smtp_server_password: mail-secret
         local_host_name: smtp.mydomain.com
         from_address: no-reply@mydomain.com
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 
