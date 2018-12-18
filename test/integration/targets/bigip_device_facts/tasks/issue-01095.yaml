@@ -1,0 +1,26 @@
+---
+- name: Issue 01095 - Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
+- name: Issue 01095 - Select ASM signature sets facts
+  bigip_device_facts:
+    include:
+      - asm-signature-sets
+  register: result
+
+- name: Issue 01095 - Assert Select ASM signature sets facts
+  assert:
+    that:
+      - result is success
+      - result.asm_signature_sets | json_query("[?name=='Java Servlets/JSP Signatures'].type") | first == 'filter-based'
+
+- name: Issue 01095 - De-provision ASM
+  bigip_provision:
+    name: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
