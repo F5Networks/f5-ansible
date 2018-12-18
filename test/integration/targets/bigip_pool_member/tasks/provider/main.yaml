@@ -1,7 +1,7 @@
 ---
 
-#- import_tasks: issue-00507.yaml
-#  tags: issue-00507
+- import_tasks: issue-00507.yaml
+  tags: issue-00507
 
 - import_tasks: issue-00703.yaml
   tags: issue-00703
@@ -23,3 +23,6 @@
 
 - import_tasks: issue-01027.yaml
   tags: issue-01027
+
+- import_tasks: issue-01108.yaml
+  tags: issue-01108
