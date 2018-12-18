@@ -313,10 +313,6 @@ Examples
       bigip_policy:
         name: Policy-Foo
         state: present
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Add a rule to the new policy - Immediately published
@@ -335,11 +331,6 @@ Examples
           - forward: yes
             select: yes
             pool: pool-svrs
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
 
     - name: Add multiple rules to the new policy - Added in the order they are specified
       bigip_policy_rule:
@@ -347,11 +338,6 @@ Examples
         name: "{{ item.name }}"
         conditions: "{{ item.conditions }}"
         actions: "{{ item.actions }}"
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
       loop:
         - name: rule1
           actions:
@@ -376,11 +362,6 @@ Examples
           - rule1
           - rule2
           - rule3
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
 
     - name: Create policy specify default rules - Left in a draft
       bigip_policy:
@@ -390,11 +371,6 @@ Examples
           - rule1
           - rule2
           - rule3
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
 
 
 

@@ -757,29 +757,30 @@ Examples
     
     - name: Modify Port of the Virtual Server
       bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
         state: present
         partition: Common
         name: my-virtual-server
         port: 8080
-        provider:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Delete virtual server
       bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
         state: absent
         partition: Common
         name: my-virtual-server
-        provider:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Add virtual server
       bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
         state: present
         partition: Common
         name: my-virtual-server
@@ -802,10 +803,6 @@ Examples
           - ltm-policy-3
         enabled_vlans:
           - /Common/vlan2
-        provider:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Add FastL4 virtual server
@@ -816,108 +813,95 @@ Examples
         profiles:
           - fastL4
         state: present
-        provider:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
-      delegate_to: localhost
 
     - name: Add iRules to the Virtual Server
       bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
         name: my-virtual-server
         irules:
           - irule1
           - irule2
-        provider:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Remove one iRule from the Virtual Server
       bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
         name: my-virtual-server
         irules:
           - irule2
-        provider:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Remove all iRules from the Virtual Server
       bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
         name: my-virtual-server
         irules: ""
-        provider:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Remove pool from the Virtual Server
       bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
         name: my-virtual-server
         pool: ""
-        provider:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Add metadata to virtual
       bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
         state: absent
         name: my-pool
         partition: Common
         metadata:
           ansible: 2.4
           updated_at: 2017-12-20T17:50:46Z
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Add virtual with two profiles
       bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
         state: absent
         name: my-pool
         partition: Common
         profiles:
           - http
           - tcp
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Remove HTTP profile from previous virtual
       bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
         state: absent
         name: my-pool
         partition: Common
         profiles:
           - tcp
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Add the HTTP profile back to the previous virtual
       bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
         state: absent
         name: my-pool
         partition: Common
         profiles:
           - http
           - tcp
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
 

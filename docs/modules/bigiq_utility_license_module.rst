@@ -283,21 +283,19 @@ Examples
       bigiq_utility_license:
         license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
         accept_eula: yes
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Remove a utility license from the system
       bigiq_utility_license:
         license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+        password: secret
+        server: lb.mydomain.com
         state: absent
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

@@ -560,11 +560,10 @@ Examples
         query_type: aaaa
         up_interval: 5
         adaptive: no
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 

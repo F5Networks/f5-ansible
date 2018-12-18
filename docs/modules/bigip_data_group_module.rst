@@ -28,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
@@ -48,16 +48,6 @@ Parameters
                                                                 <td>
                                                                         <div>When <code>yes</code>, will ensure that the remote data group file is deleted.</div>
                                                     <div>This parameter is only relevant when <code>state</code> is <code>absent</code> and <code>internal</code> is <code>no</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>description</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The description of the monitor.</div>
                                                                                 </td>
             </tr>
                                 <tr>
