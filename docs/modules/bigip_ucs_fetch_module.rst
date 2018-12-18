@@ -321,11 +321,12 @@ Examples
     
     - name: Download a new UCS
       bigip_ucs_fetch:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
         src: cs_backup.ucs
         dest: /tmp/cs_backup.ucs
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
 
