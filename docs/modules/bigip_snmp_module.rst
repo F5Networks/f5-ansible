@@ -309,19 +309,19 @@ Examples
     - name: Set snmp contact
       bigip_snmp:
         contact: Joe User
-        provider:
-          password: secret
-          server: lb.mydomain.com
-          user: admin
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        validate_certs: false
       delegate_to: localhost
 
     - name: Set snmp location
       bigip_snmp:
         location: US West 1
-        provider:
-          password: secret
-          server: lb.mydomain.com
-          user: admin
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 

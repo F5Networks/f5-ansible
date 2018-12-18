@@ -397,24 +397,22 @@ Examples
       bigip_routedomain:
         name: foo
         id: 1234
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
     - name: Set VLANs on the route domain
       bigip_routedomain:
         name: bar
+        password: secret
+        server: lb.mydomain.com
         state: present
+        user: admin
         vlans:
           - net1
           - foo
-        provider:
-          password: secret
-          server: lb.mydomain.com
-          user: admin
       delegate_to: localhost
 
 

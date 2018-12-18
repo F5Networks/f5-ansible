@@ -373,21 +373,19 @@ Examples
       bigip_monitor_udp:
         state: present
         ip: 10.10.10.10
+        server: lb.mydomain.com
+        user: admin
+        password: secret
         name: my_udp_monitor
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
     - name: Remove UDP Monitor
       bigip_monitor_udp:
         state: absent
+        server: lb.mydomain.com
+        user: admin
+        password: secret
         name: my_udp_monitor
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
       delegate_to: localhost
 
 

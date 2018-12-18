@@ -276,11 +276,10 @@ Examples
         synchronization: yes
         synchronization_group_name: my-group
         synchronize_zone_files: yes
+        password: secret
+        server: lb.mydomain.com
         state: present
-        provider:
-          user: admin
-          password: secret
-          server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 
