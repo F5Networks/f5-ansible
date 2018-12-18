@@ -304,10 +304,11 @@ Examples
         port_misuse_policy: misuse1
         timer_policy_enabled: yes
         port_misuse_policy_enabled: yes
-        password: secret
-        server: lb.mydomain.com
         state: present
-        user: admin
+        provider:
+          user: admin
+          password: secret
+          server: lb.mydomain.com
       delegate_to: localhost
 
 
