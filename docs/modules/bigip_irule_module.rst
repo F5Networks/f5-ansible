@@ -305,21 +305,23 @@ Examples
         content: "{{ lookup('template', 'irule.tcl') }}"
         module: ltm
         name: MyiRule
-        password: secret
-        server: lb.mydomain.com
         state: present
-        user: admin
+        provider:
+          user: admin
+          password: secret
+          server: lb.mydomain.com
       delegate_to: localhost
 
     - name: Add the iRule contained in static file irule.tcl to the LTM module
       bigip_irule:
         module: ltm
         name: MyiRule
-        password: secret
-        server: lb.mydomain.com
         src: irule.tcl
         state: present
-        user: admin
+        provider:
+          user: admin
+          password: secret
+          server: lb.mydomain.com
       delegate_to: localhost
 
 

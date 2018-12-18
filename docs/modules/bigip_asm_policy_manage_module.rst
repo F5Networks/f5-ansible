@@ -1,14 +1,14 @@
-:source: bigip_management_route.py
+:source: bigip_asm_policy_manage.py
 
 :orphan:
 
-.. _bigip_management_route_module:
+.. _bigip_asm_policy_manage_module:
 
 
-bigip_management_route - Manage system management routes on a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_asm_policy_manage - Manage BIG-IP ASM policies
+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_management_route - Manage system management routes on a BIG-IP
 
 Synopsis
 --------
-- Configures route settings for the management interface of a BIG-IP.
+- Manage BIG-IP ASM policies, create from templates and manage global policy settings.
 
 
 
@@ -28,30 +28,24 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>description</b>
+                    <b>active</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Description of the management route.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>gateway</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies that the system forwards packets to the destination through the gateway with the specified IP address.</div>
+                                                                        <div>If <code>yes</code> will apply and activate existing inactive policy. If <code>no</code>, it will deactivate existing active policy. Generally should be <code>yes</code> only in cases where you want to activate new or existing policy.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -61,20 +55,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the management route.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>network</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The subnet and netmask to be used for the route.</div>
-                                                    <div>To specify that the route is the default route for the system, provide the value <code>default</code>.</div>
-                                                    <div>Only one <code>default</code> entry is allowed.</div>
-                                                    <div>This parameter cannot be changed after it is set. Therefore, if you do need to change it, it is required that you delete and create a new route.</div>
+                                                                        <div>The ASM policy to manage or create.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -251,8 +232,58 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
-                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
+                                                                        <div>When <code>state</code> is <code>present</code>, and <code>template</code> parameter is provided, new ASM policy is created from template with the given <code>name</code>.</div>
+                                                    <div>When <code>state</code> is present and no <code>template</code> parameter is provided new blank ASM policy is created with the given <code>name</code>.</div>
+                                                    <div>When <code>state</code> is <code>absent</code>, ensures that the policy is removed, even if it is currently active.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>template</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>ActiveSync v1.0 v2.0 (http)</li>
+                                                                                                                                                                                                <li>ActiveSync v1.0 v2.0 (https)</li>
+                                                                                                                                                                                                <li>Comprehensive</li>
+                                                                                                                                                                                                <li>Drupal</li>
+                                                                                                                                                                                                <li>Fundamental</li>
+                                                                                                                                                                                                <li>Joomla</li>
+                                                                                                                                                                                                <li>LotusDomino 6.5 (http)</li>
+                                                                                                                                                                                                <li>LotusDomino 6.5 (https)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2003 (http)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2003 (https)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2003 with ActiveSync (http)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2003 with ActiveSync (https)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2007 (http)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2007 (https)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2007 with ActiveSync (http)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2007 with ActiveSync (https)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2010 (http)</li>
+                                                                                                                                                                                                <li>OWA Exchange 2010 (https)</li>
+                                                                                                                                                                                                <li>Oracle 10g Portal (http)</li>
+                                                                                                                                                                                                <li>Oracle 10g Portal (https)</li>
+                                                                                                                                                                                                <li>Oracle Applications 11i (http)</li>
+                                                                                                                                                                                                <li>Oracle Applications 11i (https)</li>
+                                                                                                                                                                                                <li>PeopleSoft Portal 9 (http)</li>
+                                                                                                                                                                                                <li>PeopleSoft Portal 9 (https)</li>
+                                                                                                                                                                                                <li>Rapid Deployment Policy</li>
+                                                                                                                                                                                                <li>SAP NetWeaver 7 (http)</li>
+                                                                                                                                                                                                <li>SAP NetWeaver 7 (https)</li>
+                                                                                                                                                                                                <li>SharePoint 2003 (http)</li>
+                                                                                                                                                                                                <li>SharePoint 2003 (https)</li>
+                                                                                                                                                                                                <li>SharePoint 2007 (http)</li>
+                                                                                                                                                                                                <li>SharePoint 2007 (https)</li>
+                                                                                                                                                                                                <li>SharePoint 2010 (http)</li>
+                                                                                                                                                                                                <li>SharePoint 2010 (https)</li>
+                                                                                                                                                                                                <li>Vulnerability Assessment Baseline</li>
+                                                                                                                                                                                                <li>Wordpress</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>An ASM policy built-in template. If the template does not exist we will raise an error.</div>
+                                                    <div>Once the policy has been created, this value cannot change.</div>
+                                                    <div>The <code>Comprehensive</code>, <code>Drupal</code>, <code>Fundamental</code>, <code>Joomla</code>, <code>Vulnerability Assessment Baseline</code>, and <code>Wordpress</code> templates are only available on BIG-IP versions &gt;= 13.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -300,17 +331,57 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a management route
-      bigip_management_route:
-        name: tacacs
-        description: Route to TACACS
-        gateway: 10.10.10.10
-        network: 11.11.11.0/24
+    - name: Create ASM policy from template
+      bigip_asm_policy:
+        name: new_sharepoint_policy
+        template: SharePoint 2007 (http)
         state: present
         provider:
+          server: lb.mydomain.com
           user: admin
           password: secret
+      delegate_to: localhost
+
+    - name: Create blank ASM policy
+      bigip_asm_policy:
+        name: new_blank_policy
+        state: present
+        provider:
           server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
+    - name: Create blank ASM policy and activate
+      bigip_asm_policy:
+        name: new_blank_policy
+        active: yes
+        state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
+    - name: Activate ASM policy
+      bigip_asm_policy:
+        name: inactive_policy
+        active: yes
+        state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
+    - name: Deactivate ASM policy
+      bigip_asm_policy_manage:
+        name: active_policy
+        state: present
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
 
@@ -323,48 +394,61 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                        <tr>
+                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <b>active</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new description of the management route.</div>
+                                            <div>Set when activating/deactivating ASM policy</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Route to TACACS</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>gateway</b>
+                    <b>name</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new gateway of the management route.</div>
+                                            <div>Name of the ASM policy to be managed/created</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.10.10.10</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Asm_APP1_Transparent</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>network</b>
+                    <b>state</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new network to use for the management route.</div>
+                                            <div>Action performed on the target device.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">default</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">absent</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>template</b>
+                    <br/><div style="font-size: small; color: red">string</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Name of the built-in ASM policy template</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">OWA Exchange 2007 (https)</div>
                                     </td>
             </tr>
                         </table>
@@ -384,6 +468,5 @@ This module is **preview** which means that it is not guaranteed to have a backw
 Author
 ~~~~~~
 
-- Tim Rupp (@caphrim007)
 - Wojciech Wypior (@wojtek0806)
 
