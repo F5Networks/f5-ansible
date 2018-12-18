@@ -1,14 +1,14 @@
-:source: bigip_management_route.py
+:source: bigip_asm_policy_server_technology.py
 
 :orphan:
 
-.. _bigip_management_route_module:
+.. _bigip_asm_policy_server_technology_module:
 
 
-bigip_management_route - Manage system management routes on a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_asm_policy_server_technology - Manages Server Technology on ASM policy
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.6
+.. versionadded:: 2.8
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_management_route - Manage system management routes on a BIG-IP
 
 Synopsis
 --------
-- Configures route settings for the management interface of a BIG-IP.
+- Manages Server Technology on ASM policy.
 
 
 
@@ -28,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -36,45 +36,55 @@ Parameters
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>description</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Description of the management route.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>gateway</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies that the system forwards packets to the destination through the gateway with the specified IP address.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>jQuery</li>
+                                                                                                                                                                                                <li>Java Servlets/JSP</li>
+                                                                                                                                                                                                <li>ASP</li>
+                                                                                                                                                                                                <li>WebDAV</li>
+                                                                                                                                                                                                <li>IIS</li>
+                                                                                                                                                                                                <li>Front Page Server Extensions (FPSE)</li>
+                                                                                                                                                                                                <li>ASP.NET</li>
+                                                                                                                                                                                                <li>Microsoft Windows</li>
+                                                                                                                                                                                                <li>Unix/Linux</li>
+                                                                                                                                                                                                <li>Macromedia ColdFusion</li>
+                                                                                                                                                                                                <li>WordPress</li>
+                                                                                                                                                                                                <li>Apache Tomcat</li>
+                                                                                                                                                                                                <li>Apache/NCSA HTTP Server</li>
+                                                                                                                                                                                                <li>Outlook Web Access</li>
+                                                                                                                                                                                                <li>PHP</li>
+                                                                                                                                                                                                <li>Microsoft SQL Server</li>
+                                                                                                                                                                                                <li>Oracle</li>
+                                                                                                                                                                                                <li>MySQL</li>
+                                                                                                                                                                                                <li>Lotus Domino</li>
+                                                                                                                                                                                                <li>BEA Systems WebLogic Server</li>
+                                                                                                                                                                                                <li>Macromedia JRun</li>
+                                                                                                                                                                                                <li>Novell</li>
+                                                                                                                                                                                                <li>Cisco</li>
+                                                                                                                                                                                                <li>SSI (Server Side Includes)</li>
+                                                                                                                                                                                                <li>Proxy Servers</li>
+                                                                                                                                                                                                <li>CGI</li>
+                                                                                                                                                                                                <li>Sybase/ASE</li>
+                                                                                                                                                                                                <li>IBM DB2</li>
+                                                                                                                                                                                                <li>PostgreSQL</li>
+                                                                                                                                                                                                <li>XML</li>
+                                                                                                                                                                                                <li>Apache Struts</li>
+                                                                                                                                                                                                <li>Elasticsearch</li>
+                                                                                                                                                                                                <li>JBoss</li>
+                                                                                                                                                                                                <li>Citrix</li>
+                                                                                                                                                                                                <li>Node.js</li>
+                                                                                                                                                                                                <li>Django</li>
+                                                                                                                                                                                                <li>MongoDB</li>
+                                                                                                                                                                                                <li>Ruby</li>
+                                                                                                                                                                                                <li>JavaServer Faces (JSF)</li>
+                                                                                                                                                                                                <li>Joomla</li>
+                                                                                                                                                                                                <li>Jetty</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the management route.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>network</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The subnet and netmask to be used for the route.</div>
-                                                    <div>To specify that the route is the default route for the system, provide the value <code>default</code>.</div>
-                                                    <div>Only one <code>default</code> entry is allowed.</div>
-                                                    <div>This parameter cannot be changed after it is set. Therefore, if you do need to change it, it is required that you delete and create a new route.</div>
+                                                                        <div>Specifies the name of the server technology to apply/remove to the ASM policy.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -85,7 +95,7 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
-                                                                        <div>Device partition to manage resources on.</div>
+                                                                        <div>This parameter is only used when identifying ASM policy.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -99,6 +109,16 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>policy_name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of an existing ASM policy to add or remove server technology.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -289,6 +309,8 @@ Notes
 -----
 
 .. note::
+    - This module is primarily used as a component of configuring ASM policy in Ansible Galaxy ASM Policy Role.
+    - Requires BIG-IP >= 13.0.0
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
@@ -300,17 +322,24 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a management route
-      bigip_management_route:
-        name: tacacs
-        description: Route to TACACS
-        gateway: 10.10.10.10
-        network: 11.11.11.0/24
-        state: present
+    - name: Add Server Technology to ASM Policy
+      bigip_asm_policy_server_technology:
+        name: Joomla
+        policy_name: FooPolicy
         provider:
-          user: admin
           password: secret
           server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+    - name: Remove Server Technology from ASM Policy
+      bigip_asm_policy_server_technology:
+        name: Joomla
+        policy_name: FooPolicy
+        state: absent
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
 
@@ -323,48 +352,35 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>description</b>
+                    <b>name</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new description of the management route.</div>
+                                            <div>The name of Server Technology added/removed on ASM policy</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Route to TACACS</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Joomla</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>gateway</b>
+                    <b>policy_name</b>
                     <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new gateway of the management route.</div>
+                                            <div>The name of the ASM policy</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.10.10.10</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>network</b>
-                    <br/><div style="font-size: small; color: red">string</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new network to use for the management route.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">default</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">FooPolicy</div>
                                     </td>
             </tr>
                         </table>
@@ -384,6 +400,5 @@ This module is **preview** which means that it is not guaranteed to have a backw
 Author
 ~~~~~~
 
-- Tim Rupp (@caphrim007)
 - Wojciech Wypior (@wojtek0806)
 
