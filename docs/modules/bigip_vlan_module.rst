@@ -121,6 +121,7 @@ Parameters
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li>reboot</li>
                                                                                                                                                                                                 <li>restart-all</li>
+                                                                                                                                                                                                <li>failover</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
