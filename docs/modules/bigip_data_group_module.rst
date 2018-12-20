@@ -439,7 +439,7 @@ Examples
             value: ""
           - key: cactus
             value: ""
-        type: string
+        type: str
         provider:
           password: secret
           server: lb.mydomain.com
