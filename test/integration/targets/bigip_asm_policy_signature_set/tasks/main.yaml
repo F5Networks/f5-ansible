@@ -1,0 +1,120 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Add OWA Signature Set to ASM Policy
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_1 }}"
+    policy_name: "{{ policy }}"
+  register: result
+
+- name: Assert Add OWA Signature Set to ASM Policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add OWA Signature Set to ASM Policy - Idempotent check
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_1 }}"
+    policy_name: "{{ policy }}"
+  register: result
+
+- name: Assert Add OWA Signature Set to ASM Policy - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change settings in OWA Signature Set on ASM Policy
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_1 }}"
+    policy_name: "{{ policy }}"
+    block: no
+    learn: yes
+  register: result
+
+- name: Assert Change settings in OWA Signature Set on ASM Policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change settings in OWA Signature Set on ASM Policy - Idempotent check
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_1 }}"
+    policy_name: "{{ policy }}"
+    block: no
+    learn: yes
+  register: result
+
+- name: Assert Change settings in OWA Signature Set on ASM Policy - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add WebSphere Signature Set to ASM Policy with custom settings
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_2 }}"
+    policy_name: "{{ policy }}"
+    block: no
+    learn: yes
+    alarm: no
+  register: result
+
+- name: Assert Add WebSphere Signature Set to ASM Policy with custom settings
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add WebSphere Signature Set to ASM Policy with custom settings - Idempotent check
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_2 }}"
+    policy_name: "{{ policy }}"
+    block: no
+    learn: yes
+    alarm: no
+  register: result
+
+- name: Assert Add WebSphere Signature Set to ASM Policy with custom settings - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove OWA Signature Set from ASM Policy
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_1 }}"
+    policy_name: "{{ policy }}"
+    state: absent
+  register: result
+
+- name: Assert Remove OWA Signature Set from ASM Policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove OWA Signature Set from ASM Policy - Idempotent check
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_1 }}"
+    policy_name: "{{ policy }}"
+    state: absent
+  register: result
+
+- name: Assert Remove OWA Signature Set from ASM Policy - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add Non-Existent Signature Set to ASM Policy - Expect Failure
+  bigip_asm_policy_signature_set:
+    name: "{{ ss_3 }}"
+    policy_name: "{{ policy }}"
+  register: result
+  failed_when: "'The specified signature FooBar set does not exist.' not in result.msg"
+
+- import_tasks: teardown.yaml

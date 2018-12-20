@@ -1,0 +1,12 @@
+---
+
+- name: Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
+- name: Create ASM policy
+  bigip_asm_policy_manage:
+    name: "{{ policy }}"
+    state: present
