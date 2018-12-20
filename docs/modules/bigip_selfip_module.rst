@@ -456,7 +456,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <tr>
                                 <td colspan="1">
                     <b>address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -482,7 +482,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>name</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>created</td>
                 <td>
@@ -495,7 +495,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>netmask</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -508,7 +508,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>traffic_group</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -521,7 +521,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>vlan</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>

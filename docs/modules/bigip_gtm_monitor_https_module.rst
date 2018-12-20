@@ -538,7 +538,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <tr>
                                 <td colspan="1">
                     <b>cipher_list</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -551,7 +551,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>client_cert</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -564,7 +564,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>client_key</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -616,7 +616,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>ip</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -629,7 +629,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>parent</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -642,7 +642,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>port</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -668,7 +668,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>receive</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -692,7 +692,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>send</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>

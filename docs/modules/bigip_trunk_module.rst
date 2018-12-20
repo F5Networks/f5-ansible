@@ -412,7 +412,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <tr>
                                 <td colspan="1">
                     <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -425,7 +425,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>frame_distribution_hash</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -464,7 +464,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>lacp_mode</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -477,7 +477,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>lacp_timeout</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -490,7 +490,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>link_selection_policy</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -503,7 +503,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>qinq_ethertype</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>

@@ -369,7 +369,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <tr>
                                 <td colspan="1">
                     <b>assigned_role</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -382,7 +382,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>attribute_string</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -408,7 +408,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>partition_access</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -432,7 +432,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>terminal_access</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>

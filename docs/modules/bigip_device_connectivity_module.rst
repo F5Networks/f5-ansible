@@ -374,7 +374,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>cluster_mirroring</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -387,7 +387,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>config_sync_ip</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -411,7 +411,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>mirror_primary_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -424,7 +424,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>mirror_secondary_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -437,7 +437,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>multicast_address</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -450,7 +450,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>multicast_interface</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -463,7 +463,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>multicast_port</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
