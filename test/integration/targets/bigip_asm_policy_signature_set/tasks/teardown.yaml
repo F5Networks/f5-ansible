@@ -1,0 +1,13 @@
+---
+- name: Remove Policy
+  bigip_asm_policy_manage:
+    name: "{{ policy }}"
+    state: absent
+
+- name: Deprovision ASM
+  bigip_provision:
+    module: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
