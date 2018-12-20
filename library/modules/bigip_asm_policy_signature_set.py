@@ -155,8 +155,8 @@ name:
   returned: changed
   type: str
   sample: Cisco Signatures
-alarm: Specifies whether the security policy logs the request data in the Statistics screen,
-  description:
+alarm:
+  description: Specifies whether the security policy logs the request data in the Statistics screen
   returned: changed
   type: bool
   sample: yes
@@ -166,7 +166,7 @@ block:
   type: bool
   sample: no
 learn:
-  description: Specifies if the policy learns all requests that match a signature that is included in the signature set.
+  description: Specifies if the policy learns all requests that match a signature that is included in the signature set
   returned: changed
   type: bool
   sample: yes
