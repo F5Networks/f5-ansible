@@ -546,7 +546,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
                     <b>type</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -560,7 +560,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
                     <b>pool</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -588,7 +588,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
                     <b>type</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
@@ -616,7 +616,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <tr>
                                 <td colspan="2">
                     <b>description</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
