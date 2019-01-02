@@ -1,0 +1,48 @@
+- name: Export APM access profile
+  bigip_apm_policy_fetch:
+    name: "{{ policy }}"
+    file: "{{ file1 }}"
+    dest: "{{ role_path }}/files/"
+  register: result
+
+- name: Assert Export APM access profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Export APM access profile, force no - Expect Failure
+  bigip_apm_policy_fetch:
+    name: "{{ policy }}"
+    file: "{{ file1 }}"
+    dest: "{{ role_path }}/files/"
+    force: no
+  register: result
+  failed_when: "'already exists' not in result.msg"
+
+
+- name: Export APM access policy
+  bigip_apm_policy_fetch:
+    name: "{{ policy }}"
+    file: "{{ file2 }}"
+    dest: "{{ role_path }}/files/"
+    type: access_policy
+  register: result
+
+- name: Assert Export APM access policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Export APM access profile, autogenerate name
+  bigip_apm_policy_fetch:
+    name: "{{ policy }}"
+    dest: "{{ role_path }}/files/"
+  register: result
+
+- name: Assert Export APM access profile, autogenerate name
+  assert:
+    that:
+      - result is success
+      - result is changed

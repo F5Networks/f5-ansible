@@ -1,0 +1,6 @@
+---
+
+policy: new_blank_policy
+file1: "foobar.tar.gz"
+file2: "foobar2.tar.gz"
+
