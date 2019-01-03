@@ -1,0 +1,15 @@
+---
+
+- name: Delete APM Policies and Profiles
+  bigip_command:
+    commands:
+      - tmsh delete apm profile access all
+      - tmsh delete apm policy access-policy all
+
+- name: De-provision APM
+  bigip_provision:
+    name: apm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
