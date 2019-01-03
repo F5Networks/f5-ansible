@@ -1,0 +1,75 @@
+---
+
+- name: Import APM access profile
+  bigip_apm_policy_import:
+    name: foo-profile
+    source: "{{ role_path }}/files/v14_1_profile.tar.gz"
+  register: result
+
+- name: Assert Import APM access profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import APM access profile - Idempotent check
+  bigip_apm_policy_import:
+    name: foo-profile
+    source: "{{ role_path }}/files/v14_1_profile.tar.gz"
+  register: result
+
+- name: Assert Import APM access profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Import APM access profile, force yes
+  bigip_apm_policy_import:
+    name: foo-profile
+    source: "{{ role_path }}/files/v14_1_profile.tar.gz"
+    force: yes
+  register: result
+
+- name: Assert Import APM access profile, force yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import APM access policy
+  bigip_apm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v14_1_policy.tar.gz"
+  register: result
+
+- name: Assert Import APM access policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import APM access policy - Idempotent check
+  bigip_apm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v14_1_policy.tar.gz"
+  register: result
+
+- name: Assert Import APM access policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Import APM access profile, force yes
+  bigip_apm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v14_1_policy.tar.gz"
+    force: yes
+  register: result
+
+- name: Assert Import APM access policy, force yes
+  assert:
+    that:
+      - result is changed
+      - result is success
