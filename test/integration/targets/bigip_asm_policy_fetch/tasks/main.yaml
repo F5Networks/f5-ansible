@@ -30,6 +30,16 @@
       - result is success
       - result is changed
 
+- name: Export ASM policy, force no - Expect Failure
+  bigip_asm_policy_fetch:
+    name: "{{ policy }}"
+    file: "{{ file1 }}"
+    dest: "{{ role_path }}/files/"
+    binary: yes
+    force: no
+  register: result
+  failed_when: "'already exists' not in result.msg"
+
 - name: Export ASM policy inline, compact format, base64 encoded
   bigip_asm_policy_fetch:
     name: "{{ policy }}"

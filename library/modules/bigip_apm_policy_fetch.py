@@ -14,16 +14,23 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_apm_policy_import
-short_description: Manage BIG-IP APM policy or APM access profile imports
+module: bigip_apm_policy_fetch
+short_description: Exports the APM policy or APM access profile from remote nodes.
 description:
-   - Manage BIG-IP APM policy or APM access profile imports.
+  - Exports the apm policy or APM access profile from remote nodes.
 version_added: 2.8
 options:
   name:
     description:
-      - The name of the APM policy or APM access profile to create or override.
+      - The name of the APM policy or APM access profile exported to create a file on the remote device for downloading.
     required: True
+  dest:
+    description:
+      - A directory to save the file into.
+    type: path
+  file:
+    description:
+      - The name of the file to be created on the remote device for downloading.
   type:
     description:
       - Specifies the type of item to export from device.
@@ -31,21 +38,14 @@ options:
       - profile_access
       - access_policy
     default: profile_access
-  source:
-    description:
-      - Full path to a file to be imported into the BIG-IP APM.
-      - Files exported from newer versions of BIG-IP cannot be imported into older versions of BIG-IP.
-      - This restriction applies to major release trains: c(12.x) c(13.x) c(14.x) and so on.
-    type: path
   force:
     description:
-      - When set to C(yes) any existing policy with the same name will be overwritten by the new import.
-      - If policy does not exist this setting is ignored.
-    default: no
+      - If C(no), the file will only be transferred if it does not exist in the the destination.
+    default: yes
     type: bool
   partition:
     description:
-      - Device partition to manage resources on.
+      - Device partition to which contain APM policy or APM access profile to export.
     default: Common
 notes:
   - Due to ID685681 it is not possible to execute ng_* tools via REST api on v12.x and 13.x, once this is fixed
@@ -57,63 +57,68 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Import APM profile
-  bigip_apm_policy_import:
-    name: new_apm_profile
-    source: /root/apm_profile.tar.gz
+- name: Export APM access profile
+  bigip_apm_policy_fetch:
+    name: foobar
+    file: export_foo
+    dest: /root/download
     provider:
+      password: secret
       server: lb.mydomain.com
       user: admin
-      password: secret
   delegate_to: localhost
 
-- name: Import APM policy
-  bigip_apm_policy_import:
-    name: new_apm_policy
-    source: /root/apm_policy.tar.gz
+- name: Export APM access policy
+  bigip_apm_policy_fetch:
+    name: foobar
+    file: export_foo
+    dest: /root/download
     type: access_policy
     provider:
+      password: secret
       server: lb.mydomain.com
       user: admin
-      password: secret
   delegate_to: localhost
 
-- name: Override existing APM policy
-  bigip_asm_policy:
-    name: new_apm_policy
-    source: /root/apm_policy.tar.gz
-    force: yes
+- name: Export APM access profile, autogenerate name
+  bigip_apm_policy_fetch:
+    name: foobar
+    dest: /root/download
     provider:
+      password: secret
       server: lb.mydomain.com
       user: admin
-      password: secret
   delegate_to: localhost
 '''
 
 RETURN = r'''
-source:
-  description: Local path to APM policy file.
-  returned: changed
-  type: path
-  sample: /root/some_policy.tar.gz
 name:
-  description: Name of the APM policy or APM access profile to be created/overwritten.
+  description: Name of the APM policy or APM access profile to be exported.
   returned: changed
   type: str
   sample: APM_policy_global
+file:
+  description:
+    - Name of the exported file on the remote BIG-IP to download. If not
+      specified, then this will be a randomly generated filename.
+  returned: changed
+  type: str
+  sample: foobar_file
+dest:
+  description: Local path to download exported APM policy.
+  returned: changed
+  type: str
+  sample: /root/downloads/profile-foobar_file.conf.tar.gz
 type:
   description: Set to specify type of item to export.
   returned: changed
   type: str
   sample: access_policy
-force:
-  description: Set when overwriting an existing policy or profile.
-  returned: changed
-  type: bool
-  sample: yes
 '''
 
 import os
+import tempfile
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 from distutils.version import LooseVersion
@@ -123,12 +128,11 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fq_name
-    from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
-    from library.module_utils.network.f5.icontrol import upload_file
+    from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.icontrol import download_file
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import module_provisioned
 except ImportError:
@@ -136,35 +140,29 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
-    from ansible.module_utils.network.f5.icontrol import upload_file
+    from ansible.module_utils.network.f5.common import transform_name
+    from ansible.module_utils.network.f5.icontrol import download_file
     from ansible.module_utils.network.f5.icontrol import tmos_version
     from ansible.module_utils.network.f5.icontrol import module_provisioned
 
 
 class Parameters(AnsibleF5Parameters):
-    api_map = {
+    api_map = {}
 
-    }
-
-    api_attributes = [
-
-    ]
+    api_attributes = []
 
     returnables = [
         'name',
-        'source',
+        'file',
+        'dest',
         'type',
-
+        'force',
     ]
 
-    updatables = [
-
-    ]
+    updatables = []
 
 
 class ApiParameters(Parameters):
@@ -172,7 +170,73 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    pass
+    def _item_exists(self):
+        if self.type == 'access_policy':
+            uri = 'https://{0}:{1}/mgmt/tm/apm/policy/access-policy/{2}'.format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.partition, self.name)
+            )
+        else:
+            uri = 'https://{0}:{1}/mgmt/tm/apm/profile/access/{2}'.format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.partition, self.name)
+            )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'items' in response and response['items'] != []:
+            return True
+        return False
+
+    @property
+    def file(self):
+        if self._values['file'] is not None:
+            return self._values['file']
+        result = next(tempfile._get_candidate_names()) + '.tar.gz'
+        self._values['file'] = result
+        return result
+
+    @property
+    def fulldest(self):
+        result = None
+        if os.path.isdir(self.dest):
+            result = os.path.join(self.dest, self.file)
+        else:
+            if os.path.exists(os.path.dirname(self.dest)):
+                result = self.dest
+            else:
+                try:
+                    # os.path.exists() can return false in some
+                    # circumstances where the directory does not have
+                    # the execute bit for the current user set, in
+                    # which case the stat() call will raise an OSError
+                    os.stat(os.path.dirname(result))
+                except OSError as e:
+                    if "permission denied" in str(e).lower():
+                        raise F5ModuleError(
+                            "Destination directory {0} is not accessible".format(os.path.dirname(result))
+                        )
+                    raise F5ModuleError(
+                        "Destination directory {0} does not exist".format(os.path.dirname(result))
+                    )
+
+        if not os.access(os.path.dirname(result), os.W_OK):
+            raise F5ModuleError(
+                "Destination {0} not writable".format(os.path.dirname(result))
+            )
+        return result
+
+    @property
+    def name(self):
+        if not self._item_exists():
+            raise F5ModuleError('The provided {0} with the name {1} does not exist on device.'.format(
+                self.type, self._values['name'])
+            )
+        return self._values['name']
 
 
 class Changes(Parameters):
@@ -193,28 +257,6 @@ class UsableChanges(Changes):
 
 class ReportableChanges(Changes):
     pass
-
-
-class Difference(object):
-    def __init__(self, want, have=None):
-        self.want = want
-        self.have = have
-
-    def compare(self, param):
-        try:
-            result = getattr(self, param)
-            return result
-        except AttributeError:
-            return self.__default(param)
-
-    def __default(self, param):
-        attr1 = getattr(self.want, param)
-        try:
-            attr2 = getattr(self.have, param)
-            if attr1 != attr2:
-                return attr1
-        except AttributeError:
-            return attr1
 
 
 class ModuleManager(object):
@@ -251,13 +293,12 @@ class ModuleManager(object):
 
         result = dict()
 
-        changed = self.policy_import()
+        self.export()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
-        result.update(dict(changed=changed))
-        self._announce_deprecations(result)
+        result.update(dict(changed=True))
         return result
 
     def version_less_than_14(self):
@@ -266,58 +307,49 @@ class ModuleManager(object):
             return True
         return False
 
-    def policy_import(self):
+    def export(self):
+        if self.exists():
+            return self.update()
+        else:
+            return self.create()
+
+    def update(self):
+        if not self.want.force:
+            raise F5ModuleError(
+                "File '{0}' already exists.".format(self.want.fulldest)
+            )
+        self.execute()
+
+    def create(self):
         self._set_changed_options()
         if self.module.check_mode:
             return True
-        if self.exists():
-            if self.want.force is False:
-                return False
+        self.create_on_device()
+        self.execute()
+        return True
 
-        self.import_file_to_device()
+    def download(self):
+        self.download_from_device(self.want.fulldest)
+        if os.path.exists(self.want.fulldest):
+            return True
+        raise F5ModuleError(
+            "Failed to download the remote file."
+        )
+
+    def execute(self):
+        self.download()
         self.remove_temp_file_from_device()
         return True
 
     def exists(self):
-        if self.want.type == 'access_policy':
-            uri = "https://{0}:{1}/mgmt/tm/apm/policy/access-policy/{2}".format(
-                self.client.provider['server'],
-                self.client.provider['server_port'],
-                transform_name(self.want.partition, self.want.name)
-            )
-        else:
-            uri = "https://{0}:{1}/mgmt/tm/apm/profile/access/{2}".format(
-                self.client.provider['server'],
-                self.client.provider['server_port'],
-                transform_name(self.want.partition, self.want.name)
-            )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError:
-            return False
-        if resp.status == 404 or 'code' in response and response['code'] == 404:
-            return False
-        return True
+        if os.path.exists(self.want.fulldest):
+            return True
+        return False
 
-    def upload_file_to_device(self, content, name):
-        url = 'https://{0}:{1}/mgmt/shared/file-transfer/uploads'.format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
+    def create_on_device(self):
+        cmd = 'ng_export -t {0} {1} {2} -p {3}'.format(
+            self.want.type, self.want.name, self.want.name, self.want.partition
         )
-        try:
-            upload_file(self.client, url, content, name)
-        except F5ModuleError:
-            raise F5ModuleError(
-                "Failed to upload the file."
-            )
-
-    def import_file_to_device(self):
-        name = os.path.split(self.want.source)[1]
-        self.upload_file_to_device(self.want.source, name)
-
-        cmd = 'ng_import -s /var/config/rest/downloads/{0} {1} -p {2}'.format(name, self.want.name, self.want.partition)
-
         uri = "https://{0}:{1}/mgmt/tm/util/bash/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -330,21 +362,76 @@ class ModuleManager(object):
 
         try:
             response = resp.json()
-            if 'commandResult' in response:
-                raise F5ModuleError(response['commandResult'])
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] in [400, 403]:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'commandResult' in response:
+            raise F5ModuleError('Item export command failed.')
         return True
 
+    def _move_file_to_download(self):
+        if self.want.type == 'access_policy':
+            item = 'policy'
+        else:
+            item = 'profile'
+
+        name = '{0}-{1}.conf.tar.gz'.format(item, self.want.name)
+        move_path = '/shared/tmp/{0} {1}/{2}'.format(
+            name,
+            '/ts/var/rest',
+            self.want.file
+        )
+        params = dict(
+            command='run',
+            utilCmdArgs=move_path
+        )
+
+        uri = "https://{0}:{1}/mgmt/tm/util/unix-mv/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+
+        resp = self.client.api.post(uri, json=params)
+
+        try:
+            response = resp.json()
+            if 'commandResult' in response:
+                if 'cannot stat' in response['commandResult']:
+                    raise F5ModuleError(response['commandResult'])
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        return True
+
+    def download_from_device(self, dest):
+        url = 'https://{0}:{1}/mgmt/tm/asm/file-transfer/downloads/{2}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.file
+        )
+        try:
+            download_file(self.client, url, dest)
+        except F5ModuleError:
+            raise F5ModuleError(
+                "Failed to download the file."
+            )
+        if os.path.exists(self.want.dest):
+            return True
+        return False
+
     def remove_temp_file_from_device(self):
-        name = os.path.split(self.want.source)[1]
-        tpath_name = '/var/config/rest/downloads/{0}'.format(name)
+        tpath_name = '/ts/var/rest/{0}'.format(self.want.file)
         uri = "https://{0}:{1}/mgmt/tm/util/unix-rm/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -372,14 +459,17 @@ class ArgumentSpec(object):
             name=dict(
                 required=True,
             ),
-            source=dict(type='path'),
-            force=dict(
-                type='bool',
-                default='no'
+            dest=dict(
+                type='path'
             ),
             type=dict(
                 default='profile_access',
                 choices=['profile_access', 'access_policy']
+            ),
+            file=dict(),
+            force=dict(
+                default='yes',
+                type='bool'
             ),
             partition=dict(
                 default='Common',

@@ -1,0 +1,16 @@
+---
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
+- name: Provision APM
+  bigip_provision:
+    name: apm
+  tags:
+    - module-provisioning
+
+- name: Create APM access profile
+  bigip_apm_policy_import:
+    name: "{{ policy }}"
+    source: "{{ role_path }}/fixtures/v14_1_profile.tar.gz"
