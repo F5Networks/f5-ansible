@@ -1,0 +1,18 @@
+---
+
+- name: Clean up files folder
+  shell: find "{{ role_path }}/files/" -mindepth 1 -maxdepth 1 -print0 | xargs -0 rm -rf
+
+- name: Delete APM Policies and Profiles
+  bigip_command:
+    commands:
+      - tmsh delete apm profile access all
+      - tmsh delete apm policy access-policy all
+
+- name: De-provision ASM
+  bigip_provision:
+    name: asm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
