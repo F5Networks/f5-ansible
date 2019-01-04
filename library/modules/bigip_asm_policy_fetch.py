@@ -27,7 +27,6 @@ options:
   dest:
     description:
       - A directory to save the policy file into.
-      - Di
       - This option is ignored when C(inline) is set to c(yes).
     type: path
   file:
@@ -61,7 +60,7 @@ options:
     type: bool
   partition:
     description:
-      - Device partition to which contain ASM policy to export.
+      - Device partition which contains ASM policy to export.
     default: Common
 extends_documentation_fragment: f5
 author:
@@ -136,7 +135,7 @@ name:
 dest:
   description: Local path to download exported ASM policy.
   returned: changed
-  type: str
+  type: path
   sample: /root/downloads/foobar.xml
 file:
   description:
