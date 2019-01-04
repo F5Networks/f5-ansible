@@ -1,12 +1,12 @@
-:source: bigip_apm_policy_import.py
+:source: bigip_apm_policy_fetch.py
 
 :orphan:
 
-.. _bigip_apm_policy_import_module:
+.. _bigip_apm_policy_fetch_module:
 
 
-bigip_apm_policy_import - Manage BIG-IP APM policy or APM access profile imports
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_apm_policy_fetch - Exports the APM policy or APM access profile from remote nodes.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.8
 
@@ -17,7 +17,7 @@ bigip_apm_policy_import - Manage BIG-IP APM policy or APM access profile imports
 
 Synopsis
 --------
-- Manage BIG-IP APM policy or APM access profile imports.
+- Exports the apm policy or APM access profile from remote nodes.
 
 
 
@@ -28,25 +28,44 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
+                    <b>dest</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>A directory to save the file into.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>file</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The name of the file to be created on the remote device for downloading.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>force</b>
                                                         </td>
                                 <td>
                                                                                                                                                                                                                     <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>yes</li>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When set to <code>yes</code> any existing policy with the same name will be overwritten by the new import.</div>
-                                                    <div>If policy does not exist this setting is ignored.</div>
+                                                                        <div>If <code>no</code>, the file will only be transferred if it does not exist in the the destination.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -56,7 +75,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The name of the APM policy or APM access profile to create or override.</div>
+                                                                        <div>The name of the APM policy or APM access profile exported to create a file on the remote device for downloading.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -67,7 +86,7 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
-                                                                        <div>Device partition to manage resources on.</div>
+                                                                        <div>Device partition to which contain APM policy or APM access profile to export.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -224,16 +243,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>source</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Full path to a file to be imported into the BIG-IP APM.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>type</b>
                                                         </td>
                                 <td>
@@ -293,36 +302,37 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Import APM profile
-      bigip_apm_policy_import:
-        name: new_apm_profile
-        source: /root/apm_profile.tar.gz
+    - name: Export APM access profile
+      bigip_apm_policy_fetch:
+        name: foobar
+        file: export_foo
+        dest: /root/download
         provider:
+          password: secret
           server: lb.mydomain.com
           user: admin
-          password: secret
       delegate_to: localhost
 
-    - name: Import APM policy
-      bigip_apm_policy_import:
-        name: new_apm_policy
-        source: /root/apm_policy.tar.gz
+    - name: Export APM access policy
+      bigip_apm_policy_fetch:
+        name: foobar
+        file: export_foo
+        dest: /root/download
         type: access_policy
         provider:
+          password: secret
           server: lb.mydomain.com
           user: admin
-          password: secret
       delegate_to: localhost
 
-    - name: Override existing APM policy
-      bigip_asm_policy:
-        name: new_apm_policy
-        source: /root/apm_policy.tar.gz
-        force: yes
+    - name: Export APM access profile, autogenerate name
+      bigip_apm_policy_fetch:
+        name: foobar
+        dest: /root/download
         provider:
+          password: secret
           server: lb.mydomain.com
           user: admin
-          password: secret
       delegate_to: localhost
 
 
@@ -342,15 +352,28 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>force</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>dest</b>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Set when overwriting an existing policy or profile.</div>
+                                            <div>Local path to download exported APM policy.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/root/downloads/profile-foobar_file.conf.tar.gz</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>file</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                                                        <div>Name of the exported file on the remote BIG-IP to download. If not specified, then this will be a randomly generated filename.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foobar_file</div>
                                     </td>
             </tr>
                                 <tr>
@@ -360,23 +383,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Name of the APM policy or APM access profile to be created/overwritten.</div>
+                                            <div>Name of the APM policy or APM access profile to be exported.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">APM_policy_global</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>source</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Local path to APM policy file.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/root/some_policy.tar.gz</div>
                                     </td>
             </tr>
                                 <tr>

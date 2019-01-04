@@ -232,8 +232,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>state</code> is <code>present</code>, and <code>template</code> parameter is provided, new ASM policy is created from template with the given <code>name</code>.</div>
-                                                    <div>When <code>state</code> is present and no <code>template</code> parameter is provided new blank ASM policy is created with the given <code>name</code>.</div>
+                                                                        <div>When <code>state</code> is <code>present</code>, and <code>template</code> parameter is provided, new ASM policy is created from template with the given policy <code>name</code>.</div>
+                                                    <div>When <code>state</code> is present and no <code>template</code> parameter is provided new blank ASM policy is created with the given policy <code>name</code>.</div>
                                                     <div>When <code>state</code> is <code>absent</code>, ensures that the policy is removed, even if it is currently active.</div>
                                                                                 </td>
             </tr>

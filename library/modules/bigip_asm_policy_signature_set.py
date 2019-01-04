@@ -92,7 +92,7 @@ options:
     type: bool
   block:
     description:
-      - Effective when the security policy’s enforcement mode is Blocking.
+      - Effective when the security policy`s enforcement mode is Blocking.
       - Determines how the system treats requests that match a signature included in the signature set.
       - When C(yes) the system blocks all requests that match a signature,
         and provides the client with a support ID number.

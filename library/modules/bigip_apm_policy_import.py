@@ -34,8 +34,6 @@ options:
   source:
     description:
       - Full path to a file to be imported into the BIG-IP APM.
-      - Files exported from newer versions of BIG-IP cannot be imported into older versions of BIG-IP.
-      - This restriction applies to major release trains: c(12.x) c(13.x) c(14.x) and so on.
     type: path
   force:
     description:
