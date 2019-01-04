@@ -135,7 +135,7 @@ name:
 dest:
   description: Local path to download exported ASM policy.
   returned: changed
-  type: path
+  type: str
   sample: /root/downloads/foobar.xml
 file:
   description:
