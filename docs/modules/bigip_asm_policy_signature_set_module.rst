@@ -45,7 +45,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies whether the security policy logs the request data in the Statistics screen, if a request matches a signature that is included in the signature set.</div>
+                                                                        <div>Specifies if the security policy logs the request data in the Statistics screen, when a request matches a signature that is included in the signature set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -86,8 +86,8 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the signature sets to apply/remove to the ASM policy.</div>
-                                                    <div>Apart from built-in signature sets that ship with the device, users can create and use their own signature sets.</div>
+                                                                        <div>Specifies the name of the signature sets to apply on or remove from the ASM policy.</div>
+                                                    <div>Apart from built-in signature sets that ship with the device, users can use user created signature sets.</div>
                                                     <div>When <code>All Response Signatures</code>, configures all signatures in the attack signature pool that can review responses.</div>
                                                     <div>When <code>All Signatures</code>, configures all attack signatures in the attack signature pool.</div>
                                                     <div>When <code>Apache Struts Signatures</code>, configures signatures that target attacks against the Apache Struts web servers. Only available in version 13.x and up.</div>
@@ -107,14 +107,14 @@ Parameters
                                                     <div>When <code>Medium Accuracy Signatures</code>, configures signatures with a medium level of accuracy when identifying attacks.</div>
                                                     <div>When <code>OS Command Injection Signatures</code>, configures signatures targeting attacks that attempt to run system level commands through a vulnerable application.</div>
                                                     <div>When <code>OWA Signatures</code>, configures signatures that target attacks against the Microsoft Outlook Web Access (OWA) application.</div>
-                                                    <div>When <code>Other Application Attacks Signatures</code>, configures signatures targeting miscellaneous attacks including session fixation, local file access, injection attempts, header tampering, and so on that could affect many applications.</div>
+                                                    <div>When <code>Other Application Attacks Signatures</code>, configures signatures targeting miscellaneous attacks, including session fixation, local file access, injection attempts, header tampering and so on, affecting many applications.</div>
                                                     <div>When <code>Path Traversal Signatures</code>, configures signatures targeting attacks that attempt to access files and directories that are stored outside the web root folder.</div>
                                                     <div>When <code>Predictable Resource Location Signatures</code>, configures signatures targeting attacks that attempt to uncover hidden website content and functionality by forceful browsing, or by directory and file enumeration.</div>
                                                     <div>When <code>Remote File Include Signatures</code>, configures signatures targeting attacks that attempt to exploit a remote file include vulnerability that could enable a remote attacker to execute arbitrary commands on the server hosting the application.</div>
                                                     <div>When <code>SQL Injection Signatures</code>, configures signatures targeting attacks that attempt to insert (inject) a SQL query using the input data from a client to an application.</div>
                                                     <div>When <code>Server Side Code Injection Signatures</code>, configures signatures targeting code injection attacks on the server side.</div>
                                                     <div>When <code>WebSphere signatures</code>, configures signatures targeting attacks on many computing platforms that are integrated using WebSphere including general database, Microsoft Windows, IIS, Microsoft SQL Server, Apache, Oracle, Unix/Linux, IBM DB2, PostgreSQL, and XML.</div>
-                                                    <div>When <code>XPath Injection Signatures</code>, configures signatures targeting attacks that attempt to gain access to data structures or bypass permissions or access when a web site uses user-supplied information to construct XPath queries for XML data.</div>
+                                                    <div>When <code>XPath Injection Signatures</code>, configures signatures targeting attacks that attempt to gain access to data structures or bypass permissions when a web site uses user-supplied information to construct XPath queries for XML data.</div>
                                                                                 </td>
             </tr>
                                 <tr>

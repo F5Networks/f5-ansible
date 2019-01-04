@@ -84,7 +84,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the server technology to apply/remove to the ASM policy.</div>
+                                                                        <div>Specifies the name of the server technology to apply on or remove from the ASM policy.</div>
                                                                                 </td>
             </tr>
                                 <tr>

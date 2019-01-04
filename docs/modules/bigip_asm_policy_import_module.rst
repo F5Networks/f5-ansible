@@ -46,7 +46,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>When set to <code>yes</code> any existing policy with the same name will be overwritten by the new import.</div>
-                                                    <div>Works in both inline and file imports, if policy does not exist this setting is ignored.</div>
+                                                    <div>Works for both inline and file imports, if the policy does not exist this setting is ignored.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -78,7 +78,7 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
-                                                                        <div>Device partition to manage resources on.</div>
+                                                                        <div>Device partition to create policy on.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -338,19 +338,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>file</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Local path to ASM policy file.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/root/some_policy.xml</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
                     <b>force</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -386,6 +373,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Asm_APP1_Transparent</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>source</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Local path to an ASM policy file.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/root/some_policy.xml</div>
                                     </td>
             </tr>
                         </table>
