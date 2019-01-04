@@ -87,7 +87,6 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>A directory to save the policy file into.</div>
-                                                    <div>Di</div>
                                                     <div>This option is ignored when <code>inline</code> is set to c(yes).</div>
                                                                                 </td>
             </tr>
@@ -149,7 +148,7 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
-                                                                        <div>Device partition to which contain ASM policy to export.</div>
+                                                                        <div>Device partition which contains ASM policy to export.</div>
                                                                                 </td>
             </tr>
                                 <tr>
