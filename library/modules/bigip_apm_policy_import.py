@@ -94,7 +94,7 @@ RETURN = r'''
 source:
   description: Local path to APM policy file.
   returned: changed
-  type: path
+  type: str
   sample: /root/some_policy.tar.gz
 name:
   description: Name of the APM policy or APM access profile to be created/overwritten.
