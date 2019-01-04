@@ -107,7 +107,7 @@ file:
 dest:
   description: Local path to download exported APM policy.
   returned: changed
-  type: str
+  type: path
   sample: /root/downloads/profile-foobar_file.conf.tar.gz
 type:
   description: Set to specify type of item to export.
