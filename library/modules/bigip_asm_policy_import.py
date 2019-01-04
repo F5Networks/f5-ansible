@@ -88,7 +88,7 @@ RETURN = r'''
 source:
   description: Local path to an ASM policy file.
   returned: changed
-  type: path
+  type: str
   sample: /root/some_policy.xml
 inline:
   description: Contents of policy as an inline string
