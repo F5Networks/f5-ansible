@@ -1,0 +1,68 @@
+---
+- name: Issue 01109 - Create a client SSL profile - Provider
+  bigip_profile_client_ssl:
+    name: cssl_star.sherwin.com
+    ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
+    parent: clientssl
+    provider: "{{ provider }}"
+
+- name: Issue 01109 - Create a server SSL profile - Provider
+  bigip_profile_server_ssl:
+    name: sssl_star.sherwin.com
+    ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
+    parent: serverssl
+    provider: "{{ provider }}"
+
+- name: Issue 01109 - Create VS with SSL profiles, no context specified - Provider
+  bigip_virtual_server:
+    name: vs_Test
+    destination: 192.168.109.77
+    port: 443
+    profiles:
+      - cssl_star.sherwin.com
+      - sssl_star.sherwin.com
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01109 - Assert Create VS with SSL profiles, no context specified - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01109 - Create VS with SSL profiles, no context specified - Provider - Idempotent check
+  bigip_virtual_server:
+    name: vs_Test
+    destination: 192.168.109.77
+    port: 443
+    profiles:
+      - cssl_star.sherwin.com
+      - sssl_star.sherwin.com
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01109 - Assert Create VS with SSL profiles, no context specified - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01109 - Delete VS - Provider
+  bigip_virtual_server:
+    name: vs_Test
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01109 - Remove Client SSL profile - Provider
+  bigip_profile_client_ssl:
+    name: cssl_star.sherwin.com
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01109 - Remove Server SSL profile - Provider
+  bigip_profile_server_ssl:
+    name: sssl_star.sherwin.com
+    state: absent
+    provider: "{{ provider }}"
