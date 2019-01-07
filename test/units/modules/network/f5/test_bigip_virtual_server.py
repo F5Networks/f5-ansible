@@ -359,12 +359,8 @@ class TestManager(unittest.TestCase):
             self.p1 = patch('library.modules.bigip_virtual_server.modules_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = ['ltm', 'gtm', 'asm']
-            self.p2 = patch(
-                'library.modules.bigip_virtual_server.Parameters._read_current_clientssl_profiles_from_device'
-            )
-            self.p3 = patch(
-                'library.modules.bigip_virtual_server.Parameters._read_current_serverssl_profiles_from_device'
-            )
+            self.p2 = patch('library.modules.bigip_virtual_server.Parameters._read_current_clientssl_profiles_from_device')
+            self.p3 = patch('library.modules.bigip_virtual_server.Parameters._read_current_serverssl_profiles_from_device')
             self.m2 = self.p2.start()
             self.m3 = self.p3.start()
             self.m2.return_value = ['asda', 'clientssl', 'cs_foobar.star.local']
@@ -373,12 +369,8 @@ class TestManager(unittest.TestCase):
             self.p1 = patch('ansible.modules.network.f5.bigip_virtual_server.modules_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = ['ltm', 'gtm', 'asm']
-            self.p2 = patch(
-                'ansible.modules.network.f5.bigip_virtual_server.Parameters._read_current_clientssl_profiles_from_device'
-            )
-            self.p3 = patch(
-                'ansible.modules.network.f5.bigip_virtual_server.Parameters._read_current_serverssl_profiles_from_device'
-            )
+            self.p2 = patch('ansible.modules.network.f5.bigip_virtual_server.Parameters._read_current_clientssl_profiles_from_device')
+            self.p3 = patch('ansible.modules.network.f5.bigip_virtual_server.Parameters._read_current_serverssl_profiles_from_device')
             self.m2 = self.p2.start()
             self.m3 = self.p3.start()
             self.m2.return_value = ['asda', 'clientssl', 'cs_foobar.star.local']
