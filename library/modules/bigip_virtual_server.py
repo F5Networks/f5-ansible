@@ -1105,6 +1105,54 @@ class Parameters(AnsibleF5Parameters):
         result = [x['name'] for x in response['items']]
         return result
 
+    def _read_current_clientssl_profiles_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/client-ssl/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = [x['name'] for x in response['items']]
+        return result
+
+    def _read_current_serverssl_profiles_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/server-ssl/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = [x['name'] for x in response['items']]
+        return result
+
+    def _is_client_ssl_profile(self, profile):
+        if profile['name'] in self._read_current_clientssl_profiles_from_device():
+            return True
+        return False
+
+    def _is_server_ssl_profile(self, profile):
+        if profile['name'] in self._read_current_serverssl_profiles_from_device():
+            return True
+        return False
+
 
 class ApiParameters(Parameters):
     @property
@@ -1440,11 +1488,14 @@ class ModuleParameters(Parameters):
         tmp['context'] = tmp['context'].replace('server-side', 'serverside')
         tmp['context'] = tmp['context'].replace('client-side', 'clientside')
 
-    def _handle_clientssl_profile_nuances(self, profile):
-        if profile['name'] != 'clientssl':
-            return
-        if profile['context'] != 'clientside':
-            profile['context'] = 'clientside'
+    def _handle_ssl_profile_nuances(self, profile):
+        if profile['name'] == 'serverssl' or self._is_server_ssl_profile(profile):
+            if profile['context'] != 'serverside':
+                profile['context'] = 'serverside'
+        if profile['name'] == 'clientssl' or self._is_client_ssl_profile(profile):
+            if profile['context'] != 'clientside':
+                profile['context'] = 'clientside'
+        return
 
     def _check_port(self):
         try:
@@ -1553,13 +1604,13 @@ class ModuleParameters(Parameters):
                 if 'name' not in profile:
                     tmp['name'] = profile
                 tmp['fullPath'] = fq_name(self.partition, tmp['name'])
-                self._handle_clientssl_profile_nuances(tmp)
+                self._handle_ssl_profile_nuances(tmp)
             else:
                 full_path = fq_name(self.partition, profile)
                 tmp['name'] = os.path.basename(profile)
                 tmp['context'] = 'all'
                 tmp['fullPath'] = full_path
-                self._handle_clientssl_profile_nuances(tmp)
+                self._handle_ssl_profile_nuances(tmp)
             result.append(tmp)
         mutually_exclusive = [x['name'] for x in result if x in self.profiles_mutex]
         if len(mutually_exclusive) > 1:
@@ -2734,7 +2785,6 @@ class Difference(object):
             return None
         want = set([(p['name'], p['context'], p['fullPath']) for p in self.want.profiles])
         have = set([(p['name'], p['context'], p['fullPath']) for p in self.have.profiles])
-
         if len(have) == 0:
             return self.want.profiles
         elif len(have) == 1:
