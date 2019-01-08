@@ -19,6 +19,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+import os
 import sys
 import copy
 
@@ -26,19 +27,22 @@ from ansible import constants as C
 from ansible.module_utils._text import to_text
 from ansible.module_utils.connection import Connection
 from ansible.module_utils.network.common.utils import load_provider
-from ansible.plugins.action.normal import ActionModule as _ActionModule
+from ansible.plugins.action.network import ActionModule as ActionNetworkModule
 from ansible.utils.display import Display
-display = Display()
 
 try:
     from library.module_utils.network.f5.common import f5_provider_spec
-except ImportError:
+except Exception:
     from ansible.module_utils.network.f5.common import f5_provider_spec
 
+display = Display()
 
-class ActionModule(_ActionModule):
+
+class ActionModule(ActionNetworkModule):
 
     def run(self, tmp=None, task_vars=None):
+
+        self._config_module = True if self._task.action == 'bigip_imish_config' else False
         socket_path = None
         transport = 'rest'
 
@@ -66,6 +70,7 @@ class ActionModule(_ActionModule):
                 display.vvv('using connection plugin %s' % pc.connection, pc.remote_addr)
                 connection = self._shared_loader_obj.connection_loader.get('persistent', pc, sys.stdin)
                 connection.set_options(direct={'persistent_command_timeout': command_timeout})
+
                 socket_path = connection.run()
                 display.vvvv('socket_path: %s' % socket_path, pc.remote_addr)
                 if not socket_path:
@@ -89,5 +94,5 @@ class ActionModule(_ActionModule):
                 conn.send_command('exit')
                 out = conn.get_prompt()
 
-        result = super(ActionModule, self).run(tmp, task_vars)
+        result = super(ActionModule, self).run(task_vars=task_vars)
         return result
