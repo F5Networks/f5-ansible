@@ -19,7 +19,6 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-import os
 import sys
 import copy
 
@@ -27,8 +26,17 @@ from ansible import constants as C
 from ansible.module_utils._text import to_text
 from ansible.module_utils.connection import Connection
 from ansible.module_utils.network.common.utils import load_provider
-from ansible.plugins.action.network import ActionModule as ActionNetworkModule
 from ansible.utils.display import Display
+
+# this is a temporary workaround as this import causes problems on non devel version of Ansible prior 2.8 release,
+# preventing f5ansible galaxy role usage. This change should not be upstreamed.
+
+# TODO Remove try/except when 2.8 ships
+
+try:
+    from ansible.plugins.action.network import ActionModule as ActionNetworkModule
+except Exception:
+    pass
 
 try:
     from library.module_utils.network.f5.common import f5_provider_spec
