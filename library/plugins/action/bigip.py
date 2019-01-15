@@ -28,7 +28,7 @@ from ansible.module_utils.connection import Connection
 from ansible.module_utils.network.common.utils import load_provider
 from ansible.utils.display import Display
 
-# this is a temporary workaround as this import causes problems on non devel version of Ansible prior 2.8 release,
+# this is a temporary workaround as this import causes problems on non-devel version of Ansible prior 2.8 release,
 # preventing f5ansible galaxy role usage. This change should not be upstreamed.
 
 # TODO Remove try/except when 2.8 ships
@@ -36,7 +36,7 @@ from ansible.utils.display import Display
 try:
     from ansible.plugins.action.network import ActionModule as ActionNetworkModule
 except Exception:
-    from library.plugins.action.network import ActionModule as ActionNetworkModule
+    from .network import ActionModule as ActionNetworkModule
 
 try:
     from library.module_utils.network.f5.common import f5_provider_spec
