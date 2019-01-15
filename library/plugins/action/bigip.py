@@ -34,9 +34,10 @@ from ansible.utils.display import Display
 # TODO Remove try/except when 2.8 ships
 
 try:
-    from ansible.plugins.action.network import ActionModule as ActionNetworkModule
-except Exception:
     from .network import ActionModule as ActionNetworkModule
+except Exception:
+    from ansible.plugins.action.network import ActionModule as ActionNetworkModule
+
 
 try:
     from library.module_utils.network.f5.common import f5_provider_spec
