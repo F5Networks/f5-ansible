@@ -453,3 +453,43 @@ class TestManager(unittest.TestCase):
         assert 'metadata' in results
         assert 'ansible' in results['metadata']
         assert results['metadata']['ansible'] == '2.4'
+
+    def test_create_aggregate_pools(self, *args):
+        set_module_args(dict(
+            aggregate=[
+                dict(
+                    pool='fake_pool',
+                    description='fakepool',
+                    service_down_action='drop',
+                    lb_method='round-robin',
+                    partition='Common',
+                    slow_ramp_time=10,
+                    reselect_tries=1,
+                ),
+                dict(
+                    pool='fake_pool2',
+                    description='fakepool2',
+                    service_down_action='drop',
+                    lb_method='predictive-node',
+                    partition='Common',
+                    slow_ramp_time=110,
+                    reselect_tries=2,
+                )
+            ],
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True

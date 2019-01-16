@@ -1,0 +1,34 @@
+---
+ext_pool1: issue_01158_dummy_pool
+ext_pool2: issue_01158_dummy_pool2
+ext_lb_method1: round-robin
+ext_lb_method2: least-connections-member
+
+agg1:
+  state: present
+  name: issue_01158_agg1
+  lb_method: round-robin
+  monitors:
+    - http
+    - tcp
+  monitor_type: and_list
+  slow_ramp_time: 120
+
+agg2:
+  state: present
+  name: issue_01158_agg2
+  lb_method: least-connections-member
+  monitors: http
+  monitor_type: single
+  slow_ramp_time: 90
+
+agg3:
+  state: present
+  name: issue_01158_agg3
+  lb_method: least-sessions
+  priority_group_activation: 10
+  monitors:
+    - http
+    - tcp
+  monitor_type: and_list
+  slow_ramp_time: 100

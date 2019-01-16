@@ -280,7 +280,7 @@ class TransactionContextManager(object):
         return self.client
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        self.client.request.headers.pop('X-F5-REST-Coordination-Id')
+        self.client.api.request.headers.pop('X-F5-REST-Coordination-Id')
         if exc_tb is None:
             uri = "https://{0}:{1}/mgmt/tm/transaction/{2}".format(
                 self.client.provider['server'],
