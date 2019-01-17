@@ -204,3 +204,41 @@ class TestManager(unittest.TestCase):
         assert results['fqdn_auto_populate'] is True
         assert results['fqdn'] == 'foo.bar.com'
         assert results['state'] == 'present'
+
+    def test_create_aggregate_pool_members(self, *args):
+        set_module_args(dict(
+            pool='fake_pool',
+            aggregate=[
+                dict(
+                    name='my-name',
+                    port=2345,
+                    state='present',
+                    partition='Common',
+                    reuse_nodes=True,
+                    fqdn_auto_populate=False,
+                ),
+                dict(
+                    name='my-name2',
+                    port=2423,
+                    state='present',
+                    partition='Common',
+                    reuse_nodes=True,
+                )
+            ],
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True

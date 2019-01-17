@@ -5,43 +5,150 @@
     pool: pool1
     provider: "{{ provider }}"
 
-- name: Issue 00507 - Add members to pool in aggregate - Provider
+- name: Issue 00507 - Add member1 to pool - Provider
   bigip_pool_member:
     pool: pool1
-    state: present
-    port: 8443
-    aggregate:
-      - name: node1
-        host: 1.1.1.1
-        port: 9000
-      - name: node2
-        host: 1.1.1.2
-      - name: node3
-        host: 1.1.1.3
-      - name: node4
-        host: 1.1.1.4
-      - name: node5
-        host: 1.1.1.5
-    provider: "{{ provider }}"
-  register: result
-
-- name: Issue 00507 - Assert Add member to pool - Provider
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Issue 00507 - Add member to pool - Idempotent check - Provider
-  bigip_pool_member:
-    pool: pool1
-    name: node1
     host: 1.1.1.1
     port: 8443
     state: present
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00507 - Assert Add member to pool - Idempotent check - Provider
+- name: Issue 00507 - Add fqdn member2 to pool - Provider
+  bigip_pool_member:
+    pool: pool1
+    fqdn: yahoo.co.uk
+    fqdn_auto_populate: yes
+    port: 443
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00507 - Add member3 to pool - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: issue_00507_node_external
+    address: 2.2.2.2
+    port: 443
+    state: present
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00507 - Add pool members aggregate - Provider
+  bigip_pool_member:
+    pool: pool1
+    aggregate:
+      - name: issue_507_node
+        host: 192.168.1.1
+        partition: Common
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2
+      - host: 192.168.1.2
+        partition: Common
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2
+      - fqdn: google.com
+        partition: Common
+        fqdn_auto_populate: yes
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00507 - Add pool members aggregate - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00507 - Add pool members aggregate - Provider - Idempotent check
+  bigip_pool_member:
+    pool: pool1
+    aggregate:
+      - name: issue_507_node
+        host: 192.168.1.1
+        partition: Common
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2
+      - host: 192.168.1.2
+        partition: Common
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2
+      - fqdn: google.com
+        partition: Common
+        fqdn_auto_populate: yes
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00507 - Add pool members aggregate - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00507 - Modify pool member aggregate, purge others - Provider
+  bigip_pool_member:
+    pool: pool1
+    aggregate:
+      - name: issue_507_node
+        host: 192.168.1.1
+        partition: Common
+        port: 80
+        description: issue_507_node
+      - host: 192.168.1.2
+        partition: Common
+        port: 80
+        description: issue_507_node
+        connection_limit: 50
+    replace_all_with: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00507 - Modify pool member aggregate, purge others - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00507 - Modify pool member aggregate, purge others - Provider - Idempotent check
+  bigip_pool_member:
+    pool: pool1
+    aggregate:
+      - name: issue_507_node
+        host: 192.168.1.1
+        partition: Common
+        port: 80
+        description: issue_507_node
+      - host: 192.168.1.2
+        partition: Common
+        port: 80
+        description: issue_507_node
+        connection_limit: 50
+    replace_all_with: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00507 - Modify pool member aggregate, purge others - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -53,8 +160,15 @@
     state: absent
     provider: "{{ provider }}"
 
-- name: Issue 00507 - Remove node - Provider
+- name: Issue 00507 - Remove nodes - Provider
   bigip_node:
-    name: node1
+    name: "{{ item }}"
     state: absent
     provider: "{{ provider }}"
+  with_items:
+    - issue_507_node
+    - 192.168.1.2
+    - 1.1.1.1
+    - issue_00507_node_external
+    - yahoo.co.uk
+    - google.com
