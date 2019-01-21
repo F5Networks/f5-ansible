@@ -19,10 +19,16 @@
 - name: Issue 01158 - Create Pools with Aggregate, purge non aggregates
   bigip_pool:
     aggregate:
-      - { name: "{{ agg1['name'] }}", partition: Common, lb_method: "{{ agg1['lb_method'] }}" , slow_ramp_time: "{{ agg1['slow_ramp_time'] }}" }
-      - { name: "{{ agg2['name'] }}", partition: Common, lb_method: "{{ agg2['lb_method'] }}" , slow_ramp_time: "{{ agg2['slow_ramp_time'] }}" }
-      - { name: "{{ agg3['name'] }}", partition: Common, lb_method: "{{ agg3['lb_method'] }}" , slow_ramp_time: "{{ agg3['slow_ramp_time'] }}" }
-    remove_all: yes
+      - name: "{{ agg1['name'] }}"
+        lb_method: "{{ agg1['lb_method'] }}"
+        slow_ramp_time: "{{ agg1['slow_ramp_time'] }}"
+      - name: "{{ agg2['name'] }}"
+        lb_method: "{{ agg2['lb_method'] }}"
+        slow_ramp_time: "{{ agg2['slow_ramp_time'] }}"
+      - name: "{{ agg3['name'] }}"
+        lb_method: "{{ agg3['lb_method'] }}"
+        slow_ramp_time: "{{ agg3['slow_ramp_time'] }}"
+    replace_all_with: yes
   register: result
 
 - name: Issue 01158 - Assert Create Pools with Aggregate, purge non aggregates
@@ -34,10 +40,16 @@
 - name: Issue 01158 - Create Pools with Aggregate, purge non aggregates - Idempotent check
   bigip_pool:
     aggregate:
-      - { name: "{{ agg1['name'] }}", partition: Common, lb_method: "{{ agg1['lb_method'] }}" , slow_ramp_time: "{{ agg1['slow_ramp_time'] }}" }
-      - { name: "{{ agg2['name'] }}", partition: Common, lb_method: "{{ agg2['lb_method'] }}" , slow_ramp_time: "{{ agg2['slow_ramp_time'] }}" }
-      - { name: "{{ agg3['name'] }}", partition: Common, lb_method: "{{ agg3['lb_method'] }}" , slow_ramp_time: "{{ agg3['slow_ramp_time'] }}" }
-    remove_all: yes
+      - name: "{{ agg1['name'] }}"
+        lb_method: "{{ agg1['lb_method'] }}"
+        slow_ramp_time: "{{ agg1['slow_ramp_time'] }}"
+      - name: "{{ agg2['name'] }}"
+        lb_method: "{{ agg2['lb_method'] }}"
+        slow_ramp_time: "{{ agg2['slow_ramp_time'] }}"
+      - name: "{{ agg3['name'] }}"
+        lb_method: "{{ agg3['lb_method'] }}"
+        slow_ramp_time: "{{ agg3['slow_ramp_time'] }}"
+    replace_all_with: yes
   register: result
 
 - name: Issue 01158 - Assert Create Pools with Aggregate, purge non aggregates - Idempotent check
@@ -49,8 +61,12 @@
 - name: Issue 01158 - Modify Pools with Aggregate
   bigip_pool:
     aggregate:
-      - { name: "{{ agg1['name'] }}", partition: Common, lb_method: "{{ agg2['lb_method'] }}" , slow_ramp_time: "{{ agg2['slow_ramp_time'] }}" }
-      - { name: "{{ agg2['name'] }}", partition: Common, lb_method: "{{ agg1['lb_method'] }}" , slow_ramp_time: "{{ agg1['slow_ramp_time'] }}" }
+      - name: "{{ agg1['name'] }}"
+        lb_method: "{{ agg2['lb_method'] }}"
+        slow_ramp_time: "{{ agg2['slow_ramp_time'] }}"
+      - name: "{{ agg2['name'] }}"
+        lb_method: "{{ agg1['lb_method'] }}"
+        slow_ramp_time: "{{ agg1['slow_ramp_time'] }}"
   register: result
 
 - name: Issue 01158 - Assert Modify Pools with Aggregate
@@ -62,8 +78,12 @@
 - name: Issue 01158 - Modify Pools with Aggregate - Idempotent check
   bigip_pool:
     aggregate:
-      - { name: "{{ agg1['name'] }}", partition: Common, lb_method: "{{ agg2['lb_method'] }}" , slow_ramp_time: "{{ agg2['slow_ramp_time'] }}" }
-      - { name: "{{ agg2['name'] }}", partition: Common, lb_method: "{{ agg1['lb_method'] }}" , slow_ramp_time: "{{ agg1['slow_ramp_time'] }}" }
+      - name: "{{ agg1['name'] }}"
+        lb_method: "{{ agg2['lb_method'] }}"
+        slow_ramp_time: "{{ agg2['slow_ramp_time'] }}"
+      - name: "{{ agg2['name'] }}"
+        lb_method: "{{ agg1['lb_method'] }}"
+        slow_ramp_time: "{{ agg1['slow_ramp_time'] }}"
   register: result
 
 - name: Issue 01158 - Assert Modify Pools with Aggregate - Idempotent check
@@ -75,9 +95,13 @@
 - name: Issue 01158 - Purge one pool and modify other pools
   bigip_pool:
     aggregate:
-      - { name: "{{ agg2['name'] }}", partition: Common, lb_method: "{{ agg2['lb_method'] }}" , slow_ramp_time: "{{ agg2['slow_ramp_time'] }}" }
-      - { name: "{{ agg1['name'] }}", partition: Common, lb_method: "{{ agg1['lb_method'] }}" , slow_ramp_time: "{{ agg1['slow_ramp_time'] }}" }
-    remove_all: yes
+      - name: "{{ agg2['name'] }}"
+        lb_method: "{{ agg2['lb_method'] }}"
+        slow_ramp_time: "{{ agg2['slow_ramp_time'] }}"
+      - name: "{{ agg1['name'] }}"
+        lb_method: "{{ agg1['lb_method'] }}"
+        slow_ramp_time: "{{ agg1['slow_ramp_time'] }}"
+    replace_all_with: yes
   register: result
 
 - name: Issue 01158 - Assert Purge one pool and modify other pools
@@ -89,9 +113,13 @@
 - name: Issue 01158 - Purge one pool and modify other pools - Idempotent check
   bigip_pool:
     aggregate:
-      - { name: "{{ agg2['name'] }}", partition: Common, lb_method: "{{ agg2['lb_method'] }}" , slow_ramp_time: "{{ agg2['slow_ramp_time'] }}" }
-      - { name: "{{ agg1['name'] }}", partition: Common, lb_method: "{{ agg1['lb_method'] }}" , slow_ramp_time: "{{ agg1['slow_ramp_time'] }}" }
-    remove_all: yes
+      - name: "{{ agg2['name'] }}"
+        lb_method: "{{ agg2['lb_method'] }}"
+        slow_ramp_time: "{{ agg2['slow_ramp_time'] }}"
+      - name: "{{ agg1['name'] }}"
+        lb_method: "{{ agg1['lb_method'] }}"
+        slow_ramp_time: "{{ agg1['slow_ramp_time'] }}"
+    replace_all_with: yes
   register: result
 
 - name: Issue 01158 - Assert Purge one pool and modify other pools - Idempotent check
@@ -103,8 +131,10 @@
 - name: Issue 01158 - Remove All Pools with Aggregate
   bigip_pool:
     aggregate:
-      - { name: "{{ agg1['name'] }}", partition: Common, state: absent }
-      - { name: "{{ agg2['name'] }}", partition: Common, state: absent }
+      - name: "{{ agg1['name'] }}"
+        state: absent
+      - name: "{{ agg2['name'] }}"
+        state: absent
   register: result
 
 - name: Issue 01158 - Assert Remove All Pools with Aggregate
@@ -116,8 +146,10 @@
 - name: Issue 01158 - Remove All Pools with Aggregate - Idempotent check
   bigip_pool:
     aggregate:
-      - { name: "{{ agg1['name'] }}", partition: Common, state: absent }
-      - { name: "{{ agg2['name'] }}", partition: Common, state: absent }
+      - name: "{{ agg1['name'] }}"
+        state: absent
+      - name: "{{ agg2['name'] }}"
+        state: absent
   register: result
 
 - name: Issue 01158 - Assert Remove All Pools with Aggregate - Idempotent check

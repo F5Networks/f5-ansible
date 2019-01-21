@@ -149,7 +149,7 @@ options:
     aliases:
       - pools
   version_added: 2.8
-  remove_all:
+  replace_all_with:
     description:
       - Remove pools not defined in the C(aggregate) parameter.
       - This operation is all or none, meaning that it will stop if there are some pools
@@ -296,7 +296,7 @@ EXAMPLES = r'''
       - { name: my-pool, partition: Common, lb_method: least-connections-member, slow_ramp_time: 120 }
       - { name: my-pool2, partition: Common, lb_method: least-sessions, slow_ramp_time: 120 }
       - { name: my-pool3, partition: Common, lb_method: round-robin, slow_ramp_time: 120 }
-    remove_all: yes
+    replace_all_with: yes
     provider:
       server: lb.mydomain.com
       user: admin
@@ -355,7 +355,7 @@ priority_group_activation:
   returned: changed
   type: int
   sample: 10
-remove_all:
+replace_all_with:
   description: Purges all non-aggregate pools from device
   returned: changed
   type: bool
@@ -762,13 +762,13 @@ class ModuleManager(object):
         self.want = None
         self.have = None
         self.changes = None
-        self.remove_all = False
+        self.replace_all_with = False
         self.purge_links = None
 
     def exec_module(self):
         wants = None
-        if self.module.params['remove_all']:
-            self.remove_all = True
+        if self.module.params['replace_all_with']:
+            self.replace_all_with = True
 
         if self.module.params['aggregate']:
             wants = self.merge_defaults_for_aggregate(self.module.params)
@@ -776,7 +776,7 @@ class ModuleManager(object):
         result = dict()
         changed = False
 
-        if self.remove_all and self.purge_links:
+        if self.replace_all_with and self.purge_links:
             self.purge()
             changed = True
 
@@ -802,11 +802,11 @@ class ModuleManager(object):
 
         for i, j in enumerate(aggregate):
             for k, v in iteritems(defaults):
-                if k != 'remove_all':
+                if k != 'replace_all_with':
                     if j.get(k, None) is None and v is not None:
                         aggregate[i][k] = v
 
-        if self.remove_all:
+        if self.replace_all_with:
             self.compare_aggregate_names(aggregate)
 
         return aggregate
@@ -1175,7 +1175,7 @@ class ArgumentSpec(object):
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
             ),
-            remove_all=dict(
+            replace_all_with=dict(
                 default=False,
                 type='bool',
                 aliases=['purge']
