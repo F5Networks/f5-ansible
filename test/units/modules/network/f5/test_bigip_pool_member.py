@@ -211,6 +211,7 @@ class TestManager(unittest.TestCase):
             aggregate=[
                 dict(
                     name='my-name',
+                    host="1.1.1.1",
                     port=2345,
                     state='present',
                     partition='Common',
@@ -219,9 +220,11 @@ class TestManager(unittest.TestCase):
                 ),
                 dict(
                     name='my-name2',
+                    fqdn='google.com',
                     port=2423,
                     state='present',
                     partition='Common',
+                    fqdn_auto_populate=True,
                     reuse_nodes=True,
                 )
             ],
