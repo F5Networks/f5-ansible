@@ -1,0 +1,138 @@
+---
+
+- name: Issue 01153 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 01153 - Create partition
+  bigip_partition:
+    name: SysOps
+    route_domain: 0
+
+- name: Issue 01153 - Create datacenter
+  bigip_gtm_datacenter:
+    name: dc1
+
+- name: Issue 01153 - Create GTM server
+  bigip_gtm_server:
+    name: fancy_name
+    devices:
+      - name: foo
+        address: 1.1.1.1
+    datacenter: dc1
+
+- name: Issue 01153 - Create a GTM virtual server
+  bigip_gtm_virtual_server:
+    name: GTMVSName
+    server_name: fancy_name
+    address: 10.10.10.10
+    port: 80
+
+- name: Issue 01153 - Create pool on SysOps partition, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    name: fancy-pool
+    type: a
+    partition: SysOps
+
+- name: Issue 01153 - Create a pool member from different partition
+  bigip_gtm_pool_member:
+    server_name: /Common/fancy_name
+    virtual_server: GTMVSName
+    type: a
+    pool: fancy-pool
+    partition: Common
+    pool_partition: SysOps
+  register: result
+
+- name: Issue 01153 - Assert Create a pool member from different partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01153 - Create a pool member from different partition - Idempotent check
+  bigip_gtm_pool_member:
+    server_name: /Common/fancy_name
+    virtual_server: GTMVSName
+    type: a
+    pool: fancy-pool
+    partition: Common
+    pool_partition: SysOps
+  register: result
+
+- name: Issue 01153 - Assert Create a pool member from different partition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01153 - Create pool on Common partition, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    name: fancy-pool2
+    type: a
+    partition: Common
+
+- name: Issue 01153 - Create a pool member on same partition, pool_partiton not specified
+  bigip_gtm_pool_member:
+    server_name: fancy_name
+    virtual_server: GTMVSName
+    type: a
+    pool: fancy-pool2
+    partition: Common
+  register: result
+
+- name: Issue 01153 - Assert Create a pool member on same partition, pool_partiton not specified
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01153 - Create a pool member on same partition, pool_partiton not specified - Idempotent check
+  bigip_gtm_pool_member:
+    server_name: fancy_name
+    virtual_server: GTMVSName
+    type: a
+    pool: fancy-pool2
+    partition: Common
+  register: result
+
+- name: Issue 01153 - Assert Create a pool member on same partition, pool_partiton not specified - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01153 - Remove Pools
+  bigip_gtm_pool:
+    name: "{{ item.name }}"
+    partition: "{{ item.partition }}"
+    type: a
+    state: absent
+  loop:
+    - { name: 'fancy-pool', partition: 'SysOps'}
+    - { name: 'fancy-pool2', partition: 'Common'}
+
+- name: Issue 01153 - Remove GTM server
+  bigip_gtm_server:
+    name: fancy_name
+    devices:
+      - name: foo
+        address: 1.1.1.1
+    datacenter: dc1
+    state: absent
+
+- name: Issue 01153 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: dc1
+    state: absent
+
+- name: Issue 01153 - Remove partition
+  bigip_partition:
+    name: SysOps
+    route_domain: 0
+    state: absent
+

@@ -59,7 +59,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Effective when the security policy’s enforcement mode is Blocking.</div>
+                                                                        <div>Effective when the security policy`s enforcement mode is Blocking.</div>
                                                     <div>Determines how the system treats requests that match a signature included in the signature set.</div>
                                                     <div>When <code>yes</code> the system blocks all requests that match a signature, and provides the client with a support ID number.</div>
                                                     <div>When <code>no</code> the system accepts those requests.</div>
