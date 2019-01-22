@@ -169,7 +169,7 @@ options:
       - List of pool member definitions to be created, modified or removed.
     aliases:
       - members
-  version_added: 2.8
+    version_added: 2.8
   replace_all_with:
     description:
       - Remove members not defined in the C(aggregate) parameter.
@@ -179,7 +179,7 @@ options:
     type: bool
     aliases:
       - purge
-  version_added: 2.8
+    version_added: 2.8
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -1334,7 +1334,7 @@ class ModuleManager(object):
         )
 
         query = '?$select=name,selfLink,fqdn,address,ephemeral'
-        resp = self.client.api.get(uri+query)
+        resp = self.client.api.get(uri + query)
 
         try:
             response = resp.json()

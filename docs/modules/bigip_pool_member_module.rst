@@ -28,9 +28,9 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                    
+                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -44,6 +44,17 @@ Parameters
                                                                 <td>
                                                                         <div>IP address of the pool member. This can be either IPv4 or IPv6. When creating a new pool member, one of either <code>address</code> or <code>fqdn</code> must be provided. This parameter cannot be updated after it is set.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: ip, host</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>aggregate</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>List of pool member definitions to be created, modified or removed.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: members</div>
                                     </td>
             </tr>
                                 <tr>
@@ -135,6 +146,7 @@ Parameters
                                                     <div>When <code>yes</code>, the system generates an ephemeral node for each IP address returned in response to a DNS query for the FQDN of the node. Additionally, when a DNS response indicates the IP address of an ephemeral node no longer exists, the system deletes the ephemeral node.</div>
                                                     <div>When <code>no</code>, the system resolves a DNS query for the FQDN of the node with the single IP address associated with the FQDN.</div>
                                                     <div>When creating a new pool member, the default for this parameter is <code>yes</code>.</div>
+                                                    <div>Once set this parameter cannot be changed afterwards.</div>
                                                     <div>This parameter is ignored when <code>reuse_nodes</code> is <code>yes</code>.</div>
                                                                                 </td>
             </tr>
@@ -385,6 +397,22 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>replace_all_with</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Remove members not defined in the <code>aggregate</code> parameter.</div>
+                                                    <div>This operation is all or none, meaning that it will stop if there are some pool members that cannot be removed.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: purge</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>reuse_nodes</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
                                 <td>
@@ -565,6 +593,69 @@ Examples
           name: web4
           priority_group: 1
 
+    - name: Add pool members aggregate
+      bigip_pool_member:
+        pool: my-pool
+        aggregate:
+          - host: 192.168.1.1
+            partition: Common
+            port: 80
+            description: web server
+            connection_limit: 100
+            rate_limit: 50
+            ratio: 2
+          - host: 192.168.1.2
+            partition: Common
+            port: 80
+            description: web server
+            connection_limit: 100
+            rate_limit: 50
+            ratio: 2
+          - host: 192.168.1.3
+            partition: Common
+            port: 80
+            description: web server
+            connection_limit: 100
+            rate_limit: 50
+            ratio: 2
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
+    - name: Add pool members aggregate, remove non aggregates
+      bigip_pool_member:
+        pool: my-pool
+        aggregate:
+          - host: 192.168.1.1
+            partition: Common
+            port: 80
+            description: web server
+            connection_limit: 100
+            rate_limit: 50
+            ratio: 2
+          - host: 192.168.1.2
+            partition: Common
+            port: 80
+            description: web server
+            connection_limit: 100
+            rate_limit: 50
+            ratio: 2
+          - host: 192.168.1.3
+            partition: Common
+            port: 80
+            description: web server
+            connection_limit: 100
+            rate_limit: 50
+            ratio: 2
+        replace_all_with: yes
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
 
 
 
@@ -575,7 +666,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -695,6 +786,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">50</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>replace_all_with</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Purges all non-aggregate pool members from device</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                         </table>

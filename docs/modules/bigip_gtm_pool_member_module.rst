@@ -29,7 +29,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -200,6 +200,18 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Name of the GTM pool.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>pool_partition</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Partition where the pool has been configured on.</div>
+                                                    <div>Parameter is required when creating/modifying GTM pool members that on different partition than the GTM pool.</div>
+                                                    <div>When not specified it assumes the same value as partition.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -465,6 +477,20 @@ Examples
           user: admin
       delegate_to: localhost
 
+    - name: Create a GTM pool member different partition
+      bigip_gtm_pool_member:
+        server_name: /Common/foo_name
+        virtual_server: GTMVSName
+        type: a
+        pool: foo-pool
+        pool_partition: FooBar
+        partition: Common
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
 
 
 
@@ -539,10 +565,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new description of the member.</div>
+                                            <div>The partition for the GTM pool.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My description</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">FooBar</div>
                                     </td>
             </tr>
                                 <tr>

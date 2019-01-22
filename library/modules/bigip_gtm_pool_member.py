@@ -53,6 +53,12 @@ options:
     description:
       - Device partition to manage resources on.
     default: Common
+  pool_partition:
+    description:
+      - Partition where the pool has been configured on.
+      - Parameter is required when creating/modifying GTM pool members that on different partition than the GTM pool.
+      - When not specified it assumes the same value as partition.
+    version_added: 2.6
   member_order:
     description:
       - Specifies the order in which the member will appear in the pool.
@@ -157,6 +163,20 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
+
+- name: Create a GTM pool member different partition
+  bigip_gtm_pool_member:
+    server_name: /Common/foo_name
+    virtual_server: GTMVSName
+    type: a
+    pool: foo-pool
+    pool_partition: FooBar
+    partition: Common
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -220,6 +240,11 @@ description:
   returned: changed
   type: str
   sample: My description
+description:
+  description: The partition for the GTM pool.
+  returned: changed
+  type: str
+  sample: FooBar
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -292,6 +317,7 @@ class Parameters(AnsibleF5Parameters):
         'packets_limit',
         'ratio',
         'description',
+        'pool_partition',
     ]
 
     updatables = [
@@ -375,6 +401,12 @@ class ModuleParameters(Parameters):
             return None
 
     @property
+    def pool_partition(self):
+        if self._values['pool_partition'] is None:
+            return self.partition
+        return self._values['pool_partition']
+
+    @property
     def disabled(self):
         if self._values['state'] == 'enabled':
             return False
@@ -440,6 +472,12 @@ class ReportableChanges(Changes):
     @property
     def enabled(self):
         return flatten_boolean(self._values['enabled'])
+
+    @property
+    def pool_partition(self):
+        if self._values['pool_partition'] is None:
+            return self._values['partition']
+        return self._values['pool_partition']
 
 
 class Difference(object):
@@ -566,7 +604,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
             self.want.type,
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(self.want.pool_partition, self.want.pool),
             transform_name(self.want.partition, self.want.name),
         )
         resp = self.client.api.get(uri)
@@ -614,7 +652,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
             self.want.type,
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(self.want.pool_partition, self.want.pool),
         )
         resp = self.client.api.post(uri, json=params)
         try:
@@ -635,7 +673,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
             self.want.type,
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(self.want.pool_partition, self.want.pool),
             transform_name(self.want.partition, self.want.name),
         )
         resp = self.client.api.patch(uri, json=params)
@@ -660,7 +698,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
             self.want.type,
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(self.want.pool_partition, self.want.pool),
             transform_name(self.want.partition, self.want.name),
         )
         response = self.client.api.delete(uri)
@@ -673,7 +711,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
             self.want.type,
-            transform_name(self.want.partition, self.want.pool),
+            transform_name(self.want.pool_partition, self.want.pool),
             transform_name(self.want.partition, self.want.name),
         )
         resp = self.client.api.get(uri)
@@ -723,6 +761,7 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['present', 'absent', 'disabled', 'enabled']
             ),
+            pool_partition=dict(),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

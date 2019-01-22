@@ -5,8 +5,8 @@
 .. _bigip_command_module:
 
 
-bigip_command - Run arbitrary command on F5 devices
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_command - Run TMSH and BASH commands on F5 devices
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -17,7 +17,7 @@ bigip_command - Run arbitrary command on F5 devices
 
 Synopsis
 --------
-- Sends an arbitrary command to an BIG-IP node and returns the results read from the device. This module includes an argument that will cause the module to wait for a specific condition before returning or timing out if the condition is not met.
+- Sends a TMSH or BASH command to an BIG-IP node and returns the results read from the device. This module includes an argument that will cause the module to wait for a specific condition before returning or timing out if the condition is not met.
 - This module is **not** idempotent, nor will it ever be. It is intended as a stop-gap measure to satisfy automation requirements until such a time as a real module has been developed to configure in the way you need.
 - If you are using this module, you should probably also be filing an issue to have a **real** module created for your needs.
 
