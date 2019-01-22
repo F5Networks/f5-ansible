@@ -27,13 +27,24 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>aggregate</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>List of pool definitions to be created, modified or removed.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pools</div>
+                                    </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>description</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.3)</div>                </td>
@@ -298,6 +309,22 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>replace_all_with</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Remove pools not defined in the <code>aggregate</code> parameter.</div>
+                                                    <div>This operation is all or none, meaning that it will stop if there are some pools that cannot be removed.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: purge</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>reselect_tries</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
                                 <td>
@@ -404,7 +431,7 @@ Notes
 -----
 
 .. note::
-    - To add members do a pool, use the ``bigip_pool_member`` module. Previously, the ``bigip_pool`` module allowed the management of users, but this has been removed in version 2.5 of Ansible.
+    - To add members to a pool, use the ``bigip_pool_member`` module. Previously, the ``bigip_pool`` module allowed the management of members, but this has been removed in version 2.5 of Ansible.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
@@ -435,19 +462,6 @@ Examples
         name: my-pool
         partition: Common
         lb_method: round-robin
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
-
-    - name: Add pool member
-      bigip_pool_member:
-        state: present
-        pool: my-pool
-        partition: Common
-        host: "{{ ansible_default_ipv4['address'] }}"
-        port: 80
         provider:
           server: lb.mydomain.com
           user: admin
@@ -512,19 +526,6 @@ Examples
           password: secret
       delegate_to: localhost
 
-    - name: Remove pool member from pool
-      bigip_pool_member:
-        state: absent
-        pool: my-pool
-        partition: Common
-        host: "{{ ansible_default_ipv4['address'] }}"
-        port: 80
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
-
     - name: Delete pool
       bigip_pool:
         state: absent
@@ -550,6 +551,31 @@ Examples
           password: secret
       delegate_to: localhost
 
+    - name: Add pools Aggregate
+      bigip_pool:
+        aggregate:
+          - { name: my-pool, partition: Common, lb_method: least-connections-member, slow_ramp_time: 120 }
+          - { name: my-pool2, partition: Common, lb_method: least-sessions, slow_ramp_time: 120 }
+          - { name: my-pool3, partition: Common, lb_method: round-robin, slow_ramp_time: 120 }
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
+    - name: Add pools Aggregate, purge others
+      bigip_pool:
+        aggregate:
+          - { name: my-pool, partition: Common, lb_method: least-connections-member, slow_ramp_time: 120 }
+          - { name: my-pool2, partition: Common, lb_method: least-sessions, slow_ramp_time: 120 }
+          - { name: my-pool3, partition: Common, lb_method: round-robin, slow_ramp_time: 120 }
+        replace_all_with: yes
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
 
 
 
@@ -560,7 +586,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -637,7 +663,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new minimum number of members to activate the priorty group.</div>
+                                            <div>The new minimum number of members to activate the priority group.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
@@ -654,6 +680,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>replace_all_with</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Purges all non-aggregate pools from device</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
