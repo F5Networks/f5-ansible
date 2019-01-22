@@ -148,7 +148,7 @@ options:
       - List of pool definitions to be created, modified or removed.
     aliases:
       - pools
-  version_added: 2.8
+    version_added: 2.8
   replace_all_with:
     description:
       - Remove pools not defined in the C(aggregate) parameter.
@@ -158,7 +158,7 @@ options:
     type: bool
     aliases:
       - purge
-  version_added: 2.8
+    version_added: 2.8
 notes:
   - To add members to a pool, use the C(bigip_pool_member) module. Previously, the
     C(bigip_pool) module allowed the management of members, but this has been removed
