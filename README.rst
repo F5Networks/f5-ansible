@@ -19,7 +19,7 @@
 Ansible F5
 ==========
 
-|slack badge| |travis badge|
+|slack badge| |travis badge| |shippable badge|
 
 Introduction
 ------------
@@ -83,14 +83,17 @@ Contributor License Agreement
 Individuals or business entities who contribute to this project must complete and submit the `F5 Contributor License Agreement <http://clouddocs.f5.com/products/orchestration/ansible/devel/development/cla-landing.html>`_ to Ansible_CLA@f5.com prior to their code submission being included in this project.
 
 
-.. |travis badge| image:: https://travis-ci.org/F5Networks/f5-ansible.svg?branch=devel
-    :target: https://travis-ci.org/F5Networks/f5-ansible
+.. |travis badge| image:: https://travis-ci.com/F5Networks/f5-ansible.svg?branch=devel
+    :target: https://travis-ci.com/F5Networks/f5-ansible
     :alt: Build Status
 
 .. |slack badge| image:: https://f5cloudsolutions.herokuapp.com/badge.svg
     :target: https://f5cloudsolutions.herokuapp.com
     :alt: Slack Status
 
+.. |shippable badge| image:: https://api.shippable.com/projects/57c88ded5a5c0d0f0012c53e/badge?branch=devel
+    :target: https://app.shippable.com/github/F5Networks/f5-ansible
+    :alt: Shippable Status
 
 .. _License: https://github.com/F5Networks/f5-ansible/blob/devel/COPYING
 
