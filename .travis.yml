@@ -3,45 +3,39 @@ sudo: required
 language: python
 
 python:
-#  - 2.7
-#  - 3.5
-  - 3.6
-#  - 3.7
-
-#env:
-#  - TOXENV=unit
-#  - TOXENV=style
+  - "3.5"
+  - "3.6"
 
 before_install:
-  # NOTE: this is probably not required since you're not trying to pull or
-  # push from a GitHub repo
-  - git config --global user.email "OpenStack_TravisCI@f5.com"
-  - git config --global user.name "Travis F5 Openstack"
+  - git config --global user.email "Ansible_TravisCI@f5.com"
+  - git config --global user.name "Travis F5 Ansible"
 
 install:
   - travis_retry sudo apt-get update
   - travis_retry sudo apt-get -y install libffi-dev libssl-dev
   - travis_retry pip install -r requirements.travis.txt
 
-script:
-  - tox
+stages:
+  - name: Tests
+    if: branch = devel AND type = pull_request
+  - name: Deploy_Docs
+    if: if: branch = devel AND type != pull_request
 
 jobs:
   include:
-    - stage: test
+    - stage: Tests
+      name: Unit Tests
+      script: pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
+    - name: Style and Sanity Tests
+      script: inv test.style
+    - name: Docs Tests
+      script: inv docs.build
+    - stage: Deploy_Docs
       script:
-        - inv docs.build
-        - inv test.style
-        - pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
-      python: 3.6
-      env: TOXENV=sanity
-      if: branch = devel AND type = pull_request
-
-    - stage: test
-      script:
+        - travis_retry pip install -r requirements.readthedocs.txt
         - inv docs.module
         - make docker-test && make docker-deploy
         - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel
-      python: 3.6
-      env: TOXENV=docs-deploy
-      if: branch = devel AND type != pull_request
+      python: 3.6,
+
+
