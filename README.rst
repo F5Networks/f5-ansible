@@ -60,7 +60,7 @@ What types of modules do you want created? If you have a use case and can suffic
 
 If you've got the time, consider sending an email that introduces yourself and what you do. We love hearing about how you're using the F5 Modules for Ansible.
 
-- Tim Rupp and the F5 team - solutionsfeedback@f5.com
+- Wojciech Wypior and the F5 team - solutionsfeedback@f5.com
 
 Copyright
 ---------
