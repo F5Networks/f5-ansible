@@ -1,9 +1,10 @@
+# Installing barebones
 git+https://github.com/ansible/ansible.git@devel
 invoke
 cffi
+paramiko
 
 # For test building documentation with inv docs.build
-awscli
 sphinx
 markupsafe
 git+https://github.com/f5devcentral/f5-sphinx-theme@master
@@ -11,11 +12,10 @@ cloud_sptheme
 sphinxjp.themes.basicstrap
 sphinxcontrib-napoleon
 
-# Test running
+# Test running for style, unit and sanity tests
 pycodestyle
+flake8
 pytest
 pytest-xdist
-flake8
 nose
 mock
-virtualenv
