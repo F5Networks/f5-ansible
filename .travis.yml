@@ -32,6 +32,7 @@ jobs:
       script:
         - inv docs.build
         - inv test.style
+        - pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
       python: 3.6
       env: TOXENV=sanity
       if: branch = devel AND type = pull_request
