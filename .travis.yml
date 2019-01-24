@@ -2,10 +2,6 @@ sudo: required
 
 language: python
 
-python:
-  - "3.5"
-  - "3.6"
-
 before_install:
   - git config --global user.email "Ansible_TravisCI@f5.com"
   - git config --global user.name "Travis F5 Ansible"
@@ -19,23 +15,26 @@ stages:
   - name: Tests
     if: branch = devel AND type = pull_request
   - name: Deploy_Docs
-    if: if: branch = devel AND type != pull_request
+    if: branch = devel AND type != pull_request
 
 jobs:
   include:
     - stage: Tests
       name: Unit Tests
-      script: pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
+      script:
+        - travis_retry pip install pytest --upgrade
+        - pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
+      python: "3.6"
     - name: Style and Sanity Tests
       script: inv test.style
+      python: "3.6"
     - name: Docs Tests
       script: inv docs.build
+      python: "3.6"
     - stage: Deploy_Docs
       script:
         - travis_retry pip install -r requirements.readthedocs.txt
         - inv docs.module
         - make docker-test && make docker-deploy
         - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel
-      python: 3.6,
-
-
+      python: "3.6"

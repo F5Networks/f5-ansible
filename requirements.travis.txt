@@ -13,8 +13,6 @@ sphinxcontrib-napoleon
 
 # Test running
 pycodestyle
-pytest
-pytest-xdist
 flake8
 nose
 mock
