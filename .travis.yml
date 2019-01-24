@@ -21,7 +21,9 @@ jobs:
   include:
     - stage: Tests
       name: Unit Tests
-      script: pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
+      script:
+        - travis_retry pip install pytest --upgrade
+        - pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
       python: "3.6"
     - name: Style and Sanity Tests
       script: inv test.style
