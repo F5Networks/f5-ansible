@@ -39,12 +39,11 @@
 
 - name: Issue 01153 - Create a pool member from different partition
   bigip_gtm_pool_member:
-    server_name: /Common/fancy_name
+    server_name: fancy_name
     virtual_server: GTMVSName
     type: a
-    pool: fancy-pool
+    pool: /SysOps/fancy-pool
     partition: Common
-    pool_partition: SysOps
   register: result
 
 - name: Issue 01153 - Assert Create a pool member from different partition
@@ -55,12 +54,11 @@
 
 - name: Issue 01153 - Create a pool member from different partition - Idempotent check
   bigip_gtm_pool_member:
-    server_name: /Common/fancy_name
+    server_name: fancy_name
     virtual_server: GTMVSName
     type: a
-    pool: fancy-pool
+    pool: /SysOps/fancy-pool
     partition: Common
-    pool_partition: SysOps
   register: result
 
 - name: Issue 01153 - Assert Create a pool member from different partition - Idempotent check
@@ -69,52 +67,12 @@
       - result is not changed
       - result is success
 
-- name: Issue 01153 - Create pool on Common partition, type 'a'
+- name: Issue 01153 - Remove Pool
   bigip_gtm_pool:
-    preferred_lb_method: round-robin
-    name: fancy-pool2
-    type: a
-    partition: Common
-
-- name: Issue 01153 - Create a pool member on same partition, pool_partiton not specified
-  bigip_gtm_pool_member:
-    server_name: fancy_name
-    virtual_server: GTMVSName
-    type: a
-    pool: fancy-pool2
-    partition: Common
-  register: result
-
-- name: Issue 01153 - Assert Create a pool member on same partition, pool_partiton not specified
-  assert:
-    that:
-      - result is changed
-      - result is success
-
-- name: Issue 01153 - Create a pool member on same partition, pool_partiton not specified - Idempotent check
-  bigip_gtm_pool_member:
-    server_name: fancy_name
-    virtual_server: GTMVSName
-    type: a
-    pool: fancy-pool2
-    partition: Common
-  register: result
-
-- name: Issue 01153 - Assert Create a pool member on same partition, pool_partiton not specified - Idempotent check
-  assert:
-    that:
-      - result is not changed
-      - result is success
-
-- name: Issue 01153 - Remove Pools
-  bigip_gtm_pool:
-    name: "{{ item.name }}"
-    partition: "{{ item.partition }}"
+    name: fancy-pool
+    partition: SysOps
     type: a
     state: absent
-  loop:
-    - { name: 'fancy-pool', partition: 'SysOps'}
-    - { name: 'fancy-pool2', partition: 'Common'}
 
 - name: Issue 01153 - Remove GTM server
   bigip_gtm_server:

@@ -26,11 +26,3 @@
   bigip_gtm_datacenter:
     name: "{{ dc_name1 }}"
     state: absent
-
-- name: Deprovision GTM on the device
-  bigip_provision:
-    module: gtm
-    state: absent
-  tags:
-    - module-provisioning
-    - deprovision-module

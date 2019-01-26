@@ -410,21 +410,44 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'description', 'name', 'loadBalancingMode', 'monitor', 'slowRampTime',
-        'reselectTries', 'serviceDownAction', 'metadata', 'minActiveMembers',
+        'description',
+        'name',
+        'loadBalancingMode',
+        'monitor',
+        'slowRampTime',
+        'reselectTries',
+        'serviceDownAction',
+        'metadata',
+        'minActiveMembers',
     ]
 
     returnables = [
-        'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'slow_ramp_time',
-        'reselect_tries', 'monitor', 'name', 'partition', 'metadata',
+        'monitor_type',
+        'quorum',
+        'monitors',
+        'service_down_action',
+        'description',
+        'lb_method',
+        'slow_ramp_time',
+        'reselect_tries',
+        'monitor',
+        'name',
+        'partition',
+        'metadata',
         'priority_group_activation',
     ]
 
     updatables = [
-        'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries',
-        'metadata', 'priority_group_activation',
+        'monitor_type',
+        'quorum',
+        'monitors',
+        'service_down_action',
+        'description',
+        'lb_method',
+        'slow_ramp_time',
+        'reselect_tries',
+        'metadata',
+        'priority_group_activation',
     ]
 
     @property
@@ -1176,7 +1199,7 @@ class ArgumentSpec(object):
                 fallback=(env_fallback, ['F5_PARTITION'])
             ),
             replace_all_with=dict(
-                default=False,
+                default='no',
                 type='bool',
                 aliases=['purge']
             )
