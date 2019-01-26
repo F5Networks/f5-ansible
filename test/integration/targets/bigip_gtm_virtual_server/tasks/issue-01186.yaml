@@ -1,0 +1,111 @@
+---
+
+- name: Issue 01186 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 01186 - Create datacenter
+  bigip_gtm_datacenter:
+    name: issue_01186_dc
+
+- name: Issue 01186 - Create GTM server
+  bigip_gtm_server:
+    name: issue_01186_server
+    devices:
+      - name: foo
+        address: 1.1.1.1
+    datacenter: issue_01186_dc
+
+- name: Issue 01186 - Create a GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "/Mickey/Mouse"
+    server_name: issue_01186_server
+    address: 10.10.10.1
+    port: 80
+  register: result
+
+- name: Issue 01186 - Assert Create a GTM virtual server
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01186 - Create a GTM virtual server - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "/Mickey/Mouse"
+    server_name: issue_01186_server
+    address: 10.10.10.1
+    port: 80
+  register: result
+
+- name: Issue 01186 - Assert Create a GTM virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01186 - Update a GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "/Mickey/Mouse"
+    server_name: issue_01186_server
+    address: 10.10.10.1
+    port: 8080
+  register: result
+
+- name: Issue 01186 - Assert Update a GTM virtual server
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01186 - Update a GTM virtual server - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "/Mickey/Mouse"
+    server_name: issue_01186_server
+    address: 10.10.10.1
+    port: 8080
+  register: result
+
+- name: Issue 01186 - Assert Update a GTM virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01186 - Remove GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "/Mickey/Mouse"
+    server_name: issue_01186_server
+    state: absent
+  register: result
+
+- name: Issue 01186 - Assert Remove GTM virtual server
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01186 - Remove GTM virtual server - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "/Mickey/Mouse"
+    server_name: issue_01186_server
+    state: absent
+  register: result
+
+- name: Issue 01186 - Assert Remove GTM virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01186 - Remove GTM server
+  bigip_gtm_server:
+    name: issue_01186_server
+    state: absent
+
+- name: Issue 01186 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: issue_01186_dc
+    state: absent

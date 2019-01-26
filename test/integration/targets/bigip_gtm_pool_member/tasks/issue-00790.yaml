@@ -102,11 +102,3 @@
   bigip_gtm_datacenter:
     name: "{{ dc_name1 }}"
     state: absent
-
-- name: Issue 00716 - De-provision GTM on the device
-  bigip_provision:
-    module: gtm
-    state: absent
-  tags:
-    - module-provisioning
-    - deprovision-module

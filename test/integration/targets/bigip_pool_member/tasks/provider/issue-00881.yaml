@@ -39,7 +39,7 @@
 - name: Issue 00881 - Disable FQDN pool member
   bigip_pool_member:
     pool: pool1
-    name: google.com
+    fqdn: google.com
     port: 80
     state: disabled
     provider: "{{ provider }}"
@@ -54,7 +54,7 @@
 - name: Issue 00881 - Disable FQDN pool member - Idempotent check
   bigip_pool_member:
     pool: pool1
-    name: google.com
+    fqdn: google.com
     port: 80
     state: disabled
     provider: "{{ provider }}"
@@ -69,7 +69,7 @@
 - name: Issue 00881 - Remove pool member
   bigip_pool_member:
     pool: pool1
-    name: google.com
+    fqdn: google.com
     port: 80
     state: absent
     provider: "{{ provider }}"

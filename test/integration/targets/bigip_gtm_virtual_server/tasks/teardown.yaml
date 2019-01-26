@@ -17,11 +17,3 @@
     state: absent
   loop:
     - "{{ dc_name1 }}"
-
-- name: Deprovision GTM
-  bigip_provision:
-    name: gtm
-    state: absent
-  tags:
-    - module-provisioning
-    - deprovision-module

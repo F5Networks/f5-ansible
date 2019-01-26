@@ -22,7 +22,7 @@
 - name: Issue 01027 - Add member, existing node, node in Common partition, pool is different partition
   bigip_pool_member:
     pool: /p1027/pool1
-    name: 1.1.1.1
+    address: 1.1.1.1
     reuse_nodes: yes
     port: 80
     provider: "{{ provider }}"
@@ -37,7 +37,7 @@
 - name: Issue 01027 - Add member, existing node, node in Common partition, pool is different partition - Idempotent check
   bigip_pool_member:
     pool: /p1027/pool1
-    name: 1.1.1.1
+    address: 1.1.1.1
     reuse_nodes: yes
     port: 80
     provider: "{{ provider }}"
