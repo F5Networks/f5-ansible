@@ -29,18 +29,11 @@ Paste verbatim output from “tmsh show sys version” between quotes below
 
 ```
 
-##### LIBRARY VERSIONS
-<!---
-Paste verbatim output from “pip freeze | egrep '(f5-sdk|bigsuds)'” between quotes below
--->
-```
-
-```
-
 ##### CONFIGURATION
 <!---
 Mention any settings you have changed/added/removed in ansible.cfg
 (or using the ANSIBLE_* environment variables).
+Mention the version of the f5ansible galaxy role used in testing.
 -->
 
 ##### OS / ENVIRONMENT
@@ -54,8 +47,11 @@ managing, or say “N/A” for anything that is not platform-specific.
 
 ##### STEPS TO REPRODUCE
 <!---
-For bugs, show exactly how to reproduce the problem.
+For bugs, show exactly how to reproduce the problem, providing a test playbook using 
+latest f5ansible galaxy role. 
+This is a requirement for the issue to be accepted and resolved efficiently.
 For new features, show how the feature would be used.
+
 -->
 
 <!--- Paste example playbooks or commands between quotes below -->
