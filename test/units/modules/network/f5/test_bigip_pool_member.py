@@ -84,11 +84,6 @@ class TestParameters(unittest.TestCase):
             partition='Common',
             fqdn_auto_populate=False,
             reuse_nodes=False,
-
-            # Deprecated params
-            # TODO(Remove in 2.7)
-            session_state='disabled',
-            monitor_state='disabled',
         )
 
         p = ModuleParameters(params=args)
@@ -109,20 +104,24 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             pool='my-pool',
-            name='my-name',
+            fqdn='foo.bar.com',
             port=2345,
             state='present',
             partition='Common',
             reuse_nodes=True,
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                password='password',
+                server='localhost',
+                user='admin'
+            )
         ))
 
         current_node = NodeApiParameters(params=load_fixture('load_net_node_with_fqdn.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_one_of=self.spec.required_one_of,
         )
         mm = ModuleManager(module=module)
 
@@ -142,20 +141,24 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             pool='my-pool',
-            name='7.3.67.8',
+            address='7.3.67.8',
             port=2345,
             state='present',
             partition='Common',
             reuse_nodes=True,
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                password='password',
+                server='localhost',
+                user='admin'
+            )
         ))
 
         current_node = NodeApiParameters(params=load_fixture('load_net_node_with_ipv4_address.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_one_of=self.spec.required_one_of,
         )
         mm = ModuleManager(module=module)
 
@@ -175,21 +178,25 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             pool='my-pool',
-            name='my-name',
+            fqdn='foo.bar.com',
             port=2345,
             state='present',
             partition='Common',
             reuse_nodes=True,
             fqdn_auto_populate=False,
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                password='password',
+                server='localhost',
+                user='admin'
+            )
         ))
 
         current_node = NodeApiParameters(params=load_fixture('load_net_node_with_fqdn.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_one_of=self.spec.required_one_of,
         )
         mm = ModuleManager(module=module)
 
@@ -212,7 +219,7 @@ class TestManager(unittest.TestCase):
                 dict(
                     name='my-name',
                     host="1.1.1.1",
-                    port=2345,
+                    port=1234,
                     state='present',
                     partition='Common',
                     reuse_nodes=True,
@@ -228,14 +235,18 @@ class TestManager(unittest.TestCase):
                     reuse_nodes=True,
                 )
             ],
-            server='localhost',
-            password='password',
-            user='admin'
+            provider=dict(
+                password='password',
+                server='localhost',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_one_of=self.spec.required_one_of,
         )
 
         mm = ModuleManager(module=module)
