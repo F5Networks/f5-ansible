@@ -128,11 +128,3 @@
     server_name: "{{ server_name }}"
     state: absent
   register: result
-
-- name: De-provision GTM
-  bigip_provision:
-    name: gtm
-    state: absent
-  tags:
-    - module-provisioning
-    - deprovision-module

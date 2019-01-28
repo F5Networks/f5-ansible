@@ -1571,16 +1571,18 @@ class ArgumentSpec(object):
                 type='list',
                 elements='dict',
                 options=aggregate_spec,
+                aliases=['members'],
                 mutually_exclusive=[
                     ['address', 'fqdn']
                 ],
                 required_one_of=[
                     ['address', 'fqdn']
-                ]
+                ],
             ),
             replace_all_with=dict(
                 type='bool',
-                aliases=['purge']
+                aliases=['purge'],
+                default='no'
             ),
             pool=dict(required=True),
             partition=dict(
@@ -1593,10 +1595,11 @@ class ArgumentSpec(object):
         self.argument_spec.update(f5_argument_spec)
 
         self.mutually_exclusive = [
-            ['address', 'fqdn', 'aggregate'],
+            ['address', 'aggregate'],
+            ['fqdn', 'aggregate']
         ]
         self.required_one_of = [
-            ['name', 'address', 'fqdn', 'aggregate'],
+            ['address', 'fqdn', 'aggregate'],
         ]
 
 

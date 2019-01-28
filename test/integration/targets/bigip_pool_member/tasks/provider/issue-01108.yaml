@@ -11,7 +11,7 @@
     pool: "TestPool-issue01108"
     fqdn_auto_populate: no
     preserve_node: no
-    name: "{{ item.Name }}"
+    fqdn: "{{ item.Name }}"
     port: "{{ item.Port }}"
     availability_requirements:
       type: all
@@ -34,7 +34,7 @@
     pool: "TestPool-issue01108"
     fqdn_auto_populate: no
     preserve_node: no
-    name: "{{ item.Name }}"
+    fqdn: "{{ item.Name }}"
     port: "{{ item.Port }}"
     availability_requirements:
       type: all

@@ -1,0 +1,171 @@
+---
+- name: Issue 01185 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 01185 - Create datacenter
+  bigip_gtm_datacenter:
+    name: issue_01185_dc1
+
+- name: Issue 01185 - Create GTM server
+  bigip_gtm_server:
+    name: issue_01185
+    devices:
+      - name: issue_01185_device
+        address: 1.1.1.1
+    datacenter: issue_01185_dc1
+
+- name: Issue 01185 - Create a GTM virtual servers
+  bigip_gtm_virtual_server:
+    name: "{{ item.name }}"
+    server_name: "{{ item.server_name }}"
+    address: "{{ item.address }}"
+    port: "{{ item.port }}"
+  loop:
+    - { name: issue_01185_vs1, server_name: issue_01185, port: 8080, address: 10.10.10.1 }
+    - { name: issue_01185_vs2, server_name: issue_01185, port: 8081, address: 10.10.10.2 }
+    - { name: issue_01185_vs3, server_name: issue_01185, port: 8082, address: 10.10.10.3 }
+    - { name: issue_01185_vs4, server_name: issue_01185, port: 8083, address: 10.10.10.4 }
+    - { name: issue_01185_vs5, server_name: issue_01185, port: 8084, address: 10.10.10.5 }
+
+- name: Issue 01185 - Create pool, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    name: issue_01185_pool
+    type: a
+
+- name: Issue 01185 - Add 2 members to GTM pool non-aggregate
+  bigip_gtm_pool_member:
+    pool: issue_01185_pool
+    type: a
+    ratio: "{{ item.ratio }}"
+    server_name: "{{ item.server }}"
+    virtual_server: "{{ item.vs }}"
+    member_order: "{{ item.order }}"
+  loop:
+    - { vs: issue_01185_vs1, server: issue_01185, ratio: '1', order: '0' }
+    - { vs: issue_01185_vs2, server: issue_01185, ratio: '1', order: '1' }
+
+- name: Issue 01185 - Add GTM pool members aggregate
+  bigip_gtm_pool_member:
+    pool: issue_01185_pool
+    type: a
+    aggregate:
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs3
+        partition: Common
+        description: web server1
+        member_order: 0
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs4
+        partition: Common
+        description: web server2
+        member_order: 1
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs5
+        partition: Common
+        description: web server3
+        member_order: 2
+    replace_all_with: yes
+  register: result
+
+- name: Issue 01185 - Assert Add GTM pool members aggregate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01185 - Add GTM pool members aggregate - Idempotent check
+  bigip_gtm_pool_member:
+    pool: issue_01185_pool
+    type: a
+    aggregate:
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs3
+        partition: Common
+        description: web server1
+        member_order: 0
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs4
+        partition: Common
+        description: web server2
+        member_order: 1
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs5
+        partition: Common
+        description: web server3
+        member_order: 2
+  register: result
+
+- name: Issue 01185 - Assert Add GTM pool members aggregate - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01185 - Update GTM pool members aggregate, remove non aggregates
+  bigip_gtm_pool_member:
+    pool: issue_01185_pool
+    type: a
+    aggregate:
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs3
+        partition: Common
+        description: web server8082
+        member_order: 0
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs4
+        partition: Common
+        description: web server8083
+        member_order: 1
+    replace_all_with: yes
+  register: result
+
+- name: Issue 01185 - Issue 01185 - Update GTM pool members aggregate, remove non aggregates
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01185 - Update GTM pool members aggregate, remove non aggregates - Idempotent check
+  bigip_gtm_pool_member:
+    pool: issue_01185_pool
+    type: a
+    aggregate:
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs3
+        partition: Common
+        description: web server8082
+        member_order: 0
+      - server_name: issue_01185
+        virtual_server: issue_01185_vs4
+        partition: Common
+        description: web server8083
+        member_order: 1
+    replace_all_with: yes
+  register: result
+
+- name: Issue 01185 - Issue 01185 - Update GTM pool members aggregate, remove non aggregates - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01185 - Remove pool, type 'a'
+  bigip_gtm_pool:
+    name: issue_01185_pool
+    type: a
+    state: absent
+
+- name: Issue 01185 - Remove GTM server
+  bigip_gtm_server:
+    name: issue_01185
+    state: absent
+
+- name: Issue 01185 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: issue_01185_dc1
+    state: absent
+
