@@ -3,9 +3,20 @@
 Filing issues
 =============
 
-If you run into any issues while working with the F5 modules for Ansible, you should submit them.
+If you run into any issues while working with the F5 modules for Ansible, before you file an bug-report go
+through this these steps first, this is to ensure that F5 triages the problems as efficiently as possible:
 
-For F5 to triage as quickly as possible, please follow these guidelines.
+- Check if the issue has been discussed and is closed/resolved
+- If you have not done so already install f5ansible galaxy role more on |galaxy_role|, which will allows testing
+  issues against the current development code
+
+.. |galaxy_role| raw:: html
+
+   <a href="https://galaxy.ansible.com/f5devcentral/f5ansible" target="_blank">this page</a>
+
+- If the problem is fixed while using f5ansible role, the bugfix will appear in the next Ansible release cycle
+- If testing with the role yields the same results, please file an issue following below guidelines
+
 
 Be verbose
 ----------
@@ -25,6 +36,7 @@ Some things F5 wants to know are:
 - If this is a feature request, which `tmsh` commands meet your needs
 - If this is a feature request for a module, provide an example (in your own YAML) and what you think the parameters to the would look like
 - If you have uploaded a qkview to F5
+- Reproduced the problem with the latest updated F5Ansible Galaxy Role
 
 The Issue template asks these questions.
 
