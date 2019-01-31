@@ -369,7 +369,7 @@ class ModuleManager(object):
                 'Failed to import ASM policy.'
             )
         if response['status'] == 'COMPLETED':
-                return True
+            return True
 
     def import_file_to_device(self):
         name = os.path.split(self.want.source)[1]

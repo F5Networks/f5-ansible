@@ -1,0 +1,76 @@
+---
+- name: Issue 01175 - Create user
+  bigip_user:
+    partition_access:
+      - Common:manager
+    username_credential: ansible
+    password_credential: ansible
+    update_password: on_create
+    provider: "{{ provider }}"
+
+- name: Issue 01175 - Add virtual server, non-admin user - Provider
+  bigip_virtual_server:
+    name: issue_01175_server
+    destination: 10.3.3.3
+    port: 80
+    state: present
+    insert_metadata: no
+    provider:
+      user: ansible
+      password: ansible
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 01175 - Assert Add virtual server, non-admin user - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01175 - Add virtual server, non-admin user - Provider - Idempotent check
+  bigip_virtual_server:
+    name: issue_01175_server
+    destination: 10.3.3.3
+    port: 80
+    state: present
+    insert_metadata: no
+    provider:
+      user: ansible
+      password: ansible
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 01175 - Assert Add virtual server, non-admin user - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01175 - Add virtual server, non-admin user, meta data on - Provider - Expect failure
+  bigip_virtual_server:
+    name: issue_01175_server
+    description: "this will fail"
+    provider:
+      user: ansible
+      password: ansible
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  failed_when: result is success
+
+- name: Issue 01175 - Remove VS - Provider
+  bigip_virtual_server:
+    name: issue_01175_server
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01175 - Remove user
+  bigip_user:
+    username_credential: ansible
+    state: absent
+    provider: "{{ provider }}"

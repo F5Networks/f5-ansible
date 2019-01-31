@@ -941,9 +941,9 @@ class Difference(object):
     def fqdn_auto_populate(self):
         if self.want.fqdn_auto_populate is not None:
             if self.want.fqdn_auto_populate != self.have.fqdn_auto_populate:
-                    raise F5ModuleError(
-                        "The fqdn_auto_populate cannot be changed once it has been set."
-                    )
+                raise F5ModuleError(
+                    "The fqdn_auto_populate cannot be changed once it has been set."
+                )
 
     @property
     def monitors(self):
