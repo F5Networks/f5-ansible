@@ -1,0 +1,126 @@
+---
+
+- name: Issue 01770 - Create VS blank policies - Provider
+  bigip_virtual_server:
+    name: vs_issue_1170
+    destination: "10.10.10.10"
+    port: 8080
+    policies: ""
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01770 - Assert Create VS blank policies - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01770 - Create VS blank policies - Provider - Idempotent check
+  bigip_virtual_server:
+    name: vs_issue_1170
+    destination: "10.10.10.10"
+    port: 8080
+    policies: ""
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01770 - Assert Create VS blank policies - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01770 - Update VS blank iRules - Provider
+  bigip_virtual_server:
+    name: vs_issue_1170
+    description: "blank one"
+    irules: ""
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01770 - Assert Update VS blank iRules - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01770 - Update VS blank iRules - Provider - Idempotent check
+  bigip_virtual_server:
+    name: vs_issue_1170
+    description: "blank one"
+    irules: ""
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01770 - Assert Update VS blank iRules - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01770 - Create VS blank policies using empty list - Provider
+  bigip_virtual_server:
+    name: vs_issue_1170_2
+    destination: "10.10.10.12"
+    port: 8080
+    policies: []
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01770 - Assert Create VS blank policies using empty list - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01770 - Create VS blank policies using empty list - Provider - Idempotent check
+  bigip_virtual_server:
+    name: vs_issue_1170_2
+    destination: "10.10.10.12"
+    port: 8080
+    policies: []
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01770 - Assert Create VS blank policies using empty list - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01770 - Update VS blank iRules using empty list - Provider
+  bigip_virtual_server:
+    name: vs_issue_1170_2
+    irules: []
+    description: "empty list"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01770 - Assert Update VS blank iRules using empty list - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01770 - Update VS blank iRules using empty list - Provider - Idempotent check
+  bigip_virtual_server:
+    name: vs_issue_1170_2
+    irules: []
+    description: "empty list"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01770 - Assert Update VS blank iRules using empty list - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01770 - VS cleanup - Provider
+  bigip_virtual_server:
+    name: "{{ item }}"
+    state: absent
+    provider: "{{ provider }}"
+  with_items:
+    - vs_issue_1170
+    - vs_issue_1170_2

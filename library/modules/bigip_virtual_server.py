@@ -1925,6 +1925,8 @@ class UsableChanges(Changes):
             return None
         if self._values['type'] in ['dhcp', 'stateless', 'reject', 'internal']:
             return None
+        if self._values['irules'] == '':
+            return []
         return self._values['irules']
 
     @property
@@ -1933,6 +1935,8 @@ class UsableChanges(Changes):
             return None
         if self._values['type'] in ['dhcp', 'reject', 'internal']:
             return None
+        if self._values['policies'] == '':
+            return []
         return self._values['policies']
 
     @property
@@ -2064,8 +2068,18 @@ class ReportableChanges(Changes):
     def policies(self):
         if len(self._values['policies']) == 0:
             return []
+        if len(self._values['policies']) == 1 and self._values['policies'][0] == '':
+            return ''
         result = ['/{0}/{1}'.format(x['partition'], x['name']) for x in self._values['policies']]
         return result
+
+    @property
+    def irules(self):
+        if len(self._values['irules']) == 0:
+            return []
+        if len(self._values['irules']) == 1 and self._values['irules'][0] == '':
+            return ''
+        return self._values['irules']
 
     @property
     def enabled_vlans(self):
@@ -2865,7 +2879,7 @@ class Difference(object):
     def policies(self):
         if self.want.policies is None:
             return None
-        if self.want.policies == '' and self.have.policies is None:
+        if self.want.policies in [[], ''] and self.have.policies is None:
             return None
         if self.want.policies == '' and len(self.have.policies) > 0:
             return []
@@ -2912,7 +2926,7 @@ class Difference(object):
             return None
         if self.want.irules == '' and len(self.have.irules) > 0:
             return []
-        if self.want.irules == '' and len(self.have.irules) == 0:
+        if self.want.irules in [[], ''] and len(self.have.irules) == 0:
             return None
         if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
             return self.want.irules
@@ -3156,7 +3170,6 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
-
         if self.want.insert_metadata:
             # Mark the resource as managed by Ansible, this is default behavior
             params = mark_managed_by(self.module.ansible_version, params)

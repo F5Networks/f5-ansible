@@ -23,7 +23,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 01175 - Add virtual server, non-admin user - Provider
+- name: Issue 01175 - Assert Add virtual server, non-admin user - Provider
   assert:
     that:
       - result is changed
@@ -44,7 +44,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 01175 - Add virtual server, non-admin user - Provider - Idempotent check
+- name: Issue 01175 - Assert Add virtual server, non-admin user - Provider - Idempotent check
   assert:
     that:
       - result is not changed
