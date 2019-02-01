@@ -1,0 +1,14 @@
+---
+vs_name: vs_issue_1187
+vs_name_2: vs_issue_1187_2
+destination: 10.20.20.1
+destination_2: 10.20.20.2
+port: 8080
+rate_limit: 1000
+rate_limit_2: 3000
+dst_mask: 100
+dst_mask_2: 200
+src_mask: 128
+src_mask_2: 32
+mode_1: destination
+mode_2: source
