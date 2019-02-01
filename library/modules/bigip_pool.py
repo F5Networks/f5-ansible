@@ -281,9 +281,18 @@ EXAMPLES = r'''
 - name: Add pools Aggregate
   bigip_pool:
     aggregate:
-      - { name: my-pool, partition: Common, lb_method: least-connections-member, slow_ramp_time: 120 }
-      - { name: my-pool2, partition: Common, lb_method: least-sessions, slow_ramp_time: 120 }
-      - { name: my-pool3, partition: Common, lb_method: round-robin, slow_ramp_time: 120 }
+      - name: my-pool
+        partition: Common
+        lb_method: least-connections-member
+        slow_ramp_time: 120
+      - name: my-pool2
+        partition: Common
+        lb_method: least-sessions
+        slow_ramp_time: 120
+      - name: my-pool3
+        partition: Common
+        lb_method: round-robin
+        slow_ramp_time: 120
     provider:
       server: lb.mydomain.com
       user: admin
@@ -293,9 +302,18 @@ EXAMPLES = r'''
 - name: Add pools Aggregate, purge others
   bigip_pool:
     aggregate:
-      - { name: my-pool, partition: Common, lb_method: least-connections-member, slow_ramp_time: 120 }
-      - { name: my-pool2, partition: Common, lb_method: least-sessions, slow_ramp_time: 120 }
-      - { name: my-pool3, partition: Common, lb_method: round-robin, slow_ramp_time: 120 }
+      - name: my-pool
+        partition: Common
+        lb_method: least-connections-member
+        slow_ramp_time: 120
+      - name: my-pool2
+        partition: Common
+        lb_method: least-sessions
+        slow_ramp_time: 120
+      - name: my-pool3
+        partition: Common
+        lb_method: round-robin
+        slow_ramp_time: 120
     replace_all_with: yes
     provider:
       server: lb.mydomain.com
@@ -836,7 +854,8 @@ class ModuleManager(object):
 
     def compare_aggregate_names(self, items):
         on_device = self._read_purge_collection()
-
+        if not on_device:
+            return False
         aggregates = [item['name'] for item in items]
         collection = [item['name'] for item in on_device]
 
@@ -991,8 +1010,9 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-
-        return response['items']
+        if 'items' in response:
+            return response['items']
+        return []
 
     def create_on_device(self):
         params = self.changes.api_params()

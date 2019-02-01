@@ -442,6 +442,26 @@ options:
       - source-destination
     default: object
     version_added: 2.8
+  clone_pools:
+    description:
+      - Specifies a pool or list of pools that the virtual server uses to replicate either client-side
+        or server-side traffic.
+      - Typically this option is used for intrusion detection.
+    version_added: 2.8
+    suboptions:
+      pool_name:
+        description:
+          - The pool name to which the server replicates the traffic.
+          - Only pools created on Common partition or on the same partition as the virtual server can be used.
+          - Referencing pool on common partition needs to be done in the full path format,
+            for example, C(/Common/pool_name).
+        required: True
+      context:
+        description:
+          - The context option for a clone pool to replicate either client-side or server-side traffic.
+        choices:
+         - clientside
+         - serverside
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -645,6 +665,23 @@ EXAMPLES = r'''
       user: admin
       password: secret
   delegate_to: localhost
+
+- name: Add FastL4 virtual server with clone_pools
+  bigip_virtual_server:
+    destination: 1.1.1.1
+    name: fastl4_vs
+    port: 80
+    profiles:
+      - fastL4
+    state: present
+    clone_pools:
+      - pool_name: FooPool
+        context: clientside
+    provider:
+      server: lb.mydomain.net
+      user: admin
+      password: secret
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -793,6 +830,11 @@ rate_limit_mode:
   returned: changed
   type: str
   sample: object-source
+clone_pools:
+  description: Pools to which virtual server copies traffic.
+  returned: changed
+  type: list
+  sample: [{'pool_name':'/Common/Pool1', 'context': 'clientside'}]
 '''
 
 import os
@@ -872,6 +914,7 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitMode': 'rate_limit_mode',
         'rateLimitDstMask': 'rate_limit_dst_mask',
         'rateLimitSrcMask': 'rate_limit_src_mask',
+        'clonePools': 'clone_pools',
     }
 
     api_attributes = [
@@ -912,6 +955,7 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitMode',
         'rateLimitDstMask',
         'rateLimitSrcMask',
+        'clonePools',
     ]
 
     updatables = [
@@ -946,6 +990,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_mode',
         'rate_limit_src_mask',
         'rate_limit_dst_mask',
+        'clone_pools',
     ]
 
     returnables = [
@@ -984,6 +1029,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_mode',
         'rate_limit_src_mask',
         'rate_limit_dst_mask',
+        'clone_pools',
     ]
 
     profiles_mutex = [
@@ -1265,6 +1311,24 @@ class Parameters(AnsibleF5Parameters):
         if profile['name'] in self._read_current_serverssl_profiles_from_device():
             return True
         return False
+
+    def _check_pool(self, item):
+        pool = transform_name(name=fq_name(self.partition, item))
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            pool
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            raise F5ModuleError(
+                'The specified pool {0} does not exist.'.format(pool)
+            )
+        return item
 
 
 class ApiParameters(Parameters):
@@ -1579,6 +1643,21 @@ class ApiParameters(Parameters):
             return 0
         return int(self._values['rate_limit'])
 
+    @property
+    def clone_pools(self):
+        if self._values['clone_pools'] is None:
+            return None
+        result = []
+        for item in self._values['clone_pools']:
+            pool_name = fq_name(item['partition'], item['name'])
+            context = item['context']
+            tmp = {
+                'name': pool_name,
+                'context': context
+            }
+            result.append(tmp)
+        return result
+
 
 class ModuleParameters(Parameters):
     services_map = {
@@ -1630,6 +1709,19 @@ class ModuleParameters(Parameters):
         raise F5ModuleError(
             "Valid ports must be in range 0 - 65535"
         )
+
+    def _check_clone_pool_contexts(self):
+        client = 0
+        server = 0
+        for item in self._values['clone_pools']:
+            if item['context'] == 'clientside':
+                client += 1
+            if item['context'] == 'serverside':
+                server += 1
+        if client > 1 or server > 1:
+            raise F5ModuleError(
+                'You must specify only one clone pool for each context.'
+            )
 
     @property
     def destination(self):
@@ -2038,6 +2130,24 @@ class ModuleParameters(Parameters):
         raise F5ModuleError(
             "Valid 'rate_limit_dst_mask' must be in range 0 - 4294967295."
         )
+
+    @property
+    def clone_pools(self):
+        if self._values['clone_pools'] is None:
+            return None
+        if len(self._values['clone_pools']) == 1 and self._values['clone_pools'][0] in ['', []]:
+            return []
+        self._check_clone_pool_contexts()
+        result = []
+        for item in self._values['clone_pools']:
+            pool_name = fq_name(self.partition, self._check_pool(item['pool_name']))
+            context = item['context']
+            tmp = {
+                'name': pool_name,
+                'context': context
+            }
+            result.append(tmp)
+        return result
 
 
 class Changes(Parameters):
@@ -3128,6 +3238,13 @@ class Difference(object):
         if result:
             return dict(security_nat_policy=result)
 
+    @property
+    def clone_pools(self):
+        if self.want.clone_pools == [] and self.have.clone_pools:
+            return self.want.clone_pools
+        result = self._diff_complex_items(self.want.clone_pools, self.have.clone_pools)
+        return result
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
@@ -3443,6 +3560,18 @@ class ArgumentSpec(object):
                     'destination', 'object-destination', 'object-source-destination',
                     'source-destination', 'object', 'object-source', 'source'
                 ]
+            ),
+            clone_pools=dict(
+                type='list',
+                options=dict(
+                    pool_name=dict(required=True),
+                    context=dict(
+                        required=True,
+                        choices=[
+                            'clientside', 'serverside'
+                        ]
+                    )
+                )
             )
         )
         self.argument_spec = {}
