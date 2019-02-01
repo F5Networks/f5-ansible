@@ -406,7 +406,42 @@ options:
       - This parameter requires that a valid BIG-IP security module such as ASM or AFM
         be provisioned.
     version_added: 2.8
-extends_documentation_fragment: f5
+  rate_limit:
+    description:
+      - Virtual server rate limit (connections-per-second). Setting this to 0
+        disables the limit.
+      - The valid value range is C(0) - C(4294967295).
+    type: int
+    version_added: 2.8
+  rate_limit_dst_mask:
+    description:
+      - Specifies a mask, in bits, to be applied to the destination address as part of the rate limiting.
+      - The default value is C(0), which is equivalent to using the entire address - C(32) in IPv4, or C(128) in IPv6.
+      - The valid value range is C(0) - C(4294967295).
+    type: int
+    version_added: 2.8
+  rate_limit_src_mask:
+    description:
+      - Specifies a mask, in bits, to be applied to the source address as part of the rate limiting.
+      - The default value is C(0), which is equivalent to using the entire address - C(32) in IPv4, or C(128) in IPv6.
+      - The valid value range is C(0) - C(4294967295).
+    type: int
+    version_added: 2.8
+  rate_limit_mode:
+    description:
+      - Indicates whether the rate limit is applied per virtual object, per source address, per destination address,
+        or some combination thereof.
+      - The default value is 'object', which does not use the source or destination address as part of the key.
+    choices:
+      - object
+      - object-source
+      - object-destination
+      - object-source-destination
+      - destination
+      - source
+      - source-destination
+    default: object
+    version_added: 2.8
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -577,6 +612,39 @@ EXAMPLES = r'''
       user: admin
       password: secret
   delegate_to: localhost
+
+- name: Add virtual server with rate limit
+  bigip_virtual_server:
+    state: present
+    partition: Common
+    name: my-virtual-server
+    destination: 10.10.10.10
+    port: 443
+    pool: my-pool
+    snat: Automap
+    description: Test Virtual Server
+    profiles:
+      - http
+      - fix
+      - name: clientssl
+        context: server-side
+      - name: ilx
+        context: client-side
+    policies:
+      - my-ltm-policy-for-asm
+      - ltm-uri-policy
+      - ltm-policy-2
+      - ltm-policy-3
+    enabled_vlans:
+      - /Common/vlan2
+    rate_limit: 400
+    rate_limit_mode: destination
+    rate_limit_dst_mask: 32
+    provider:
+      server: lb.mydomain.net
+      user: admin
+      password: secret
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -705,6 +773,26 @@ ip_intelligence_policy:
   returned: changed
   type: str
   sample: /Common/ip-intelligence
+rate_limit:
+  description: The maximum number of connections per second allowed for a virtual server.
+  returned: changed
+  type: int
+  sample: 5000
+rate_limit_src_mask:
+  description: Specifies a mask, in bits, to be applied to the source address as part of the rate limiting.
+  returned: changed
+  type: int
+  sample: 32
+rate_limit_dst_mask:
+  description: Specifies a mask, in bits, to be applied to the destination address as part of the rate limiting.
+  returned: changed
+  type: int
+  sample: 32
+rate_limit_mode:
+  description: Sets the type of rate limiting to be used on the virtual server.
+  returned: changed
+  type: str
+  sample: object-source
 '''
 
 import os
@@ -780,6 +868,10 @@ class Parameters(AnsibleF5Parameters):
         'securityNatPolicy': 'security_nat_policy',
         'sourcePort': 'source_port',
         'ipIntelligencePolicy': 'ip_intelligence_policy',
+        'rateLimit': 'rate_limit',
+        'rateLimitMode': 'rate_limit_mode',
+        'rateLimitDstMask': 'rate_limit_dst_mask',
+        'rateLimitSrcMask': 'rate_limit_src_mask',
     }
 
     api_attributes = [
@@ -816,6 +908,10 @@ class Parameters(AnsibleF5Parameters):
         'mirror',
         'mask',
         'ipIntelligencePolicy',
+        'rateLimit',
+        'rateLimitMode',
+        'rateLimitDstMask',
+        'rateLimitSrcMask',
     ]
 
     updatables = [
@@ -846,6 +942,10 @@ class Parameters(AnsibleF5Parameters):
         'mirror',
         'mask',
         'ip_intelligence_policy',
+        'rate_limit',
+        'rate_limit_mode',
+        'rate_limit_src_mask',
+        'rate_limit_dst_mask',
     ]
 
     returnables = [
@@ -880,6 +980,10 @@ class Parameters(AnsibleF5Parameters):
         'mirror',
         'mask',
         'ip_intelligence_policy',
+        'rate_limit',
+        'rate_limit_mode',
+        'rate_limit_src_mask',
+        'rate_limit_dst_mask',
     ]
 
     profiles_mutex = [
@@ -1467,6 +1571,14 @@ class ApiParameters(Parameters):
             return []
         return self._values['irules']
 
+    @property
+    def rate_limit(self):
+        if self._values['rate_limit'] is None:
+            return None
+        if self._values['rate_limit'] == 'disabled':
+            return 0
+        return int(self._values['rate_limit'])
+
 
 class ModuleParameters(Parameters):
     services_map = {
@@ -1896,6 +2008,36 @@ class ModuleParameters(Parameters):
         if result == 'yes':
             return 'enabled'
         return 'disabled'
+
+    @property
+    def rate_limit(self):
+        if self._values['rate_limit'] is None:
+            return None
+        if 0 <= int(self._values['rate_limit']) <= 4294967295:
+            return int(self._values['rate_limit'])
+        raise F5ModuleError(
+            "Valid 'rate_limit' must be in range 0 - 4294967295."
+        )
+
+    @property
+    def rate_limit_src_mask(self):
+        if self._values['rate_limit_src_mask'] is None:
+            return None
+        if 0 <= int(self._values['rate_limit_src_mask']) <= 4294967295:
+            return int(self._values['rate_limit_src_mask'])
+        raise F5ModuleError(
+            "Valid 'rate_limit_src_mask' must be in range 0 - 4294967295."
+        )
+
+    @property
+    def rate_limit_dst_mask(self):
+        if self._values['rate_limit_dst_mask'] is None:
+            return None
+        if 0 <= int(self._values['rate_limit_dst_mask']) <= 4294967295:
+            return int(self._values['rate_limit_dst_mask'])
+        raise F5ModuleError(
+            "Valid 'rate_limit_dst_mask' must be in range 0 - 4294967295."
+        )
 
 
 class Changes(Parameters):
@@ -3291,6 +3433,16 @@ class ArgumentSpec(object):
             insert_metadata=dict(
                 type='bool',
                 default='yes'
+            ),
+            rate_limit=dict(type='int'),
+            rate_limit_dst_mask=dict(type='int'),
+            rate_limit_src_mask=dict(type='int'),
+            rate_limit_mode=dict(
+                default='object',
+                choices=[
+                    'destination', 'object-destination', 'object-source-destination',
+                    'source-destination', 'object', 'object-source', 'source'
+                ]
             )
         )
         self.argument_spec = {}
