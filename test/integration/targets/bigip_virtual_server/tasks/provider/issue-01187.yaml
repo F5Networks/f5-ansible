@@ -1,0 +1,167 @@
+---
+
+- name: Issue 01187 - Include issue variables
+  include_vars:
+    file: issue-01187.yaml
+
+- name: Issue 01187 - Create VS with rate limiting - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    destination: "{{ destination }}"
+    port: "{{ port }}"
+    rate_limit: "{{ rate_limit }}"
+    rate_limit_mode: "{{ mode_1 }}"
+    rate_limit_dst_mask: "{{ dst_mask }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Create VS with rate limiting - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01187 - Create VS with rate limiting - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    destination: "{{ destination }}"
+    port: "{{ port }}"
+    rate_limit: "{{ rate_limit }}"
+    rate_limit_mode: "{{ mode_1 }}"
+    rate_limit_dst_mask: "{{ dst_mask }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Create VS with rate limiting - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01187 - Update VS with rate limiting - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    rate_limit_mode: "{{ mode_2 }}"
+    rate_limit_dst_mask: 0
+    rate_limit_src_mask: "{{ src_mask }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Update VS with rate limiting - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01187 - Update VS with rate limiting - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    rate_limit_mode: "{{ mode_2 }}"
+    rate_limit_dst_mask: 0
+    rate_limit_src_mask: "{{ src_mask }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Update VS with rate limiting - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01187 - Update VS with rate limiting - change all settings - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    rate_limit_mode: "{{ mode_1 }}"
+    rate_limit: "{{ rate_limit_2 }}"
+    rate_limit_dst_mask: "{{ dst_mask_2 }}"
+    rate_limit_src_mask: "{{ src_mask_2 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Update VS with rate limiting - change all settings - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01187 - Update VS with rate limiting - change all settings - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    rate_limit_mode: "{{ mode_1 }}"
+    rate_limit: "{{ rate_limit_2 }}"
+    rate_limit_dst_mask: "{{ dst_mask_2 }}"
+    rate_limit_src_mask: "{{ src_mask_2 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Update VS with rate limiting - change all settings - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+- name: Issue 01187 - Create VS with rate limiting default mode - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name_2 }}"
+    destination: "{{ destination_2 }}"
+    port: "{{ port }}"
+    rate_limit: "{{ rate_limit_2 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Create VS with rate limiting default mode - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01187 - Create VS with rate limiting default mode - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name_2 }}"
+    destination: "{{ destination_2 }}"
+    port: "{{ port }}"
+    rate_limit: "{{ rate_limit_2 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Create VS with rate limiting default mode - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01187 - Update VS disable rate limiting - Provider
+  bigip_virtual_server:
+    name: "{{ vs_name_2 }}"
+    rate_limit: 0
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Update VS disable rate limiting - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01187 - Update VS disable rate limiting - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name_2 }}"
+    rate_limit: 0
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01187 - Assert Update VS disable rate limiting - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01187 - VS cleanup - Provider
+  bigip_virtual_server:
+    name: "{{ item }}"
+    state: absent
+    provider: "{{ provider }}"
+  loop:
+    - "{{ vs_name }}"
+    - "{{ vs_name_2 }}"
