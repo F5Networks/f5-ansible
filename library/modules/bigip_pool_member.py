@@ -1080,6 +1080,9 @@ class ModuleManager(object):
 
     def _filter_ephemerals(self):
         on_device = self._read_purge_collection()
+        if not on_device:
+            self.on_device = []
+            return
         self.on_device = [member for member in on_device if member['ephemeral'] != "true"]
 
     def compare_fqdns(self, items):
@@ -1112,7 +1115,8 @@ class ModuleManager(object):
 
     def compare_aggregate_names(self, items):
         self._filter_ephemerals()
-
+        if not self.on_device:
+            return False
         fqdns = self.compare_fqdns(items)
         addresses = self.compare_addresses(items)
 
@@ -1346,8 +1350,9 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-
-        return response['items']
+        if 'items' in response:
+            return response['items']
+        return []
 
     def create_on_device(self):
         params = self.changes.api_params()

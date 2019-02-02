@@ -1,0 +1,142 @@
+---
+- name: Issue 01163 - Include issue variables - Provider
+  include_vars:
+    file: issue-01163.yaml
+
+- name: Issue 01163 - Create pools for testing
+  bigip_pool:
+    aggregate:
+      - name: "{{ pool1 }}"
+        partition: Common
+        lb_method: "{{ pool_lb_method }}"
+      - name: "{{ pool2 }}"
+        partition: Common
+        lb_method: "{{ pool_lb_method }}"
+    replace_all_with: yes
+    provider: "{{ provider }}"
+
+- name: Issue 01163 - Create VS clone pool same partiton - Provider
+  bigip_virtual_server:
+    name: "{{ vs1 }}"
+    destination: "{{ addr1 }}"
+    port: "{{ port }}"
+    clone_pools:
+      - pool_name: "{{ pool1 }}"
+        context: "{{ context1 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01163 - Create VS clone pool - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01163 - Create VS clone pool - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs1 }}"
+    destination: "{{ addr1 }}"
+    port: "{{ port }}"
+    clone_pools:
+      - pool_name: "{{ pool1 }}"
+        context: "{{ context1 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01163 - Create VS clone pool - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01163 - Modify VS clone pool - Provider
+  bigip_virtual_server:
+    name: "{{ vs1 }}"
+    clone_pools:
+      - pool_name: "{{ pool1 }}"
+        context: "{{ context2 }}"
+      - pool_name: "{{ pool2 }}"
+        context: "{{ context1 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01163 - Modify VS clone pool - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01163 - Modify VS clone pool - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs1 }}"
+    clone_pools:
+      - pool_name: "{{ pool1 }}"
+        context: "{{ context2 }}"
+      - pool_name: "{{ pool2 }}"
+        context: "{{ context1 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01163 - Modify VS clone pool - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01163 - Remove VS clone pool - Provider
+  bigip_virtual_server:
+    name: "{{ vs1 }}"
+    clone_pools: ""
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01163 - Remove VS clone pool - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01163 - Remove VS clone pool - Provider - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs1 }}"
+    clone_pools: ""
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01163 - Remove VS clone pool - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01163 - Modify VS clone pool too many pools - Provider - Expect Failure
+  bigip_virtual_server:
+    name: "{{ vs1 }}"
+    clone_pools:
+      - pool_name: "{{ pool1 }}"
+        context: "{{ context2 }}"
+      - pool_name: "{{ pool2 }}"
+        context: "{{ context1 }}"
+      - pool_name: "{{ pool2 }}"
+        context: "{{ context2 }}"
+    provider: "{{ provider }}"
+  register: result
+  failed_when: "'You must specify only one clone pool for each context' not in result['msg']"
+
+- name: Issue 00163 - VS Cleanup
+  bigip_virtual_server:
+    name: "{{ item }}"
+    state: absent
+    provider: "{{ provider }}"
+  loop:
+    - "{{ vs1 }}"
+
+- name: Issue 00163 - Pool Cleanup
+  bigip_pool:
+    name: "{{ item.name }}"
+    partition: "{{ item.partition }}"
+    state: absent
+    provider: "{{ provider }}"
+  loop:
+    - { name: "{{ pool1 }}", partition: Common }
+    - { name: "{{ pool2 }}", partition: Common }

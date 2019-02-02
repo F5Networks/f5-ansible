@@ -698,6 +698,9 @@ class ModuleManager(object):
     def compare_aggregate_names(self, items):
         on_device = self._read_purge_collection()
 
+        if not on_device:
+            return False
+
         aggregates = [self._combine_names(item) for item in items]
         collection = [self._transform_api_names(item) for item in on_device]
 
@@ -855,8 +858,9 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-
-        return response['items']
+        if 'items' in response:
+            return response['items']
+        return []
 
     def create_on_device(self):
         params = self.changes.api_params()
