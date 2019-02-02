@@ -1,0 +1,15 @@
+pool1: issue_01163_pool1
+pool2: issue_01163_pool2
+
+pool_lb_method: round-robin
+
+
+vs1: issue_01163_1
+
+addr1: 10.10.10.1
+port: 8080
+
+context1: clientside
+context2: serverside
+
+
