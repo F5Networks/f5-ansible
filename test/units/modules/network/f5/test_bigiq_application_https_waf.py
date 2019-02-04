@@ -21,6 +21,7 @@ try:
     from library.modules.bigiq_application_https_waf import ModuleParameters
     from library.modules.bigiq_application_https_waf import ModuleManager
     from library.modules.bigiq_application_https_waf import ArgumentSpec
+    from library.module_utils.network.f5.common import F5ModuleError
 
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
@@ -33,6 +34,7 @@ except ImportError:
     from ansible.modules.network.f5.bigiq_application_https_waf import ModuleParameters
     from ansible.modules.network.f5.bigiq_application_https_waf import ModuleManager
     from ansible.modules.network.f5.bigiq_application_https_waf import ArgumentSpec
+    from ansible.module_utils.network.f5.common import F5ModuleError
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -132,8 +134,18 @@ class TestManager(unittest.TestCase):
         self.patcher1 = patch('time.sleep')
         self.patcher1.start()
 
+        try:
+            self.p1 = patch('library.modules.bigiq_application_https_waf.bigiq_version')
+            self.m1 = self.p1.start()
+            self.m1.return_value = '6.1.0'
+        except Exception:
+            self.p1 = patch('ansible.modules.bigiq_application_https_waf.bigiq_version')
+            self.m1 = self.p1.start()
+            self.m1.return_value = '6.1.0'
+
     def tearDown(self):
         self.patcher1.stop()
+        self.p1.stop()
 
     def test_create(self, *args):
         set_module_args(dict(
@@ -178,6 +190,7 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
+        mm.check_bigiq_version = Mock(return_value=True)
         mm.has_no_service_environment = Mock(return_value=False)
         mm.wait_for_apply_template_task = Mock(return_value=True)
 
@@ -188,3 +201,43 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['description'] == 'my description'
+
+    def test_bigiq_version_raises(self):
+        set_module_args(dict(
+            name='foo',
+            description='my description',
+            service_environment='bar',
+            servers=[
+                dict(
+                    address='1.2.3.4',
+                    port=8080
+                ),
+                dict(
+                    address='5.6.7.8',
+                    port=8000
+                )
+            ],
+            inbound_virtual=dict(
+                address='2.2.2.2',
+                netmask='255.255.255.255',
+                port=80
+            ),
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        msg = 'Module supports only BIGIQ version 6.0.x or lower.'
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+
+        with pytest.raises(F5ModuleError) as err:
+            mm.exec_module()
+        assert str(err.value) == msg
