@@ -152,7 +152,8 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
 
@@ -181,7 +182,8 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
 
@@ -209,7 +211,8 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
 
@@ -226,6 +229,8 @@ class TestManager(unittest.TestCase):
     def test_set_multicast_address_none(self, *args):
         set_module_args(dict(
             multicast_address="none",
+            multicast_port=62960,
+            multicast_interface="eth0",
             server='localhost',
             user='admin',
             password='password'
@@ -237,7 +242,8 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
 
@@ -254,6 +260,8 @@ class TestManager(unittest.TestCase):
     def test_set_multicast_port_negative(self, *args):
         set_module_args(dict(
             multicast_port=-1,
+            multicast_address="224.0.0.245",
+            multicast_interface="eth0",
             server='localhost',
             user='admin',
             password='password'
@@ -265,7 +273,8 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
 
@@ -281,6 +290,8 @@ class TestManager(unittest.TestCase):
     def test_set_multicast_address(self, *args):
         set_module_args(dict(
             multicast_address="10.1.1.1",
+            multicast_port=62960,
+            multicast_interface="eth0",
             server='localhost',
             user='admin',
             password='password'
@@ -292,7 +303,8 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
 
@@ -320,7 +332,8 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
 
@@ -348,7 +361,8 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
 

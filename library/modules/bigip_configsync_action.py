@@ -408,9 +408,6 @@ class ArgumentSpec(object):
         self.mutually_exclusive = [
             ['sync_device_to_group', 'sync_most_recent_to_device']
         ]
-        self.required_one_of = [
-            ['sync_device_to_group', 'sync_most_recent_to_device']
-        ]
 
 
 def main():
