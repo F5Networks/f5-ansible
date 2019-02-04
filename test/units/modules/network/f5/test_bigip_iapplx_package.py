@@ -92,9 +92,10 @@ class TestManager(unittest.TestCase):
         self.patcher1.stop()
 
     def test_create_iapp_template(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
-            package='fixtures/MyApp-0.1.0-0001.noarch.rpm',
+            package=package_name,
             state='present',
             password='password',
             server='localhost',
