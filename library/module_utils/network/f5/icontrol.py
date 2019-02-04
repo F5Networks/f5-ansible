@@ -506,6 +506,32 @@ def tmos_version(client):
     return version
 
 
+def bigiq_version(client):
+    uri = "/mgmt/shared/resolver/device-groups/cm-shared-all-big-iqs/devices"
+    query = "?$select=version"
+
+    resp = client.api.get(uri + query)
+
+    try:
+        response = resp.json()
+    except ValueError as ex:
+        raise F5ModuleError(str(ex))
+
+    if 'code' in response and response['code'] in [400, 403]:
+        if 'message' in response:
+            raise F5ModuleError(response['message'])
+        else:
+            raise F5ModuleError(resp.content)
+
+    if 'items' in response:
+        version = response['items'][0]['version']
+        return version
+
+    raise F5ModuleError(
+        'Failed to retrieve BIGIQ version information.'
+    )
+
+
 def module_provisioned(client, module_name):
     provisioned = modules_provisioned(client)
     if module_name in provisioned:

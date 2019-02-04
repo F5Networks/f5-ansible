@@ -101,7 +101,7 @@ notes:
   - This module does not support updating of your application (whether deployed or not).
     If you need to update the application, the recommended practice is to remove and
     re-create.
-  - Requires BIG-IQ version 6.0 or greater.
+  - This module will not work on BIGIQ version 6.1.x or greater.
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -176,6 +176,7 @@ servers:
 
 import time
 
+from distutils.version import LooseVersion
 from ansible.module_utils.basic import AnsibleModule
 
 try:
@@ -186,6 +187,7 @@ try:
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.icontrol import bigiq_version
 except ImportError:
     from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -194,6 +196,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible.module_utils.network.f5.icontrol import bigiq_version
 
 
 class Parameters(AnsibleF5Parameters):
@@ -478,7 +481,15 @@ class ModuleManager(object):
             return True
         return False
 
+    def check_bigiq_version(self):
+        version = bigiq_version(self.client)
+        if LooseVersion(version) >= LooseVersion('6.1.0'):
+            raise F5ModuleError(
+                'Module supports only BIGIQ version 6.0.x or lower.'
+            )
+
     def exec_module(self):
+        self.check_bigiq_version()
         changed = False
         result = dict()
         state = self.want.state
