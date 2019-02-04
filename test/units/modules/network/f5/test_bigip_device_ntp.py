@@ -108,7 +108,8 @@ class TestModuleManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_one_of=self.spec.required_one_of
         )
         mm = ModuleManager(module=module)
 
@@ -136,7 +137,8 @@ class TestModuleManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_one_of=self.spec.required_one_of
         )
         mm = ModuleManager(module=module)
 
@@ -166,7 +168,8 @@ class TestModuleManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_one_of=self.spec.required_one_of
         )
         mm = ModuleManager(module=module)
 
@@ -198,7 +201,8 @@ class TestModuleManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_one_of=self.spec.required_one_of
         )
         mm = ModuleManager(module=module)
 
@@ -228,7 +232,8 @@ class TestModuleManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
+            supports_check_mode=self.spec.supports_check_mode,
+            required_one_of=self.spec.required_one_of
         )
         mm = ModuleManager(module=module)
 
