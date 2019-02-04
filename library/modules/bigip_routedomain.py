@@ -708,7 +708,8 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode
+        supports_check_mode=spec.supports_check_mode,
+        required_one_of=spec.required_one_of
     )
 
     client = F5RestClient(**module.params)

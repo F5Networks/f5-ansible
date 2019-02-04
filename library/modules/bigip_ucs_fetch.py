@@ -64,7 +64,7 @@ notes:
     do is check for the existence of the file on disk; no check-summing.
   - If you are using this module with either Ansible Tower or Ansible AWX, you
     should be aware of how these Ansible products execute jobs in restricted
-    environments. More informat can be found here
+    environments. More information can be found here
     https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
 extends_documentation_fragment: f5
 author:
