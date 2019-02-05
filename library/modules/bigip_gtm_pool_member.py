@@ -197,19 +197,16 @@ EXAMPLES = r'''
       - server_name: server1
         virtual_server: vs1
         partition: Common
-        port: 8080
         description: web server1
         member_order: 0
       - server_name: server2
         virtual_server: vs2
         partition: Common
-        port: 8081
         description: web server2
         member_order: 1
       - server_name: server3
         virtual_server: vs3
         partition: Common
-        port: 8082
         description: web server3
         member_order: 2
     provider:
@@ -226,19 +223,16 @@ EXAMPLES = r'''
       - server_name: server1
         virtual_server: vs1
         partition: Common
-        port: 8080
         description: web server1
         member_order: 0
       - server_name: server2
         virtual_server: vs2
         partition: Common
-        port: 8081
         description: web server2
         member_order: 1
       - server_name: server3
         virtual_server: vs3
         partition: Common
-        port: 8082
         description: web server3
         member_order: 2
     replace_all_with: yes
