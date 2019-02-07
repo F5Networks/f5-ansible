@@ -122,6 +122,29 @@ options:
     choices:
       - always
       - on_create
+  expiration:
+    description:
+      - Specifies the expiration time of the cookie. By default the system generates and uses session cookie.
+        This cookie expires when the user session expires, that is when the browser is closed.
+    suboptions:
+      days:
+        description:
+          - Cookie expiration time in days, the value must be in range from C(0) to C(24855) days.
+        type: int
+      hours:
+        description:
+          - Cookie expiration time in hours, the value must be in the range from C(0) to C(23) hours.
+        type: int
+      minutes:
+        description:
+          - Cookie expiration time in minutes, the value must be in the range from C(0) to C(59) minutes.
+        type: int
+      seconds:
+        description:
+          - Cookie expiration time in seconds, the value must be in the range from C(0) to C(59) seconds.
+        default: 0
+        type: int
+    version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.
@@ -137,12 +160,25 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Create a persistence cookie profile
   bigip_profile_persistence_cookie:
     name: foo
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+- name: Create a persistence cookie profile with expiration time
+  bigip_profile_persistence_cookie:
+    name: foo
+    expiration:
+      days: 7
+      hours: 12
+      minutes: 30
     provider:
       password: secret
       server: lb.mydomain.com
@@ -216,6 +252,32 @@ secure:
   returned: changed
   type: bool
   sample: no
+expiration:
+  description: The expiration time of the cookie.
+  returned: changed
+  type: complex
+  contains:
+    days:
+      description: Cookie expiration time in days.
+      returned: changed
+      type: int
+      sample: 125
+    hours:
+      description: Cookie expiration time in hours.
+      returned: changed
+      type: int
+      sample: 22
+    minutes:
+      description: Cookie expiration time in minutes.
+      returned: changed
+      type: int
+      sample: 58
+    seconds:
+      description: Cookie expiration time in seconds.
+      returned: changed
+      type: int
+      sample: 20
+  sample: hash/dictionary of values
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -278,6 +340,7 @@ class Parameters(AnsibleF5Parameters):
         'secure',
         'cookieEncryptionPassphrase',
         'method',
+        'expiration'
     ]
 
     returnables = [
@@ -295,6 +358,7 @@ class Parameters(AnsibleF5Parameters):
         'encryption_passphrase',
         'description',
         'secure',
+        'expiration',
     ]
 
     updatables = [
@@ -312,6 +376,7 @@ class Parameters(AnsibleF5Parameters):
         'encryption_passphrase',
         'description',
         'secure',
+        'expiration',
     ]
 
     @property
@@ -370,6 +435,86 @@ class ModuleParameters(Parameters):
         elif self._values['description'] in ['none', '']:
             return ''
         return self._values['description']
+
+    @property
+    def expiration(self):
+        if self._values['expiration'] is None:
+            return None
+
+        days = self.days
+        hours = self.hours
+        minutes = self.minutes
+        seconds = self.seconds
+
+        if days is not None:
+            if hours is None:
+                raise F5ModuleError(
+                    "Incorrect format, 'hours' parameter is missing value."
+                )
+            if minutes is None:
+                raise F5ModuleError(
+                    "Incorrect format, 'minutes' parameter is missing value."
+                )
+
+            expiry_time = '{0}:{1}:{2}:{3}'.format(days, hours, minutes, seconds)
+            return expiry_time
+
+        if hours is not None:
+            if minutes is None:
+                raise F5ModuleError(
+                    "Incorrect format, 'minutes' parameter is missing value."
+                )
+
+            expiry_time = '{0}:{1}:{2}'.format(hours, minutes, seconds)
+            return expiry_time
+
+        if minutes is not None:
+            expiry_time = '{0}:{1}'.format(minutes, seconds)
+            return expiry_time
+
+        return str(seconds)
+
+    @property
+    def days(self):
+        days = self._values['expiration']['days']
+        if days is None:
+            return None
+        if days < 0 or days >= 24856:
+            raise F5ModuleError(
+                'The provided value is invalid, the correct value range is: 0 - 24855 days.'
+            )
+        return days
+
+    @property
+    def hours(self):
+        hours = self._values['expiration']['hours']
+        if hours is None:
+            return None
+        if hours < 0 or hours > 23:
+            raise F5ModuleError(
+                'The provided value is invalid, the correct value range is: 0 - 23 hours.'
+            )
+        return hours
+
+    @property
+    def minutes(self):
+        minutes = self._values['expiration']['minutes']
+        if minutes is None:
+            return None
+        if minutes < 0 or minutes > 59:
+            raise F5ModuleError(
+                'The provided value is invalid, the correct value range is: 0 - 59 minutes.'
+            )
+        return minutes
+
+    @property
+    def seconds(self):
+        seconds = self._values['expiration']['seconds']
+        if seconds < 0 or seconds > 59:
+            raise F5ModuleError(
+                'The provided value is invalid, the correct value range is: 0 - 59 seconds.'
+            )
+        return seconds
 
 
 class Changes(Parameters):
@@ -486,6 +631,32 @@ class ReportableChanges(Changes):
     @property
     def encryption_passphrase(self):
         return None
+
+    @property
+    def expiration(self):
+        expire = self._values['expiration']
+        result = dict()
+
+        if expire is None:
+            return None
+        tmp = expire.split(':')
+
+        if len(tmp) == 1:
+            result['seconds'] = int(tmp[0])
+        if len(tmp) == 2:
+            result['minutes'] = int(tmp[0])
+            result['seconds'] = int(tmp[1])
+        if len(tmp) == 3:
+            result['hours'] = int(tmp[0])
+            result['minutes'] = int(tmp[1])
+            result['seconds'] = int(tmp[2])
+        if len(tmp) == 4:
+            result['days'] = int(tmp[0])
+            result['hours'] = int(tmp[1])
+            result['minutes'] = int(tmp[2])
+            result['seconds'] = int(tmp[3])
+
+        return result
 
 
 class Difference(object):
@@ -743,6 +914,24 @@ class ArgumentSpec(object):
             update_password=dict(
                 default='always',
                 choices=['always', 'on_create']
+            ),
+            expiration=dict(
+                type='dict',
+                options=dict(
+                    days=dict(
+                        type='int'
+                    ),
+                    hours=dict(
+                        type='int'
+                    ),
+                    minutes=dict(
+                        type='int'
+                    ),
+                    seconds=dict(
+                        type='int',
+                        default=0
+                    )
+                )
             ),
             state=dict(
                 default='present',
