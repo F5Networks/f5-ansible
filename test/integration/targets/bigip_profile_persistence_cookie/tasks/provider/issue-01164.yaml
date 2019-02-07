@@ -1,0 +1,100 @@
+---
+
+- name: Issue 01164 - Create profile set cookie expiration - Provider
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    expiration:
+      days: 12
+      hours: 11
+      minutes: 45
+      seconds: 10
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01164 - Assert Create profile set cookie expiration - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01164 - Create profile set cookie expiration - Provider - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    expiration:
+      days: 12
+      hours: 11
+      minutes: 45
+      seconds: 10
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01164 - Assert Create profile set cookie expiration - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01164 - Modify profile set cookie expiration to default - Provider
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    expiration:
+      seconds: 0
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01164 - Assert Modify profile set cookie expiration to default - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01164 - Modify profile set cookie expiration to default - Provider - Idempotent check
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    expiration:
+      seconds: 0
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01164 - Assert Modify profile set cookie expiration to default - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01164 - Modify profile set invalid format for expiration, missing hours - Provider - Expect Failure
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    expiration:
+      days: 10
+      minutes: 10
+    provider: "{{ provider }}"
+  register: result
+  failed_when: "'parameter is missing value' not in result ['msg']"
+
+- name: Issue 01164 - Modify profile set invalid format for expiration, missing minutes - Provider - Expect Failure
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    expiration:
+      days: 10
+      hours: 10
+    provider: "{{ provider }}"
+  register: result
+  failed_when: "'parameter is missing value' not in result ['msg']"
+
+- name: Issue 01164 - Modify profile set invalid format for expiration, missing minutes 2 - Provider - Expect Failure
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    expiration:
+      hours: 10
+      seconds: 10
+    provider: "{{ provider }}"
+  register: result
+  failed_when: "'parameter is missing value' not in result ['msg']"
+
+
+- name: Issue 01164 - Remove profile - Provider
+  bigip_profile_persistence_cookie:
+    name: cookie1
+    state: absent
+    provider: "{{ provider }}"
