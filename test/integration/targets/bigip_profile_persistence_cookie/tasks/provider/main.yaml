@@ -747,3 +747,6 @@
     - cookie2
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01164.yaml
+  tags: issue-01164
