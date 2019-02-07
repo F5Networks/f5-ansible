@@ -1,0 +1,28 @@
+bigip12: 192.168.1.1
+bigip13: 192.168.1.2
+user: admin
+pass: admin
+conflict: use_bigip
+modules1:
+    - ltm
+    - afm
+    - security_shared
+
+modules2:
+    - dns
+    - afm
+    - security_shared
+
+modules3:
+    - asm
+    - ltm
+    - security_shared
+
+modules4:
+    - ltm
+    - afm
+    - dns
+    - security_shared
+
+module5:
+    - websafe
