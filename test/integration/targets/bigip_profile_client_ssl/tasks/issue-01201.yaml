@@ -1,0 +1,54 @@
+---
+
+- name: Issue 01201 - Create a client SSL profile, enable strict resume
+  bigip_profile_client_ssl:
+    name: issue-01201
+    strict_resume: yes
+  register: result
+
+- name: Issue 01201 - Assert Create a client SSL profile, enable strict resume
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01201 - Create a client SSL profile, enable strict resume - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-01201
+    strict_resume: yes
+  register: result
+
+- name: Issue 01201 - Assert Create a client SSL profile, enable strict resume - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01201 - Modify client SSL profile, disable strict resume
+  bigip_profile_client_ssl:
+    name: issue-01201
+    strict_resume: no
+  register: result
+
+- name: Issue 01201 - Assert Modify client SSL profile, disable strict resume
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01201 - Modify client SSL profile, disable strict resume - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-01201
+    strict_resume: no
+  register: result
+
+- name: Issue 01201 - Assert Modify client SSL profile, disable strict resume - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01201 - Cleanup
+  bigip_profile_client_ssl:
+    name: issue-01201
+    state: absent
