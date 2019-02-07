@@ -452,7 +452,7 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['present', 'absent']
             ),
-            package=dict()
+            package=dict(type='path')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
