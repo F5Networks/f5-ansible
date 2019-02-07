@@ -142,6 +142,12 @@ options:
         set to C(true). When creating a new profile, the setting is provided by the parent profile.
     type: bool
     version_added: 2.8
+  strict_resume:
+    description:
+      - Enables or disables the resumption of SSL sessions after an unclean shutdown.
+        When creating a new profile, the setting is provided by the parent profile.
+    type: bool
+    version_added: 2.8
   client_certificate:
     description:
       - Specifies the way the system handles client certificates.
@@ -294,6 +300,11 @@ allow_non_ssl:
   returned: changed
   type: bool
   sample: yes
+strict_resume:
+  description: Resumption of SSL sessions after an unclean shutdown.
+  returned: changed
+  type: bool
+  sample: yes
 '''
 
 import os
@@ -346,6 +357,7 @@ class Parameters(AnsibleF5Parameters):
         'clientCertCa': 'advertised_cert_authority',
         'crlFile': 'client_auth_crl',
         'allowExpiredCrl': 'allow_expired_crl',
+        'strictResume': 'strict_resume',
     }
 
     api_attributes = [
@@ -366,6 +378,7 @@ class Parameters(AnsibleF5Parameters):
         'clientCertCa',
         'crlFile',
         'allowExpiredCrl',
+        'strictResume',
     ]
 
     returnables = [
@@ -386,6 +399,7 @@ class Parameters(AnsibleF5Parameters):
         'advertised_cert_authority',
         'client_auth_crl',
         'allow_expired_crl',
+        'strict_resume',
     ]
 
     updatables = [
@@ -405,6 +419,7 @@ class Parameters(AnsibleF5Parameters):
         'advertised_cert_authority',
         'client_auth_crl',
         'allow_expired_crl',
+        'strict_resume',
     ]
 
     @property
@@ -479,6 +494,15 @@ class ModuleParameters(Parameters):
     @property
     def allow_non_ssl(self):
         result = flatten_boolean(self._values['allow_non_ssl'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def strict_resume(self):
+        result = flatten_boolean(self._values['strict_resume'])
         if result is None:
             return None
         if result == 'yes':
@@ -631,6 +655,14 @@ class ReportableChanges(Changes):
         if self._values['allow_non_ssl'] is None:
             return None
         elif self._values['allow_non_ssl'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def strict_resume(self):
+        if self._values['strict_resume'] is None:
+            return None
+        elif self._values['strict_resume'] == 'enabled':
             return 'yes'
         return 'no'
 
@@ -1008,6 +1040,7 @@ class ArgumentSpec(object):
             advertised_cert_authority=dict(),
             client_auth_crl=dict(),
             allow_expired_crl=dict(type='bool'),
+            strict_resume=dict(type='bool'),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
