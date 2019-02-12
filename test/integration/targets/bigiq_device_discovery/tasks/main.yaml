@@ -1,0 +1,166 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Discover a new device and import config, use default conflict policy
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules3 }}"
+  register: result
+
+- name: Assert Discover a new device and import config, use default conflict policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Discover a new device and import config, use default conflict policy - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules3 }}"
+  register: result
+
+- name: Assert Discover a new device and import config, use default conflict policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Rediscover a known device and import new modules, use non-default conflict policy
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    modules: "{{ modules2 }}"
+    conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Assert Rediscover a known device and import new modules, use non-default conflict policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Rediscover a known device and import new modules, use non-default conflict policy - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    modules: "{{ modules2 }}"
+    conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Assert Rediscover a known device and import new modules, use non-default conflict policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove a discovered device and its config
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a discovered device and its config
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove a discovered device and its config - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a discovered device and its config - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Discover a new device and import config, use non-default conflict policy
+  bigiq_device_discovery:
+    device_address: "{{ bigip13 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+    conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Assert Discover a new device and import config, use non-default conflict policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Discover a new device and import config, use non-default conflict policy - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip13 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+    conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Assert Discover a new device and import config, use non-default conflict policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Rediscover a known device and import new modules, use non-default conflict policy
+  bigiq_device_discovery:
+    device_address: "{{ bigip13 }}"
+    modules: "{{ modules2 }}"
+    conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Assert Rediscover a known device and import new modules, use non-default conflict policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Rediscover a known device and import new modules, use non-default conflict policy - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip13 }}"
+    modules: "{{ modules2 }}"
+    conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Assert Rediscover a known device and import new modules, use non-default conflict policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Force full device rediscovery, use non-default conflict policy
+  bigiq_device_discovery:
+    device_address: "{{ bigip13 }}"
+    modules: "{{ modules4 }}"
+    conflict_policy: "{{ conflict }}"
+    force: yes
+  register: result
+
+- name: Assert Force full device rediscovery, use non-default conflict policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Rediscover a known device and import non-existent module - Expect Failure
+  bigiq_device_discovery:
+    device_address: "{{ bigip13 }}"
+    modules: "{{ module5 }}"
+  register: result
+  failed_when: result is success
+
+- name: Remove second discovered device and its config
+  bigiq_device_discovery:
+    device_address: "{{ bigip13 }}"
+    state: absent
+
+
+- import_tasks: teardown.yaml
