@@ -155,6 +155,7 @@ F5
   * :ref:`bigiq_application_http_module`
   * :ref:`bigiq_application_https_offload_module`
   * :ref:`bigiq_application_https_waf_module`
+  * :ref:`bigiq_device_discovery_module`
   * :ref:`bigiq_device_facts_module`
   * :ref:`bigiq_regkey_license_module`
   * :ref:`bigiq_regkey_license_assignment_module`

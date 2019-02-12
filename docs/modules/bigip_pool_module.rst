@@ -554,9 +554,18 @@ Examples
     - name: Add pools Aggregate
       bigip_pool:
         aggregate:
-          - { name: my-pool, partition: Common, lb_method: least-connections-member, slow_ramp_time: 120 }
-          - { name: my-pool2, partition: Common, lb_method: least-sessions, slow_ramp_time: 120 }
-          - { name: my-pool3, partition: Common, lb_method: round-robin, slow_ramp_time: 120 }
+          - name: my-pool
+            partition: Common
+            lb_method: least-connections-member
+            slow_ramp_time: 120
+          - name: my-pool2
+            partition: Common
+            lb_method: least-sessions
+            slow_ramp_time: 120
+          - name: my-pool3
+            partition: Common
+            lb_method: round-robin
+            slow_ramp_time: 120
         provider:
           server: lb.mydomain.com
           user: admin
@@ -566,9 +575,18 @@ Examples
     - name: Add pools Aggregate, purge others
       bigip_pool:
         aggregate:
-          - { name: my-pool, partition: Common, lb_method: least-connections-member, slow_ramp_time: 120 }
-          - { name: my-pool2, partition: Common, lb_method: least-sessions, slow_ramp_time: 120 }
-          - { name: my-pool3, partition: Common, lb_method: round-robin, slow_ramp_time: 120 }
+          - name: my-pool
+            partition: Common
+            lb_method: least-connections-member
+            slow_ramp_time: 120
+          - name: my-pool2
+            partition: Common
+            lb_method: least-sessions
+            slow_ramp_time: 120
+          - name: my-pool3
+            partition: Common
+            lb_method: round-robin
+            slow_ramp_time: 120
         replace_all_with: yes
         provider:
           server: lb.mydomain.com
