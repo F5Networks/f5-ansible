@@ -28,14 +28,25 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>aggregate</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>List of GTM pool member definitions to be created, modified or removed.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: members</div>
+                                    </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>description</b>
                                                         </td>
@@ -200,18 +211,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Name of the GTM pool.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>pool_partition</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Partition where the pool has been configured on.</div>
-                                                    <div>Parameter is required when creating/modifying GTM pool members that on different partition than the GTM pool.</div>
-                                                    <div>When not specified it assumes the same value as partition.</div>
+                                                    <div>For pools created on different partitions, you must specify partition of the pool in the full path format, for example, <code>/FooBar/pool_name</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -340,6 +340,22 @@ Parameters
                                                                 <td>
                                                                         <div>Specifies the weight of the pool member for load balancing purposes.</div>
                                                                                 </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>replace_all_with</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Remove members not defined in the <code>aggregate</code> parameter.</div>
+                                                    <div>This operation is all or none, meaning that it will stop if there are some pool members that cannot be removed.</div>
+                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: purge</div>
+                                    </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -482,13 +498,65 @@ Examples
         server_name: /Common/foo_name
         virtual_server: GTMVSName
         type: a
-        pool: foo-pool
-        pool_partition: FooBar
+        pool: /FooBar/foo-pool
         partition: Common
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
+      delegate_to: localhost
+
+    - name: Add GTM pool members aggregate
+      bigip_gtm_pool_member:
+        pool: pool1
+        type: a
+        aggregate:
+          - server_name: server1
+            virtual_server: vs1
+            partition: Common
+            description: web server1
+            member_order: 0
+          - server_name: server2
+            virtual_server: vs2
+            partition: Common
+            description: web server2
+            member_order: 1
+          - server_name: server3
+            virtual_server: vs3
+            partition: Common
+            description: web server3
+            member_order: 2
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
+    - name: Add GTM pool members aggregate, remove non aggregates
+      bigip_gtm_pool_member:
+        pool: pool1
+        type: a
+        aggregate:
+          - server_name: server1
+            virtual_server: vs1
+            partition: Common
+            description: web server1
+            member_order: 0
+          - server_name: server2
+            virtual_server: vs2
+            partition: Common
+            description: web server2
+            member_order: 1
+          - server_name: server3
+            virtual_server: vs3
+            partition: Common
+            description: web server3
+            member_order: 2
+        replace_all_with: yes
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
       delegate_to: localhost
 
 
@@ -501,7 +569,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -565,10 +633,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The partition for the GTM pool.</div>
+                                            <div>The new description of the member.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">FooBar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My description</div>
                                     </td>
             </tr>
                                 <tr>
@@ -660,6 +728,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>replace_all_with</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Purges all non-aggregate pool members from device</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                         </table>

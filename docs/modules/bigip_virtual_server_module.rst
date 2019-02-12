@@ -28,9 +28,10 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -54,6 +55,46 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
+                                                                <td colspan="2">
+                    <b>clone_pools</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a pool or list of pools that the virtual server uses to replicate either client-side or server-side traffic.</div>
+                                                    <div>Typically this option is used for intrusion detection.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>pool_name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The pool name to which the server replicates the traffic.</div>
+                                                    <div>Only pools created on Common partition or on the same partition as the virtual server can be used.</div>
+                                                    <div>Referencing pool on common partition needs to be done in the full path format, for example, <code>/Common/pool_name</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>context</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>clientside</li>
+                                                                                                                                                                                                <li>serverside</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>The context option for a clone pool to replicate either client-side or server-side traffic.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
                     <b>default_persistence_profile</b>
                                                         </td>
@@ -148,6 +189,21 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>insert_metadata</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When set to <code>no</code> it will not set metadata on the device.</div>
+                                                    <div>Currently there is a limitation that non-admin users cannot set metadata on the object, despite being able to create and modify virtual server objects, setting this option to <code>no</code> will allow such users to utilize this module to manage Virtual Server objects on the device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>ip_intelligence_policy</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
                                 <td>
@@ -232,7 +288,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Arbitrary key/value pairs that you can attach to a pool. This is useful in situations where you might want to annotate a virtual to me managed by Ansible.</div>
+                                                                        <div>Arbitrary key/value pairs that you can attach to a virtual server. This is useful in situations where you might want to annotate a virtual to be managed by Ansible.</div>
                                                     <div>Key names will be stored as strings; this includes names that are numbers.</div>
                                                     <div>Values for all of the keys will be stored as strings; this includes values that are numbers.</div>
                                                     <div>Data will be persisted, not ephemeral.</div>
@@ -522,6 +578,61 @@ Parameters
             </tr>
                     
                                                 <tr>
+                                                                <td colspan="2">
+                    <b>rate_limit</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Virtual server rate limit (connections-per-second). Setting this to 0 disables the limit.</div>
+                                                    <div>The valid value range is <code>0</code> - <code>4294967295</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>rate_limit_dst_mask</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a mask, in bits, to be applied to the destination address as part of the rate limiting.</div>
+                                                    <div>The default value is <code>0</code>, which is equivalent to using the entire address - <code>32</code> in IPv4, or <code>128</code> in IPv6.</div>
+                                                    <div>The valid value range is <code>0</code> - <code>4294967295</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>rate_limit_mode</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>object</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>object-source</li>
+                                                                                                                                                                                                <li>object-destination</li>
+                                                                                                                                                                                                <li>object-source-destination</li>
+                                                                                                                                                                                                <li>destination</li>
+                                                                                                                                                                                                <li>source</li>
+                                                                                                                                                                                                <li>source-destination</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Indicates whether the rate limit is applied per virtual object, per source address, per destination address, or some combination thereof.</div>
+                                                    <div>The default value is &#x27;object&#x27;, which does not use the source or destination address as part of the key.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>rate_limit_src_mask</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a mask, in bits, to be applied to the source address as part of the rate limiting.</div>
+                                                    <div>The default value is <code>0</code>, which is equivalent to using the entire address - <code>32</code> in IPv4, or <code>128</code> in IPv6.</div>
+                                                    <div>The valid value range is <code>0</code> - <code>4294967295</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>security_log_profiles</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
@@ -920,6 +1031,56 @@ Examples
           password: secret
       delegate_to: localhost
 
+    - name: Add virtual server with rate limit
+      bigip_virtual_server:
+        state: present
+        partition: Common
+        name: my-virtual-server
+        destination: 10.10.10.10
+        port: 443
+        pool: my-pool
+        snat: Automap
+        description: Test Virtual Server
+        profiles:
+          - http
+          - fix
+          - name: clientssl
+            context: server-side
+          - name: ilx
+            context: client-side
+        policies:
+          - my-ltm-policy-for-asm
+          - ltm-uri-policy
+          - ltm-policy-2
+          - ltm-policy-3
+        enabled_vlans:
+          - /Common/vlan2
+        rate_limit: 400
+        rate_limit_mode: destination
+        rate_limit_dst_mask: 32
+        provider:
+          server: lb.mydomain.net
+          user: admin
+          password: secret
+      delegate_to: localhost
+
+    - name: Add FastL4 virtual server with clone_pools
+      bigip_virtual_server:
+        destination: 1.1.1.1
+        name: fastl4_vs
+        port: 80
+        profiles:
+          - fastL4
+        state: present
+        clone_pools:
+          - pool_name: FooPool
+            context: clientside
+        provider:
+          server: lb.mydomain.net
+          user: admin
+          password: secret
+      delegate_to: localhost
+
 
 
 
@@ -930,7 +1091,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -946,6 +1107,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>clone_pools</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Pools to which virtual server copies traffic.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;pool_name&#x27;: &#x27;/Common/Pool1&#x27;, &#x27;context&#x27;: &#x27;clientside&#x27;}]</div>
                                     </td>
             </tr>
                                 <tr>
@@ -1204,6 +1378,58 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;name&#x27;: &#x27;tcp&#x27;, &#x27;context&#x27;: &#x27;server-side&#x27;}, {&#x27;name&#x27;: &#x27;tcp-legacy&#x27;, &#x27;context&#x27;: &#x27;client-side&#x27;}]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>rate_limit</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The maximum number of connections per second allowed for a virtual server.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>rate_limit_dst_mask</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies a mask, in bits, to be applied to the destination address as part of the rate limiting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">32</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>rate_limit_mode</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Sets the type of rate limiting to be used on the virtual server.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">object-source</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>rate_limit_src_mask</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies a mask, in bits, to be applied to the source address as part of the rate limiting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">32</div>
                                     </td>
             </tr>
                                 <tr>
