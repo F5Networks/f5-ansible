@@ -28,7 +28,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -131,6 +132,62 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
+                                                                <td colspan="2">
+                    <b>expiration</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the expiration time of the cookie. By default the system generates and uses session cookie. This cookie expires when the user session expires, that is when the browser is closed.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>days</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Cookie expiration time in days, the value must be in range from <code>0</code> to <code>24855</code> days.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>hours</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Cookie expiration time in hours, the value must be in the range from <code>0</code> to <code>23</code> hours.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>minutes</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Cookie expiration time in minutes, the value must be in the range from <code>0</code> to <code>59</code> minutes.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>seconds</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">0</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Cookie expiration time in seconds, the value must be in the range from <code>0</code> to <code>59</code> seconds.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
                     <b>http_only</b>
                                                         </td>
@@ -477,9 +534,21 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Create a persistence cookie profile
       bigip_profile_persistence_cookie:
         name: foo
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+    - name: Create a persistence cookie profile with expiration time
+      bigip_profile_persistence_cookie:
+        name: foo
+        expiration:
+          days: 7
+          hours: 12
+          minutes: 30
         provider:
           password: secret
           server: lb.mydomain.com
@@ -496,13 +565,14 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
-            <th colspan="1">Key</th>
+                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                            <tr>
+            <th colspan="2">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>always_send</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -513,7 +583,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>cookie_encryption</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -526,7 +596,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>cookie_method</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -539,7 +609,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>cookie_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -552,7 +622,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -565,7 +635,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>encrypt_cookie_pool_name</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -578,7 +648,77 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
+                                <td colspan="2">
+                    <b>expiration</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The expiration time of the cookie.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
+                    <b>days</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Cookie expiration time in days.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">125</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>hours</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Cookie expiration time in hours.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">22</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>minutes</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Cookie expiration time in minutes.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">58</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>seconds</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Cookie expiration time in seconds.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">20</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="2">
                     <b>http_only</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -591,7 +731,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>match_across_pools</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -604,7 +744,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>match_across_services</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -615,7 +755,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>match_across_virtuals</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -628,7 +768,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>override_connection_limit</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -639,7 +779,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -652,7 +792,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>secure</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -680,4 +820,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 
