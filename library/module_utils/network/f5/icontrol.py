@@ -507,7 +507,10 @@ def tmos_version(client):
 
 
 def bigiq_version(client):
-    uri = "/mgmt/shared/resolver/device-groups/cm-shared-all-big-iqs/devices"
+    uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-shared-all-big-iqs/devices".format(
+        client.provider['server'],
+        client.provider['server_port'],
+    )
     query = "?$select=version"
 
     resp = client.api.get(uri + query)
