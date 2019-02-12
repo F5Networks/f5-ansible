@@ -307,7 +307,7 @@ Notes
 
 .. note::
     - BIG-IP provides no way to get a checksum of the UCS files on the system via any interface except, perhaps, logging in directly to the box (which would not support appliance mode). Therefore, the best this module can do is check for the existence of the file on disk; no check-summing.
-    - If you are using this module with either Ansible Tower or Ansible AWX, you should be aware of how these Ansible products execute jobs in restricted environments. More informat can be found here https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
+    - If you are using this module with either Ansible Tower or Ansible AWX, you should be aware of how these Ansible products execute jobs in restricted environments. More information can be found here https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
