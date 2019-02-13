@@ -10873,11 +10873,15 @@ class LtmPoolsParameters(BaseParameters):
 
     @property
     def active_member_count(self):
-        return int(self._values['stats']['activeMemberCnt'])
+        if 'availableMemberCnt' in self._values['stats']:
+            return int(self._values['stats']['activeMemberCnt'])
+        return None
 
     @property
     def available_member_count(self):
-        return int(self._values['stats']['availableMemberCnt'])
+        if 'availableMemberCnt' in self._values['stats']:
+            return int(self._values['stats']['availableMemberCnt'])
+        return None
 
     @property
     def all_max_queue_entry_age_ever(self):
@@ -10945,7 +10949,9 @@ class LtmPoolsParameters(BaseParameters):
 
     @property
     def member_count(self):
-        return self._values['stats']['memberCnt']
+        if 'memberCnt' in self._values['stats']:
+            return self._values['stats']['memberCnt']
+        return None
 
     @property
     def total_requests(self):
@@ -11172,6 +11178,8 @@ class LtmPoolsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
