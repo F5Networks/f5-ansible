@@ -8802,7 +8802,8 @@ class GtmAPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.get(uri)
+        query = "?expandSubcollections=true"
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
@@ -8854,7 +8855,8 @@ class GtmAaaaPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.get(uri)
+        query = "?expandSubcollections=true"
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
@@ -8906,7 +8908,8 @@ class GtmCnamePoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.get(uri)
+        query = "?expandSubcollections=true"
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
@@ -8958,7 +8961,8 @@ class GtmMxPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.get(uri)
+        query = "?expandSubcollections=true"
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
@@ -9010,7 +9014,8 @@ class GtmNaptrPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.get(uri)
+        query = "?expandSubcollections=true"
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
@@ -9062,7 +9067,8 @@ class GtmSrvPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        resp = self.client.api.get(uri)
+        query = "?expandSubcollections=true"
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:

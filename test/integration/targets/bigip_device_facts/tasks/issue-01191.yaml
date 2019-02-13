@@ -1,0 +1,92 @@
+---
+- name: Issue 01191 - Include issue variables
+  include_vars:
+    file: issue-01191.yaml
+
+- name: Issue 01191- Provision GTM on the device
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 01191 - Create GTM pools
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    name: issue-01191-gtm-pool-a
+    state: present
+    type: a
+
+- name: Issue 01191 - Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+
+- name: Issue 01191 - Create GTM server
+  bigip_gtm_server:
+    name: "{{ item.name }}"
+    devices:
+      - name: "{{ item.name }}"
+        address: "{{ item.address }}"
+    datacenter: "{{ dc_name1 }}"
+    state: present
+  loop:
+    - { name: server1.example.com, address: 3.3.3.3 }
+    - { name: server2.example.com, address: 4.4.4.4 }
+    - { name: server3.example.com, address: 5.5.5.5 }
+
+- name: Issue 01191 - Create a GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "{{ item.vs }}"
+    server_name: "{{ item.name }}"
+    address: "{{ item.address }}"
+    port: 80
+  loop:
+    - { name: 'server1.example.com', vs: 'test.example.com_443', address: 6.6.6.6 }
+    - { name: 'server2.example.com', vs: 'test.example.com_443', address: 7.7.7.7 }
+    - { name: 'server3.example.com', vs: 'test.example.com_443', address: 8.8.8.8 }
+
+- name: Issue 01191 - Add members to GTM pool type a
+  bigip_gtm_pool_member:
+    description: ""
+    member_order: "{{ item.order }}"
+    pool: issue-01191-gtm-pool-a
+    ratio: "{{ item.ratio }}"
+    server_name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    type: a
+    virtual_server: "{{ item.vs }}"
+  loop:
+    - { name: 'server1.example.com', vs: 'test.example.com_443', order: '0', ratio: '1', state: 'enabled' }
+    - { name: 'server2.example.com', vs: 'test.example.com_443', order: '1', ratio: '1', state: 'enabled' }
+    - { name: 'server3.example.com', vs: 'test.example.com_443', order: '2', ratio: '1', state: 'enabled' }
+
+- name: Issue 01191 - Select gtm-a-pools members facts
+  bigip_device_facts:
+    include:
+      - gtm-a-pools
+  register: result
+
+- name: Issue 01191 - Assert Select gtm-a-pools members facts
+  assert:
+    that:
+      - result is success
+      - result.gtm_a_pools | json_query("[?name=='issue-01191-gtm-pool-a'].sort_by(members, &member_order)[0].name") | first == "server1.example.com:test.example.com_443"
+
+- name: Issue 01191 - Remove pool
+  bigip_gtm_pool:
+    name: issue-01191-gtm-pool-a
+    type: a
+    state: absent
+
+- name: Issue 01191 - Remove GTM servers
+  bigip_gtm_server:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - server1.example.com
+    - server2.example.com
+    - server3.example.com
+
+- name: Issue 01191 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+    state: absent
