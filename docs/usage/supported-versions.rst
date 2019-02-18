@@ -61,5 +61,5 @@ then the module is likely complete and ready for testing. You can create issues 
 
    <a href="https://github.com/F5Networks/f5-ansible" target="_blank">GitHub repo</a>
 
-.. |check| image:: ../_static/check.svg
-.. |x| image:: ../_static/x.svg
+.. |check| image:: ../_static/check.png
+.. |x| image:: ../_static/x.png
