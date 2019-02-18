@@ -51,3 +51,14 @@ def make(c):
     """Create the module RST docs and then build the full HTML documentation
     """
     print("done")
+
+
+# TODO Need to update container to have latexmk and texlive-formats-extra packages installed before this can be used in CI/CD
+
+@task
+def build_pdf(c):
+    """Create documentation in PDF format
+    """
+    with c.cd("{0}/docs".format(BASE_DIR)):
+        c.run("rm -rf _build")
+        c.run("make latexpdf")
