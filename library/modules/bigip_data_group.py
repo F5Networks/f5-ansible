@@ -131,10 +131,13 @@ options:
     description:
       - When C(state) is C(present), ensures the data group exists.
       - When C(state) is C(absent), ensures that the data group is removed.
+      - The use of state in this module refers to the entire data group, not its members.
     choices:
       - present
       - absent
     default: present
+notes:
+  - This module does NOT support atomic updates of data group members in a type C(internal) data group.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
