@@ -36,8 +36,8 @@ def upstream(c):
 
     # - upstream module utils files
     cmd = [
-        'cp', '{0}/library/utils/module_docs_fragments/*'.format(BASE_DIR),
-        '{0}/local/ansible/lib/ansible/utils/module_docs_fragments/'.format(BASE_DIR)
+        'cp', '{0}/library/plugins/doc_fragments/*'.format(BASE_DIR),
+        '{0}/local/ansible/lib/ansible/plugins/doc_fragments/'.format(BASE_DIR)
     ]
     c.run(' '.join(cmd))
     print("Copy complete")
