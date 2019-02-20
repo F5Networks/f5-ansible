@@ -574,6 +574,17 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
+
+    def _strip_route_domain(self, item):
+        result = dict()
+        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)/(?P<mask>[0-9]+)'
+        matches = re.search(pattern, item['name'])
+        if matches:
+            result['data'] = item['data']
+            result['name'] = '{0}/{1}'.format(matches.group('ip'), matches.group('mask'))
+            return result
+        return item
+
     @property
     def checksum(self):
         if self._values['checksum'] is None:
@@ -585,7 +596,8 @@ class ApiParameters(Parameters):
     def records(self):
         if self._values['records'] is None:
             return None
-        return self._values['records']
+        result = [self._strip_route_domain(item) for item in self._values['records']]
+        return result
 
     @property
     def records_list(self):
