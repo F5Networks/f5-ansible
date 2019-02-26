@@ -150,7 +150,7 @@
       - result is changed
       - result is success
 
-- name: Rediscover a known device and import non-existent module - Expect Failure
+- name: Rediscover a known device and import module, non existent module- Expect Failure
   bigiq_device_discovery:
     device_address: "{{ bigip13 }}"
     modules: "{{ module5 }}"
@@ -162,5 +162,14 @@
     device_address: "{{ bigip13 }}"
     state: absent
 
-
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01241.yaml
+  tags: issue-01241
+
+- import_tasks: issue-01242.yaml
+  tags: issue-01242
+
+- import_tasks: issue-01243.yaml
+  tags: issue-01243
+

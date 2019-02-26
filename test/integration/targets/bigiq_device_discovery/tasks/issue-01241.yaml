@@ -1,0 +1,84 @@
+---
+
+- name: Issue 01241 - Include issue variables
+  include_vars:
+    file: issue-01241.yaml
+
+- name: Issue 01241 - Discover a new device and import config, LTM is missing - Expect Failure
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules3 }}"
+  register: result
+  failed_when: "'LTM module must be specified for device discovery and import.' not in result ['msg']"
+
+- name: Issue 01241 - Discover a new device and import config, set different conflict resolutions
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+    device_conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Issue 01241 - Assert Discover a new device and import config, set different conflict resolutions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01241 - Discover a new device and import config, set different conflict resolutions - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+    device_conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Issue 01241 - Assert Discover a new device and import config, set different conflict resolutions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01241 - Remove discovered device and its config
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    state: absent
+
+- name: Issue 01241 - Discover a new device and import LTM config, set versioned config policy
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules2 }}"
+    versioned_conflict_policy: "{{ conflict2 }}"
+  register: result
+
+- name: Issue 01241 - Assert Discover a new device and import LTM config, set versioned config policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01241 - Discover a new device and import LTM config, set versioned config policy - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules2 }}"
+    versioned_conflict_policy: "{{ conflict2 }}"
+  register: result
+
+- name: Issue 01241 - Assert Discover a new device and import LTM config, set versioned config policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01241 - Remove discovered device and its config
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    state: absent

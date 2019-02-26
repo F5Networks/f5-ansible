@@ -5,11 +5,9 @@ pass: admin
 conflict: use_bigip
 modules1:
     - ltm
-    - afm
-    - security_shared
 
 modules2:
-    - dns
+    - ltm
     - afm
     - security_shared
 
@@ -25,4 +23,5 @@ modules4:
     - security_shared
 
 module5:
+    - ltm
     - websafe
