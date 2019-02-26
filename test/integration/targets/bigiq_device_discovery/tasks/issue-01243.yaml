@@ -1,0 +1,81 @@
+---
+- name: Issue 01243 - Include issue variables
+  include_vars:
+    file: issue-01243.yaml
+
+- name: Issue 01243 - Discover a new device, import config, enable stats collection
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+    statistics:
+      enable: yes
+      interval: 120
+  register: result
+
+- name: Issue 01243 - Assert Discover a new device, import config, enable stats collection
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01243 - Discover a new device, import config, enable stats collection - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+    statistics:
+      enable: yes
+      interval: 120
+  register: result
+
+- name: Issue 01243 - Assert Discover a new device, import config, enable stats collection - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01243 - Rediscover a device, import config, enable stats collection
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    modules: "{{ modules2 }}"
+    statistics:
+      enable: yes
+      interval: 120
+      stat_modules:
+        - ltm
+        - device
+        - dns
+  register: result
+
+- name: Issue 01243 - Assert Rediscover a device, import config, enable stats collection
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01243 - Rediscover a device, import config, enable stats collection - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    modules: "{{ modules2 }}"
+    statistics:
+      enable: yes
+      interval: 120
+      stat_modules:
+        - ltm
+        - device
+        - dns
+  register: result
+
+- name: Issue 01243 - Assert Rediscover a device, import config, enable stats collection - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01243 - Remove discovered device and its config
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    state: absent
