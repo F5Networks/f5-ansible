@@ -23,15 +23,18 @@ options:
   device_address:
     description:
       - The IP address of the BIG-IP device to be imported/managed.
+    type: str
     required: True
   device_username:
     description:
       - The administrator username fot the BIG-IP device.
       - This parameter is only required when adding a new BIG-IP device to be managed.
+    type: str
   device_password:
     description:
       - The administrator password fot the BIG-IP device.
       - This parameter is only required when adding a new BIG-IP device to be managed.
+    type: str
   device_port:
     description:
       - The port on which a device trust setup between BIG-IQ and BIG-IP should happen.
@@ -42,6 +45,7 @@ options:
       - DSC cluster name of the BIG-IP device to be managed.
       - This is optional if the managed device is not a part of a cluster group.
       - When C(use_bigiq_sync) is set to C(yes) then this parameter becomes mandatory.
+    type: str
   use_bigiq_sync:
     description:
       - When set to true, BIG-IQ will manually synchronize configuration changes
@@ -50,12 +54,48 @@ options:
     default: no
   conflict_policy:
     description:
-      - Sets the conflict resolution policy for shared objects.
-    default: keep_version
+      - Sets the conflict resolution policy for shared objects across BIG-IP devices, except LTM profiles and monitors.
+    type: str
+    default: use_bigiq
+    choices:
+      - use_bigiq
+      - use_bigip
+  versioned_conflict_policy:
+    description:
+      - Sets the conflict resolution policy for LTM profile and monitor objects that are specific to a BIG-IP software
+        version.
+    type: str
     choices:
       - use_bigiq
       - use_bigip
       - keep_version
+  device_conflict_policy:
+    description:
+      - Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device
+        and not shared among BIG-IP devices.
+    type: str
+    default: use_bigiq
+    choices:
+      - use_bigiq
+      - use_bigip
+  access_conflict_policy:
+    description:
+      - Sets the conflict resolution policy for Access module C(apm) objects, only used when C(apm) module is specified.
+    type: str
+    choices:
+      - use_bigiq
+      - use_bigip
+      - keep_version
+  access_group_name:
+    description:
+      - Access group name to import Access configuration for devices, once set it cannot be changed.
+    type: str
+  access_group_first_device:
+    description:
+      - Specifies if the imported device is the first device in the access group to import shared configuration for that
+        access group.
+    type: bool
+    default: no
   force:
     description:
       - Forces rediscovery and import of existing modules on the managed BIG-IP
@@ -64,7 +104,8 @@ options:
   modules:
     description:
       - List of modules to be discovered and imported into the device.
-      - These modules must be provisioned on the target device otherwise opration will fail.
+      - These modules must be provisioned on the target device otherwise operation will fail.
+      - The C(ltm) module must always be specified when performing discovery or re-discovery of the the device.
       - When C(asm) or C(afm) are specified C(shared_security) module needs to also be declared.
     type: list
     choices:
@@ -74,11 +115,45 @@ options:
       - dns
       - websafe
       - security_shared
+  statistics:
+    description:
+      - Specify the statistics collection for discovered device.
+    suboptions:
+      enable:
+        description:
+          - Enables statistics collection on a device
+        type: bool
+        default: no
+      interval:
+        description:
+          - Specify the interval in seconds the data is collected from the discovered device.
+        type: int
+        default: 60
+        choices:
+          - 30
+          - 60
+          - 120
+          - 500
+      zone:
+        description:
+          - Specify in which DCD zone is collecting the data from device.
+        type: str
+        default: default
+      stat_modules:
+        description:
+          - Specifies for which modules the data is being collected.
+        type: list
+        default: ['device', 'ltm']
+        choices:
+          - device
+          - ltm
+          - dns
   state:
     description:
       - The state of the managed device on the system.
       - When C(present), enables new device addition as well as device rediscovery/import.
       - When C(absent), completely removes the device from the system.
+    type: str
     default: present
     choices:
       - absent
@@ -86,7 +161,6 @@ options:
 extends_documentation_fragment: f5
 notes:
   - BIG-IQ >= 6.1.0.
-  - This module does not support importing of APM module configuration at this time.
   - This module does not support atomic removal of discovered modules on the device.
 author:
   - Wojciech Wypior (@wojtek0806)
@@ -99,7 +173,7 @@ EXAMPLES = r'''
     device_username: bigipadmin
     device_password: bigipsecret
     modules:
-      - asm
+      - ltm
       - afm
       - shared_security
     provider:
@@ -112,6 +186,7 @@ EXAMPLES = r'''
   bigiq_device_discovery:
     device_address: 192.168.1.1
     modules:
+      - ltm
       - dns
     conflict_policy: use_bigip
     provider:
@@ -124,7 +199,7 @@ EXAMPLES = r'''
   bigiq_device_discovery:
     device_address: 192.168.1.1
     modules:
-      - asm
+      - ltm
       - afm
       - dns
       - shared_security
@@ -168,10 +243,35 @@ use_bigiq_sync:
   type: bool
   sample: yes
 conflict_policy:
-  description: Sets the conflict resolution policy for shared objects.
+  description: Sets the conflict resolution policy for shared objects across BIG-IP devices.
+  returned: changed
+  type: str
+  sample: use_bigip
+device_conflict_policy:
+  description: Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device
+  returned: changed
+  type: str
+  sample: use_bigip
+versioned_conflict_policy:
+  description: Sets the conflict resolution policy for LTM profile and monitor objects.
   returned: changed
   type: str
   sample: keep_version
+access_conflict_policy:
+  description: Sets the conflict resolution policy for Access module C(apm) objects.
+  returned: changed
+  type: str
+  sample: keep_version
+access_group_name:
+  description: Access group name to import Access configuration for devices.
+  returned: changed
+  type: str
+  sample: foo_group
+access_group_first_device:
+  description: First device in the access group to import shared configuration for that access group.
+  returned: changed
+  type: bool
+  sample: yes
 modules:
   description: List of modules to be discovered and imported into the device.
   returned: changed
@@ -189,8 +289,6 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
-    from library.module_utils.network.f5.common import exit_json
-    from library.module_utils.network.f5.common import fail_json
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.icontrol import bigiq_version
@@ -199,8 +297,6 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import exit_json
-    from ansible.module_utils.network.f5.common import fail_json
     from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.network.f5.icontrol import bigiq_version
@@ -233,10 +329,21 @@ class Parameters(AnsibleF5Parameters):
         'ha_name',
         'use_bigiq_sync',
         'modules',
+        'conflict_policy',
+        'versioned_conflict_policy',
+        'device_conflict_policy',
+        'access_group_name',
+        'access_group_first_device',
+        'access_conflict_policy',
+        'module_list',
+        'apm_properties',
     ]
 
     updatables = [
         'modules',
+        'access_group_name',
+        'apm_properties',
+        'module_list',
     ]
 
 
@@ -247,7 +354,8 @@ class ApiParameters(Parameters):
         'cm-firewall-allFirewallDevices': 'firewall',
         'cm-websafe-allFpsDevices': 'fps',
         'cm-dns-allBigIpDevices': 'dns',
-        'cm-adccore-allbigipDevices': 'adc_core'
+        'cm-adccore-allbigipDevices': 'adc_core',
+        'cm-access-allBigIpDevices': 'access',
     }
 
     @property
@@ -262,12 +370,23 @@ class ApiParameters(Parameters):
                     result.append(self.module_map[item])
         return result
 
+    @property
+    def access_group_name(self):
+        raw_data = self._values['properties']
+        if raw_data is None:
+            return None
+        for item in raw_data.keys():
+            if 'cm:access:access-group-name' in raw_data[item]:
+                return raw_data[item]['cm:access:access-group-name']
+        return None
+
 
 class ModuleParameters(Parameters):
     module_map = {
         'ltm': 'adc_core',
         'afm': 'firewall',
         'websafe': 'fps',
+        'apm': 'access',
     }
 
     @property
@@ -297,6 +416,26 @@ class ModuleParameters(Parameters):
         return int(self._values['device_port'])
 
     @property
+    def conflict_policy(self):
+        return self._values['conflict_policy'].upper()
+
+    @property
+    def device_conflict_policy(self):
+        return self._values['device_conflict_policy'].upper()
+
+    @property
+    def versioned_conflict_policy(self):
+        if self._values['versioned_conflict_policy'] is None:
+            return None
+        return self._values['versioned_conflict_policy'].upper()
+
+    @property
+    def access_conflict_policy(self):
+        if self._values['access_conflict_policy'] is None:
+            return None
+        return self._values['device_conflict_policy'].upper()
+
+    @property
     def modules(self):
         if self._values['modules'] is None:
             return None
@@ -310,6 +449,15 @@ class ModuleParameters(Parameters):
                 raise F5ModuleError(
                     "Module 'shared_security' required for 'asm' module."
                 )
+        if 'ltm' not in self._values['modules']:
+            raise F5ModuleError(
+                "LTM module must be specified for device discovery and import."
+            )
+        if 'apm' in self._values['modules']:
+            if not self.access_group_name or not self.access_conflict_policy:
+                raise F5ModuleError(
+                    "When importing APM 'access_group_name' and 'access_conflict_policy' must be specified."
+                )
         for item in self._values['modules']:
             if item in self.module_map:
                 result.append(self.module_map[item])
@@ -318,8 +466,16 @@ class ModuleParameters(Parameters):
         return result
 
     @property
-    def conflict_policy(self):
-        return self._values['conflict_policy'].upper()
+    def apm_properties(self):
+        if self._values['modules'] is None:
+            return None
+        if 'apm' in self._values['modules']:
+            result = {
+                'cm:access:conflict-resolution': self.access_conflict_policy,
+                'cm:access:access-group-name': self.access_group_name,
+                'cm:access:import-shared': self.access_group_first_device
+            }
+            return result
 
     @property
     def use_bigiq_sync(self):
@@ -328,6 +484,46 @@ class ModuleParameters(Parameters):
             if result == 'yes':
                 return True
             return False
+
+    @property
+    def access_group_first_device(self):
+        result = flatten_boolean(self._values['access_group_first_device'])
+        if result:
+            if result == 'yes':
+                return True
+            return False
+
+    @property
+    def stats_enabled(self):
+        if self._values['statistics'] is None:
+            return None
+        result = flatten_boolean(self._values['statistics']['enable'])
+        if result:
+            if result == 'yes':
+                return True
+            return False
+
+    @property
+    def interval(self):
+        if self._values['statistics'] is None:
+            return None
+        return self._values['statistics']['interval']
+
+    @property
+    def zone(self):
+        if self._values['statistics'] is None:
+            return None
+        return self._values['statistics']['zone']
+
+    @property
+    def stat_modules(self):
+        if self._values['statistics'] is None:
+            return None
+        modules = self._values['statistics']['stat_modules']
+        result = list()
+        for module in modules:
+            result.append((dict(module=module.upper())))
+        return result
 
 
 class Changes(Parameters):
@@ -352,9 +548,27 @@ class UsableChanges(Changes):
             result.append(dict(module=item))
         return result
 
+    @property
+    def module_list(self):
+        if self._values['modules'] is None:
+            return None
+        result = list()
+        for item in self._values['modules']:
+            if item == 'access':
+                result.append(dict(module=item, properties=self._values['apm_properties']))
+            else:
+                result.append(dict(module=item))
+        return result
+
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def module_list(self):
+        return None
+
+    @property
+    def apm_properties(self):
+        return None
 
 
 class Difference(object):
@@ -389,11 +603,23 @@ class Difference(object):
         if set(self.want.modules) != set(self.have.modules):
             return self.want.modules
 
+    @property
+    def access_group_name(self):
+        if self.want.access_group_name != self.have.access_group_name:
+            raise F5ModuleError(
+                'Access group name cannot be modified once it is set.'
+            )
+
+    @property
+    def apm_properties(self):
+        # This is required for idempotency and updates as we do not compare these properties
+        return None
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
-        self.client = kwargs.get('client', None)
+        self.client = F5RestClient(**self.module.params)
         self.want = ModuleParameters(params=self.module.params)
         self.have = ApiParameters()
         self.changes = UsableChanges()
@@ -422,6 +648,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
+            changed['apm_properties'] = self.want.apm_properties
             self.changes = UsableChanges(params=changed)
             return True
         return False
@@ -486,6 +713,8 @@ class ModuleManager(object):
             self._set_changed_options()
         self.discover_on_device()
         self.import_modules_on_device()
+        if self.want.stats_enabled:
+            self.enable_stats_on_device()
         return True
 
     def remove(self):
@@ -506,10 +735,12 @@ class ModuleManager(object):
         self.set_trust_with_device()
         self.discover_on_device()
         self.import_modules_on_device()
+        if self.want.stats_enabled:
+            self.enable_stats_on_device()
         return True
 
     def exists(self):
-        uri = "https://{0}:{1}//mgmt/cm/system/machineid-resolver".format(
+        uri = "https://{0}:{1}/mgmt/cm/system/machineid-resolver".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
@@ -595,6 +826,7 @@ class ModuleManager(object):
 
             if response['status'] in ['FINISHED', 'FAILED', 'CANCELLED']:
                 break
+
             time.sleep(1)
 
         if response['status'] == 'FAILED':
@@ -608,7 +840,19 @@ class ModuleManager(object):
 
     def discover_on_device(self):
         tmp = self.changes.to_return()
-        if not self.reuse_task_on_device('discovery'):
+        if self.reuse_task_on_device('discovery'):
+            params = dict(
+                moduleList=tmp['modules'],
+                status='STARTED'
+            )
+            uri = "https://{0}:{1}/mgmt/cm/global/tasks/device-discovery/{2}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                self.task_id
+            )
+            resp = self.client.api.patch(uri, json=params)
+
+        else:
             params = dict(
                 name='discovery_{0}'.format(self.want.device_address),
                 moduleList=tmp['modules'],
@@ -623,18 +867,6 @@ class ModuleManager(object):
                 self.client.provider['server_port'],
             )
             resp = self.client.api.post(uri, json=params)
-        else:
-            params = dict(
-                moduleList=tmp['modules'],
-                status='STARTED'
-            )
-
-            uri = "https://{0}:{1}/mgmt/cm/global/tasks/device-discovery/{2}".format(
-                self.client.provider['server'],
-                self.client.provider['server_port'],
-                self.task_id
-            )
-            resp = self.client.api.patch(uri, json=params)
 
         try:
             response = resp.json()
@@ -662,10 +894,14 @@ class ModuleManager(object):
         tmp = self.changes.to_return()
         if self.reuse_task_on_device('import'):
             params = dict(
-                moduleList=tmp['modules'],
+                moduleList=tmp['module_list'],
                 conflictPolicy=self.want.conflict_policy,
+                deviceConflictPolicy=self.want.device_conflict_policy,
                 status='STARTED'
             )
+
+            if self.want.versioned_conflict_policy:
+                params['versionedConflictPolicy'] = self.want.versioned_conflict_policy
 
             uri = "https://{0}:{1}/mgmt/cm/global/tasks/device-import/{2}".format(
                 self.client.provider['server'],
@@ -676,15 +912,19 @@ class ModuleManager(object):
 
         else:
             params = dict(
-                name='discovery_{0}'.format(self.want.device_address),
-                moduleList=tmp['modules'],
+                name='import_{0}'.format(self.want.device_address),
+                moduleList=tmp['module_list'],
                 conflictPolicy=self.want.conflict_policy,
+                deviceConflictPolicy=self.want.device_conflict_policy,
                 deviceReference=dict(link='https://localhost/mgmt/cm/system/machineid-resolver/{0}'.format(
                     self.device_id
                 )
                 ),
                 status='STARTED'
             )
+
+            if self.want.versioned_conflict_policy:
+                params['versionedConflictPolicy'] = self.want.versioned_conflict_policy
 
             uri = "https://{0}:{1}/mgmt/cm/global/tasks/device-import".format(
                 self.client.provider['server'],
@@ -704,6 +944,47 @@ class ModuleManager(object):
                 raise F5ModuleError(resp.content)
 
         task = "https://{0}:{1}/mgmt/cm/global/tasks/device-import/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            response['id']
+        )
+        query = "?$select=status,currentStep,errorMessage"
+
+        self._wait_for_task(task + query)
+
+        return True
+
+    def enable_stats_on_device(self):
+        params = dict(
+            enabled=self.want.stats_enabled,
+            pushIntervalSecs=self.want.interval,
+            zone=self.want.zone,
+            modules=self.want.stat_modules,
+            targetDeviceReference=dict(
+                link='https://localhost/mgmt/cm/system/machineid-resolver/{0}'.format(
+                    self.device_id
+                )
+            ),
+        )
+
+        uri = "https://{0}:{1}/mgmt/cm/shared/stats-mgmt/agent-install-and-config-task".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.post(uri, json=params)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] in [400, 409]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        task = "https://{0}:{1}/mgmt/cm/shared/stats-mgmt/agent-install-and-config-task/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             response['id']
@@ -825,7 +1106,7 @@ class ModuleManager(object):
         self._wait_for_task(task + query)
 
     def read_current_from_device(self):
-        uri = "https://{0}:{1}//mgmt/cm/system/machineid-resolver/{2}".format(
+        uri = "https://{0}:{1}/mgmt/cm/system/machineid-resolver/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             self.device_id
@@ -847,6 +1128,7 @@ class ModuleManager(object):
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
+        self.conflict = ['use_bigip', 'use_bigiq']
         argument_spec = dict(
             device_address=dict(
                 required=True
@@ -867,10 +1149,15 @@ class ArgumentSpec(object):
                 default='no'
             ),
             conflict_policy=dict(
-                choices=[
-                    'use_bigip', 'use_bigiq', 'keep_version'
-                ],
-                default='keep_version'
+                choices=self.conflict,
+                default='use_bigiq'
+            ),
+            versioned_conflict_policy=dict(
+                choices=self.conflict + ['keep_version'],
+            ),
+            device_conflict_policy=dict(
+                choices=self.conflict,
+                default='use_bigiq'
             ),
             force=dict(
                 type='bool',
@@ -879,8 +1166,46 @@ class ArgumentSpec(object):
             modules=dict(
                 type='list',
                 choices=[
-                    'ltm', 'asm', 'afm', 'dns', 'websafe', 'security_shared'
+                    'ltm', 'asm', 'afm', 'dns', 'websafe', 'security_shared', 'apm'
                 ]
+            ),
+            access_conflict_policy=dict(
+                choices=self.conflict + ['keep_version']
+            ),
+            access_group_name=dict(),
+            access_group_first_device=dict(
+                type='bool',
+                default='yes'
+            ),
+            statistics=dict(
+                type='dict',
+                options=dict(
+                    enable=dict(
+                        type='bool',
+                        default='no'
+                    ),
+                    interval=dict(
+                        type='int',
+                        choices=[
+                            30, 60, 120, 500
+                        ],
+                        default=60
+                    ),
+                    zone=dict(
+                        type='str',
+                        default='default'
+                    ),
+                    stat_modules=dict(
+                        type='list',
+                        choices=[
+                            'device', 'ltm', 'dns'
+                        ],
+                        default=[
+                            'device', 'ltm'
+                        ]
+                    )
+                )
+
             ),
             state=dict(default='present', choices=['absent', 'present']),
         )
@@ -901,14 +1226,12 @@ def main():
         required_if=spec.required_if
     )
 
-    client = F5RestClient(**module.params)
-
     try:
-        mm = ModuleManager(module=module, client=client)
+        mm = ModuleManager(module=module)
         results = mm.exec_module()
-        exit_json(module, results, client)
+        module.exit_json(**results)
     except F5ModuleError as ex:
-        fail_json(module, ex, client)
+        module.fail_json(msg=str(ex))
 
 
 if __name__ == '__main__':

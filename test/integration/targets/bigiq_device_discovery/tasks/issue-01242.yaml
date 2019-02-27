@@ -1,0 +1,87 @@
+---
+- name: Issue 01242 - Include issue variables
+  include_vars:
+    file: issue-01242.yaml
+
+- name: Issue 01242 - Discover a new device and import config, APM properties missing - Expect Failure
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+  register: result
+  failed_when: "'When importing APM' not in result ['msg']"
+
+- name: Issue 01242 - Discover a new device and import APM config
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+    access_group_name: "{{ group1 }}"
+    access_conflict_policy: "{{ conflict2 }}"
+  register: result
+
+- name: Issue 01242 - Assert Discover a new device and import APM configs
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01242 - Discover a new device and import APM config - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    device_username: "{{ user }}"
+    device_password: "{{ pass }}"
+    modules: "{{ modules1 }}"
+    access_group_name: "{{ group1 }}"
+    access_conflict_policy: "{{ conflict2 }}"
+  register: result
+
+- name: Issue 01242 - Assert Discover a new device and import APM configs - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01242 - Rediscover device and import multiple modules including APM
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    modules: "{{ modules2 }}"
+    access_group_name: "{{ group1 }}"
+    access_conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Issue 01242 - Assert Rediscover device and import multiple modules including APM
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01242 - Rediscover device and import multiple modules including APM - Idempotent check
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    modules: "{{ modules2 }}"
+    access_group_name: "{{ group1 }}"
+    access_conflict_policy: "{{ conflict }}"
+  register: result
+
+- name: Issue 01242 - Assert Rediscover device and import multiple modules including APM - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01242 - Rediscover device use different access group name - Expect Failure
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    modules: "{{ modules2 }}"
+    access_group_name: "{{ group2 }}"
+    access_conflict_policy: "{{ conflict }}"
+  register: result
+  failed_when: "'Access group name cannot be modified once it is set.' not in result ['msg']"
+
+- name: Issue 01242 - Remove discovered device and its config
+  bigiq_device_discovery:
+    device_address: "{{ bigip12 }}"
+    state: absent
