@@ -451,8 +451,8 @@ class ModuleParameters(Parameters):
                 )
         if 'ltm' not in self._values['modules']:
             raise F5ModuleError(
-                    "LTM module must be specified for device discovery and import."
-                )
+                "LTM module must be specified for device discovery and import."
+            )
         if 'apm' in self._values['modules']:
             if not self.access_group_name or not self.access_conflict_policy:
                 raise F5ModuleError(
