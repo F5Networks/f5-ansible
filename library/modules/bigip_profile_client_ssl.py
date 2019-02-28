@@ -257,7 +257,7 @@ EXAMPLES = r'''
   bigip_profile_client_ssl:
     state: present
     name: my_profile
-    secure_renegotation: request
+    secure_renegotiation: request
     provider:
       server: lb.mydomain.com
       user: admin
@@ -290,7 +290,7 @@ options:
   returned: changed
   type: list
   sample: ['no-sslv2', 'no-sslv3']
-secure_renegotation:
+secure_renegotiation:
   description: The method of secure SSL renegotiation.
   returned: changed
   type: str
