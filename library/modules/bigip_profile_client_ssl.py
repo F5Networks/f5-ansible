@@ -173,6 +173,12 @@ options:
       - once
       - always
     version_added: 2.8
+  renegotiation:
+    description:
+      - Enables or disables SSL renegotiation.
+      - When creating a new profile, the setting is provided by the parent profile.
+    type: bool
+    version_added: 2.8
   retain_certificate:
     description:
       - When C(yes), client certificate is retained in SSL session.
@@ -257,7 +263,7 @@ EXAMPLES = r'''
   bigip_profile_client_ssl:
     state: present
     name: my_profile
-    secure_renegotation: request
+    secure_renegotiation: request
     provider:
       server: lb.mydomain.com
       user: admin
@@ -290,7 +296,7 @@ options:
   returned: changed
   type: list
   sample: ['no-sslv2', 'no-sslv3']
-secure_renegotation:
+secure_renegotiation:
   description: The method of secure SSL renegotiation.
   returned: changed
   type: str
@@ -302,6 +308,11 @@ allow_non_ssl:
   sample: yes
 strict_resume:
   description: Resumption of SSL sessions after an unclean shutdown.
+  returned: changed
+  type: bool
+  sample: yes
+renegotiation:
+  description: Renegotiation of SSL sessions.
   returned: changed
   type: bool
   sample: yes
@@ -358,6 +369,7 @@ class Parameters(AnsibleF5Parameters):
         'crlFile': 'client_auth_crl',
         'allowExpiredCrl': 'allow_expired_crl',
         'strictResume': 'strict_resume',
+        'renegotiation': 'renegotiation',
     }
 
     api_attributes = [
@@ -379,6 +391,7 @@ class Parameters(AnsibleF5Parameters):
         'crlFile',
         'allowExpiredCrl',
         'strictResume',
+        'renegotiation',
     ]
 
     returnables = [
@@ -400,6 +413,7 @@ class Parameters(AnsibleF5Parameters):
         'client_auth_crl',
         'allow_expired_crl',
         'strict_resume',
+        'renegotiation',
     ]
 
     updatables = [
@@ -420,6 +434,7 @@ class Parameters(AnsibleF5Parameters):
         'client_auth_crl',
         'allow_expired_crl',
         'strict_resume',
+        'renegotiation',
     ]
 
     @property
@@ -503,6 +518,15 @@ class ModuleParameters(Parameters):
     @property
     def strict_resume(self):
         result = flatten_boolean(self._values['strict_resume'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def renegotiation(self):
+        result = flatten_boolean(self._values['renegotiation'])
         if result is None:
             return None
         if result == 'yes':
@@ -1041,6 +1065,7 @@ class ArgumentSpec(object):
             client_auth_crl=dict(),
             allow_expired_crl=dict(type='bool'),
             strict_resume=dict(type='bool'),
+            renegotiation=dict(type='bool'),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

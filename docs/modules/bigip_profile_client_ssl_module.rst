@@ -614,7 +614,7 @@ Examples
       bigip_profile_client_ssl:
         state: present
         name: my_profile
-        secure_renegotation: request
+        secure_renegotiation: request
         provider:
           server: lb.mydomain.com
           user: admin
@@ -691,7 +691,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>secure_renegotation</b>
+                    <b>secure_renegotiation</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
