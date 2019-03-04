@@ -1,0 +1,54 @@
+---
+
+- name: Issue 01250 - Create a client SSL profile, enable renegotiation
+  bigip_profile_client_ssl:
+    name: issue-01250
+    renegotiation: yes
+  register: result
+
+- name: Issue 01250 - Assert Create a client SSL profile, enable renegotiation
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01250 - Create a client SSL profile, enable renegotiation - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-01250
+    renegotiation: yes
+  register: result
+
+- name: Issue 01250 - Assert Create a client SSL profile, enable renegotiation - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01250 - Modify client SSL profile, disable renegotiation
+  bigip_profile_client_ssl:
+    name: issue-01250
+    renegotiation: no
+  register: result
+
+- name: Issue 01250 - Assert Modify client SSL profile, disable renegotiation
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01250 - Modify client SSL profile, disable renegotiation - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-01250
+    renegotiation: no
+  register: result
+
+- name: Issue 01250 - Assert Modify client SSL profile, disable renegotiation - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01250 - Cleanup
+  bigip_profile_client_ssl:
+    name: issue-01250
+    state: absent
