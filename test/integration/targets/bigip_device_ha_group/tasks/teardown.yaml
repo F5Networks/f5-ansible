@@ -1,0 +1,28 @@
+- name: Remove HA group
+  bigip_device_ha_group:
+    name: "{{ ha_name2 }}"
+    state: absent
+
+- name: Remove trunk
+  bigip_trunk:
+    name: "{{ trunk_name }}"
+    state: absent
+
+- name: Remove pool
+  bigip_pool:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+      - "{{ pool_name }}"
+      - "{{ pool_name2 }}"
+
+- name: Remove nodes
+  bigip_node:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - ha_node
+    - 192.168.1.2
+    - ha_node2
+    - 192.168.11.2
+

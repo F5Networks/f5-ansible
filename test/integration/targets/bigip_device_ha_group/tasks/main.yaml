@@ -1,0 +1,191 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create HA group with pools and trunk
+  bigip_device_ha_group:
+    name: "{{ ha_name1 }}"
+    description: "{{ ha_description_1 }}"
+    active_bonus: "{{ bonus1 }}"
+    pools:
+      - pool_name: "{{ pool_name }}"
+        weight: "{{ weight_1 }}"
+        minimum_threshold: "{{ threshold }}"
+      - pool_name: "{{ pool_name2 }}"
+        weight: "{{ weight_3 }}"
+        minimum_threshold: "{{ threshold }}"
+    trunks:
+      - trunk_name: "{{ trunk_name }}"
+        weight: "{{ weight_2 }}"
+        minimum_threshold: "{{ threshold }}"
+  register: result
+
+- name: Assert Create HA group with pools and trunk
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.name == ha_name1
+      - result.active_bonus == bonus1
+      - result.description == ha_description_1
+      - result.pools | json_query("[?pool_name=='{{ pool_name2 }}'].pool_name") | first == pool_name2
+      - result.trunks | json_query("[?trunk_name=='{{ trunk_name }}'].trunk_name") | first == trunk_name
+
+- name: Create HA group with pools and trunk - Idempotent check
+  bigip_device_ha_group:
+    name: "{{ ha_name1 }}"
+    description: "{{ ha_description_1 }}"
+    active_bonus: "{{ bonus1 }}"
+    pools:
+      - pool_name: "{{ pool_name }}"
+        weight: "{{ weight_1 }}"
+        minimum_threshold: "{{ threshold }}"
+      - pool_name: "{{ pool_name2 }}"
+        weight: "{{ weight_3 }}"
+        minimum_threshold: "{{ threshold }}"
+    trunks:
+      - trunk_name: "{{ trunk_name }}"
+        weight: "{{ weight_2 }}"
+        minimum_threshold: "{{ threshold }}"
+  register: result
+
+- name: Assert Create HA group with pools and trunk - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify HA group, change multiple settings
+  bigip_device_ha_group:
+    name: "{{ ha_name1 }}"
+    description: "{{ ha_description_2 }}"
+    active_bonus: "{{ bonus2 }}"
+    trunks:
+      - trunk_name: "{{ trunk_name }}"
+        weight: "{{ weight_4 }}"
+  register: result
+
+- name: Assert Modify HA group, change multiple settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.active_bonus == bonus2
+      - result.description == ha_description_2
+      - result.trunks | json_query("[?trunk_name=='{{ trunk_name }}'].weight") | first == weight_4
+
+- name: Modify HA group, change multiple settings - Idempotent check
+  bigip_device_ha_group:
+    name: "{{ ha_name1 }}"
+    description: "{{ ha_description_2 }}"
+    active_bonus: "{{ bonus2 }}"
+    trunks:
+      - trunk_name: "{{ trunk_name }}"
+        weight: "{{ weight_4 }}"
+  register: result
+
+- name: Assert Modify HA group, change multiple settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create inactive HA group
+  bigip_device_ha_group:
+    name: "{{ ha_name2 }}"
+    description: "{{ ha_description_1 }}"
+    enable: no
+  register: result
+
+- name: Assert Create HA group with pools and trunk
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.name == ha_name2
+      - result.description == ha_description_1
+      - result.enable == 'no'
+
+- name: Create inactive HA group - Idempotent check
+  bigip_device_ha_group:
+    name: "{{ ha_name2 }}"
+    description: "{{ ha_description_1 }}"
+    enable: no
+  register: result
+
+- name: Assert Create HA group with pools and trunk - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Activate inactive HA group, add pool
+  bigip_device_ha_group:
+    name: "{{ ha_name2 }}"
+    enable: yes
+    pools:
+      - pool_name: "{{ pool_name2 }}"
+        weight: "{{ weight_3 }}"
+        minimum_threshold: "{{ threshold }}"
+  register: result
+
+- name: Assert Activate inactive HA group, add pool
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.enable == 'yes'
+      - result.pools | json_query("[?pool_name=='{{ pool_name2 }}'].pool_name") | first == pool_name2
+
+- name: Activate inactive HA group, add pool - Idempotent check
+  bigip_device_ha_group:
+    name: "{{ ha_name2 }}"
+    enable: yes
+    pools:
+      - pool_name: "{{ pool_name2 }}"
+        weight: "{{ weight_3 }}"
+        minimum_threshold: "{{ threshold }}"
+  register: result
+
+- name: Assert Activate inactive HA group, add pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify HA group, threshold settings invalid - Expect Failure
+  bigip_device_ha_group:
+    name: "{{ ha_name2 }}"
+    enable: yes
+    pools:
+      - pool_name: "{{ pool_name2 }}"
+        weight: "{{ weight_3 }}"
+        minimum_threshold: "{{ invalid }}"
+  register: result
+  failed_when: result is success
+
+- name: Remove first HA group
+  bigip_device_ha_group:
+    name: "{{ ha_name1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove first HA group
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove first HA group - Idempotent check
+  bigip_device_ha_group:
+    name: "{{ ha_name1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove first HA group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
