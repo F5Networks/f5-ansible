@@ -1,0 +1,19 @@
+pool_name: /Common/foo_pool
+pool_name2: /Common/foo_pool2
+pool_lb_method: round-robin
+trunk_name: foo_trunk
+ha_description_1: my description
+ha_description_2: changed description
+bonus1: 15
+bonus2: 30
+
+ha_name1: baz_ha
+ha_name2: bar_ha
+
+weight_1: 40
+weight_2: 30
+weight_3: 50
+weight_4: 70
+
+threshold: 1
+invalid: 3
