@@ -1,0 +1,43 @@
+
+- name: Create trunk
+  bigip_trunk:
+    name: "{{ trunk_name }}"
+    interfaces:
+      - 1.1
+      - 1.2
+
+- name: Create pool
+  bigip_pool:
+    lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    state: present
+
+- name: Add pool members to pool
+  bigip_pool_member:
+    pool: "{{ pool_name }}"
+    aggregate:
+      - name: ha_node
+        host: 192.168.1.1
+        partition: Common
+        port: 80
+      - host: 192.168.1.2
+        partition: Common
+        port: 80
+
+- name: Create pool
+  bigip_pool:
+    lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name2 }}"
+    state: present
+
+- name: Add pool members to second pool
+  bigip_pool_member:
+    pool: "{{ pool_name2 }}"
+    aggregate:
+      - name: ha_node2
+        host: 192.168.11.1
+        partition: Common
+        port: 80
+      - host: 192.168.11.2
+        partition: Common
+        port: 80

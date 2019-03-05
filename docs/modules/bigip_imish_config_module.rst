@@ -28,7 +28,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -61,6 +62,39 @@ Parameters
                                                                                 </td>
             </tr>
                                 <tr>
+                                                                <td colspan="2">
+                    <b>backup_options</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <em>yes</em>, if <code>backup</code> is set to <em>no</em> this option will be silently ignored.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>filename</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The filename to be used to store the backup configuration. If the the filename is not given it will be generated based on the hostname, current time and date in format defined by &lt;hostname&gt;_config.&lt;current-date&gt;@&lt;current-time&gt;</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>dir_path</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>This option provides the path ending with directory name in which the backup configuration file will be stored. If the directory does not exist it will be first created and the filename is either the value of <code>filename</code> or default filename as described in <code>filename</code> options description. If the path value is not given in that case a <em>backup</em> directory will be created in the current working directory and backup configuration will be copied in <code>filename</code> within <em>backup</em> directory.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
                     <b>before</b>
                                                         </td>
@@ -174,8 +208,7 @@ Parameters
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">None</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>A dict object containing connection details.</div>
                                                                                 </td>
@@ -277,8 +310,8 @@ Parameters
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>cli</li>
+                                                                                                                                                                <li>cli</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -488,6 +521,19 @@ Examples
           user: admin
           password: secret
           server: lb.mydomain.com
+      delegate_to: localhost
+
+    - name: configurable backup path
+      bigip_imish_config:
+        lines: bfd slow-timer 2000
+        backup: yes
+        provider:
+          user: admin
+          password: secret
+          server: lb.mydomain.com
+        backup_options:
+          filename: backup.cfg
+          dir_path: /home/user
       delegate_to: localhost
 
 

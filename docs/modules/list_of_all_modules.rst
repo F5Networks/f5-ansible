@@ -27,6 +27,7 @@ All modules
   * :ref:`bigip_device_facts_module`
   * :ref:`bigip_device_group_module`
   * :ref:`bigip_device_group_member_module`
+  * :ref:`bigip_device_ha_group_module`
   * :ref:`bigip_device_httpd_module`
   * :ref:`bigip_device_license_module`
   * :ref:`bigip_device_ntp_module`
