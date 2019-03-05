@@ -68,13 +68,13 @@ Modules Maintained by the Ansible Partners
   * :ref:`bigip_hostname_module`
   * :ref:`bigip_iapp_service_module`
   * :ref:`bigip_iapp_template_module`
-  * :ref:`bigip_iapplx_package_module`
   * :ref:`bigip_ike_peer_module`
   * :ref:`bigip_imish_config_module`
   * :ref:`bigip_ipsec_policy_module`
   * :ref:`bigip_irule_module`
   * :ref:`bigip_log_destination_module`
   * :ref:`bigip_log_publisher_module`
+  * :ref:`bigip_lx_package_module`
   * :ref:`bigip_management_route_module`
   * :ref:`bigip_monitor_dns_module`
   * :ref:`bigip_monitor_external_module`
