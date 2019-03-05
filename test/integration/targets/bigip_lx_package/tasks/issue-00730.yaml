@@ -7,6 +7,6 @@
     validate_certs: False
 
 - name: Issue 00730 - Upload package
-  bigip_iapplx_package:
+  bigip_lx_package:
     package: /var/tmp/f5-appsvcs-3.5.0-3.noarch.rpm
     state: present
