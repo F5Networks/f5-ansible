@@ -1,78 +1,78 @@
 ---
 
-- name: Create iAppLX package
-  bigip_iapplx_package:
+- name: Create LX package
+  bigip_lx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
     state: present
   register: result
 
-- name: Assert Create iAppLX package
+- name: Assert Create LX package
   assert:
     that:
       - result is changed
 
-- name: Create iAppLX package - Idempotent check
-  bigip_iapplx_package:
+- name: Create LX package - Idempotent check
+  bigip_lx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
     state: present
   register: result
 
-- name: Assert Create iAppLX package - Idempotent check
+- name: Assert Create LX package - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Delete iAppLX package
-  bigip_iapplx_package:
+- name: Delete LX package
+  bigip_lx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
     state: absent
   register: result
 
-- name: Assert Delete iAppLX package
+- name: Assert Delete LX package
   assert:
     that:
       - result is changed
 
-- name: Delete iAppLX package - Idempotent check
-  bigip_iapplx_package:
+- name: Delete LX package - Idempotent check
+  bigip_lx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
     state: absent
   register: result
 
-- name: Assert Create iAppLX package - Idempotent check
+- name: Assert Create LX package - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Create iAppLX package
-  bigip_iapplx_package:
+- name: Create LX package
+  bigip_lx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
     state: present
   register: result
 
-- name: Assert Create iAppLX package
+- name: Assert Create LX package
   assert:
     that:
       - result is changed
 
-- name: Delete iAppLX package, file does not exist
-  bigip_iapplx_package:
+- name: Delete LX package, file does not exist
+  bigip_lx_package:
     package: MyApp-0.1.0-0001.noarch.rpm
     state: absent
   register: result
 
-- name: Assert Delete iAppLX package, file does not exist
+- name: Assert Delete LX package, file does not exist
   assert:
     that:
       - result is changed
 
-- name: Delete iAppLX package, file does not exist - Idempotent check
-  bigip_iapplx_package:
+- name: Delete LX package, file does not exist - Idempotent check
+  bigip_lx_package:
     package: MyApp-0.1.0-0001.noarch.rpm
     state: absent
   register: result
 
-- name: Assert Delete iAppLX package, file does not exist - Idempotent check
+- name: Assert Delete LX package, file does not exist - Idempotent check
   assert:
     that:
       - result is not changed
