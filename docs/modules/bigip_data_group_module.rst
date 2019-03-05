@@ -130,8 +130,7 @@ Parameters
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">None</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>A dict object containing connection details.</div>
                                                                                 </td>
@@ -233,8 +232,8 @@ Parameters
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>cli</li>
+                                                                                                                                                                <li>cli</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -346,6 +345,7 @@ Parameters
                                                                 <td>
                                                                         <div>When <code>state</code> is <code>present</code>, ensures the data group exists.</div>
                                                     <div>When <code>state</code> is <code>absent</code>, ensures that the data group is removed.</div>
+                                                    <div>The use of state in this module refers to the entire data group, not its members.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -403,6 +403,7 @@ Notes
 -----
 
 .. note::
+    - This module does NOT support atomic updates of data group members in a type ``internal`` data group.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
