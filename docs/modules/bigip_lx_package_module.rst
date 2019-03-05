@@ -1,12 +1,13 @@
-:source: bigip_iapplx_package.py
+:source: bigip_lx_package.py
 
 :orphan:
 
+.. _bigip_lx_package_module:
 .. _bigip_iapplx_package_module:
 
 
-bigip_iapplx_package - Manages Javascript iApp packages on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_lx_package - Manages Javascript LX packages on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -17,9 +18,10 @@ bigip_iapplx_package - Manages Javascript iApp packages on a BIG-IP
 
 Synopsis
 --------
-- Manages Javascript iApp packages on a BIG-IP. This module will allow you to deploy iAppLX packages to the BIG-IP and manage their lifecycle.
+- Manages Javascript LX packages on a BIG-IP. This module will allow you to deploy LX packages to the BIG-IP and manage their lifecycle.
 
 
+Aliases: bigip_iapplx_package
 
 Requirements
 ~~~~~~~~~~~~
@@ -48,7 +50,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The iAppLX package that you want to upload or remove. When <code>state</code> is <code>present</code>, and you intend to use this module in a <code>role</code>, it is recommended that you use the <code>{{ role_path }}</code> variable. An example is provided in the <code>EXAMPLES</code> section.</div>
+                                                                        <div>The LX package that you want to upload or remove. When <code>state</code> is <code>present</code>, and you intend to use this module in a <code>role</code>, it is recommended that you use the <code>{{ role_path }}</code> variable. An example is provided in the <code>EXAMPLES</code> section.</div>
                                                     <div>When <code>state</code> is <code>absent</code>, it is not necessary for the package to exist on the Ansible controller. If the full path to the package is provided, the fileame will specifically be cherry picked from it to properly remove the package.</div>
                                                                                 </td>
             </tr>
@@ -214,7 +216,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Whether the iAppLX package should exist or not.</div>
+                                                                        <div>Whether the LX package should exist or not.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -253,6 +255,7 @@ Notes
 .. note::
     - Requires the rpm tool be installed on the host. This can be accomplished through different ways on each platform. On Debian based systems with ``apt``; ``apt-get install rpm``. On Mac with ``brew``; ``brew install rpm``. This command is already present on RedHat based systems.
     - Requires BIG-IP >= 12.1.0 because the required functionality is missing on versions earlier than that.
+    - The module name ``bigip_iapplx_package`` has been deprecated in favor of ``bigip_lx_package``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
@@ -265,7 +268,7 @@ Examples
 
     
     - name: Install AS3
-      bigip_iapplx_package:
+      bigip_lx_package:
         package: f5-appsvcs-3.5.0-3.noarch.rpm
         provider:
           password: secret
@@ -273,8 +276,8 @@ Examples
           user: admin
       delegate_to: localhost
 
-    - name: Add an iAppLX package stored in a role
-      bigip_iapplx_package:
+    - name: Add an LX package stored in a role
+      bigip_lx_package:
         package: "{{ roles_path }}/files/MyApp-0.1.0-0001.noarch.rpm'"
         provider:
           password: secret
@@ -282,8 +285,8 @@ Examples
           user: admin
       delegate_to: localhost
 
-    - name: Remove an iAppLX package
-      bigip_iapplx_package:
+    - name: Remove an LX package
+      bigip_lx_package:
         package: MyApp-0.1.0-0001.noarch.rpm
         state: absent
         provider:
