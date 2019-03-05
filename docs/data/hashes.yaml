@@ -583,7 +583,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -714,7 +714,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -845,7 +845,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -976,7 +976,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -1107,7 +1107,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -1238,7 +1238,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -1369,7 +1369,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -1500,7 +1500,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -1631,7 +1631,7 @@
 - hash: 18ecb281f521161bc67509c2ae4852f6
   name: bigip_iapp_template.py
 - hash: ac15c147960414d0c58351d5b6a7aa47
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: accea600a39caedd292a62933afadfbd
   name: bigip_irule.py
 - hash: 0ddacddf2d39b1c78884cd55dc9bde88
@@ -1784,7 +1784,7 @@
 - hash: 5d1e8b72fbc1ee81f6f4c440d9cfed75
   name: bigip_iapp_template.py
 - hash: b7b30dc87ea8876a73f05d1cc4cb65d8
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: 38afed2fa068763652c165917daa8ee5
   name: bigip_irule.py
 - hash: 724e22265c46d02493228515a6f57b21
@@ -1977,7 +1977,7 @@
 - hash: 5d1e8b72fbc1ee81f6f4c440d9cfed75
   name: bigip_iapp_template.py
 - hash: b7b30dc87ea8876a73f05d1cc4cb65d8
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: 38afed2fa068763652c165917daa8ee5
   name: bigip_irule.py
 - hash: 724e22265c46d02493228515a6f57b21
@@ -2170,7 +2170,7 @@
 - hash: 5d1e8b72fbc1ee81f6f4c440d9cfed75
   name: bigip_iapp_template.py
 - hash: b7b30dc87ea8876a73f05d1cc4cb65d8
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: 38afed2fa068763652c165917daa8ee5
   name: bigip_irule.py
 - hash: 724e22265c46d02493228515a6f57b21
@@ -2363,7 +2363,7 @@
 - hash: 5d1e8b72fbc1ee81f6f4c440d9cfed75
   name: bigip_iapp_template.py
 - hash: b7b30dc87ea8876a73f05d1cc4cb65d8
-  name: bigip_iapplx_package.py
+  name: bigip_lx_package.py
 - hash: 38afed2fa068763652c165917daa8ee5
   name: bigip_irule.py
 - hash: 724e22265c46d02493228515a6f57b21

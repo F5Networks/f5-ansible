@@ -1,25 +1,25 @@
 ---
 
-# Test the bigip_iapplx_package module
+# Test the bigip_lx_package module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# bigip_iapplx_package module behaves as expected.
+# bigip_lx_package module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, playbooks/bigip_iapplx_package.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_lx_package.yaml
 #
 # Examples:
 #
-#    Run all tests on the bigip_iapplx_package module
+#    Run all tests on the bigip_lx_package module
 #
-#    ansible-playbook -i notahost, playbooks/bigip_iapplx_package.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_lx_package.yaml
 #
 
-- name: Metadata of bigip_iapplx_package
+- name: Metadata of bigip_lx_package
   hosts: localhost
   connection: local
   gather_facts: false
@@ -33,7 +33,7 @@
       tested_platforms:
         - NA
 
-- name: Test the bigip_iapplx_package module
+- name: Test the bigip_lx_package module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
@@ -49,4 +49,4 @@
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-    - bigip_iapplx_package
+    - bigip_lx_package
