@@ -28,25 +28,64 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>conflict_policy</b>
+                    <b>access_conflict_policy</b>
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li>use_bigiq</li>
                                                                                                                                                                                                 <li>use_bigip</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>keep_version</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>keep_version</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Sets the conflict resolution policy for shared objects.</div>
+                                                                        <div>Sets the conflict resolution policy for Access module <code>apm</code> objects, only used when <code>apm</code> module is specified.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>access_group_first_device</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies if the imported device is the first device in the access group to import shared configuration for that access group.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>access_group_name</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Access group name to import Access configuration for devices, once set it cannot be changed.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>conflict_policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>use_bigiq</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>use_bigip</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Sets the conflict resolution policy for shared objects across BIG-IP devices, except LTM profiles and monitors.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -57,6 +96,20 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>The IP address of the BIG-IP device to be imported/managed.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>device_conflict_policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>use_bigiq</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>use_bigip</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device and not shared among BIG-IP devices.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -134,7 +187,8 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>List of modules to be discovered and imported into the device.</div>
-                                                    <div>These modules must be provisioned on the target device otherwise opration will fail.</div>
+                                                    <div>These modules must be provisioned on the target device otherwise operation will fail.</div>
+                                                    <div>The <code>ltm</code> module must always be specified when performing discovery or re-discovery of the the device.</div>
                                                     <div>When <code>asm</code> or <code>afm</code> are specified <code>shared_security</code> module needs to also be declared.</div>
                                                                                 </td>
             </tr>
@@ -155,8 +209,7 @@ Parameters
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">None</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>A dict object containing connection details.</div>
                                                                                 </td>
@@ -258,8 +311,8 @@ Parameters
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>cli</li>
+                                                                                                                                                                <li>cli</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -308,6 +361,78 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>statistics</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specify the statistics collection for discovered device.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>enable</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables statistics collection on a device</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>interval</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>30</li>
+                                                                                                                                                                                                <li>60</li>
+                                                                                                                                                                                                <li>120</li>
+                                                                                                                                                                                                <li>500</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specify the interval in seconds the data is collected from the discovered device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>zone</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">default</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specify in which DCD zone is collecting the data from device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>stat_modules</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>device</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>ltm</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>dns</li>
+                                                                                    </ul>
+                                                                                    <b>Default:</b><br/><div style="color: blue">[&#39;device&#39;, &#39;ltm&#39;]</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specifies for which modules the data is being collected.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                                <td colspan="2">
                     <b>use_bigiq_sync</b>
                                                         </td>
                                 <td>
@@ -346,6 +471,21 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>versioned_conflict_policy</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>use_bigiq</li>
+                                                                                                                                                                                                <li>use_bigip</li>
+                                                                                                                                                                                                <li>keep_version</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Sets the conflict resolution policy for LTM profile and monitor objects that are specific to a BIG-IP software version.</div>
+                                                                                </td>
+            </tr>
                         </table>
     <br/>
 
@@ -355,7 +495,6 @@ Notes
 
 .. note::
     - BIG-IQ >= 6.1.0.
-    - This module does not support importing of APM module configuration at this time.
     - This module does not support atomic removal of discovered modules on the device.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
@@ -374,7 +513,7 @@ Examples
         device_username: bigipadmin
         device_password: bigipsecret
         modules:
-          - asm
+          - ltm
           - afm
           - shared_security
         provider:
@@ -387,6 +526,7 @@ Examples
       bigiq_device_discovery:
         device_address: 192.168.1.1
         modules:
+          - ltm
           - dns
         conflict_policy: use_bigip
         provider:
@@ -399,7 +539,7 @@ Examples
       bigiq_device_discovery:
         device_address: 192.168.1.1
         modules:
-          - asm
+          - ltm
           - afm
           - dns
           - shared_security
@@ -430,22 +570,61 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
+                    <b>access_conflict_policy</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Sets the conflict resolution policy for Access module <code>apm</code> objects.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">keep_version</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>access_group_first_device</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>First device in the access group to import shared configuration for that access group.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>access_group_name</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Access group name to import Access configuration for devices.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo_group</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
                     <b>conflict_policy</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Sets the conflict resolution policy for shared objects.</div>
+                                            <div>Sets the conflict resolution policy for shared objects across BIG-IP devices.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">keep_version</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">use_bigip</div>
                                     </td>
             </tr>
                                 <tr>
@@ -459,6 +638,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">192.168.1.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>device_conflict_policy</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">use_bigip</div>
                                     </td>
             </tr>
                                 <tr>
@@ -511,6 +703,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>versioned_conflict_policy</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Sets the conflict resolution policy for LTM profile and monitor objects.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">keep_version</div>
                                     </td>
             </tr>
                         </table>

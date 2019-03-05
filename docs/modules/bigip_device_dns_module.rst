@@ -91,8 +91,7 @@ Parameters
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">None</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>A dict object containing connection details.</div>
                                                                                 </td>
@@ -194,8 +193,8 @@ Parameters
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>cli</li>
+                                                                                                                                                                <li>cli</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
