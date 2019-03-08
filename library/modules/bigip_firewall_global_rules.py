@@ -27,6 +27,7 @@ options:
     description:
       - Specifies an enforced firewall policy.
       - C(enforced_policy) rules are enforced globally.
+    type: str
   service_policy:
     description:
       - Specifies a service policy that would apply to traffic globally.
@@ -39,15 +40,18 @@ options:
         policy setting at the global level.
       - The service policy associated here can be created using the
         C(bigip_service_policy) module.
+    type: str
   staged_policy:
     description:
       - Specifies a staged firewall policy.
       - C(staged_policy) rules are not enforced while all the visibility
         aspects namely statistics, reporting and logging function as if
         the staged-policy rules were enforced globally.
+    type: str
   description:
     description:
       - Description for the global list of firewall rules.
+    type: str
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

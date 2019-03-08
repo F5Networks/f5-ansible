@@ -23,14 +23,17 @@ options:
   name:
     description:
       - Specifies the name of the management route.
+    type: str
     required: True
   description:
     description:
       - Description of the management route.
+    type: str
   gateway:
     description:
       - Specifies that the system forwards packets to the destination through the
         gateway with the specified IP address.
+    type: str
   network:
     description:
       - The subnet and netmask to be used for the route.
@@ -39,18 +42,21 @@ options:
       - Only one C(default) entry is allowed.
       - This parameter cannot be changed after it is set. Therefore, if you do need to change
         it, it is required that you delete and create a new route.
+    type: str
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

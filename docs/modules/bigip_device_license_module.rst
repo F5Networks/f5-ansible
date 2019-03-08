@@ -39,8 +39,8 @@ Parameters
                     <b>accept_eula</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                 <li>yes</li>
                                                                                     </ul>
                                                                             </td>

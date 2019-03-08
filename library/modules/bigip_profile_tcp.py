@@ -26,12 +26,14 @@ options:
   name:
     description:
       - Specifies the name of the profile.
+    type: str
     required: True
   parent:
     description:
       - Specifies the profile from which this profile inherits settings.
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(tcp) profile.
+    type: str
   idle_timeout:
     description:
       - Specifies the length of time that a connection is idle (has no traffic) before
@@ -43,6 +45,7 @@ options:
         connection can remain idle before the system deletes it.
       - When C(0), or C(indefinite), specifies that the system does not delete TCP connections
         regardless of how long they remain idle.
+    type: str
   time_wait_recycle:
     description:
       - Specifies that connections in a TIME-WAIT state are reused, if a SYN packet,
@@ -55,15 +58,17 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the profile exists.
       - When C(absent), ensures the profile is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

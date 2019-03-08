@@ -31,7 +31,7 @@ Parameters
                                                                                                                                                                                                                                                                                                                                                                                     
                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -209,7 +209,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies an iRule that is applied to the rule.</div>
+                                                                        <div>Specifies an iRule that is applied to the firewall rule.</div>
                                                     <div>An iRule can be started when the firewall rule matches traffic.</div>
                                                                                 </td>
             </tr>
@@ -549,6 +549,18 @@ Parameters
                                                     <div>This option is only valid when <code>protocol</code> is <code>tcp</code>(6) or <code>udp</code>(17).</div>
                                                                                 </td>
             </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>vlan</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies VLANs to which the rule applies.</div>
+                                                    <div>The VLAN source refers to the packet&#x27;s source.</div>
+                                                                                </td>
+            </tr>
                     
                                                 <tr>
                                                                 <td colspan="2">
@@ -698,35 +710,433 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
-            <th colspan="1">Key</th>
+                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                            <tr>
+            <th colspan="2">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
+                                <td colspan="2">
+                    <b>action</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The action for the firewall rule.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">drop</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The rule description.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">MyRule</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>destination</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The packet destinations to which the rule applies.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>param1</b>
+                    <b>address</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>A specific IP address.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">192.168.1.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>address_list</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>An existing address list.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo-list1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>address_range</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The address range.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.1.1.1-2.2.2.2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>country</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>A country code.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">US</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Single numeric port.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8080</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>port_list</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>An existing port list.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">port-list1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>port_range</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The port range.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">80-443</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="2">
+                    <b>icmp_message</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The (ICMP) or ICMPv6 message <code>type</code> and <code>code</code> that the rule uses.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The type of ICMP message.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>code</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The code returned in response to the specified ICMP message type.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="2">
+                    <b>irule</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The iRule that is applied to the firewall rule.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">_sys_auth_radius</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>logging</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param1 value of the resource.</div>
+                                            <div>Enable or Disable logging for the firewall rule.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
-                    <b>param2</b>
+                                <td colspan="2">
+                    <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new param2 value of the resource.</div>
+                                            <div>Name of the rule.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">FooRule</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>parent_policy</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The policy which contains the rule to be managed.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">FooPolicy</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>parent_rule_list</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The rule list which contains the rule to be managed.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">FooRuleList</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>protocol</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The protocol to which the rule applies.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">any</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>rule_list</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>An existing rule list to use in the rule.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">rule-list-1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>schedule</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The schedule for the firewall rule.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo_schedule</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>source</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The packet sources to which the rule applies</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>address</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>A specific IP address.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">192.168.1.1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>address_list</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>An existing address list.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo-list1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>address_range</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The address range.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1.1.1.1-2.2.2.2</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>country</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>A country code.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">US</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Single numeric port.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8080</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>port_list</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>An existing port list.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">port-list1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>port_range</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The port range.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">80-443</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>vlan</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Source VLANs for the packets.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">vlan1</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="2">
+                    <b>status</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The activity state of the rule or rule list.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">scheduled</div>
                                     </td>
             </tr>
                         </table>
@@ -747,4 +1157,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

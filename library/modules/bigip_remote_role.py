@@ -26,6 +26,7 @@ options:
   name:
     description:
       - Specifies the name of the remote role.
+    type: str
     required: True
   line_order:
     description:
@@ -35,11 +36,13 @@ options:
         you set the first line at 1000. This allows you, in the future, to insert
         lines before the first line.
       - When creating a new remote role, this parameter is required.
+    type: int
   attribute_string:
     description:
       - Specifies the user account attributes saved in the group, in the format
         C(cn=, ou=, dc=).
       - When creating a new remote role, this parameter is required.
+    type: str
   remote_access:
     description:
       - Enables or disables remote access for the specified group of remotely
@@ -61,6 +64,7 @@ options:
         C(operator), C(application-editor), C(manager), C(certificate-manager),
         C(irule-manager), C(user-manager), C(resource-administrator), C(auditor),
         C(administrator), C(firewall-manager).
+    type: str
   partition_access:
     description:
       - Specifies the accessible partitions for the account.
@@ -70,6 +74,7 @@ options:
         as determined by the permissions conferred by the user's C(assigned_role).
       - When creating a new remote role, if this parameter is not specified, the default
         is C(all).
+    type: str
   terminal_access:
     description:
       - Specifies terminal-based accessibility for remote accounts not already
@@ -78,14 +83,16 @@ options:
         may also be specified.
       - When creating a new remote role, if this parameter is not specified, the default
         is C(none).
+    type: str
   state:
     description:
       - When C(present), guarantees that the remote role exists.
       - When C(absent), removes the remote role from the system.
-    default: present
+    type: str
     choices:
       - absent
       - present
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

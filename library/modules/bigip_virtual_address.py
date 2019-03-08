@@ -25,6 +25,7 @@ options:
       - Name of the virtual address.
       - If this parameter is not provided, then the value of C(address) will
         be used.
+    type: str
     version_added: 2.6
   address:
     description:
@@ -32,6 +33,7 @@ options:
       - If you never created a virtual address, but did create virtual servers, then
         a virtual address for each virtual server was created automatically. The name
         of this virtual address is its IP address value.
+    type: str
   netmask:
     description:
       - Netmask of the provided virtual address. This value cannot be
@@ -39,10 +41,12 @@ options:
       - When creating a new virtual address, if this parameter is not specified, the
         default value is C(255.255.255.255) for IPv4 addresses and
         C(ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff) for IPv6 addresses.
+    type: str
   connection_limit:
     description:
       - Specifies the number of concurrent connections that the system
         allows on this virtual address.
+    type: int
   arp_state:
     description:
       - Specifies whether the system accepts ARP requests. When (disabled),
@@ -53,6 +57,7 @@ options:
       - Deprecated. Use the C(arp) parameter instead.
       - When creating a new virtual address, if this parameter is not specified,
         the default value is C(enabled).
+    type: str
     choices:
       - enabled
       - disabled
@@ -77,6 +82,7 @@ options:
       - C(enabled) and C(disabled) are deprecated and will be removed in
         Ansible 2.11. Instead, use known Ansible booleans such as C(yes) and
         C(no)
+    type: str
   icmp_echo:
     description:
       - Specifies how the systems sends responses to (ICMP) echo requests
@@ -88,6 +94,7 @@ options:
         disable responses based on virtual server state; C(when_any_available),
         C(when_all_available, or C(always), regardless of the state of any
         virtual servers.
+    type: str
     choices:
       - enabled
       - disabled
@@ -100,12 +107,13 @@ options:
         the virtual address and enables it. If C(enabled), enable the virtual
         address if it exists. If C(disabled), create the virtual address if
         needed, and set state to C(disabled).
-    default: present
+    type: str
     choices:
       - present
       - absent
       - enabled
       - disabled
+    default: present
   availability_calculation:
     description:
       - Specifies what routes of the virtual address the system advertises.
@@ -113,6 +121,7 @@ options:
         server is available. When C(when_all_available), advertises the
         route when all virtual servers are available. When (always), always
         advertises the route regardless of the virtual servers available.
+    type: str
     choices:
       - always
       - when_all_available
@@ -149,6 +158,7 @@ options:
         when any virtual server is available.
       - When C(all), the BIG-IP system will advertise the route for the virtual address
         when all virtual servers are available.
+    type: str
     choices:
       - disabled
       - enabled
@@ -160,6 +170,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
     version_added: 2.5
   traffic_group:
@@ -167,11 +178,13 @@ options:
       - The traffic group for the virtual address. When creating a new address,
         if this value is not specified, the default of C(/Common/traffic-group-1)
         will be used.
+    type: str
     version_added: 2.5
   route_domain:
     description:
       - The route domain of the C(address) that you want to use.
       - This value cannot be modified after it is set.
+    type: str
     version_added: 2.6
   spanning:
     description:

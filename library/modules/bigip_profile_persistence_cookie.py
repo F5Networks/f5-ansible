@@ -23,15 +23,18 @@ options:
   name:
     description:
       - Specifies the name of the profile.
+    type: str
     required: True
   description:
     description:
       - Description of the profile.
+    type: str
   parent:
     description:
       - Specifies the profile from which this profile inherits settings.
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(cookie) profile.
+    type: str
     default: cookie
   cookie_method:
     description:
@@ -47,6 +50,7 @@ options:
       - When C(rewrite), specifies that the system intercepts the BIGipCookie
         header, sent from the server, and overwrites the name and value of that
         cookie.
+    type: str
     choices:
       - hash
       - insert
@@ -55,6 +59,7 @@ options:
   cookie_name:
     description:
       - Specifies a unique name for the cookie.
+    type: str
   http_only:
     description:
       - Specifies whether the httponly attribute should be enabled or
@@ -87,6 +92,7 @@ options:
       - When C(disabled), generates the cookie format unencrypted.
       - When C(preferred), generate an encrypted cookie, but accepts both encrypted and unencrypted formats.
       - When C(required), cookie format must be encrypted.
+    type: str
     choices:
       - disabled
       - preferred
@@ -114,14 +120,16 @@ options:
   encryption_passphrase:
     description:
       - Specifies a passphrase to be used for cookie encryption.
+    type: str
   update_password:
     description:
       - C(always) will allow to update passphrases if the user chooses to do so.
         C(on_create) will only set the passphrase for newly created profiles.
-    default: always
+    type: str
     choices:
       - always
       - on_create
+    default: always
   expiration:
     description:
       - Specifies the expiration time of the cookie. By default the system generates and uses session cookie.
@@ -142,21 +150,24 @@ options:
       seconds:
         description:
           - Cookie expiration time in seconds, the value must be in the range from C(0) to C(59) seconds.
-        default: 0
         type: int
+        default: 0
+    type: dict
     version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the profile exists.
       - When C(absent), ensures the profile is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

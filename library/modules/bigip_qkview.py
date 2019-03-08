@@ -27,35 +27,39 @@ options:
   filename:
     description:
       - Name of the qkview to create on the remote BIG-IP.
+    type: str
     default: "localhost.localdomain.qkview"
   dest:
     description:
       - Destination on your local filesystem when you want to save the qkview.
+    type: path
     required: True
   asm_request_log:
     description:
       - When C(True), includes the ASM request log data. When C(False),
         excludes the ASM request log data.
-    default: no
     type: bool
+    default: no
   max_file_size:
     description:
       - Max file size, in bytes, of the qkview to create. By default, no max
         file size is specified.
+    type: int
     default: 0
   complete_information:
     description:
       - Include complete information in the qkview.
-    default: no
     type: bool
+    default: no
   exclude_core:
     description:
       - Exclude core files from the qkview.
-    default: no
     type: bool
+    default: no
   exclude:
     description:
       - Exclude various file from the qkview.
+    type: list
     choices:
       - all
       - audit
@@ -65,8 +69,8 @@ options:
     description:
       - If C(no), the file will only be transferred if the destination does not
         exist.
-    default: yes
     type: bool
+    default: yes
 notes:
   - This module does not include the "max time" or "restrict to blade" options.
   - If you are using this module with either Ansible Tower or Ansible AWX, you

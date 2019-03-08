@@ -23,10 +23,12 @@ options:
   name:
     description:
       - Specifies the name of the DNS resolver.
+    type: str
     required: True
   route_domain:
     description:
       - Specifies the route domain the resolver uses for outbound traffic.
+    type: int
   cache_size:
     description:
       - Specifies the size of the internal DNS resolver cache.
@@ -34,6 +36,7 @@ options:
         is 5767168 bytes.
       - After the cache reaches this size, when new or refreshed content arrives, the
         system removes expired and older content and caches the new or updated content.
+    type: int
   answer_default_zones:
     description:
       - Specifies whether the system answers DNS queries for the default zones localhost,
@@ -80,13 +83,15 @@ options:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

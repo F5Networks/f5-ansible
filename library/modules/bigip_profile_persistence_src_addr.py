@@ -23,12 +23,14 @@ options:
   name:
     description:
       - Specifies the name of the profile.
+    type: str
     required: True
   parent:
     description:
       - Specifies the profile from which this profile inherits settings.
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(source_addr) profile.
+    type: str
   match_across_services:
     description:
       - When C(yes), specifies that all persistent connections from a client IP address that go
@@ -60,6 +62,7 @@ options:
         to obtain the hash result for the input to the algorithm.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
+    type: str
     choices:
       - default
       - carp
@@ -70,6 +73,7 @@ options:
         default is provided by the parent profile.
       - To specify an indefinite timeout, use the value C(indefinite).
       - If specifying a numeric timeout, the value must be between C(1) and C(4294967295).
+    type: str
   override_connection_limit:
     description:
       - When C(yes), specifies that the system allows you to specify that pool member connection
@@ -79,15 +83,17 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the profile exists.
       - When C(absent), ensures the profile is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

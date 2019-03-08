@@ -23,17 +23,20 @@ options:
   name:
     description:
       - Specifies the name of the profile.
+    type: str
     required: True
   parent:
     description:
       - The parent template of this monitor template. Once this value has
         been set, it cannot be changed. By default, this value is the C(clientssl)
         parent on the C(Common) partition.
+    type: str
     default: /Common/clientssl
   ciphers:
     description:
       - Specifies the list of ciphers that the system supports. When creating a new
         profile, the default cipher list is provided by the parent profile.
+    type: str
   cert_key_chain:
     description:
       - One or more certificates and keys to associate with the SSL profile. This
@@ -47,25 +50,31 @@ options:
       cert:
         description:
           - Specifies a cert name for use.
+        type: str
         required: True
       key:
         description:
           - Contains a key name.
+        type: str
         required: True
       chain:
         description:
           - Contains a certificate chain that is relevant to the certificate and key
             mentioned earlier.
           - This key is optional.
+        type: str
       passphrase:
         description:
           - Contains the passphrase of the key file, should it require one.
           - Passphrases are encrypted on the remote BIG-IP device. Therefore, there is no way
             to compare them when updating a client SSL profile. Due to this, if you specify a
             passphrase, this module will always register a C(changed) event.
+        type: str
+    type: list
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
     version_added: 2.5
   options:
@@ -73,6 +82,7 @@ options:
       - Options that the system uses for SSL processing in the form of a list. When
         creating a new profile, the list is provided by the parent profile.
       - When a C('') or C(none) value is provided all options for SSL processing are disabled.
+    type: list
     choices:
       - netscape-reuse-cipher-change-bug
       - microsoft-big-sslv3-buffer
@@ -111,6 +121,7 @@ options:
       - The C(require-strict) setting the system requires strict renegotiation of SSL
         connections. In this mode the system refuses connections to insecure servers,
         and terminates existing SSL connections to insecure servers.
+    type: str
     choices:
       - require
       - require-strict
@@ -138,14 +149,15 @@ options:
     version_added: 2.8
   sni_require:
     description:
-      - Requires that the network peers also provide SNI support. This setting only takes effect when C(sni_default) is
-        set to C(true). When creating a new profile, the setting is provided by the parent profile.
+      - Requires that the network peers also provide SNI support, this setting only takes effect when C(sni_default) is
+        set to C(true).
+      - When creating a new profile, the setting is provided by the parent profile.
     type: bool
     version_added: 2.8
   strict_resume:
     description:
       - Enables or disables the resumption of SSL sessions after an unclean shutdown.
-        When creating a new profile, the setting is provided by the parent profile.
+      - When creating a new profile, the setting is provided by the parent profile.
     type: bool
     version_added: 2.8
   client_certificate:
@@ -157,6 +169,7 @@ options:
         valid certificate.
       - When C(request), specifies that the system requests a valid certificate from a
         client but always authenticate the client.
+    type: str
     choices:
       - ignore
       - require
@@ -169,6 +182,7 @@ options:
         SSL session.
       - When C(always), specifies that the system authenticates the client once for an
         SSL session and also upon reuse of that session.
+    type: str
     choices:
       - once
       - always
@@ -188,19 +202,23 @@ options:
     description:
       - Specifies the maximum number of certificates to be traversed in a client
         certificate chain.
+    type: int
     version_added: 2.8
   trusted_cert_authority:
     description:
       - Specifies a client CA that the system trusts.
+    type: str
     version_added: 2.8
   advertised_cert_authority:
     description:
       - Specifies that the CAs that the system advertises to clients is being trusted
         by the profile.
+    type: str
     version_added: 2.8
   client_auth_crl:
     description:
       - Specifies the name of a file containing a list of revoked client certificates.
+    type: str
     version_added: 2.8
   allow_expired_crl:
     description:
@@ -211,10 +229,11 @@ options:
     description:
       - When C(present), ensures that the profile exists.
       - When C(absent), ensures the profile is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
     version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12

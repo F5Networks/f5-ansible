@@ -24,21 +24,26 @@ options:
     description:
       - List of members to put in the SNAT pool. When a C(state) of present is
         provided, this parameter is required. Otherwise, it is optional.
+    type: list
     aliases:
       - member
   name:
-    description: The name of the SNAT pool.
+    description:
+      - The name of the SNAT pool.
+    type: str
     required: True
   state:
     description:
       - Whether the SNAT pool should exist or not.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
     version_added: 2.5
 extends_documentation_fragment: f5

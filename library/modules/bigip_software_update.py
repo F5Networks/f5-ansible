@@ -33,6 +33,7 @@ options:
   frequency:
     description:
       - Specifies the schedule for the automatic update check.
+    type: str
     choices:
       - daily
       - monthly

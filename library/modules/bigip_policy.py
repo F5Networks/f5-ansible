@@ -30,9 +30,11 @@ options:
       - The description to attach to the policy.
       - This parameter is only supported on versions of BIG-IP >= 12.1.0. On earlier
         versions it will simply be ignored.
+    type: str
   name:
     description:
       - The name of the policy to create.
+    type: str
     required: True
   state:
     description:
@@ -43,6 +45,7 @@ options:
         When modifying rules, it is required that policies first be in a draft.
       - Drafting is only supported on versions of BIG-IP >= 12.1.0. On versions
         prior to that, specifying a C(state) of C(draft) will raise an error.
+    type: str
     choices:
       - present
       - absent
@@ -55,6 +58,7 @@ options:
         policies, the default is C(first).
       - This module does not allow you to specify the C(best) strategy to use.
         It will choose the system default (C(/Common/best-match)) for you instead.
+    type: str
     choices:
       - first
       - all
@@ -69,9 +73,11 @@ options:
       - The C(actions) for a default rule are C(ignore).
       - The C(bigip_policy_rule) module can be used to create and edit existing
         and new rules.
+    type: list
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

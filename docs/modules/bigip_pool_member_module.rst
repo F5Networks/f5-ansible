@@ -193,7 +193,7 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
-                                                                        <div>Partition</div>
+                                                                        <div>Partition to manage resources on.</div>
                                                                                 </td>
             </tr>
                                 <tr>
