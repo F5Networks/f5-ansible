@@ -23,16 +23,19 @@ options:
   name:
     description:
       - The name of the policy to create.
+    type: str
     required: True
   description:
     description:
       - The description to attach to the policy.
       - This parameter is only supported on versions of BIG-IP >= 12.1.0. On earlier
         versions it will simply be ignored.
+    type: str
   state:
     description:
       - When C(state) is C(present), ensures that the rule list exists.
       - When C(state) is C(absent), ensures that the rule list is removed.
+    type: str
     choices:
       - present
       - absent
@@ -48,9 +51,11 @@ options:
         configuration for these rules.
       - The C(bigip_firewall_rule) module can be used to also create, as well as
         edit, existing and new rules.
+    type: list
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

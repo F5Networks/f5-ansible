@@ -24,6 +24,7 @@ options:
     description:
       - Specifies the lowest level of messages about user authentication
         to include in the system log.
+    type: str
     choices:
       - alert
       - crit
@@ -37,6 +38,7 @@ options:
     description:
       - Specifies the highest level of messages about user authentication
         to include in the system log.
+    type: str
     choices:
       - alert
       - crit
@@ -55,6 +57,7 @@ options:
     description:
       - Specifies the lowest level of messages about time-based scheduling
         to include in the system log.
+    type: str
     choices:
       - alert
       - crit
@@ -68,6 +71,7 @@ options:
     description:
       - Specifies the highest level of messages about time-based
         scheduling to include in the system log.
+    type: str
     choices:
       - alert
       - crit
@@ -81,6 +85,7 @@ options:
     description:
       - Specifies the lowest level of messages about daemon performance to
         include in the system log.
+    type: str
     choices:
       - alert
       - crit
@@ -94,6 +99,7 @@ options:
     description:
       - Specifies the highest level of messages about daemon performance
         to include in the system log.
+    type: str
     choices:
       - alert
       - crit
@@ -106,6 +112,7 @@ options:
   include:
     description:
       - Syslog-NG configuration to include in the device syslog config.
+    type: str
   iso_date:
     description:
       - Enables or disables the ISO date format for messages in the log
@@ -115,6 +122,7 @@ options:
     description:
       - Specifies the lowest level of kernel messages to include in the
         system log.
+    type: str
     choices:
       - alert
       - crit
@@ -128,6 +136,7 @@ options:
     description:
       - Specifies the highest level of kernel messages to include in the
         system log.
+    type: str
     choices:
       - alert
       - crit
@@ -141,6 +150,7 @@ options:
     description:
       - Specifies the lowest error level for messages from the local6
         facility to include in the log.
+    type: str
     choices:
       - alert
       - crit
@@ -154,6 +164,7 @@ options:
     description:
       - Specifies the highest error level for messages from the local6
         facility to include in the log.
+    type: str
     choices:
       - alert
       - crit
@@ -167,6 +178,7 @@ options:
     description:
       - Specifies the lowest level of mail log messages to include in the
         system log.
+    type: str
     choices:
       - alert
       - crit
@@ -180,6 +192,7 @@ options:
     description:
       - Specifies the highest level of mail log messages to include in the
         system log.
+    type: str
     choices:
       - alert
       - crit
@@ -193,6 +206,7 @@ options:
     description:
       - Specifies the lowest level of system messages to include in the
         system log.
+    type: str
     choices:
       - alert
       - crit
@@ -206,6 +220,7 @@ options:
     description:
       - Specifies the highest level of system messages to include in the
         system log.
+    type: str
     choices:
       - alert
       - crit
@@ -219,6 +234,7 @@ options:
     description:
       - Specifies the lowest level of user account messages to include in
         the system log.
+    type: str
     choices:
       - alert
       - crit
@@ -232,6 +248,7 @@ options:
     description:
       - Specifies the highest level of user account messages to include in
         the system log.
+    type: str
     choices:
       - alert
       - crit

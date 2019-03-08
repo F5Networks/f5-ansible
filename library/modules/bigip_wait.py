@@ -29,18 +29,22 @@ options:
       - When used without other conditions it is equivalent of just sleeping.
       - The default timeout is deliberately set to 2 hours because no individual
         REST API.
+    type: int
     default: 7200
   delay:
     description:
       - Number of seconds to wait before starting to poll.
+    type: int
     default: 0
   sleep:
-    default: 1
     description:
       - Number of seconds to sleep between checks, before 2.3 this was hardcoded to 1 second.
+    type: int
+    default: 1
   msg:
     description:
       - This overrides the normal error message from a failure to meet the required conditions.
+    type: str
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

@@ -28,35 +28,38 @@ options:
     description:
       - Create a backup file including the timestamp information so you can
         get the original file back if you somehow clobbered it incorrectly.
-    default: no
     type: bool
+    default: no
   create_on_missing:
     description:
       - Creates the UCS based on the value of C(src) if the file does not already
         exist on the remote system.
-    default: yes
     type: bool
+    default: yes
   dest:
     description:
       - A directory to save the UCS file into.
-    required: yes
+    type: str
+    required: True
   encryption_password:
     description:
-      - Password to use to encrypt the UCS file if desired
+      - Password to use to encrypt the UCS file if desired.
+    type: str
   fail_on_missing:
     description:
       - Make the module fail if the UCS file on the remote system is missing.
-    default: no
     type: bool
+    default: no
   force:
     description:
       - If C(no), the file will only be transferred if the destination does not
         exist.
-    default: yes
     type: bool
+    default: yes
   src:
     description:
       - The name of the UCS file to create on the remote server for downloading
+    type: str
 notes:
   - BIG-IP provides no way to get a checksum of the UCS files on the system
     via any interface except, perhaps, logging in directly to the box (which

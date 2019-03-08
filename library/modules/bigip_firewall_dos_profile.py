@@ -24,10 +24,12 @@ options:
   name:
     description:
       - Specifies the name of the profile.
+    type: str
     required: True
   description:
     description:
       - The description of the DoS profile.
+    type: str
   default_whitelist:
     description:
       - The default whitelist address list for the system to use to determine which
@@ -35,6 +37,7 @@ options:
       - The system does not examine traffic from the IP addresses in the list when
         performing DoS prevention.
       - To define a new whitelist, use the C(bigip_firewall_address_list) module.
+    type: str
   threshold_sensitivity:
     description:
       - Specifies the threshold sensitivity for the DoS profile.
@@ -42,6 +45,7 @@ options:
         lower when sensitivity is C(high).
       - When creating a new profile, if this parameter is not specified, the default
         is C(medium).
+    type: str
     choices:
       - low
       - medium
@@ -49,15 +53,17 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

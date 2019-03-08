@@ -24,10 +24,12 @@ options:
   name:
     description:
       - Specifies the name of the data group.
+    type: str
     required: True
   description:
     description:
-      - The description of the monitor.
+      - The description of the data group.
+    type: str
     version_added: 2.8
   type:
     description:
@@ -37,6 +39,7 @@ options:
         to specify a list of records containing IP addresses, but label them as a C(string)
         type.
       - This value cannot be changed once the data group is created.
+    type: str
     choices:
       - address
       - addr
@@ -71,6 +74,7 @@ options:
       - If this value is not provided, it will be given the value specified in C(name) and,
         therefore, match the name of the data group.
       - This value may only contain letters, numbers, underscores, dashes, or a period.
+    type: str
   records:
     description:
       - Specifies the records that you want to add to a data group.
@@ -81,15 +85,18 @@ options:
         RAM.
       - When C(internal) is C(no), at least one record must be specified in either C(records)
         or C(records_content).
+    type: list
     suboptions:
       key:
         description:
           - The key describing the record in the data group.
           - Your key will be used for validation of the C(type) parameter to this module.
+        type: str
         required: True
       value:
         description:
           - The value of the key describing the record in the data group.
+        type: raw
   records_src:
     description:
       - Path to a file with records in it.
@@ -108,6 +115,7 @@ options:
         group file.
       - When C(internal) is C(no), at least one record must be specified in either C(records)
         or C(records_content).
+    type: pat
   separator:
     description:
       - When specifying C(records_content), this is the string of characters that will
@@ -116,22 +124,25 @@ options:
       - This value cannot be changed once it is set.
       - This parameter is only relevant when C(internal) is C(no). It will be ignored
         otherwise.
+    type: str
     default: ":="
   delete_data_group_file:
     description:
       - When C(yes), will ensure that the remote data group file is deleted.
       - This parameter is only relevant when C(state) is C(absent) and C(internal) is C(no).
-    default: no
     type: bool
+    default: no
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(state) is C(present), ensures the data group exists.
       - When C(state) is C(absent), ensures that the data group is removed.
       - The use of state in this module refers to the entire data group, not its members.
+    type: str
     choices:
       - present
       - absent

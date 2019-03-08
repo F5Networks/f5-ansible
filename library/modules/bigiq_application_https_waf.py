@@ -24,10 +24,12 @@ options:
   name:
     description:
       - Name of the new application.
+    type: str
     required: True
   description:
     description:
       - Description of the application.
+    type: str
   servers:
     description:
       - A list of servers that the application is hosted on.
@@ -38,10 +40,13 @@ options:
       address:
         description:
           - The IP address of the server.
+        type: str
       port:
         description:
           - The port of the server.
+        type: str
         default: 80
+    type: list
   inbound_virtual:
     description:
       - Settings to configure the virtual which will receive the inbound connection.
@@ -54,16 +59,20 @@ options:
           - Specifies destination IP address information to which the virtual server
             sends traffic.
           - This parameter is required when creating a new application.
+        type: str
       netmask:
         description:
           - Specifies the netmask to associate with the given C(destination).
           - This parameter is required when creating a new application.
+        type: str
       port:
         description:
           - The port that the virtual listens for connections on.
           - When creating a new application, if this parameter is not specified, the
             default value of C(443) will be used.
+        type: str
         default: 443
+    type: dict
   redirect_virtual:
     description:
       - Settings to configure the virtual which will receive the connection to be
@@ -78,16 +87,20 @@ options:
           - Specifies destination IP address information to which the virtual server
             sends traffic.
           - This parameter is required when creating a new application.
+        type: str
       netmask:
         description:
           - Specifies the netmask to associate with the given C(destination).
           - This parameter is required when creating a new application.
+        type: str
       port:
         description:
           - The port that the virtual listens for connections on.
           - When creating a new application, if this parameter is not specified, the
             default value of C(80) will be used.
+        type: str
         default: 80
+    type: dict
   client_ssl_profile:
     description:
       - Specifies the SSL profile for managing client-side SSL traffic.
@@ -97,6 +110,7 @@ options:
           - The name of the client SSL profile to created and used.
           - When creating a new application, if this value is not specified, the
             default value of C(clientssl) will be used.
+        type: str
       cert_key_chain:
         description:
           - One or more certificates and keys to associate with the SSL profile.
@@ -114,25 +128,32 @@ options:
           cert:
             description:
               - Specifies a cert name for use.
+            type: str
             required: True
           key:
             description:
               - Specifies a key name.
+            type: str
             required: True
           chain:
             description:
               - Specifies a certificate chain that is relevant to the certificate and
                 key mentioned earlier.
               - This key is optional.
+            type: str
           passphrase:
             description:
               - Contains the passphrase of the key file, should it require one.
               - Passphrases are encrypted on the remote BIG-IP device.
+            type: str
+        type: raw
+    type: dict
   service_environment:
     description:
       - Specifies the name of service environment that the application will be
         deployed to.
       - When creating a new application, this parameter is required.
+    type: str
   add_analytics:
     description:
       - Collects statistics of the BIG-IP that the application is deployed to.
@@ -145,15 +166,17 @@ options:
       - Specifies host names that are used to access the web application that this
         security policy protects.
       - When creating a new application, this parameter is required.
+    type: str
   state:
     description:
       - The state of the resource on the system.
       - When C(present), guarantees that the resource exists with the provided attributes.
       - When C(absent), removes the resource from the system.
-    default: present
+    type: str
     choices:
       - absent
       - present
+    default: present
   wait:
     description:
       - If the module should wait for the application to be created, deleted or updated.

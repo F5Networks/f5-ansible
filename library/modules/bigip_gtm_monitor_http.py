@@ -23,33 +23,39 @@ options:
   name:
     description:
       - Monitor name.
+    type: str
     required: True
   parent:
     description:
       - The parent template of this monitor template. Once this value has
         been set, it cannot be changed. By default, this value is the C(tcp)
         parent on the C(Common) partition.
+    type: str
     default: /Common/http
   send:
     description:
       - The send string for the monitor call.
       - When creating a new monitor, if this parameter is not provided, the
         default of C(GET /\r\n) will be used.
+    type: str
   receive:
     description:
       - The receive string for the monitor call.
+    type: str
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
         '*'.
       - If this value is an IP address, then a C(port) number must be specified.
+    type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
         '*'. Note that if specifying an IP address, a value between 1 and 65535
         must be specified
+    type: str
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
@@ -57,6 +63,7 @@ options:
       - If this parameter is not provided when creating a new monitor, then the
         default value will be 30.
       - This value B(must) be less than the C(timeout) value.
+    type: int
   timeout:
     description:
       - The number of seconds in which the node or service must respond to
@@ -67,24 +74,28 @@ options:
         interval number of seconds plus 1 second.
       - If this parameter is not provided when creating a new monitor, then the
         default value will be 120.
+    type: int
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the monitor exists.
       - When C(absent), ensures the monitor is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   probe_timeout:
     description:
       - Specifies the number of seconds after which the system times out the probe request
         to the system.
       - When creating a new monitor, if this parameter is not provided, then the default
         value will be C(5).
+    type: int
   ignore_down_response:
     description:
       - Specifies that the monitor allows more than one probe attempt per interval.
@@ -119,17 +130,20 @@ options:
   target_username:
     description:
       - Specifies the user name, if the monitored target requires authentication.
+    type: str
   target_password:
     description:
       - Specifies the password, if the monitored target requires authentication.
+    type: str
   update_password:
     description:
       - C(always) will update passwords if the C(target_password) is specified.
       - C(on_create) will only set the password for newly created monitors.
-    default: always
+    type: str
     choices:
       - always
       - on_create
+    default: always
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

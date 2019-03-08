@@ -56,10 +56,10 @@ options:
     description:
       - Sets the conflict resolution policy for shared objects across BIG-IP devices, except LTM profiles and monitors.
     type: str
-    default: use_bigiq
     choices:
       - use_bigiq
       - use_bigip
+    default: use_bigiq
   versioned_conflict_policy:
     description:
       - Sets the conflict resolution policy for LTM profile and monitor objects that are specific to a BIG-IP software
@@ -74,10 +74,10 @@ options:
       - Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device
         and not shared among BIG-IP devices.
     type: str
-    default: use_bigiq
     choices:
       - use_bigiq
       - use_bigip
+    default: use_bigiq
   access_conflict_policy:
     description:
       - Sets the conflict resolution policy for Access module C(apm) objects, only used when C(apm) module is specified.
@@ -154,10 +154,10 @@ options:
       - When C(present), enables new device addition as well as device rediscovery/import.
       - When C(absent), completely removes the device from the system.
     type: str
-    default: present
     choices:
       - absent
       - present
+    default: present
 extends_documentation_fragment: f5
 notes:
   - BIG-IQ >= 6.1.0.

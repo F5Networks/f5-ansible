@@ -25,6 +25,7 @@ options:
   device_group:
     description:
       - The device group that you want to perform config-sync actions on.
+    type: str
     required: True
   sync_device_to_group:
     description:
@@ -44,8 +45,8 @@ options:
     description:
       - Indicates that the sync operation overwrites the configuration on
         the target.
-    default: no
     type: bool
+    default: no
 notes:
   - Requires the objectpath Python package on the host. This is as easy as
     C(pip install objectpath).

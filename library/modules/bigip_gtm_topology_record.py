@@ -32,28 +32,34 @@ options:
       subnet:
         description:
           - An IP address and network mask in the CIDR format.
+        type: str
       region:
         description:
           - Specifies the name of region already defined in the configuration.
+        type: str
       continent:
         description:
           - Specifies one of the seven continents, along with the C(Unknown) setting.
           - Specifying C(Unknown) forces the system to use a default resolution
             if the system cannot determine the location of the local DNS making the request.
           - Full continent names and their abbreviated versions are supported.
+        type: str
       country:
         description:
           - Specifies a country.
           - In addition to the country full names, you may also specify their abbreviated
             form, such as C(US) instead of C(United States).
           - Valid country codes can be found here https://countrycode.org/.
+        type: str
       state:
         description:
           - Specifies a state in a given country.
           - This parameter requires country option to be provided.
+        type: str
       isp:
         description:
           - Specifies an Internet service provider.
+        type: str
         choices:
           - AOL
           - BeijingCNC
@@ -70,6 +76,8 @@ options:
       geo_isp:
         description:
           - Specifies a geolocation ISP
+        type: str
+    type: dict
     required: True
   destination:
     description:
@@ -83,32 +91,40 @@ options:
       subnet:
         description:
           - An IP address and network mask in the CIDR format.
+        type: str
       region:
         description:
           - Specifies the name of region already defined in the configuration.
+        type: str
       continent:
         description:
           - Specifies one of the seven continents, along with the C(Unknown) setting.
           - Specifying C(Unknown) forces the system to use a default resolution
             if the system cannot determine the location of the local DNS making the request.
           - Full continent names and their abbreviated versions are supported.
+        type: str
       country:
         description:
           - Specifies a country.
           - Full continent names and their abbreviated versions are supported.
+        type: str
       state:
         description:
           - Specifies a state in a given country.
           - This parameter requires country option to be provided.
+        type: str
       pool:
         description:
           - Specifies the name of GTM pool already defined in the configuration.
+        type: str
       datacenter:
         description:
           - Specifies the name of GTM data center already defined in the configuration.
+        type: str
       isp:
         description:
           - Specifies an Internet service provider.
+        type: str
         choices:
           - AOL
           - BeijingCNC
@@ -125,6 +141,8 @@ options:
       geo_isp:
         description:
           - Specifies a geolocation ISP
+        type: str
+    type: dict
     required: True
   weight:
      description:
@@ -142,11 +160,13 @@ options:
       - Device partition to manage resources on.
       - Partition parameter is taken into account when used in conjunction with C(pool), C(data_center),
         and C(region) parameters, it is ignored otherwise.
+    type: str
     default: Common
   state:
     description:
       - When C(state) is C(present), ensures that the record exists.
       - When C(state) is C(absent), ensures that the record is removed.
+    type: str
     choices:
       - present
       - absent

@@ -23,19 +23,22 @@ options:
   name:
     description:
       - The name of the traffic group.
+    type: str
     required: True
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the traffic group exists.
       - When C(absent), ensures the traffic group is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   mac_address:
     description:
       - Specifies the floating Media Access Control (MAC) address associated with the floating IP addresses
@@ -47,6 +50,7 @@ options:
       - Without a MAC masquerade address, the sending host must learn the MAC address for a newly-active device,
         either by sending an ARP request or by relying on the gratuitous ARP from the newly-active device.
       - To unset the MAC address, specify an empty value (C("")) to this parameter.
+    type: str
     version_added: 2.6
 extends_documentation_fragment: f5
 author:

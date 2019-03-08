@@ -27,14 +27,17 @@ options:
         BIG-IQ does not require this, this module does. If you do not do this,
         the behavior of the module is undefined and you may end up putting
         licenses in the wrong registration key pool.
+    type: str
     required: True
   license_key:
     description:
       - The license key to put in the pool.
+    type: str
     required: True
   description:
     description:
       - Description of the license.
+    type: str
   accept_eula:
     description:
       - A key that signifies that you accept the F5 EULA for this license.
@@ -46,10 +49,11 @@ options:
       - The state of the regkey license in the pool on the system.
       - When C(present), guarantees that the license exists in the pool.
       - When C(absent), removes the license from the pool.
-    default: present
+    type: str
     choices:
       - absent
       - present
+    default: present
 requirements:
   - BIG-IQ >= 5.3.0
 extends_documentation_fragment: f5

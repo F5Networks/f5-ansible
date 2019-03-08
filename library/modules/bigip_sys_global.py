@@ -23,10 +23,12 @@ options:
   banner_text:
     description:
       - Specifies the text to present in the advisory banner.
+    type: str
   console_timeout:
     description:
       - Specifies the number of seconds of inactivity before the system logs
         off a user that is logged on.
+    type: int
   gui_setup:
     description:
       - C(yes) or C(no) the Setup utility in the browser-based
@@ -65,9 +67,10 @@ options:
     description:
       - The state of the variable on the system. When C(present), guarantees
         that an existing variable is set to C(value).
-    default: present
+    type: str
     choices:
       - present
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

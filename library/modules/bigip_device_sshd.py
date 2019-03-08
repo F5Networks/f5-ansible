@@ -33,6 +33,7 @@ options:
   banner:
     description:
       - Whether to enable the banner or not.
+    type: str
     choices:
       - enabled
       - disabled
@@ -40,13 +41,16 @@ options:
     description:
       - Specifies the text to include on the pre-login banner that displays
         when a user attempts to login to the system using SSH.
+    type: str
   inactivity_timeout:
     description:
       - Specifies the number of seconds before inactivity causes an SSH
         session to log out.
+    type: int
   log_level:
     description:
       - Specifies the minimum SSHD message level to include in the system log.
+    type: str
     choices:
       - debug
       - debug1
@@ -61,12 +65,14 @@ options:
     description:
       - Specifies, when checked C(enabled), that the system accepts SSH
         communications.
+    type: str
     choices:
       - enabled
       - disabled
   port:
     description:
       - Port that you want the SSH daemon to run on.
+    type: int
 notes:
   - Requires BIG-IP version 12.0.0 or greater
 extends_documentation_fragment: f5

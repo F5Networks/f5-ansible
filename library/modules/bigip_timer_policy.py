@@ -23,10 +23,12 @@ options:
   name:
     description:
       - Specifies the name of the timer policy.
+    type: str
     required: True
   description:
     description:
       - Specifies descriptive text that identifies the timer policy.
+    type: str
   rules:
     description:
       - Rules that you want assigned to the timer policy
@@ -34,6 +36,7 @@ options:
       name:
         description:
           - The name of the rule.
+        type: str
         required: True
       protocol:
         description:
@@ -45,6 +48,7 @@ options:
             that match the flow, the flow matches all the other ip-protocol rules.
           - When specifying rules, if this parameter is not specified, the default of
             C(all-other) will be used.
+        type: str
         choices:
           - all-other
           - ah
@@ -72,6 +76,7 @@ options:
             dash (-).
           - This field is only available if you have selected the C(sctp), C(tcp), or
             C(udp) protocol.
+        type: list
       idle_timeout:
         description:
           - Specifies an idle timeout, in seconds, for protocol and port pairs that
@@ -80,18 +85,22 @@ options:
             the timer policy rule have no idle timeout.
           - When specifying rules, if this parameter is not specified, the default of
             C(unspecified) will be used.
+        type: str
+    type: list
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

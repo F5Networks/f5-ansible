@@ -30,19 +30,22 @@ options:
         This member must be trusted by the device already. Trusting
         can be done with the C(bigip_device_trust) module and the
         C(peer_hostname) option to that module.
+    type: str
     required: True
   device_group:
     description:
       - The device group that you want to add the member to.
+    type: str
     required: True
   state:
     description:
       - When C(present), ensures that the device group member exists.
       - When C(absent), ensures the device group member is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

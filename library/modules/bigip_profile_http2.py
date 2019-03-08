@@ -23,16 +23,19 @@ options:
   name:
     description:
       - Specifies the name of the profile.
+    type: str
     required: True
   parent:
     description:
       - Specifies the profile from which this profile inherits settings.
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(http2) profile.
+    type: str
     default: /Common/http2
   description:
     description:
       - Description of the profile.
+    type: str
   streams:
     description:
       - Specifies the number of outstanding concurrent requests that are allowed on a single HTTP/2 connection.
@@ -54,6 +57,7 @@ options:
     description:
       - Specifies the name of the HTTP header controlled by C(insert_header) parameter.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: str
   enforce_tls_requirements:
     description:
       - Specifies whether the system requires TLS for communications between specified senders and recipients.
@@ -64,10 +68,10 @@ options:
       - Specifies what will cause an incoming connection to be handled as a HTTP/2 connection.
       - The C(alpn) and C(always) are mutually exclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: list
     choices:
       - alpn
       - always
-    type: list
   frame_size:
     description:
       - Specifies the size of data frames, in bytes, that HTTP/2 sends to the client.
@@ -95,15 +99,17 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the profile exists.
       - When C(absent), ensures the profile is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Wojciech Wypior (@wojtek0806)

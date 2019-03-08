@@ -26,6 +26,7 @@ options:
       - Sets the contents of a key directly to the specified value. This is
         used with lookup plugins or for anything with formatting or templating.
         This must be provided when C(state) is C(present).
+    type: str
     aliases:
       - key_content
   state:
@@ -33,20 +34,24 @@ options:
       - When C(present), ensures that the key is uploaded to the device. When
         C(absent), ensures that the key is removed from the device. If the key
         is currently in use, the module will not be able to remove the key.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   name:
     description:
       - The name of the key.
+    type: str
     required: True
   passphrase:
     description:
       - Passphrase on key.
+    type: str
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
     version_added: 2.5
 notes:
