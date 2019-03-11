@@ -33,6 +33,7 @@ options:
   synchronization_group_name:
     description:
       - Specifies the name of the synchronization group to which the system belongs.
+    type: str
   synchronize_zone_files:
     description:
       - Specifies that the system synchronizes Domain Name System (DNS) zone files among the

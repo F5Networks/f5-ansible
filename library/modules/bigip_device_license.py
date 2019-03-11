@@ -26,12 +26,14 @@ options:
       - This parameter is required if the C(state) is equal to C(present).
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
+    type: str
   license_server:
     description:
       - The F5 license server to use when getting a license and validating a dossier.
       - This parameter is required if the C(state) is equal to C(present).
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
+    type: str
     default: activate.f5.com
   state:
     description:
@@ -41,11 +43,12 @@ options:
       - When C(absent), removes the license on the system.
       - When C(revoked), removes the license on the system and revokes its future usage
         on the F5 license servers.
-    default: present
+    type: str
     choices:
       - absent
       - present
       - revoked
+    default: present
   accept_eula:
     description:
       - Declares whether you accept the BIG-IP EULA or not. By default, this
@@ -56,6 +59,7 @@ options:
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
     type: bool
+    default: no
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

@@ -79,7 +79,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Password to use to encrypt the UCS file if desired</div>
+                                                                        <div>Password to use to encrypt the UCS file if desired.</div>
                                                                                 </td>
             </tr>
                                 <tr>

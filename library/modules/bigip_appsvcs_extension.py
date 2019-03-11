@@ -36,6 +36,7 @@ options:
       - If you are using the C(to_nice_json) filter, it will cause this module to fail because
         the purpose of that filter is to format the JSON to be human-readable and this process
         includes inserting "extra characters that break JSON validators.
+    type: raw
     required: True
   tenants:
     description:
@@ -44,6 +45,7 @@ options:
         C(state) is C(present).
       - A value of C(all) will remove all tenants.
       - Tenants can be specified as a list as well to remove only specific tenants.
+    type: raw
   force:
     description:
       - Force updates a declaration.
@@ -55,6 +57,7 @@ options:
     description:
       - When C(state) is C(present), ensures the configuration exists.
       - When C(state) is C(absent), ensures that the configuration is removed.
+    type: str
     choices:
       - present
       - absent

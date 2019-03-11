@@ -28,6 +28,7 @@ options:
       - Take special note that the parameters supported by this module will vary depending
         on the C(type) that you are configuring.
       - This module only supports a subset, at this time, of the total available auth types.
+    type: str
     choices:
       - tacacs
       - local
@@ -40,6 +41,7 @@ options:
         by specifying the C(port) key.
       - If no port number is specified, the default port C(49163) is used.
       - This parameter is supported by the C(tacacs) type.
+    type: raw
     suboptions:
       address:
         description:
@@ -57,6 +59,7 @@ options:
         server.
       - B(Do not) use the pound/hash sign in the secret for TACACS+ servers.
       - When configuring TACACS+ auth for the first time, this value is required.
+    type: str
   service_name:
     description:
       - Specifies the name of the service that the user is requesting to be
@@ -67,6 +70,7 @@ options:
       - When configuring this form of system authentication, this setting is required.
       - Note that the majority of TACACS+ implementations are of service type C(ppp),
         so try that first.
+    type: str
     choices:
       - slip
       - ppp
@@ -83,6 +87,7 @@ options:
         or system accounting.
       - Note that the majority of TACACS+ implementations are of protocol type C(ip),
         so try that first.
+    type: str
     choices:
       - lcp
       - ip
@@ -110,6 +115,7 @@ options:
         request to each server until authentication succeeds, or until the system has
         sent a request to all servers in the list.
       - This parameter is supported by the C(tacacs) type.
+    type: str
     choices:
       - use-first-server
       - use-all-servers
@@ -122,19 +128,21 @@ options:
       - The state of the authentication configuration on the system.
       - When C(present), guarantees that the system is configured for the specified C(type).
       - When C(absent), sets the system auth source back to C(local).
-    default: present
+    type: str
     choices:
       - absent
       - present
+    default: present
   update_secret:
     description:
       - C(always) will allow to update secrets if the user chooses to do so.
       - C(on_create) will only set the secret when a C(use_auth_source) is C(yes)
         and TACACS+ is not currently the auth source.
-    default: always
+    type: str
     choices:
       - always
       - on_create
+    default: always
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

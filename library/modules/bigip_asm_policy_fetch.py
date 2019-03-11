@@ -23,6 +23,7 @@ options:
   name:
     description:
       - The name of the policy exported to create a file on the remote device for downloading.
+    type: str
     required: True
   dest:
     description:
@@ -33,6 +34,7 @@ options:
     description:
       - The name of the file to be create on the remote device for downloading.
       - When C(binary) is set to C(no) the ASM policy will be in XML format.
+    type: str
   inline:
     description:
       - If C(yes), the ASM policy will be exported C(inline) as a string instead of a file.
@@ -61,6 +63,7 @@ options:
   partition:
     description:
       - Device partition which contains ASM policy to export.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

@@ -506,9 +506,33 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Create new IKE peer
       bigip_ike_peer:
-        name: foo
+        name: ike1
+        remote_address: 1.2.3.4
+        version:
+          - v1
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Change presented id type - keyid-tag
+      bigip_ike_peer:
+        name: ike1
+        presented_id_type: keyid-tag
+        presented_id_value: key1
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Remove IKE peer
+      bigip_ike_peer:
+        name: ike1
+        state: absent
         provider:
           password: secret
           server: lb.mydomain.com

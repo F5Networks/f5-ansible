@@ -24,7 +24,8 @@ options:
   module:
     description:
       - The module to provision in BIG-IP.
-    required: true
+    type: str
+    required: True
     choices:
       - am
       - afm
@@ -52,11 +53,12 @@ options:
         the module is not activated.
       - This parameter is not relevant to C(cgnat) and will not be applied to the
         C(cgnat) module.
-    default: nominal
+    type: str
     choices:
       - dedicated
       - nominal
       - minimum
+    default: nominal
   state:
     description:
       - The state of the provisioned module on the system. When C(present),
@@ -64,10 +66,11 @@ options:
         level provided that there are sufficient resources on the device (such
         as physical RAM) to support the provisioned module. When C(absent),
         de-provision the module.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

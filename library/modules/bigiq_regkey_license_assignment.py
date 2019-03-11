@@ -25,10 +25,12 @@ options:
   pool:
     description:
       - The registration key pool to use.
+    type: str
     required: True
   key:
     description:
       - The registration key that you want to assign from the pool.
+    type: str
     required: True
   device:
     description:
@@ -40,6 +42,7 @@ options:
         one device with the same name. BIG-IQ internally recognizes devices by their ID,
         and therefore, this module's cannot guarantee that the correct device will be
         registered. The device returned is the device that will be used.
+    type: str
   managed:
     description:
       - Whether the specified device is a managed or un-managed device.
@@ -49,6 +52,7 @@ options:
     description:
       - Specifies the port of the remote device to connect to.
       - If this parameter is not specified, the default of C(443) will be used.
+    type: int
     default: 443
   device_username:
     description:
@@ -56,19 +60,22 @@ options:
       - This username should be one that has sufficient privileges on the remote device
         to do licensing. Usually this is the C(Administrator) role.
       - When C(managed) is C(no), this parameter is required.
+    type: str
   device_password:
     description:
       - The password of the C(device_username).
       - When C(managed) is C(no), this parameter is required.
+    type: str
   state:
     description:
       - When C(present), ensures that the device is assigned the specified license.
       - When C(absent), ensures the license is revokes from the remote device and freed
         on the BIG-IQ.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

@@ -23,10 +23,12 @@ options:
   name:
     description:
       - The name of the APM policy or APM access profile to create or override.
+    type: str
     required: True
   type:
     description:
       - Specifies the type of item to export from device.
+    type: str
     choices:
       - profile_access
       - access_policy

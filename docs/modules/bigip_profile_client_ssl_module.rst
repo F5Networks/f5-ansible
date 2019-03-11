@@ -502,7 +502,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Requires that the network peers also provide SNI support. This setting only takes effect when <code>sni_default</code> is set to <code>true</code>. When creating a new profile, the setting is provided by the parent profile.</div>
+                                                                        <div>Requires that the network peers also provide SNI support, this setting only takes effect when <code>sni_default</code> is set to <code>true</code>.</div>
+                                                    <div>When creating a new profile, the setting is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -531,7 +532,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Enables or disables the resumption of SSL sessions after an unclean shutdown. When creating a new profile, the setting is provided by the parent profile.</div>
+                                                                        <div>Enables or disables the resumption of SSL sessions after an unclean shutdown.</div>
+                                                    <div>When creating a new profile, the setting is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>

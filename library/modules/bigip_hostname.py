@@ -23,6 +23,7 @@ options:
   hostname:
     description:
       - Hostname of the BIG-IP host.
+    type: str
     required: True
 extends_documentation_fragment: f5
 author:

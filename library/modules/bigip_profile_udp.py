@@ -26,12 +26,14 @@ options:
   name:
     description:
       - Specifies the name of the profile.
+    type: str
     required: True
   parent:
     description:
       - Specifies the profile from which this profile inherits settings.
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(udp) profile.
+    type: str
   idle_timeout:
     description:
       - Specifies the length of time that a connection is idle (has no traffic) before
@@ -45,6 +47,7 @@ options:
         indefinitely.
       - When C(immediate), specifies that you do not want the UDP connection to
         remain idle, and that it is therefore immediately eligible for deletion.
+    type: str
   datagram_load_balancing:
     description:
       - Specifies, when C(yes), that the system load balances UDP traffic
@@ -53,15 +56,17 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the profile exists.
       - When C(absent), ensures the profile is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

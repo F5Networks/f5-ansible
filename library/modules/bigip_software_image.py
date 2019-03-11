@@ -29,21 +29,23 @@ options:
         exist.
       - Generally should be C(yes) only in cases where you have reason
         to believe that the image was corrupted during upload.
-    default: no
     type: bool
+    default: no
   state:
     description:
       - When C(present), ensures that the image is uploaded.
       - When C(absent), ensures that the image is removed.
-    default: present
+    type: str
     choices:
       - absent
       - present
+    default: present
   image:
     description:
       - The image to put on the remote device.
       - This may be an absolute or relative location on the Ansible controller.
       - Image names, whether they are base ISOs or hotfix ISOs, B(must) be unique.
+    type: str
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

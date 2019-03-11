@@ -24,6 +24,7 @@ options:
     description:
       - Specifies the lowest level of ARP messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - debug
       - error
@@ -34,6 +35,7 @@ options:
     description:
       - Specifies the lowest level of HTTP compression messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - debug
       - error
@@ -44,6 +46,7 @@ options:
     description:
       - Specifies the lowest level of HTTP messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - debug
       - error
@@ -54,6 +57,7 @@ options:
     description:
       - Specifies the lowest level of IP address messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - debug
       - informational
@@ -63,6 +67,7 @@ options:
     description:
       - Specifies the lowest level of iRule messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - debug
       - error
@@ -73,6 +78,7 @@ options:
     description:
       - Specifies the lowest level of Layer 4 messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - debug
       - informational
@@ -81,6 +87,7 @@ options:
     description:
       - Specifies the lowest level of network messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - critical
       - debug
@@ -92,6 +99,7 @@ options:
     description:
       - Specifies the lowest level of operating system messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - alert
       - critical
@@ -105,6 +113,7 @@ options:
     description:
       - Specifies the lowest level of PVA messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - debug
       - informational
@@ -113,6 +122,7 @@ options:
     description:
       - Specifies the lowest level of SSL messages from the tmm daemon
         to include in the system log.
+    type: str
     choices:
       - alert
       - critical
@@ -126,9 +136,10 @@ options:
     description:
       - The state of the log level on the system. When C(present), guarantees
         that an existing log level is set to C(value).
-    default: present
+    type: str
     choices:
       - present
+    default: present
 extends_documentation_fragment: f5
 author:
   - Wojciech Wypior (@wojtek0806)

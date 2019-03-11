@@ -23,9 +23,11 @@ options:
   image:
     description:
       - Image to install on the remote device.
+    type: str
   volume:
     description:
       - The volume to install the software image to.
+    type: str
   state:
     description:
       - When C(installed), ensures that the software is installed on the volume
@@ -33,10 +35,11 @@ options:
         into the new software.
       - When C(activated), performs the same operation as C(installed), but
         the system is rebooted to the new software.
-    default: activated
+    type: str
     choices:
       - activated
       - installed
+    default: activated
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

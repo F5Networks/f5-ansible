@@ -342,7 +342,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the VLAN or Tunnel through which the system forwards packets to the destination. When <code>gateway_address</code> is a link-local IPv6 address, this value is required</div>
+                                                                        <div>Specifies the VLAN or Tunnel through which the system forwards packets to the destination. When <code>gateway_address</code> is a link-local IPv6 address, this value is required.</div>
                                                                                 </td>
             </tr>
                         </table>

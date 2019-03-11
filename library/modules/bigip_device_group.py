@@ -26,6 +26,7 @@ options:
   name:
     description:
       - Specifies the name of the device group.
+    type: str
     required: True
   type:
     description:
@@ -36,12 +37,14 @@ options:
       - A C(sync-only) device group has no such failover. When creating a new
         device group, this option will default to C(sync-only).
       - This setting cannot be changed once it has been set.
+    type: str
     choices:
       - sync-failover
       - sync-only
   description:
     description:
       - Description of the device group.
+    type: str
   auto_sync:
     description:
       - Indicates whether configuration synchronization occurs manually or
@@ -78,10 +81,12 @@ options:
       - Using incremental synchronization operations can reduce the per-device sync/load
         time for configuration changes.
       - This setting is relevant only when C(full_sync) is C(no).
+    type: int
   state:
     description:
       - When C(state) is C(present), ensures the device group exists.
       - When C(state) is C(absent), ensures that the device group is removed.
+    type: str
     choices:
       - present
       - absent
@@ -593,7 +598,9 @@ class ArgumentSpec(object):
             name=dict(
                 required=True
             ),
-            max_incremental_sync_size=dict(),
+            max_incremental_sync_size=dict(
+                type='int'
+            ),
             state=dict(
                 default='present',
                 choices=['absent', 'present']

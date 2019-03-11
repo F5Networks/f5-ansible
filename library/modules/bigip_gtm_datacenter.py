@@ -26,15 +26,19 @@ options:
   contact:
     description:
       - The name of the contact for the data center.
+    type: str
   description:
     description:
       - The description of the data center.
+    type: str
   location:
     description:
       - The location of the data center.
+    type: str
   name:
     description:
       - The name of the data center.
+    type: str
     required: True
   state:
     description:
@@ -44,15 +48,17 @@ options:
         the virtual address and enables it. If C(enabled), enable the virtual
         address if it exists. If C(disabled), create the virtual address if
         needed, and set state to C(disabled).
-    default: present
+    type: str
     choices:
       - present
       - absent
       - enabled
       - disabled
+    default: present
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
     version_added: 2.5
 extends_documentation_fragment: f5

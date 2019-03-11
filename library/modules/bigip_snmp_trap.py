@@ -23,22 +23,29 @@ options:
   name:
     description:
       - Name of the SNMP configuration endpoint.
+    type: str
     required: True
   snmp_version:
     description:
       - Specifies to which Simple Network Management Protocol (SNMP) version
         the trap destination applies.
-    choices: ['1', '2c']
+    type: str
+    choices:
+      - '1'
+      - '2c'
   community:
     description:
       - Specifies the community name for the trap destination.
+    type: str
   destination:
     description:
       - Specifies the address for the trap destination. This can be either an
         IP address or a hostname.
+    type: str
   port:
     description:
       - Specifies the port for the trap destination.
+    type: str
   network:
     description:
       - Specifies the name of the trap network. This option is not supported in
@@ -48,6 +55,7 @@ options:
         value when configuring a BIG-IP will cause the module to stop and report
         an error. The usual remedy is to choose one of the other options, such as
         C(management).
+    type: str
     choices:
       - other
       - management
@@ -56,13 +64,15 @@ options:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures that the resource does not exist.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
     version_added: 2.5
 notes:

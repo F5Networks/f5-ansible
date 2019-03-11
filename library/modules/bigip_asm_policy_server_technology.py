@@ -23,6 +23,7 @@ options:
   name:
     description:
       - Specifies the name of the server technology to apply on or remove from the ASM policy.
+    type: str
     required: True
     choices:
       - jQuery
@@ -69,11 +70,13 @@ options:
   policy_name:
     description:
       - Specifies the name of an existing ASM policy to add or remove server technology.
+    type: str
     required: True
   state:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
+    type: str
     default: present
     choices:
       - present
@@ -81,6 +84,7 @@ options:
   partition:
     description:
       - This parameter is only used when identifying ASM policy.
+    type: str
     default: Common
 notes:
   - This module is primarily used as a component of configuring ASM policy in Ansible Galaxy ASM Policy Role.

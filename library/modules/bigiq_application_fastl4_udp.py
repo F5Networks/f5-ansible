@@ -24,10 +24,12 @@ options:
   name:
     description:
       - Name of the new application.
+    type: str
     required: True
   description:
     description:
       - Description of the application.
+    type: str
   servers:
     description:
       - A list of servers that the application is hosted on.
@@ -38,13 +40,16 @@ options:
       address:
         description:
           - The IP address of the server.
+        type: str
         required: True
       port:
         description:
           - The port of the server.
           - When creating a new application and specifying a server, if this parameter
             is not provided, the default of C(8000) will be used.
+        type: str
         default: 8000
+    type: list
   inbound_virtual:
     description:
       - Settings to configure the virtual which will receive the inbound connection.
@@ -54,17 +59,20 @@ options:
           - Specifies destination IP address information to which the virtual server
             sends traffic.
           - This parameter is required when creating a new application.
+        type: str
         required: True
       netmask:
         description:
           - Specifies the netmask to associate with the given C(destination).
           - This parameter is required when creating a new application.
+        type: str
         required: True
       port:
         description:
           - The port that the virtual listens for connections on.
           - When creating a new application, if this parameter is not specified, the
             default value of C(53) will be used.
+        type: str
         default: 53
   service_environment:
     description:
@@ -75,6 +83,7 @@ options:
         Therefore, it is crucial that you maintain unique names for items in the
         different service environment types.
       - SSGs are not supported for this type of application.
+    type: str
   add_analytics:
     description:
       - Collects statistics of the BIG-IP that the application is deployed to.
@@ -87,10 +96,11 @@ options:
       - The state of the resource on the system.
       - When C(present), guarantees that the resource exists with the provided attributes.
       - When C(absent), removes the resource from the system.
-    default: present
+    type: str
     choices:
       - absent
       - present
+    default: present
   wait:
     description:
       - If the module should wait for the application to be created, deleted or updated.
