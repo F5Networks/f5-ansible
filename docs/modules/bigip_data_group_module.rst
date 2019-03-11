@@ -418,6 +418,7 @@ Examples
     - name: Create a data group of addresses
       bigip_data_group:
         name: foo
+        internal: yes
         records:
           - key: 0.0.0.0/32
             value: External_NAT
@@ -433,6 +434,7 @@ Examples
     - name: Create a data group of strings
       bigip_data_group:
         name: foo
+        internal: yes
         records:
           - key: caddy
             value: ""
