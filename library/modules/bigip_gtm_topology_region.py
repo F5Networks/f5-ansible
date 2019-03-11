@@ -89,7 +89,7 @@ options:
         description:
           - Specifies a geolocation ISP
         type: str
-    type: dict
+    type: list
   partition:
     description:
       - Device partition to manage resources on.
@@ -499,12 +499,14 @@ class ModuleParameters(Parameters):
                 'Region members must be either type of string or list.'
             )
         members = copy.deepcopy(self._values['region_members'])
-        for member in members:
+        for item in members:
+            member = self._filter_params(item)
             if 'negate' in member.keys():
                 if len(member.keys()) > 2:
                     raise F5ModuleError(
                         'You cannot specify negate and more than one option together.'
                     )
+
                 negate = self._flatten_negate(member)
 
             for key, value in iteritems(member):
@@ -825,7 +827,8 @@ class ArgumentSpec(object):
                 required=True
             ),
             region_members=dict(
-                type='dict',
+                type='list',
+                elements='dict',
                 options=dict(
                     region=dict(),
                     continent=dict(),
