@@ -25,10 +25,12 @@ options:
       - The name of the file as it should reside on the BIG-IP.
       - If this is not specified, then the filename provided in the C(source)
         parameter is used instead.
+    type: str
   source:
     description:
       - Specifies the path of the file to upload.
       - This parameter is required if C(state) is C(present).
+    type: path
     aliases:
       - src
   datastore:
@@ -42,6 +44,7 @@ options:
       - When C(lw4o6-table), the specified file will be store as an Lightweight 4
         over 6 (lw4o6) tunnel binding table, which include an IPv6 address for the
         lwB4, public IPv4 address, and restricted port set.
+    type: str
     choices:
       - external-monitor
       - ifile
@@ -59,15 +62,17 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

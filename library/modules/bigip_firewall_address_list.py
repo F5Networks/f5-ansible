@@ -24,14 +24,17 @@ options:
   name:
     description:
       - Specifies the name of the address list.
+    type: str
     required: True
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   description:
     description:
       - Description of the address list
+    type: str
   geo_locations:
     description:
       - List of geolocations specified by their C(country) and C(region).
@@ -42,19 +45,23 @@ options:
           - In addition to the country full names, you may also specify their abbreviated
             form, such as C(US) instead of C(United States).
           - Valid country codes can be found here https://countrycode.org/.
-        required: true
+        type: str
+        required: True
         choices:
           - Any valid 2 character ISO country code.
           - Any valid country name.
       region:
         description:
           - Region name of the country to use.
+        type: str
+    type: list
   addresses:
     description:
       - Individual addresses that you want to add to the list. These addresses differ
         from ranges, and lists of lists such as what can be used in C(address_ranges)
         and C(address_lists) respectively.
       - This list can also include networks that have CIDR notation.
+    type: list
   address_ranges:
     description:
       - A list of address ranges where the range starts with a port number, is followed
@@ -62,12 +69,14 @@ options:
       - If the first address is greater than the second number, the numbers will be
         reversed so-as to be properly formatted. ie, C(2.2.2.2-1.1.1). would become
         C(1.1.1.1-2.2.2.2).
+    type: list
   address_lists:
     description:
       - Simple list of existing address lists to add to this list. Address lists can be
         specified in either their fully qualified name (/Common/foo) or their short
         name (foo). If a short name is used, the C(partition) argument will automatically
         be prepended to the short name.
+    type: list
   fqdns:
     description:
       - A list of fully qualified domain names (FQDNs).
@@ -77,14 +86,16 @@ options:
         of BIG-IP. If using C(bigip_command), this can be done with C(tmsh modify security
         firewall global-fqdn-policy FOO) where C(FOO) is a DNS resolver configured
         at C(tmsh create net dns-resolver FOO).
+    type: list
   state:
     description:
       - When C(present), ensures that the address list and entries exists.
       - When C(absent), ensures the address list is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

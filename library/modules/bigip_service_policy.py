@@ -25,27 +25,33 @@ options:
     description:
       - Name of the service policy.
     required: True
+    type: str
   description:
     description:
       - Description of the service policy.
+    type: str
   timer_policy:
     description:
       - The timer policy to attach to the service policy.
+    type: str
   port_misuse_policy:
     description:
       - The port misuse policy to attach to the service policy.
       - Requires that C(afm) be provisioned to use. If C(afm) is not provisioned, this parameter
         will be ignored.
+    type: str
   state:
     description:
       - Whether the resource should exist or not.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

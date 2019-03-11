@@ -27,6 +27,7 @@ options:
       - Can specify a list of values to include a larger subset.
       - Values can also be used with an initial C(!) to specify that a specific subset
         should not be collected.
+    type: list
     required: True
     choices:
       - all

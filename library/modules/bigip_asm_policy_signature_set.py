@@ -80,10 +80,12 @@ options:
       - When C(XPath Injection Signatures), configures signatures targeting attacks that attempt to gain access
         to data structures or bypass permissions when a web site uses user-supplied information
         to construct XPath queries for XML data.
+    type: str
     required: True
   policy_name:
     description:
       - Specifies the name of an existing ASM policy to add or remove signature sets.
+    type: str
     required: True
   alarm:
     description:
@@ -107,6 +109,7 @@ options:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
+    type: str
     default: present
     choices:
       - present
@@ -114,6 +117,7 @@ options:
   partition:
     description:
       - This parameter is only used when identifying ASM policy.
+    type: str
     default: Common
 notes:
   - This module is primarily used as a component of configuring ASM policy in Ansible Galaxy ASM Policy Role.

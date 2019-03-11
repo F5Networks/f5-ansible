@@ -57,7 +57,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The description of the monitor.</div>
+                                                                        <div>The description of the data group.</div>
                                                                                 </td>
             </tr>
                                 <tr>

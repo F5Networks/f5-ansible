@@ -23,11 +23,13 @@ options:
   name:
     description:
       - The ASM policy to create or override.
+    type: str
     required: True
   inline:
     description:
       - When specified the ASM policy is created from a provided string.
       - Content needs to be provided in a valid XML format otherwise the operation will fail.
+    type: str
   source:
     description:
       - Full path to a policy file to be imported into the BIG-IP ASM.
@@ -45,6 +47,7 @@ options:
   partition:
     description:
       - Device partition to create policy on.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

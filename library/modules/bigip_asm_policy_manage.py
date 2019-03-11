@@ -30,6 +30,7 @@ options:
   name:
     description:
       - The ASM policy to manage or create.
+    type: str
     required: True
   state:
     description:
@@ -39,6 +40,7 @@ options:
         new blank ASM policy is created with the given policy C(name).
       - When C(state) is C(absent), ensures that the policy is removed, even if it is
         currently active.
+    type: str
     choices:
       - present
       - absent
@@ -50,6 +52,7 @@ options:
       - The C(Comprehensive), C(Drupal), C(Fundamental), C(Joomla),
         C(Vulnerability Assessment Baseline), and C(Wordpress) templates are only available
         on BIG-IP versions >= 13.
+    type: str
     choices:
       - ActiveSync v1.0 v2.0 (http)
       - ActiveSync v1.0 v2.0 (https)
@@ -89,6 +92,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

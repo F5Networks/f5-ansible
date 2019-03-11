@@ -24,37 +24,44 @@ options:
   name:
     description:
       - Specifies the name of the port list.
+    type: str
     required: True
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   description:
     description:
       - Description of the port list
+    type: str
   ports:
     description:
       - Simple list of port values to add to the list
+    type: list
   port_ranges:
     description:
       - A list of port ranges where the range starts with a port number, is followed
         by a dash (-) and then a second number.
       - If the first number is greater than the second number, the numbers will be
         reversed so-as to be properly formatted. ie, 90-78 would become 78-90.
+    type: list
   port_lists:
     description:
       - Simple list of existing port lists to add to this list. Port lists can be
         specified in either their fully qualified name (/Common/foo) or their short
         name (foo). If a short name is used, the C(partition) argument will automatically
         be prepended to the short name.
+    type: list
   state:
     description:
       - When C(present), ensures that the address list and entries exists.
       - When C(absent), ensures the address list is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

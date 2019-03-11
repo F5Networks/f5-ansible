@@ -46,19 +46,22 @@ options:
         is only available when specifying a C(state) of C(absent) and is
         provided as a way to delete templates that you may no longer have
         the source of.
+    type: str
   content:
     description:
       - Sets the contents of an iApp template directly to the specified
         value. This is for simple values, but can be used with lookup
         plugins for anything complex or with formatting. C(content) must
         be provided when creating new templates.
+    type: str
   state:
     description:
       - Whether the iApp template should exist or not.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   partition:
     description:
       - Device partition to manage resources on.

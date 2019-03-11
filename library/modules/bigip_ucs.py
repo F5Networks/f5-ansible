@@ -34,6 +34,7 @@ options:
         ignored and only the filename will be used to select a UCS for removal.
         Therefore you could specify C(/mickey/mouse/test.ucs) and this module
         would only look for C(test.ucs).
+    type: str
   force:
     description:
       - If C(yes) will upload the file every time and replace the file on the
@@ -70,11 +71,12 @@ options:
         When C(absent), the UCS will be removed from the system. When
         C(installed), the uploading of the UCS is idempotent, however the
         installation of that configuration is not idempotent.
-    default: present
+    type: str
     choices:
       - absent
       - installed
       - present
+    default: present
 notes:
    - Only the most basic checks are performed by this module. Other checks and
      considerations need to be taken into account. See the following URL.

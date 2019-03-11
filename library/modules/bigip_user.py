@@ -28,10 +28,12 @@ options:
   full_name:
     description:
       - Full name of the user.
+    type: str
   username_credential:
     description:
       - Name of the user to create, remove or modify.
       - The C(root) user may not be removed.
+    type: str
     required: True
     aliases:
       - name
@@ -39,9 +41,11 @@ options:
     description:
       - Set the users password to this unencrypted value.
         C(password_credential) is required when creating a new account.
+    type: str
   shell:
     description:
       - Optionally set the users shell.
+    type: str
     choices:
       - bash
       - none
@@ -56,26 +60,30 @@ options:
         C(operator), C(resource-admin), C(user-manager), C(web-application-security-administrator),
         and C(web-application-security-editor).
       - Partition portion of tuple should be an existing partition or the value 'all'.
+    type: list
   state:
     description:
       - Whether the account should exist or not, taking action if the state is
         different from what is stated.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   update_password:
     description:
       - C(always) will allow to update passwords if the user chooses to do so.
         C(on_create) will only set the password for newly created users.
       - When C(username_credential) is C(root), this value will be forced to C(always).
-    default: always
+    type: str
     choices:
       - always
       - on_create
+    default: always
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
     version_added: 2.5
 notes:

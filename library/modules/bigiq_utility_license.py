@@ -26,6 +26,7 @@ options:
   license_key:
     description:
       - The license key to install and activate.
+    type: str
     required: True
   accept_eula:
     description:
@@ -38,10 +39,11 @@ options:
       - The state of the utility license on the system.
       - When C(present), guarantees that the license exists.
       - When C(absent), removes the license from the system.
-    default: present
+    type: str
     choices:
       - absent
       - present
+    default: present
 requirements:
   - BIG-IQ >= 5.3.0
 extends_documentation_fragment: f5

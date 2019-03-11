@@ -27,15 +27,18 @@ options:
       - Specifies the name of the DNS zone.
       - The name must begin with a letter and contain only letters, numbers,
         and the underscore character.
+    type: str
     required: True
   dns_express:
     description:
       - DNS express related settings.
+    type: dict
     suboptions:
       server:
         description:
           - Specifies the back-end authoritative DNS server from which the BIG-IP
             system receives AXFR zone transfers for the DNS Express zone.
+        type: str
       enabled:
         description:
           - Specifies the current status of the DNS Express zone.
@@ -53,6 +56,7 @@ options:
             listener that handles the DNS request).
           - When C(repeat), the NOTIFY message goes to both DNS Express and any
             back-end DNS server.
+        type: str
         choices:
           - consume
           - bypass
@@ -61,6 +65,7 @@ options:
         description:
           - Specifies the IP addresses from which the system accepts NOTIFY messages
             for this DNS Express zone.
+        type: list
       verify_tsig:
         description:
           - Specifies whether the system verifies the identity of the authoritative
@@ -73,21 +78,25 @@ options:
   nameservers:
     description:
       - Specifies the DNS nameservers to which the system sends NOTIFY messages.
+    type: list
   tsig_server_key:
     description:
       - Specifies the TSIG key the system uses to authenticate the back-end DNS
         authoritative server that sends AXFR zone transfers to the BIG-IP system.
+    type: str
   state:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

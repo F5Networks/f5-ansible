@@ -23,21 +23,25 @@ options:
   name:
     description:
       - Monitor name.
+    type: str
     required: True
   description:
     description:
       - Specifies descriptive text that identifies the monitor.
+    type: str
   parent:
     description:
       - The parent template of this monitor template. Once this value has
         been set, it cannot be changed.
       - By default, this value is the C(ldap) parent on the C(Common) partition.
+    type: str
     default: "/Common/ldap"
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
         '*'.
+    type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
@@ -45,11 +49,13 @@ options:
         '*'.
       - Note that if specifying an IP address, a value between 1 and 65535
         must be specified.
+    type: str
   interval:
     description:
       - Specifies, in seconds, the frequency at which the system issues the
         monitor check when either the resource is down or the status of the
         resource is unknown.
+    type: int
   timeout:
     description:
       - Specifies the number of seconds the target has in which to respond to
@@ -60,6 +66,7 @@ options:
         from the parent monitor.
       - Note that C(timeout) and C(time_until_up) combine to control when a
         resource is set to up.
+    type: int
   time_until_up:
     description:
       - Specifies the number of seconds to wait after a resource first responds
@@ -68,6 +75,7 @@ options:
       - When the interval expires, the resource is marked 'up'.
       - A value of 0, means that the resource is marked up immediately upon
         receipt of the first correct response.
+    type: int
   up_interval:
     description:
       - Specifies the interval for the system to use to perform the health check
@@ -76,6 +84,7 @@ options:
         C(interval) to check the health of the resource.
       - When any other number, enables specification of a different interval to
         use when checking the health of a resource that is up.
+    type: int
   manual_resume:
     description:
       - Specifies whether the system automatically changes the status of a resource
@@ -90,19 +99,24 @@ options:
   target_username:
     description:
       - Specifies the user name, if the monitored target requires authentication.
+    type: str
   target_password:
     description:
       - Specifies the password, if the monitored target requires authentication.
+    type: str
   base:
     description:
       - Specifies the location in the LDAP tree from which the monitor starts the
         health check.
+    type: str
   filter:
     description:
       - Specifies an LDAP key for which the monitor searches.
+    type: str
   security:
     description:
       - Specifies the secure protocol type for communications with the target.
+    type: str
     choices:
       - none
       - ssl
@@ -126,22 +140,25 @@ options:
     description:
       - C(always) will update passwords if the C(target_password) is specified.
       - C(on_create) will only set the password for newly created monitors.
-    default: always
+    type: str
     choices:
       - always
       - on_create
+    default: always
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the monitor exists.
       - When C(absent), ensures the monitor is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

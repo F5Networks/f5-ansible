@@ -24,30 +24,35 @@ options:
   name:
     description:
       - Monitor name.
+    type: str
     required: True
   parent:
     description:
       - The parent template of this monitor template. Once this value has
         been set, it cannot be changed. By default, this value is the C(bigip)
         parent on the C(Common) partition.
+    type: str
     default: "/Common/bigip"
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
         '*'.
+    type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
         '*'. Note that if specifying an IP address, a value between 1 and 65535
         must be specified
+    type: str
   interval:
     description:
       - Specifies, in seconds, the frequency at which the system issues the monitor
         check when either the resource is down or the status of the resource is unknown.
       - When creating a new monitor, if this parameter is not provided, then the
         default value will be C(30). This value B(must) be less than the C(timeout) value.
+    type: int
   timeout:
     description:
       - Specifies the number of seconds the target has in which to respond to the
@@ -57,6 +62,7 @@ options:
       - When this value is set to 0 (zero), the system uses the interval from the parent monitor.
       - When creating a new monitor, if this parameter is not provided, then
         the default value will be C(90).
+    type: int
   ignore_down_response:
     description:
       - Specifies that the monitor allows more than one probe attempt per interval.
@@ -91,6 +97,7 @@ options:
       - When C(sum-members), specifies that the system adds together the scores of the
         pool members associated with the monitor's target virtual servers and uses
         that value in the load balancing operation.
+    type: str
     choices:
       - none
       - average-nodes
@@ -100,15 +107,17 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the monitor exists.
       - When C(absent), ensures the monitor is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 notes:
   - Requires BIG-IP software version >= 12
 extends_documentation_fragment: f5

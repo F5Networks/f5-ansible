@@ -24,6 +24,7 @@ options:
   name:
     description:
       - Specifies the name of the cache.
+    type: str
     required: True
   answer_default_zones:
     description:
@@ -40,6 +41,7 @@ options:
       name:
         description:
           - Specifies a FQDN for the forward zone.
+        type: str
         required: True
       nameservers:
         description:
@@ -50,25 +52,32 @@ options:
           address:
             description:
               - Address of recursive nameserver.
+            type: str
           port:
             description:
               - Port of recursive nameserver.
               - When specifying new nameservers, if this value is not provided, the
                 default is C(53).
+            type: int
+        type: list
+    type: raw
   route_domain:
     description:
       - Specifies the route domain the resolver uses for outbound traffic.
+    type: str
   state:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
 extends_documentation_fragment: f5
 author:

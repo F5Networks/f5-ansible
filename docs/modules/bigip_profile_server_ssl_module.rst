@@ -348,7 +348,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Requires that the network peers also provide SNI support. This setting only takes effect when <code>sni_default</code> is <code>yes</code>. When creating a new profile, the setting is provided by the parent profile.</div>
+                                                                        <div>Requires that the network peers also provide SNI support, setting only takes effect when <code>sni_default</code> is <code>yes</code>.</div>
+                                                    <div>When creating a new profile, the setting is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>

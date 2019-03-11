@@ -23,11 +23,13 @@ options:
   name:
     description:
       - Specifies the name of the log destination.
+    type: str
     required: True
   type:
     description:
       - Specifies the type of log destination.
       - Once created, this parameter cannot be changed.
+    type: str
     choices:
       - remote-high-speed-log
       - remote-syslog
@@ -39,6 +41,7 @@ options:
   description:
     description:
       - The description of the log destination.
+    type: str
   pool_settings:
     description:
       - This parameter is only available when C(type) is C(remote-high-speed-log).
@@ -49,12 +52,14 @@ options:
           - Specifies the existing pool of remote high-speed log servers where logs will be sent.
           - When creating a new destination (and C(type) is C(remote-high-speed-log)), this parameter
             is required.
+        type: str
       protocol:
         description:
           - Specifies the protocol for the system to use to send logs to the pool of remote high-speed
             log servers, where the logs are stored.
           - When creating a new log destination (and C(type) is C(remote-high-speed-log)), if this
             parameter is not specified, the default is C(tcp).
+        type: str
         choices:
           - tcp
           - udp
@@ -70,10 +75,12 @@ options:
           - When C(replicated), replicates each log to all pool members, for redundancy.
           - When creating a new log destination (and C(type) is C(remote-high-speed-log)), if this
             parameter is not specified, the default is C(adaptive).
+        type: str
         choices:
           - adaptive
           - balanced
           - replicated
+    type: dict
   syslog_settings:
     description:
       - This parameter is only available when C(type) is C(remote-syslog).
@@ -86,6 +93,7 @@ options:
             not specified, the default is C(bsd-syslog).
           - The C(syslog) and C(rfc5424) choices are two ways of saying the same thing.
           - The C(bsd-syslog) and C(rfc3164) choices are two ways of saying the same thing.
+        type: str
         choices:
           - bsd-syslog
           - syslog
@@ -98,6 +106,8 @@ options:
             single log server, or a remote high-speed log destination, which will be used to forward the
             logs to a pool of remote log servers.
           - When creating a new log destination (and C(type) is C(remote-syslog)), this parameter is required.
+        type: str
+    type: dict
   syslog_format:
     description:
       - Specifies the method to use to format the logs associated with the remote Syslog log destination.
@@ -105,6 +115,7 @@ options:
         not specified, the default is C(bsd-syslog).
       - The C(syslog) and C(rfc5424) choices are two ways of saying the same thing.
       - The C(bsd-syslog) and C(rfc3164) choices are two ways of saying the same thing.
+    type: str
     choices:
       - bsd-syslog
       - syslog
@@ -123,6 +134,7 @@ options:
         ArcSight or Splunk server.
       - When creating a new log destination and C(type) is C(remote-syslog), C(splunk), or C(arcsight),
         this parameter is required.
+    type: str
     version_added: 2.8
   pool:
     description:
@@ -133,6 +145,7 @@ options:
         of collectors.
       - When creating a new destination and C(type) is C(remote-high-speed-log) or C(ipfix), this
         parameter is required.
+    type: str
     version_added: 2.8
   protocol:
     description:
@@ -143,6 +156,7 @@ options:
       - When C(type) is C(management-port), specifies the protocol used to send messages to the
         specified location.
       - When C(type) is C(management-port), only C(tcp) and C(udp) are valid values.
+    type: str
     choices:
       - tcp
       - udp
@@ -161,6 +175,7 @@ options:
       - When C(replicated), replicates each log to all pool members, for redundancy.
       - When creating a new log destination and C(type) is C(remote-high-speed-log), if this
         parameter is not specified, the default is C(adaptive).
+    type: str
     choices:
       - adaptive
       - balanced
@@ -172,6 +187,7 @@ options:
       - This parameter is only available when C(type) is C(management-port).
       - When creating a new log destination and C(type) is C(management-port), this parameter
         is required.
+    type: str
     version_added: 2.8
   port:
     description:
@@ -180,6 +196,7 @@ options:
       - This parameter is only available when C(type) is C(management-port).
       - When creating a new log destination and C(type) is C(management-port), this parameter
         is required.
+    type: int
     version_added: 2.8
   transport_profile:
     description:
@@ -187,6 +204,7 @@ options:
       - This profile defines the TCP or UDP options used to send IP-traffic logs
         to the pool of collectors.
       - This parameter is only available when C(type) is C(ipfix).
+    type: str
     version_added: 2.8
   server_ssl_profile:
     description:
@@ -196,6 +214,7 @@ options:
       - An SSL server profile defines how to communicate securely over SSL or
         Transport Layer Security (TLS).
       - This parameter is only available when C(type) is C(ipfix).
+    type: str
     version_added: 2.8
   template_retransmit_interval:
     description:
@@ -205,6 +224,7 @@ options:
         at the interval you set in this field. These retransmissions are helpful
         for UDP, a lossy transport mechanism.
       - This parameter is only available when C(type) is C(ipfix).
+    type: int
     version_added: 2.8
   template_delete_delay:
     description:
@@ -212,19 +232,22 @@ options:
         deleting an obsolete IPFIX template and reusing its template ID.
       - This feature is useful for systems where you use iRules to create
         customized IPFIX templates.
+    type: int
     version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

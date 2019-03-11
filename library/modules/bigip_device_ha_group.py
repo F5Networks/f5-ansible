@@ -43,6 +43,7 @@ options:
     description:
       - Specifies pools to contribute to the ha score.
       - The pools must exist on the BIG-IP otherwise the operation will fail.
+    type: list
     suboptions:
       pool_name:
         description:
@@ -55,9 +56,9 @@ options:
         description:
           - The pool attribute that contributes to the ha score.
         type: str
-        default: 'percent-up-members'
         choices:
           - percent-up-members
+        default: 'percent-up-members'
       weight:
         description:
           - Maximum value the selected pool attribute contributes to the ha score.
@@ -82,6 +83,7 @@ options:
     description:
       - Specifies trunks to contribute to the ha score.
       - The trunks must exist on the BIG-IP otherwise the operation will fail.
+    type: list
     suboptions:
       trunk_name:
         description:
@@ -92,9 +94,9 @@ options:
         description:
           - The trunk attribute that contributes to the ha score.
         type: str
-        default: 'percent-up-members'
         choices:
           - percent-up-members
+        default: 'percent-up-members'
       weight:
         description:
           - Maximum value the selected trunk attribute contributes to the ha score.
@@ -114,10 +116,10 @@ options:
       - When C(present), ensures that the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
-    default: present
     choices:
       - present
       - absent
+    default: present
 notes:
   - This module does not support atomic removal of HA group objects.
 extends_documentation_fragment: f5

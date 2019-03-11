@@ -26,12 +26,14 @@ options:
   name:
     description:
       - Specifies the name of the DNS profile.
+    type: str
     required: True
   parent:
     description:
       - Specifies the profile from which this profile inherits settings.
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(dns) profile.
+    type: str
   enable_dns_express:
     description:
       - Specifies whether the DNS Express engine is enabled.
@@ -112,6 +114,7 @@ options:
       - Specifies the user-created cache that the system uses to cache DNS responses.
       - When you select a cache for the system to use, you must also set C(enable_dns_cache)
         to C(yes)
+    type: str
     version_added: 2.7
   unhandled_query_action:
     description:
@@ -125,6 +128,7 @@ options:
       - When C(no-error), the BIG-IP system returns the query with the NOERROR return code.
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
+    type: str
     choices:
       - allow
       - drop
@@ -135,15 +139,17 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
+    type: str
     default: Common
   state:
     description:
       - When C(present), ensures that the profile exists.
       - When C(absent), ensures the profile is removed.
-    default: present
+    type: str
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
