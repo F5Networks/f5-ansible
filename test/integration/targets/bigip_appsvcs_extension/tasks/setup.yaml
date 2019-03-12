@@ -6,5 +6,5 @@
     dest: /tmp/as3.rpm
 
 - name: Install AS3 rpm
-  bigip_iapplx_package:
+  bigip_lx_package:
     package: /tmp/as3.rpm

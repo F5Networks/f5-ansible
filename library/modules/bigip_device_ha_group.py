@@ -435,13 +435,6 @@ class ReportableChanges(Changes):
         'trunks',
     ]
 
-    def _handle_pool_name(self, name, partition):
-        result = name.split('/')
-        if len(result) > 1:
-            if result[1] == partition:
-                return result[2]
-        return name
-
     @property
     def enable(self):
         enabled = flatten_boolean(self._values['enabled'])

@@ -1,7 +1,7 @@
 ---
 
 - name: Create a traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
     mac_address: 00:00:00:00:00:01
   register: result
@@ -12,7 +12,7 @@
       - result is changed
 
 - name: Create a traffic group - Idempotent check
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
     mac_address: 00:00:00:00:00:01
   register: result
@@ -23,7 +23,7 @@
       - result is not changed
 
 - name: Change traffic group MAC
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
     mac_address: 00:00:00:00:00:02
   register: result
@@ -34,7 +34,7 @@
       - result is changed
 
 - name: Change traffic group MAC - Idempotent check
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
     mac_address: 00:00:00:00:00:02
   register: result
@@ -45,7 +45,7 @@
       - result is not changed
 
 - name: Remove traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
     state: absent
   register: result

@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00062 - Create a traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
   register: result
 

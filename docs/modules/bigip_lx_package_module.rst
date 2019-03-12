@@ -255,7 +255,7 @@ Notes
 .. note::
     - Requires the rpm tool be installed on the host. This can be accomplished through different ways on each platform. On Debian based systems with ``apt``; ``apt-get install rpm``. On Mac with ``brew``; ``brew install rpm``. This command is already present on RedHat based systems.
     - Requires BIG-IP >= 12.1.0 because the required functionality is missing on versions earlier than that.
-    - The module name ``bigip_iapplx_package`` has been deprecated in favor of ``bigip_lx_package``.
+    - The module name ``bigip_lx_package`` has been deprecated in favor of ``bigip_lx_package``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.

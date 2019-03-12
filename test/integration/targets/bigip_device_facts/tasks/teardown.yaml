@@ -21,7 +21,7 @@
     state: absent
 
 - name: Remove traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: tg1
     state: absent
 

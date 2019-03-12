@@ -1,0 +1,201 @@
+---
+
+- name: Issue 01216 - Include issue variables
+  include_vars:
+    file: issue-01216.yaml
+
+- name: Issue 01216 - Create sync-failover device group
+  bigip_device_group:
+    name: "{{ dg_name }}"
+    type: sync-failover
+
+- name: Issue 01216 - Add members to the device group
+  bigip_device_group_member:
+    device_group: "{{ dg_name }}"
+    name: "{{ device }}"
+
+- name: Issue 01216 - Create a HA group
+  bigip_device_ha_group:
+    name: "{{ ha_name }}"
+
+- name: Issue 01216 - Create a traffic group with ha_group failover
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_group: "{{ ha_name }}"
+  register: result
+
+- name: Issue 01216 - Assert Create a traffic group with ha_group failover
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.ha_group == ha_name
+
+- name: Issue 01216 - Create a traffic group with ha_group failover - Idempotent check
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_group: "{{ ha_name }}"
+  register: result
+
+- name: Issue 01216 - Assert Create a traffic group with ha_group failover - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01216 -  Modify a traffic group with ha_order failover, enable autofailback
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_order:
+      - "{{ device }}"
+    ha_group: ""
+    auto_failback: yes
+    auto_failback_time: "{{ time1 }}"
+  register: result
+
+- name: Issue 01216 - Assert Modify a traffic group with ha_order failover, enable autofailback
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.ha_group == ""
+      - result.auto_failback == 'yes'
+      - result.auto_failback_time == time1
+      - result.ha_order == ["/Common/{{ device }}"]
+
+- name: Issue 01216 -  Modify a traffic group with ha_order failover, enable autofailback - Idempotent check
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_order:
+      - "{{ device }}"
+    ha_group: ""
+    auto_failback: yes
+    auto_failback_time: "{{ time1 }}"
+  register: result
+
+- name: Issue 01216 - Assert Modify a traffic group with ha_order failover, enable autofailback - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01216 -  Change traffic group failback time, invalid value - Expect failure
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    auto_failback_time: "{{ invalid_time }}"
+  register: result
+  failed_when: "'Invalid auto_failback_time value, correct range is 0 - 300, specified value: 10000.' not in result['msg']"
+
+- name: Issue 01216 -  Change traffic group ha_order to ha_group, failback left enabled - Expect failure
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_group: "{{ ha_name }}"
+    ha_order: ""
+  register: result
+  failed_when: "'The auto_failback parameter on the device must disabled to use ha_group failover method.' not in result['msg']"
+
+- name: Issue 01216 -  Change traffic group ha_order to ha_group, failback disbaled
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_group: "{{ ha_name }}"
+    ha_order: ""
+    auto_failback: no
+  register: result
+
+- name: Issue 01216 - Assert Change traffic group ha_order to ha_group, failback disbaled
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.ha_group == ha_name
+      - result.auto_failback == 'no'
+      - result.ha_order == ""
+
+- name: Issue 01216 - Change traffic group ha_order to ha_group, failback disbaled - Idempotent check
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_group: "{{ ha_name }}"
+    ha_order: ""
+    auto_failback: no
+  register: result
+
+- name: Issue 01216 - Assert Change traffic group ha_order to ha_group, failback disbaled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01216 - Disable ha_group, revert to Load Aware
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_group: ""
+    ha_load_factor: "{{ load1 }}"
+  register: result
+
+- name: Issue 01216 - Assert Disable ha_group, revert to Load Aware
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.ha_group == ""
+      - result.ha_load_factor == load1
+
+- name: Issue 01216 - Disable ha_group, revert to Load Aware- Idempotent check
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_group: ""
+    ha_load_factor: "{{ load1 }}"
+  register: result
+
+- name: Issue 01216 - Assert Disable ha_group, revert to Load Aware- Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01216 -  Change load factor, invalid value - Expect failure
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    ha_load_factor: "{{ invalid_load }}"
+  register: result
+  failed_when: "'Invalid ha_load_factor value, correct range is 1 - 1000, specified value: 9999999.' not in result['msg']"
+
+- name: Issue 01216 - Remove traffic group
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    state: absent
+  register: result
+
+- name: Issue 01216 - Assert Remove traffic group
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01216 - Remove traffic group - Idempotent check
+  bigip_device_traffic_group:
+    name: "{{ tg_name1 }}"
+    state: absent
+  register: result
+
+- name: Issue 01216 - Assert Remove traffic group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01216 - Remove members from the device group
+  bigip_device_group_member:
+    device_group: "{{ dg_name }}"
+    name: "{{ device }}"
+    state: absent
+
+- name: Issue 01216 - Remove device group
+  bigip_device_group:
+    name: "{{ dg_name }}"
+    state: absent
+
+- name: Issue 01216 - Remove HA group
+  bigip_device_ha_group:
+    name: "{{ ha_name }}"
+    state: absent
