@@ -647,7 +647,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -778,7 +778,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -909,7 +909,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -1040,7 +1040,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -1171,7 +1171,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -1302,7 +1302,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -1433,7 +1433,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -1564,7 +1564,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -1695,7 +1695,7 @@
 - hash: 0f631a300f3f5975f9dcf4d5234b6776
   name: bigip_sys_global.py
 - hash: b698825c311bb5931e5963f0b6460321
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: e95a87b27ed650ba8ae7e23d7741dfae
   name: bigip_ucs.py
 - hash: 2c63508ba6f1669d34aeec86db80bc0b
@@ -1870,7 +1870,7 @@
 - hash: 694d19e3027ea4f8a317c8874564cc56
   name: bigip_timer_policy.py
 - hash: 047e3970560f2b6a9a7541bad26b08ba
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: 89799f386b85e0717b4a64fca3a97c4f
   name: bigip_trunk.py
 - hash: 7b296e77224e8b49429bb31de7bd369f
@@ -2063,7 +2063,7 @@
 - hash: 694d19e3027ea4f8a317c8874564cc56
   name: bigip_timer_policy.py
 - hash: 047e3970560f2b6a9a7541bad26b08ba
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: 89799f386b85e0717b4a64fca3a97c4f
   name: bigip_trunk.py
 - hash: 7b296e77224e8b49429bb31de7bd369f
@@ -2256,7 +2256,7 @@
 - hash: 694d19e3027ea4f8a317c8874564cc56
   name: bigip_timer_policy.py
 - hash: 047e3970560f2b6a9a7541bad26b08ba
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: 89799f386b85e0717b4a64fca3a97c4f
   name: bigip_trunk.py
 - hash: 7b296e77224e8b49429bb31de7bd369f
@@ -2449,7 +2449,7 @@
 - hash: 694d19e3027ea4f8a317c8874564cc56
   name: bigip_timer_policy.py
 - hash: 047e3970560f2b6a9a7541bad26b08ba
-  name: bigip_traffic_group.py
+  name: bigip_device_traffic_group.py
 - hash: 89799f386b85e0717b4a64fca3a97c4f
   name: bigip_trunk.py
 - hash: 7b296e77224e8b49429bb31de7bd369f

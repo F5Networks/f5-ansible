@@ -70,7 +70,7 @@
       minutes: 10
     provider: "{{ provider }}"
   register: result
-  failed_when: "'parameter is missing value' not in result ['msg']"
+  failed_when: "'parameter is missing value' not in result['msg']"
 
 - name: Issue 01164 - Modify profile set invalid format for expiration, missing minutes - Provider - Expect Failure
   bigip_profile_persistence_cookie:
@@ -80,7 +80,7 @@
       hours: 10
     provider: "{{ provider }}"
   register: result
-  failed_when: "'parameter is missing value' not in result ['msg']"
+  failed_when: "'parameter is missing value' not in result['msg']"
 
 - name: Issue 01164 - Modify profile set invalid format for expiration, missing minutes 2 - Provider - Expect Failure
   bigip_profile_persistence_cookie:
@@ -90,7 +90,7 @@
       seconds: 10
     provider: "{{ provider }}"
   register: result
-  failed_when: "'parameter is missing value' not in result ['msg']"
+  failed_when: "'parameter is missing value' not in result['msg']"
 
 
 - name: Issue 01164 - Remove profile - Provider

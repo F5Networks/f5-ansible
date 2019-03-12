@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Create a traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
   register: result
 
@@ -13,7 +13,7 @@
       - result is changed
 
 - name: Create a traffic group - Idempotent check
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
   register: result
 
@@ -23,7 +23,7 @@
       - result is not changed
 
 - name: Remove traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
     state: absent
   register: result
@@ -34,7 +34,7 @@
       - result is changed
 
 - name: Remove traffic group - Idempotent check
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo
     state: absent
   register: result
@@ -48,3 +48,6 @@
 
 - import_tasks: issue-00643.yaml
   tags: issue-00643
+
+- import_tasks: issue-01216.yaml
+  tags: issue-01216
