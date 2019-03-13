@@ -1,7 +1,7 @@
 ---
 
 - name: Remove AS3 rpm
-  bigip_iapplx_package:
+  bigip_lx_package:
     package: f5-appsvcs
     state: absent
 
