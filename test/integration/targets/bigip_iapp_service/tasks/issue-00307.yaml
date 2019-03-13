@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00307 - Create a new traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo-group
 
 - name: Issue 00307 - Create a template for testing
@@ -76,6 +76,6 @@
     state: absent
 
 - name: Issue 00307 - Remove traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: foo-group
     state: absent

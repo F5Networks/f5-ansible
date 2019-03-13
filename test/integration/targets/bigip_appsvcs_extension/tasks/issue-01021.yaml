@@ -6,7 +6,7 @@
     dest: /tmp/as3.rpm
 
 - name: Issue 01021 - Install AS3 rpm
-  bigip_iapplx_package:
+  bigip_lx_package:
     package: /tmp/as3.rpm
 
 - name: Issue 01021 - Simple HTTP application with RR pool
@@ -36,7 +36,7 @@
   register: result
 
 - name: Issue 01021 - Remove AS3 rpm
-  bigip_iapplx_package:
+  bigip_lx_package:
     package: f5-appsvcs
     state: absent
 

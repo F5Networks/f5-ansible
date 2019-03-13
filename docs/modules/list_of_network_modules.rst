@@ -41,6 +41,7 @@ F5
   * :ref:`bigip_device_ntp_module`
   * :ref:`bigip_device_sshd_module`
   * :ref:`bigip_device_syslog_module`
+  * :ref:`bigip_device_traffic_group_module`
   * :ref:`bigip_device_trust_module`
   * :ref:`bigip_dns_cache_resolver_module`
   * :ref:`bigip_dns_nameserver_module`
@@ -138,7 +139,6 @@ F5
   * :ref:`bigip_sys_db_module`
   * :ref:`bigip_sys_global_module`
   * :ref:`bigip_timer_policy_module`
-  * :ref:`bigip_traffic_group_module`
   * :ref:`bigip_traffic_selector_module`
   * :ref:`bigip_trunk_module`
   * :ref:`bigip_tunnel_module`

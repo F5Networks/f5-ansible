@@ -1,0 +1,10 @@
+---
+
+ha_name: test_ha_grp
+device: "v12-1.ansible.local"
+dg_name: test_ha
+tg_name1: issue01216-tg1
+time1: 40
+invalid_time: 10000
+load1: 15
+invalid_load: 9999999

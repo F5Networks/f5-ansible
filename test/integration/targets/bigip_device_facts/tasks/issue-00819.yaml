@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00819 - Create iAppLX package
-  bigip_iapplx_package:
+  bigip_lx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
   register: result
 
@@ -19,6 +19,6 @@
       - result.iapplx_packages | json_query("[?name=='MyApp'].arch") | first == "noarch"
 
 - name: Issue 00819 - Delete iAppLX package
-  bigip_iapplx_package:
+  bigip_lx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
     state: absent

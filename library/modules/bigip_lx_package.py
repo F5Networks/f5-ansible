@@ -45,7 +45,7 @@ notes:
     This command is already present on RedHat based systems.
   - Requires BIG-IP >= 12.1.0 because the required functionality is missing
     on versions earlier than that.
-  - The module name C(bigip_iapplx_package) has been deprecated in favor of C(bigip_lx_package).
+  - The module name C(bigip_lx_package) has been deprecated in favor of C(bigip_lx_package).
 requirements:
   - Requires BIG-IP >= 12.1.0
   - The 'rpm' tool installed on the Ansible controller

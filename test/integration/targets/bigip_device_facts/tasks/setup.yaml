@@ -43,7 +43,7 @@
     description: my trunk
 
 - name: Create a traffic group
-  bigip_traffic_group:
+  bigip_device_traffic_group:
     name: tg1
 
 - name: Create test virtual
