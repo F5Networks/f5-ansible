@@ -106,9 +106,11 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='foo',
             clock_skew=100,
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(

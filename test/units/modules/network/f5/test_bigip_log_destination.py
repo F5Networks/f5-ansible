@@ -80,9 +80,11 @@ class TestV1Parameters(unittest.TestCase):
                 forward_to='pool1',
                 syslog_format='rfc5424'
             ),
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         )
         p = V1ModuleParameters(params=args)
         assert p.name == 'foo'
@@ -110,9 +112,11 @@ class TestV1Manager(unittest.TestCase):
                 forward_to='pool1',
             ),
             state='present',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(

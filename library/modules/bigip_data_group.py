@@ -285,7 +285,7 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import transform_name
-    from library.module_utils.network.f5.common import compare_complex_list
+    from library.module_utils.network.f5.compare import compare_complex_list
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.ipaddress import is_valid_ip_interface
     from library.module_utils.compat.ipaddress import ip_network
@@ -297,7 +297,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import compare_complex_list
+    from ansible.module_utils.network.f5.compare import compare_complex_list
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip_interface
     from ansible.module_utils.compat.ipaddress import ip_network

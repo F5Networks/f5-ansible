@@ -104,9 +104,11 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             sync_device_to_group='yes',
             device_group="foo",
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
