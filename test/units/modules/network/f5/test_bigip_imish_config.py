@@ -82,9 +82,11 @@ class TestManager(unittest.TestCase):
             parents='router bgp 64664',
             before='bfd slow-timer 2000',
             match='exact',
-            server='localhost',
-            password='password',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         current = load_fixture('load_imish_output_1.json')

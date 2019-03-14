@@ -101,9 +101,11 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='fake_policy',
             source=self.policy,
-            server='localhost',
-            password='password',
-            user='admin',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(

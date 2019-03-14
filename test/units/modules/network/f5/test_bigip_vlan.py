@@ -107,10 +107,12 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='somevlan',
             description='fakevlan',
-            server='localhost',
-            password='password',
-            user='admin',
-            partition='Common'
+            partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -134,10 +136,12 @@ class TestManager(unittest.TestCase):
             name='somevlan',
             tagged_interface=['2.1'],
             tag=213,
-            server='localhost',
-            password='password',
-            user='admin',
-            partition='Common'
+            partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -161,10 +165,12 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='somevlan',
             untagged_interface=['2.1'],
-            server='localhost',
-            password='password',
-            user='admin',
-            partition='Common'
+            partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -188,10 +194,12 @@ class TestManager(unittest.TestCase):
             name='somevlan',
             tagged_interface=['2.1', '1.1'],
             tag=213,
-            server='localhost',
-            password='password',
-            user='admin',
-            partition='Common'
+            partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -215,10 +223,12 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='somevlan',
             untagged_interface=['2.1', '1.1'],
-            server='localhost',
-            password='password',
-            user='admin',
             partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -241,10 +251,12 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='somevlan',
             untagged_interface=['2.1'],
-            server='localhost',
-            password='password',
-            user='admin',
             partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -273,10 +285,12 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='somevlan',
             tagged_interface=['2.1'],
-            server='localhost',
-            password='password',
-            user='admin',
             partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -303,10 +317,12 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='somevlan',
             description='changed_that',
-            server='localhost',
-            password='password',
-            user='admin',
             partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
