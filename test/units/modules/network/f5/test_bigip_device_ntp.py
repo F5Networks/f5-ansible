@@ -96,9 +96,11 @@ class TestModuleManager(unittest.TestCase):
         set_module_args(
             dict(
                 ntp_servers=ntp,
-                server='localhost',
-                user='admin',
-                password='password'
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
             )
         )
 
@@ -125,9 +127,11 @@ class TestModuleManager(unittest.TestCase):
         set_module_args(
             dict(
                 timezone='Arctic/Longyearbyen',
-                server='localhost',
-                user='admin',
-                password='password'
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
             )
         )
 
@@ -156,9 +160,11 @@ class TestModuleManager(unittest.TestCase):
             dict(
                 ntp_servers=ntp,
                 timezone='Arctic/Longyearbyen',
-                server='localhost',
-                user='admin',
-                password='password'
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
             )
         )
 
@@ -188,10 +194,12 @@ class TestModuleManager(unittest.TestCase):
             dict(
                 ntp_servers=ntp,
                 timezone='America/Los_Angeles',
-                server='localhost',
-                user='admin',
-                password='password',
-                state='absent'
+                state='absent',
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
             )
         )
 
@@ -219,10 +227,12 @@ class TestModuleManager(unittest.TestCase):
         set_module_args(
             dict(
                 timezone='',
-                server='localhost',
-                user='admin',
-                password='password',
-                state='absent'
+                state='absent',
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
             )
         )
 

@@ -128,7 +128,6 @@ class TestParameters(unittest.TestCase):
 
 
 class TestManager(unittest.TestCase):
-
     def setUp(self):
         self.spec = ArgumentSpec()
         self.patcher1 = patch('time.sleep')
@@ -136,16 +135,42 @@ class TestManager(unittest.TestCase):
 
         try:
             self.p1 = patch('library.modules.bigiq_application_https_waf.bigiq_version')
+            self.p2 = patch('library.modules.bigiq_application_https_waf.ModuleParameters.template_reference')
+            self.p3 = patch('library.modules.bigiq_application_https_waf.ModuleParameters.ssg_reference')
+            self.p4 = patch('library.modules.bigiq_application_https_waf.ModuleParameters.default_device_reference')
+
             self.m1 = self.p1.start()
+            self.m2 = self.p2.start()
+            self.m3 = self.p3.start()
+            self.m4 = self.p4.start()
+
             self.m1.return_value = '6.1.0'
+            self.m2.return_value = Mock(return_value='https://localhost/mgmt/foobar1')
+            self.m3.return_value = Mock(return_value='https://localhost/mgmt/foobar2')
+            self.m4.return_value = Mock(return_value='https://localhost/mgmt/foobar3')
+
         except Exception:
-            self.p1 = patch('ansible.modules.bigiq_application_https_waf.bigiq_version')
+            self.p1 = patch('ansible.modules.network.f5.bigiq_application_https_waf.bigiq_version')
+            self.p2 = patch('ansible.modules.network.f5.bigiq_application_https_waf.ModuleParameters.template_reference')
+            self.p3 = patch('ansible.modules.network.f5.bigiq_application_https_waf.ModuleParameters.ssg_reference')
+            self.p4 = patch('ansible.modules.network.f5.bigiq_application_https_waf.ModuleParameters.default_device_reference')
+
             self.m1 = self.p1.start()
+            self.m2 = self.p2.start()
+            self.m3 = self.p3.start()
+            self.m4 = self.p4.start()
+
             self.m1.return_value = '6.1.0'
+            self.m2.return_value = Mock(return_value='https://localhost/mgmt/foobar1')
+            self.m3.return_value = Mock(return_value='https://localhost/mgmt/foobar2')
+            self.m4.return_value = Mock(return_value='https://localhost/mgmt/foobar3')
 
     def tearDown(self):
         self.patcher1.stop()
         self.p1.stop()
+        self.p2.stop()
+        self.p3.stop()
+        self.p4.stop()
 
     def test_create(self, *args):
         set_module_args(dict(

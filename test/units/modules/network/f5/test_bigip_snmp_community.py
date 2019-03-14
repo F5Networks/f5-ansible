@@ -170,9 +170,11 @@ class TestManager(unittest.TestCase):
             ip_version=4,
             state='present',
             partition='Common',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -205,9 +207,11 @@ class TestManager(unittest.TestCase):
             ip_version=4,
             state='present',
             partition='Common',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -240,9 +244,11 @@ class TestManager(unittest.TestCase):
             snmp_privacy_password='secretsecret',
             state='present',
             partition='Common',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -274,9 +280,11 @@ class TestManager(unittest.TestCase):
             snmp_privacy_password='secretsecret',
             state='present',
             partition='Common',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
