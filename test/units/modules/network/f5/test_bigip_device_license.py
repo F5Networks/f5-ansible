@@ -94,9 +94,11 @@ class TestModuleManager(unittest.TestCase):
                 license_key='xxxx-yyyy-zzzz',
                 license_server='foo-license.f5.com',
                 accept_eula=True,
-                server='localhost',
-                user='admin',
-                password='password'
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
             )
         )
 

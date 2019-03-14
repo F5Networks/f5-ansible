@@ -136,6 +136,11 @@ class TestManager(unittest.TestCase):
             irule='irule1',
             action='accept',
             logging='yes',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(

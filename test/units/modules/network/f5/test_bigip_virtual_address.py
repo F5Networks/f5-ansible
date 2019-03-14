@@ -199,9 +199,11 @@ class TestManager(unittest.TestCase):
             icmp_echo='enabled',
             advertise_route='always',
             use_route_advertisement='yes',
-            password='admin',
-            server='localhost',
-            user='admin',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -223,9 +225,11 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             state='absent',
             address='1.1.1.1',
-            password='admin',
-            server='localhost',
-            user='admin',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(

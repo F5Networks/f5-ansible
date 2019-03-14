@@ -178,7 +178,7 @@ class TestManager(unittest.TestCase):
     def tearDown(self):
         self.p1.stop()
 
-    def test_add_server_technology(self, *args):
+    def test_create_ha_group(self, *args):
         set_module_args(dict(
             name='fake_group',
             state='present',

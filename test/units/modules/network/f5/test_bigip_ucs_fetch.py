@@ -76,9 +76,6 @@ class TestParameters(unittest.TestCase):
             force='yes',
             fail_on_missing='no',
             src='remote.ucs',
-            password='password',
-            server='localhost',
-            user='admin'
         )
         p = Parameters(params=args)
         assert p.backup == 'yes'
@@ -97,9 +94,11 @@ class TestV1Manager(unittest.TestCase):
             force='yes',
             fail_on_missing='no',
             src='remote.ucs',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(

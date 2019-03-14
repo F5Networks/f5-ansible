@@ -66,9 +66,6 @@ class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
             module='gtm',
-            password='password',
-            server='localhost',
-            user='admin'
         )
         p = Parameters(params=args)
         assert p.module == 'gtm'
@@ -88,9 +85,11 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             module='gtm',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         # Configure the parameters that would be returned by querying the
@@ -134,9 +133,11 @@ class TestManager(unittest.TestCase):
             # Configure the arguments that would be sent to the Ansible module
             set_module_args(dict(
                 module=module,
-                password='password',
-                server='localhost',
-                user='admin'
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
             ))
 
             with patch('ansible.module_utils.basic.AnsibleModule.fail_json') as mo:

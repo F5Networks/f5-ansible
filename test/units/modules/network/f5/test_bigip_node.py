@@ -98,9 +98,11 @@ class TestManager(unittest.TestCase):
             ],
             partition='Common',
             state='present',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -127,9 +129,11 @@ class TestManager(unittest.TestCase):
             ],
             partition='Common',
             state='present',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         current = ApiParameters(params=load_fixture('load_ltm_node_3.json'))
@@ -158,9 +162,11 @@ class TestManager(unittest.TestCase):
             ],
             partition='Common',
             state='present',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -188,9 +194,11 @@ class TestManager(unittest.TestCase):
             ],
             partition='Common',
             state='present',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         current = ApiParameters(params=load_fixture('load_ltm_node_2.json'))
@@ -221,9 +229,11 @@ class TestManager(unittest.TestCase):
             ],
             partition='Common',
             state='present',
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         current = ApiParameters(params=load_fixture('load_ltm_node_2.json'))

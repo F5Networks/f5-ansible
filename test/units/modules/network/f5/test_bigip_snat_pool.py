@@ -99,9 +99,11 @@ class TestManager(unittest.TestCase):
             name='my-snat-pool',
             state='present',
             members=['10.10.10.10', '20.20.20.20'],
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(
@@ -127,9 +129,11 @@ class TestManager(unittest.TestCase):
             name='asdasd',
             state='present',
             members=['1.1.1.1', '2.2.2.2'],
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         current = ApiParameters(params=load_fixture('load_ltm_snatpool.json'))
@@ -154,9 +158,11 @@ class TestManager(unittest.TestCase):
             name='asdasd',
             state='present',
             members=['30.30.30.30'],
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         current = ApiParameters(params=load_fixture('load_ltm_snatpool.json'))

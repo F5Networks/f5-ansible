@@ -89,9 +89,11 @@ class TestUntypedManager(unittest.TestCase):
         set_module_args(dict(
             name='ike1',
             version=['v1'],
-            password='password',
-            server='localhost',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(

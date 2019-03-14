@@ -201,7 +201,6 @@ class Difference(object):
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
-        self.client = kwargs.get('client', None)
         self.client = F5RestClient(**self.module.params)
         self.want = ModuleParameters(client=self.client, params=self.module.params)
         self.have = ApiParameters()
