@@ -166,7 +166,7 @@ options:
       - Specifies host names that are used to access the web application that this
         security policy protects.
       - When creating a new application, this parameter is required.
-    type: str
+    type: list
   state:
     description:
       - The state of the resource on the system.

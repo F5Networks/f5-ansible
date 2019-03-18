@@ -84,7 +84,7 @@ class TestManager(unittest.TestCase):
             self.m1 = self.p1.start()
             self.m1.return_value = '12.1.3'
         except Exception:
-            self.p1 = patch('ansible.modules.bigip_lx_package.tmos_version')
+            self.p1 = patch('ansible.modules.network.f5.bigip_lx_package.tmos_version')
             self.m1 = self.p1.start()
             self.m1.return_value = '12.1.3'
 
