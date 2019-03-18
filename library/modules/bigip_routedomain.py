@@ -23,12 +23,12 @@ options:
   name:
     description:
       - The name of the route domain.
-    type: list
+    type: str
     version_added: 2.5
   bwc_policy:
     description:
       - The bandwidth controller for the route domain.
-    type: list
+    type: str
   connection_limit:
     description:
       - The maximum number of concurrent connections allowed for the

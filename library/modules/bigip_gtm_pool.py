@@ -206,7 +206,7 @@ options:
   ttl:
     description:
       - Specifies the number of seconds that the IP address, once found, is valid.
-    type: str
+    type: int
     version_added: 2.8
 extends_documentation_fragment: f5
 author:

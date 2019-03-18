@@ -73,7 +73,7 @@ options:
         failover. When C(failover_multicast) is C(yes) and this option is not
         provided, a default of C(62960) will be used. This value must be between
         0 and 65535.
-    type: str
+    type: int
   cluster_mirroring:
     description:
       - Specifies whether mirroring occurs within the same cluster or between

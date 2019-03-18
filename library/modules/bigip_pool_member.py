@@ -277,16 +277,16 @@ EXAMPLES = '''
       password: secret
   delegate_to: localhost
   loop:
-    - host: 1.1.1.1
+    - address: 1.1.1.1
       name: web1
       priority_group: 4
-    - host: 2.2.2.2
+    - address: 2.2.2.2
       name: web2
       priority_group: 3
-    - host: 3.3.3.3
+    - address: 3.3.3.3
       name: web3
       priority_group: 2
-    - host: 4.4.4.4
+    - address: 4.4.4.4
       name: web4
       priority_group: 1
 
