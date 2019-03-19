@@ -39,7 +39,7 @@ options:
       - absent
       - enabled
       - disabled
-    default: str
+    default: present
   datacenter:
     description:
       - Data center the server belongs to. When creating a new GTM server, this value

@@ -115,7 +115,7 @@ options:
         group file.
       - When C(internal) is C(no), at least one record must be specified in either C(records)
         or C(records_content).
-    type: pat
+    type: path
   separator:
     description:
       - When specifying C(records_content), this is the string of characters that will
