@@ -28,7 +28,7 @@ options:
   cache_error_timeout:
     description:
       - Specifies the lifetime of an error response in the cache, in seconds.
-    type: str
+    type: int
   proxy_server_pool:
     description:
       - Specifies the proxy server pool the BIG-IP system uses to fetch the OCSP

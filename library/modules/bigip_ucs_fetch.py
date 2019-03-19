@@ -39,7 +39,7 @@ options:
   dest:
     description:
       - A directory to save the UCS file into.
-    type: str
+    type: path
     required: True
   encryption_password:
     description:

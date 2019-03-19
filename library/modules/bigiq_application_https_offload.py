@@ -146,7 +146,7 @@ options:
               - Passphrases are encrypted on the remote BIG-IP device.
             type: str
         type: raw
-    type: str
+    type: dict
   service_environment:
     description:
       - Specifies the name of service environment or the hostname of the BIG-IP that

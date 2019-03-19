@@ -167,15 +167,10 @@ port:
   type: int
   sample: 389
 remote_directory_tree:
-  description: The port that the system uses for access to the remote LDAP server.
+  description: File location (tree) of the user authentication database on the server.
   returned: changed
   type: str
   sample: "CN=Users,DC=FOOBAR,DC=LOCAL"
-remote_directory_tree:
-  description: File location (tree) of the user authentication database on the server.
-  returned: changed
-  type: int
-  sample: 389
 scope:
   description: The level of the remote Active Directory or LDAP directory searched for user authentication.
   returned: changed

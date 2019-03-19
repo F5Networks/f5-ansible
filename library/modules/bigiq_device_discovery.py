@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2018, F5 Networks Inc.
+# Copyright: (c) 2019, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -27,12 +27,12 @@ options:
     required: True
   device_username:
     description:
-      - The administrator username fot the BIG-IP device.
+      - The administrator username for the BIG-IP device.
       - This parameter is only required when adding a new BIG-IP device to be managed.
     type: str
   device_password:
     description:
-      - The administrator password fot the BIG-IP device.
+      - The administrator password for the BIG-IP device.
       - This parameter is only required when adding a new BIG-IP device to be managed.
     type: str
   device_port:
@@ -95,7 +95,7 @@ options:
       - Specifies if the imported device is the first device in the access group to import shared configuration for that
         access group.
     type: bool
-    default: no
+    default: yes
   force:
     description:
       - Forces rediscovery and import of existing modules on the managed BIG-IP
@@ -111,6 +111,7 @@ options:
     choices:
       - ltm
       - asm
+      - apm
       - afm
       - dns
       - websafe
@@ -214,7 +215,7 @@ EXAMPLES = r'''
   bigiq_device_discovery:
     device_address: 192.168.1.1
     state: absent
-        provider:
+    provider:
       password: secret
       server: lb.mydomain.com
       user: admin
@@ -248,7 +249,7 @@ conflict_policy:
   type: str
   sample: use_bigip
 device_conflict_policy:
-  description: Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device
+  description: Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device.
   returned: changed
   type: str
   sample: use_bigip

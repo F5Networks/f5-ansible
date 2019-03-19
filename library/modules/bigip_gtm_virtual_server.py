@@ -45,7 +45,7 @@ options:
       - To specify all ports, use an C(*).
       - When creating a new GTM virtual server, if this parameter is not specified, a
         default of C(*) will be used.
-    type: port
+    type: int
   translation_address:
     description:
       - Specifies the translation IP address for the virtual server.
