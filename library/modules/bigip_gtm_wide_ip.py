@@ -668,8 +668,8 @@ class BaseManager(object):
             dict(
                 msg='The support for this TMOS version is deprecated.',
                 version='2.8'
-                )
             )
+        )
 
     def present(self):
         if self.exists():
