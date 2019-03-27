@@ -1,6 +1,3 @@
-ansible>=2.6.0
-f5-sdk
-isoparser
-lxml
+ansible>=2.7.0
 q
 invoke
