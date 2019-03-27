@@ -69,10 +69,10 @@ class ActionModule(ActionNetworkModule):
                 pc = copy.deepcopy(self._play_context)
                 pc.connection = 'network_cli'
                 pc.network_os = 'bigip'
-                pc.remote_addr = provider.get('server', self._play_context.remote_addr)
+                pc.remote_addr = provider['server'] or self._play_context.remote_addr
                 pc.port = int(provider['server_port'] or self._play_context.port or 22)
-                pc.remote_user = provider.get('user', self._play_context.connection_user)
-                pc.password = provider.get('password', self._play_context.password)
+                pc.remote_user = provider['user'] or self._play_context.connection_user
+                pc.password = provider['password'] or self._play_context.password
                 pc.private_key_file = provider['ssh_keyfile'] or self._play_context.private_key_file
                 command_timeout = int(provider['timeout'] or C.PERSISTENT_COMMAND_TIMEOUT)
 
