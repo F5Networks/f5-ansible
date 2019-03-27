@@ -194,3 +194,6 @@
 
 - import_tasks: v12-tests.yaml
   when: f.system_info.product_version >= "12.0.0"
+
+- import_tasks: issue-01181.yaml
+  tags: issue-01181
