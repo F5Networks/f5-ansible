@@ -1,0 +1,33 @@
+---
+
+- name: Issue 01181 - Set SSHD mgmt access, empty banner text
+  bigip_device_sshd:
+    allow: all
+    inactivity_timeout: 3600
+    login: enabled
+    port: 22
+    banner_text: ""
+    banner: enabled
+  register: result
+
+- name: Issue 01181 - Assert Set SSHD mgmt access, empty banner text
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01181 - Set SSHD mgmt access, empty banner text - Idempotent check
+  bigip_device_sshd:
+    allow: all
+    inactivity_timeout: 3600
+    login: enabled
+    port: 22
+    banner_text: ""
+    banner: enabled
+  register: result
+
+- name: Issue 01181 - Assert Set SSHD mgmt access, empty banner text - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
