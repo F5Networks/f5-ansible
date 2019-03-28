@@ -1,14 +1,15 @@
-:source: bigip_gtm_wide_ip.py
+:source: bigip_device_traffic_group.py
 
 :orphan:
 
-.. _bigip_gtm_wide_ip_module:
+.. _bigip_device_traffic_group_module:
+.. _bigip_traffic_group_module:
 
 
-bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_traffic_group - Manages traffic groups on BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.0
+.. versionadded:: 2.5
 
 .. contents::
    :local:
@@ -17,9 +18,10 @@ bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip
 
 Synopsis
 --------
-- Manages F5 BIG-IP GTM wide ip.
+- Supports managing traffic groups and their attributes on a BIG-IP.
 
 
+Aliases: bigip_traffic_group
 
 
 Parameters
@@ -28,44 +30,91 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>aliases</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
+                    <b>auto_failback</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies alternate domain names for the web site content you are load balancing.</div>
-                                                    <div>You can use the same wildcard characters for aliases as you can for actual wide IP names.</div>
+                                                                        <div>Specifies whether the traffic group fails back to the initial device specified in <code>ha_order</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>irules</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>List of rules to be applied.</div>
-                                                    <div>If you want to remove all existing iRules, specify a single empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>last_resort_pool</b>
+                    <b>auto_failback_time</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies which GTM pool, for the system to use as the last resort pool for the wide IP.</div>
-                                                    <div>The valid pools for this parameter are those with the <code>type</code> specified in this module.</div>
+                                                                        <div>Specifies the number of seconds the system delays before failing back to the initial device specified in <code>ha_order</code>.</div>
+                                                    <div>The correct value range is <code>0 - 300</code> inclusive.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ha_group</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a configured <code>HA group</code> to be associated with the traffic group.</div>
+                                                    <div>Once you create an HA group on a device and associate the HA group with a traffic group, you must create an HA group and associate it with that same traffic group on every device in the device group.</div>
+                                                    <div>To disable an HA group failover method , specify an empty string value (<code>&quot;&quot;</code>) to this parameter.</div>
+                                                    <div>Disabling HA group will revert the device back to using <code>Load Aware</code> method as it is the default, unless <code>ha_order</code> setting is also configured.</div>
+                                                    <div>The <code>auto_failback</code> and <code>auto_failback_time</code> are not compatible with <code>ha_group</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ha_load_factor</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The value of the load the traffic-group presents the system relative to other traffic groups.</div>
+                                                    <div>This parameter only takes effect when <code>Load Aware</code> failover method is in use.</div>
+                                                    <div>The correct value range is <code>1 - 1000</code> inclusive.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ha_order</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies order in which you would like to assign devices for failover.</div>
+                                                    <div>If you configure this setting, you must configure the setting on every traffic group in the device group.</div>
+                                                    <div>The values should be device names of the devices that belong to the failover group configured beforehand.</div>
+                                                    <div>The order in which the devices are placed as arguments to this parameter, determines their HA order on the device, in other words changing the order of the same elements will cause a change on the unit.</div>
+                                                    <div>To disable an HA order failover method , specify an empty string value (<code>&quot;&quot;</code>) to this parameter.</div>
+                                                    <div>Disabling HA order will revert the device back to using Load Aware method as it is the default, unless <code>ha_group</code> setting is also configured.</div>
+                                                    <div>Device names will be prepended by a partition by the module, so you can provide either the full path format name <code>/Common/bigip1</code> or just the name string <code>bigip1</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>mac_address</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the floating Media Access Control (MAC) address associated with the floating IP addresses defined for a traffic group.</div>
+                                                    <div>Primarily, a MAC masquerade address minimizes ARP communications or dropped packets as a result of failover.</div>
+                                                    <div>A MAC masquerade address ensures that any traffic destined for a specific traffic group reaches an available device after failover, which happens because along with the traffic group, the MAC masquerade address floats to the available device.</div>
+                                                    <div>Without a MAC masquerade address, the sending host must learn the MAC address for a newly-active device, either by sending an ARP request or by relying on the gratuitous ARP from the newly-active device.</div>
+                                                    <div>To unset the MAC address, specify an empty value (<code>&quot;&quot;</code>) to this parameter.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -75,14 +124,13 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Wide IP name. This name must be formatted as a fully qualified domain name (FQDN). You can also use the alias <code>wide_ip</code> but this is deprecated and will be removed in a future Ansible version.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: wide_ip</div>
-                                    </td>
+                                                                        <div>The name of the traffic group.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
                     <b>partition</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
+                                                        </td>
                                 <td>
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
@@ -103,62 +151,6 @@ Parameters
                                     </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>pool_lb_method</b>
-                    <br/><div style="font-size: small; color: red">required</div>                    <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>round-robin</li>
-                                                                                                                                                                                                <li>ratio</li>
-                                                                                                                                                                                                <li>topology</li>
-                                                                                                                                                                                                <li>global-availability</li>
-                                                                                                                                                                                                <li>global_availability</li>
-                                                                                                                                                                                                <li>round_robin</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the load balancing method used to select a pool in this wide IP. This setting is relevant only when multiple pools are configured for a wide IP.</div>
-                                                    <div>The <code>round_robin</code> value is deprecated and will be removed in Ansible 2.9.</div>
-                                                    <div>The <code>global_availability</code> value is deprecated and will be removed in Ansible 2.9.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: lb_method</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>pools</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The pools that you want associated with the Wide IP.</div>
-                                                    <div>If <code>ratio</code> is not provided when creating a new Wide IP, it will default to 1.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>name</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The name of the pool to include.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>ratio</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Ratio for the pool.</div>
-                                                    <div>The system uses this number with the Ratio load balancing method.</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
                                                                 <td colspan="2">
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
@@ -300,37 +292,16 @@ Parameters
                                 <tr>
                                                                 <td colspan="2">
                     <b>state</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.4)</div>                </td>
+                                                        </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                 <li>absent</li>
-                                                                                                                                                                                                <li>disabled</li>
-                                                                                                                                                                                                <li>enabled</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code> or <code>enabled</code>, ensures that the Wide IP exists and is enabled.</div>
-                                                    <div>When <code>absent</code>, ensures that the Wide IP has been removed.</div>
-                                                    <div>When <code>disabled</code>, ensures that the Wide IP exists and is disabled.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>type</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.4)</div>                </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>a</li>
-                                                                                                                                                                                                <li>aaaa</li>
-                                                                                                                                                                                                <li>cname</li>
-                                                                                                                                                                                                <li>mx</li>
-                                                                                                                                                                                                <li>naptr</li>
-                                                                                                                                                                                                <li>srv</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the type of wide IP. GTM wide IPs need to be keyed by query type in addition to name, since pool members need different attributes depending on the response RDATA they are meant to supply. This value is required if you are using BIG-IP versions &gt;= 12.0.0.</div>
+                                                                        <div>When <code>present</code>, ensures that the traffic group exists.</div>
+                                                    <div>When <code>absent</code>, ensures the traffic group is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -367,7 +338,6 @@ Notes
 -----
 
 .. note::
-    - Support for TMOS versions below v12.x has been deprecated for this module, and will be removed in Ansible 2.12.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
@@ -379,59 +349,59 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Set lb method
-      bigip_gtm_wide_ip:
-        pool_lb_method: round-robin
-        name: my-wide-ip.example.com
+    - name: Create a traffic group
+      bigip_device_traffic_group:
+        name: foo1
+        state: present
         provider:
           user: admin
           password: secret
           server: lb.mydomain.com
       delegate_to: localhost
 
-    - name: Add iRules to the Wide IP
-      bigip_gtm_wide_ip:
-        pool_lb_method: round-robin
-        name: my-wide-ip.example.com
-        irules:
-          - irule1
-          - irule2
+    - name: Create a traffic group with ha_group failover
+      bigip_device_traffic_group:
+        name: foo2
+        state: present
+        ha_group: foo_HA_grp
         provider:
           user: admin
           password: secret
           server: lb.mydomain.com
       delegate_to: localhost
 
-    - name: Remove one iRule from the Virtual Server
-      bigip_gtm_wide_ip:
-        pool_lb_method: round-robin
-        name: my-wide-ip.example.com
-        irules:
-          - irule1
+    - name: Create a traffic group with ha_order failover
+      bigip_device_traffic_group:
+        name: foo3
+        state: present
+        ha_order:
+          - /Common/bigip1.lab.local
+          - /Common/bigip2.lab.local
+        auto_failback: yes
+        auto_failback_time: 40
         provider:
           user: admin
           password: secret
           server: lb.mydomain.com
       delegate_to: localhost
 
-    - name: Remove all iRules from the Virtual Server
-      bigip_gtm_wide_ip:
-        pool_lb_method: round-robin
-        name: my-wide-ip.example.com
-        irules: ""
+    - name: Change traffic group ha_order to ha_group
+      bigip_device_traffic_group:
+        name: foo3
+        state: present
+        ha_group: foo_HA_grp
+        ha_order: ""
+        auto_failback: no
         provider:
           user: admin
           password: secret
           server: lb.mydomain.com
       delegate_to: localhost
 
-    - name: Assign a pool with ratio to the Wide IP
-      bigip_gtm_wide_ip:
-        pool_lb_method: round-robin
-        name: my-wide-ip.example.com
-        pools:
-          - name: pool1
-            ratio: 100
+    - name: Remove traffic group
+      bigip_device_traffic_group:
+        name: foo
+        state: absent
         provider:
           user: admin
           password: secret
@@ -448,61 +418,87 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                        <tr>
+                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>aliases</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>auto_failback</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Aliases set on the Wide IP.</div>
+                                            <div>Specifies whether the traffic group fails back to the initial device specified in ha_order</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;alias1.foo.com&#x27;, &#x27;*.wildcard.domain&#x27;]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>irules</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>auto_failback_time</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>iRules set on the Wide IP.</div>
+                                            <div>Specifies the number of seconds the system delays before failing back</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/irule1&#x27;, &#x27;/Common/irule2&#x27;]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">60</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>lb_method</b>
+                    <b>ha_group</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new load balancing method used by the wide IP.</div>
+                                            <div>The configured HA group associated with traffic group</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">topology</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo_HA_grp</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>state</b>
+                    <b>ha_load_factor</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The value of the load the traffic-group presents the system relative to other traffic groups</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">20</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>ha_order</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the order in which the devices will failover</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/bigip1&#x27;, &#x27;/Common/bigip2&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>mac_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new state of the wide IP.</div>
+                                            <div>The MAC masquerade address</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">disabled</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">02:01:d7:93:35:08</div>
                                     </td>
             </tr>
                         </table>
@@ -514,7 +510,7 @@ Status
 
 
 
-This module is **stableinterface** which means that the maintainers for this module guarantee that no backward incompatible interface changes will be made.
+This module is **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
 
 

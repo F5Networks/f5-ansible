@@ -56,8 +56,8 @@ Parameters
                                                         </td>
                                 <td>
                                                                                                                                                                                                                     <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>yes</li>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
@@ -119,7 +119,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The administrator password fot the BIG-IP device.</div>
+                                                                        <div>The administrator password for the BIG-IP device.</div>
                                                     <div>This parameter is only required when adding a new BIG-IP device to be managed.</div>
                                                                                 </td>
             </tr>
@@ -141,7 +141,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The administrator username fot the BIG-IP device.</div>
+                                                                        <div>The administrator username for the BIG-IP device.</div>
                                                     <div>This parameter is only required when adding a new BIG-IP device to be managed.</div>
                                                                                 </td>
             </tr>
@@ -179,6 +179,7 @@ Parameters
                                                                                                                             <ul><b>Choices:</b>
                                                                                                                                                                 <li>ltm</li>
                                                                                                                                                                                                 <li>asm</li>
+                                                                                                                                                                                                <li>apm</li>
                                                                                                                                                                                                 <li>afm</li>
                                                                                                                                                                                                 <li>dns</li>
                                                                                                                                                                                                 <li>websafe</li>
@@ -554,7 +555,7 @@ Examples
       bigiq_device_discovery:
         device_address: 192.168.1.1
         state: absent
-            provider:
+        provider:
           password: secret
           server: lb.mydomain.com
           user: admin
@@ -647,7 +648,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device</div>
+                                            <div>Sets the conflict resolution policy for objects that are specific to a particular to a BIG-IP device.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">use_bigip</div>

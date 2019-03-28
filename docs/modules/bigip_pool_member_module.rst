@@ -65,6 +65,8 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies, if you activate more than one health monitor, the number of health monitors that must receive successful responses in order for the link to be considered available.</div>
+                                                    <div>Specifying an empty string will remove the monitors and revert to inheriting from pool (default).</div>
+                                                    <div>Specifying <code>none</code> value will remove any health monitoring from the member completely.</div>
                                                                                 </td>
             </tr>
                                                             <tr>
@@ -579,16 +581,16 @@ Examples
           password: secret
       delegate_to: localhost
       loop:
-        - host: 1.1.1.1
+        - address: 1.1.1.1
           name: web1
           priority_group: 4
-        - host: 2.2.2.2
+        - address: 2.2.2.2
           name: web2
           priority_group: 3
-        - host: 3.3.3.3
+        - address: 3.3.3.3
           name: web3
           priority_group: 2
-        - host: 4.4.4.4
+        - address: 4.4.4.4
           name: web4
           priority_group: 1
 
