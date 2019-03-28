@@ -1,0 +1,94 @@
+---
+
+
+- name: Issue 01203 - Create new BIG IP POOL - Provider
+  bigip_pool:
+    provider: "{{ provider }}"
+    state: present
+    name: "Issue-1203-POOL"
+
+- name: Issue 01203 - Add pool members to BIGIP POOL, monitor default - Provider
+  bigip_pool_member:
+    provider: "{{ provider }}"
+    state: present
+    pool: "Issue-1203-POOL"
+    host: "10.10.10.10"
+    port: 80
+
+- name: Issue 01203 - Change monitor to none, disable pool member - Provider
+  bigip_pool_member:
+    provider: "{{ provider }}"
+    state: disabled
+    pool: "Issue-1203-POOL"
+    host: "10.10.10.10"
+    monitors: "none"
+    port: 80
+  register: result
+
+- name: Issue 01203 - Change monitor to none, disable pool member - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01203 - Change monitor to none, disable pool member - Idempotent check - Provider
+  bigip_pool_member:
+    provider: "{{ provider }}"
+    state: disabled
+    pool: "Issue-1203-POOL"
+    host: "10.10.10.10"
+    monitors: "none"
+    port: 80
+  register: result
+
+- name: Issue 01203 - Change monitor to none, disable pool member - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01203 - Change monitor to default, enable pool member - Provider
+  bigip_pool_member:
+    provider: "{{ provider }}"
+    state: enabled
+    pool: "Issue-1203-POOL"
+    host: "10.10.10.10"
+    monitors: ""
+    port: 80
+  register: result
+
+- name: Issue 01203 - Change monitor to default, enable pool member - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01203 - Change monitor to default, enable pool member - Idempotent check - Provider
+  bigip_pool_member:
+    provider: "{{ provider }}"
+    state: enabled
+    pool: "Issue-1203-POOL"
+    host: "10.10.10.10"
+    monitors: ""
+    port: 80
+  register: result
+
+- name: Issue 01203 - Change monitor to default, enable pool member - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01203 - Remove Pool member - Provider
+  bigip_pool_member:
+    provider: "{{ provider }}"
+    state: absent
+    pool: "Issue-1203-POOL"
+    host: "10.10.10.10"
+    port: 80
+
+- name: Issue 01203 - Remove pool - Provider
+  bigip_pool:
+    provider: "{{ provider }}"
+    state: absent
+    name: "Issue-1203-POOL"
