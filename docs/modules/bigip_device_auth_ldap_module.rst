@@ -536,14 +536,14 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                 <td colspan="1">
                     <b>remote_directory_tree</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
                                             <div>File location (tree) of the user authentication database on the server.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">389</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">CN=Users,DC=FOOBAR,DC=LOCAL</div>
                                     </td>
             </tr>
                                 <tr>

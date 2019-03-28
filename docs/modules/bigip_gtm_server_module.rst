@@ -627,13 +627,12 @@ Parameters
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>present</li>
+                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                 <li>absent</li>
                                                                                                                                                                                                 <li>enabled</li>
                                                                                                                                                                                                 <li>disabled</li>
                                                                                     </ul>
-                                                                                    <b>Default:</b><br/><div style="color: blue">str</div>
-                                    </td>
+                                                                            </td>
                                                                 <td>
                                                                         <div>The server state. If <code>absent</code>, an attempt to delete the server will be made. This will only succeed if this server is not in use by a virtual server. <code>present</code> creates the server and enables it. If <code>enabled</code>, enable the server if it exists. If <code>disabled</code>, create the server if needed, and set state to <code>disabled</code>.</div>
                                                                                 </td>
