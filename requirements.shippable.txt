@@ -15,7 +15,7 @@ sphinxcontrib-napoleon
 # Test running for style, unit and sanity tests
 pycodestyle
 flake8
-pytest
+pytest>=4.4.0
 pytest-xdist
 nose
 mock
