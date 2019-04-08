@@ -1,0 +1,61 @@
+---
+
+- name: Issue 01266 - Create datacenter
+  bigip_gtm_datacenter:
+    name: CRL
+
+- name: Issue 01266 - Create GTM servers (LTMs)
+  bigip_gtm_server:
+    name: LTM011-12
+    devices:
+      - name: LTM011-12
+        address: 10.0.0.21
+      - name: LTM011-12 Peer
+        address: 10.0.0.20
+    datacenter: CRL
+    virtual_server_discovery: enabled
+    iquery_options:
+      allow_path: yes
+      allow_service_check: yes
+      allow_snmp: yes
+    link_discovery: disabled
+  register: result
+
+- name: Issue 01266 - Assert Create GTM servers (LTMs)
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01266 - Create GTM servers (LTMs) - Idempotent Test
+  bigip_gtm_server:
+    name: LTM011-12
+    devices:
+      - name: LTM011-12
+        address: 10.0.0.21
+      - name: LTM011-12 Peer
+        address: 10.0.0.20
+    datacenter: CRL
+    virtual_server_discovery: enabled
+    iquery_options:
+      allow_path: yes
+      allow_service_check: yes
+      allow_snmp: yes
+    link_discovery: disabled
+  register: result
+
+- name: Issue 01266 - Assert Create GTM servers (LTMs) - Idempotent Test
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01266 - Remove GTM server
+  bigip_gtm_server:
+    name: LTM011-12
+    state: absent
+
+- name: Issue 01266 - Remove datacenters
+  bigip_gtm_datacenter:
+    name: CRL
+    state: absent
