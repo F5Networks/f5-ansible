@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['stableinterface'],
+                    'status': ['preview'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -286,9 +286,12 @@ max_answers_returned:
 import copy
 import re
 
+from ansible.module_utils.urls import urlparse
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 from distutils.version import LooseVersion
+from ansible.module_utils.six import iteritems
+from ansible.module_utils.network.common.utils import remove_default_spec
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -299,6 +302,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import module_provisioned
+    from library.module_utils.network.f5.icontrol import TransactionContextManager
     from library.module_utils.network.f5.ipaddress import is_valid_ip
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
@@ -309,6 +313,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.icontrol import tmos_version
     from ansible.module_utils.network.f5.icontrol import module_provisioned
+    from ansible.module_utils.network.f5.icontrol import TransactionContextManager
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
 
 
@@ -842,9 +847,11 @@ class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = F5RestClient(**self.module.params)
+        self.want = None
         self.have = None
-        self.want = ModuleParameters(params=self.module.params)
-        self.changes = UsableChanges()
+        self.changes = None
+        self.replace_all_with = None
+        self.purge_links = list()
 
     def _set_changed_options(self):
         changed = {}
@@ -873,11 +880,55 @@ class BaseManager(object):
         return False
 
     def exec_module(self):
+        if not module_provisioned(self.client, 'gtm'):
+            raise F5ModuleError(
+                "GTM must be provisioned to use this module."
+            )
+
+        wants = None
+        if self.module.params['replace_all_with']:
+            self.replace_all_with = True
+
+        if self.module.params['aggregate']:
+            if self.version_is_less_than_12():
+                raise F5ModuleError(
+                    "Aggregates are not supported with TMOS version lower than 12.x"
+                )
+            else:
+                wants = self.merge_defaults_for_aggregate(self.module.params)
+        result = dict()
+        changed = False
+
+        if self.replace_all_with and self.purge_links:
+            self.purge()
+            changed = True
+
+        if self.module.params['aggregate']:
+            result['aggregate'] = list()
+            for want in wants:
+                output = self.execute(want)
+                if output['changed']:
+                    changed = output['changed']
+                result['aggregate'].append(output)
+        else:
+            output = self.execute(self.module.params)
+            if output['changed']:
+                changed = output['changed']
+            result.update(output)
+        if changed:
+            result['changed'] = True
+        return result
+
+    def execute(self, params=None):
+        self.want = ModuleParameters(params=params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
+
         changed = False
         result = dict()
-        state = self.want.state
+        state = params['state']
 
-        if state in ["present", "disabled"]:
+        if state in ['present', 'disabled']:
             changed = self.present()
         elif state == "absent":
             changed = self.absent()
@@ -979,6 +1030,58 @@ class TypedManager(BaseManager):
                 "greater than or equal to 12.x"
             )
 
+    def merge_defaults_for_aggregate(self, params):
+        defaults = copy.deepcopy(params)
+        aggregate = defaults.pop('aggregate')
+
+        for i, j in enumerate(aggregate):
+            for k, v in iteritems(defaults):
+                if k != 'replace_all_with':
+                    if j.get(k, None) is None and v is not None:
+                        aggregate[i][k] = v
+
+        if self.replace_all_with:
+            self.compare_aggregate_names(aggregate)
+
+        return aggregate
+
+    def compare_aggregate_names(self, items):
+        types = [
+            'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
+        ]
+        result = list()
+        aggregate_types = self._split_aggregates_into_types(items)
+        on_device_types = self._read_purge_collection()
+
+        if not on_device_types:
+            return False
+
+        for type in types:
+            if on_device_types.get(type, False):
+                diff = set(on_device_types.get(type)) - set(aggregate_types[type])
+                if diff:
+                    result.append(diff)
+
+        if result:
+            to_purge =
+
+    def _split_aggregates_into_types(self, items):
+        result = {'a': [], 'aaaa': [], 'cname': [], 'mx': [], 'naptr': [], 'srv': []}
+        types = [
+            'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
+        ]
+        for type in types:
+            for item in items:
+                if item['type'] == type:
+                    result[type].append(item)
+        return result
+
+    def purge(self):
+        if self.module.check_mode:
+            return True
+        self.purge_from_device()
+        return True
+
     def present(self):
         types = [
             'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
@@ -993,6 +1096,37 @@ class TypedManager(BaseManager):
             )
 
         return super(TypedManager, self).present()
+
+    def _read_purge_collection(self):
+        types = [
+            'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
+        ]
+        result = dict()
+
+        for type in types:
+            uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                type
+            )
+
+            query = '?$select=name,selfLink,fullPath,subPath'
+            resp = self.client.api.get(uri + query)
+
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if 'code' in response and response['code'] == 400:
+                if 'message' in response:
+                    raise F5ModuleError(response['message'])
+                else:
+                    raise F5ModuleError(resp.content)
+            if 'items' in response:
+                result[type] = response['items']
+
+        return result
 
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}/{3}".format(
@@ -1198,8 +1332,8 @@ class ArgumentSpec(object):
             'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
         ]
         self.supports_check_mode = True
-        argument_spec = dict(
-            name=dict(required=True),
+        element_spec = dict(
+            name=dict(),
             state=dict(
                 default='present',
                 choices=self.states,
@@ -1248,18 +1382,50 @@ class ArgumentSpec(object):
                     ['type', 'require', ['number_of_probes', 'number_of_probers']]
                 ]
             ),
+            required_if=[
+                ['preferred_lb_method', 'fallback-ip', ['fallback_ip']],
+                ['fallback_lb_method', 'fallback-ip', ['fallback_ip']],
+                ['alternate_lb_method', 'fallback-ip', ['fallback_ip']]
+            ],
             monitors=dict(type='list'),
             max_answers_returned=dict(type='int'),
             ttl=dict(type='int')
         )
+
+        aggregate_spec = copy.deepcopy(element_spec)
+
+        # remove default in aggregate spec, to handle common arguments
+        remove_default_spec(aggregate_spec)
+
+        argument_spec = dict(
+            aggregate=dict(
+                type='list',
+                elements='dict',
+                options=aggregate_spec,
+                aliases=['pools']
+            ),
+            replace_all_with=dict(
+                type='bool',
+                aliases=['purge'],
+                default='no'
+            ),
+            partition=dict(
+                default='Common',
+                fallback=(env_fallback, ['F5_PARTITION'])
+            )
+
+        )
+        self.mutually_exclusive = [
+            ['name', 'aggregate']
+        ]
+        self.required_one_of = [
+            ['name', 'aggregate']
+        ]
+
         self.argument_spec = {}
+        self.argument_spec.update(element_spec)
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
-        self.required_if = [
-            ['preferred_lb_method', 'fallback-ip', ['fallback_ip']],
-            ['fallback_lb_method', 'fallback-ip', ['fallback_ip']],
-            ['alternate_lb_method', 'fallback-ip', ['fallback_ip']]
-        ]
 
 
 def main():
@@ -1268,7 +1434,8 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        required_if=spec.required_if
+        mutually_exclusive=spec.mutually_exclusive,
+        required_one_of=spec.required_one_of
     )
 
     try:
