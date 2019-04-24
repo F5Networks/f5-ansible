@@ -18,7 +18,7 @@ def get_fragment_loader():
     fragment_loader = PluginLoader(
         'ModuleDocFragment',  # class_name
         '',  # package
-        '{0}/library/utils/module_docs_fragments'.format(BASE_DIR),  # config
+        '{0}/library/plugins/doc_fragments'.format(BASE_DIR),  # config
         '',  # subdir
     )
     return fragment_loader
