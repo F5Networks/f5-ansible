@@ -172,7 +172,6 @@ class TestParameters(unittest.TestCase):
         assert '/Common/vlan2' in p.vlans
 
 
-
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
