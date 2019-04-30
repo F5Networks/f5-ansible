@@ -437,11 +437,11 @@ class ModuleParameters(Parameters):
                 "ssl_protocols may not be set to 'none'"
             )
         if protocols == 'default':
-            protocols = ' '.join(sorted(Parameters._protocols.split(' ')))
+            protocols = ' '.join(Parameters._protocols.split(' '))
         elif isinstance(protocols, string_types):
-            protocols = ' '.join(sorted(protocols.split(' ')))
+            protocols = ' '.join(protocols.split(' '))
         else:
-            protocols = ' '.join(sorted(protocols))
+            protocols = ' '.join(protocols)
         return protocols
 
 
@@ -489,7 +489,7 @@ class ReportableChanges(Changes):
 
     @property
     def ssl_protocols(self):
-        default = ' '.join(sorted(Parameters._protocols.split(' ')))
+        default = ' '.join(Parameters._protocols.split(' '))
         if self._values['ssl_protocols'] == default:
             return 'default'
         else:
