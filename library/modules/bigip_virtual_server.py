@@ -870,7 +870,6 @@ clone_pools:
   type: list
   sample: [{'pool_name':'/Common/Pool1', 'context': 'clientside'}]
 '''
-
 import os
 import re
 
@@ -1770,7 +1769,7 @@ class ModuleParameters(Parameters):
             return None
         result = self._values['destination'].split("%")
         if len(result) > 1:
-            pattern = r'^[a-zA-Z0-9_.-]+'
+            pattern = r'([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}|(\d{1,3}\.){3}\d{1,3}'
             matches = re.search(pattern, result[0])
             if matches and not is_valid_ip(matches.group(0)):
                 # we need to strip RD because when using Virtual Address names the RD is not needed.
