@@ -1,0 +1,75 @@
+---
+
+- name: Issue 01295 - Create RD - Provider
+  bigip_routedomain:
+    name: test-rd
+    id: 1234
+    state: present
+    provider: "{{ provider }}"
+
+- name: Issue 01295 - Create a pool - Provider
+  bigip_pool:
+    name: issue_01295_test-pool
+    state: present
+    provider: "{{ provider }}"
+
+- name: Issue 01295 - Create Virtual Server with RD - Provider
+  bigip_virtual_server:
+    name: issue_01295_test-vs
+    pool: issue_01295_test-pool
+    destination: "2324:1111:1212:f012:2607:1111:1212:f000%1234"
+    port: 8080
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01295 - Assert Create Virtual Server with RD - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01295 - Gather Facts on VS created - Provider
+  bigip_device_facts:
+    gather_subset:
+      - virtual-servers
+    provider: "{{ provider }}"
+  register: f
+
+- name: Issue 01295 - Verify VS has the correct address
+  assert:
+    that:
+      - f.virtual_servers[0].destination == "/Common/2324:1111:1212:f012:2607:1111:1212:f000%1234.8080"
+
+- name: Issue 01295 - Create Virtual Server with RD - Provider - Idempotent check
+  bigip_virtual_server:
+    name: issue_01295_test-vs
+    pool: issue_01295_test-pool
+    destination: "2324:1111:1212:f012:2607:1111:1212:f000%1234"
+    port: 8080
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01295 - Assert Create Virtual Server with RD - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01295 - Remove virtual - Provider
+  bigip_virtual_server:
+    name: issue_01295_test-vs
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01295 - Remove Pool - Provider
+  bigip_pool:
+    name: issue_01295_test-pool
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01295 - Remove RD - Provider
+  bigip_routedomain:
+    name: test-rd
+    id: 1234
+    state: absent
+    provider: "{{ provider }}"
