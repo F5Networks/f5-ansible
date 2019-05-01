@@ -119,7 +119,7 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>aggregate_rate</b>
+                    <b>rate_limit</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
@@ -236,7 +236,7 @@ Parameters
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>aggregate_rate</b>
+                    <b>rate_limit</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
@@ -398,7 +398,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>When <code>state</code> is <code>present</code>, ensures the resource exists.</div>
-                                                    <div>When <code>state</code> is <code>absent</code>, ensures that resource is removed.</div>
+                                                    <div>When <code>state</code> is <code>absent</code>, ensures that resource is removed. Attempts to remove built-in system profiles are ignored and no change is returned.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -450,7 +450,7 @@ Examples
       bigip_firewall_log_profile:
         name: barbaz
         port_misuse:
-          aggregate_rate: 30000
+          rate_limit: 30000
           log_publisher: local-db-pub
         provider:
           password: secret
@@ -462,7 +462,7 @@ Examples
       bigip_firewall_log_profile:
         name: barbaz
         ip_intelligence:
-          aggregate_rate: 400000
+          rate_limit: 400000
           log_translation_fields: yes
           log_rtbh: yes
           log_publisher: "/foobar/non-local-db"
@@ -616,7 +616,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>aggregate_rate</b>
+                    <b>rate_limit</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
@@ -696,7 +696,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>aggregate_rate</b>
+                    <b>rate_limit</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>

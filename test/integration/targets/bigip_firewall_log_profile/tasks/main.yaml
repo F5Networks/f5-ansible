@@ -6,7 +6,7 @@
   bigip_firewall_log_profile:
     name: "{{ log_profile }}"
     port_misuse:
-      aggregate_rate: 30000
+      rate_limit: 30000
       log_publisher: "{{ publisher1 }}"
   register: result
 
@@ -20,7 +20,7 @@
   bigip_firewall_log_profile:
     name: "{{ log_profile }}"
     port_misuse:
-      aggregate_rate: 30000
+      rate_limit: 30000
       log_publisher: "{{ publisher1 }}"
   register: result
 
@@ -34,7 +34,7 @@
   bigip_firewall_log_profile:
     name: "{{ log_profile }}"
     port_misuse:
-      aggregate_rate: "indefinite"
+      rate_limit: "indefinite"
   register: result
 
 - name: Assert Modify port misuse aggregate rate
@@ -47,7 +47,7 @@
   bigip_firewall_log_profile:
     name: "{{ log_profile }}"
     port_misuse:
-      aggregate_rate: "indefinite"
+      rate_limit: "indefinite"
   register: result
 
 - name: Assert Modify port misuse aggregate rate - Idempotent check
@@ -60,7 +60,7 @@
   bigip_firewall_log_profile:
     name: "{{ log_profile }}"
     ip_intelligence:
-      aggregate_rate: 400000
+      rate_limit: 400000
       log_translation_fields: yes
       log_rtbh: yes
       log_publisher: "/foobar/{{ publisher2 }}"
@@ -78,7 +78,7 @@
   bigip_firewall_log_profile:
     name: "{{ log_profile }}"
     ip_intelligence:
-      aggregate_rate: 400000
+      rate_limit: 400000
       log_translation_fields: yes
       log_rtbh: yes
       log_publisher: "/foobar/{{ publisher2 }}"
