@@ -1,0 +1,181 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a basic log profile with port misuse
+  bigip_firewall_log_profile:
+    name: "{{ log_profile }}"
+    port_misuse:
+      aggregate_rate: 30000
+      log_publisher: "{{ publisher1 }}"
+  register: result
+
+- name: Assert Create a basic log profile with port misuse
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a basic log profile with port misuse - Idempotent check
+  bigip_firewall_log_profile:
+    name: "{{ log_profile }}"
+    port_misuse:
+      aggregate_rate: 30000
+      log_publisher: "{{ publisher1 }}"
+  register: result
+
+- name: Assert Create a basic log profile with port misuse - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Modify port misuse aggregate rate
+  bigip_firewall_log_profile:
+    name: "{{ log_profile }}"
+    port_misuse:
+      aggregate_rate: "indefinite"
+  register: result
+
+- name: Assert Modify port misuse aggregate rate
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Modify port misuse aggregate rate - Idempotent check
+  bigip_firewall_log_profile:
+    name: "{{ log_profile }}"
+    port_misuse:
+      aggregate_rate: "indefinite"
+  register: result
+
+- name: Assert Modify port misuse aggregate rate - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change ip_intelligence settings, publisher on different partition, remove port misuse
+  bigip_firewall_log_profile:
+    name: "{{ log_profile }}"
+    ip_intelligence:
+      aggregate_rate: 400000
+      log_translation_fields: yes
+      log_rtbh: yes
+      log_publisher: "/foobar/{{ publisher2 }}"
+    port_misuse:
+      log_publisher: ""
+  register: result
+
+- name: Assert Change ip_intelligence settings, publisher on different partition, remove port misuse
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change ip_intelligence settings, publisher on different partition, remove port misuse - Idempotent check
+  bigip_firewall_log_profile:
+    name: "{{ log_profile }}"
+    ip_intelligence:
+      aggregate_rate: 400000
+      log_translation_fields: yes
+      log_rtbh: yes
+      log_publisher: "/foobar/{{ publisher2 }}"
+    port_misuse:
+        log_publisher: ""
+  register: result
+
+- name: Assert Change ip_intelligence settings, publisher on different partition, remove port misuse  - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Verify shun parameter is ignored on non global-network profile
+  bigip_firewall_log_profile:
+    name: "{{ log_profile }}"
+    ip_intelligence:
+      log_shun: yes
+  register: result
+
+- name: Assert Verify shun parameter is ignored on non global-network profile
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create a log profile with dos protection, different partition
+  bigip_firewall_log_profile:
+    name: "{{ log_profile2 }}"
+    partition: "{{ partition }}"
+    dos_protection:
+      dns_publisher: "/Common/{{ publisher1 }}"
+      sip_publisher: "{{ publisher2 }}"
+      network_publisher: "/Common/{{ publisher1 }}"
+  register: result
+
+- name: Assert Create a log profile with dos protection, different partition
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a log profile with dos protection, different partition - Idempotent check
+  bigip_firewall_log_profile:
+    name: "{{ log_profile2 }}"
+    partition: "{{ partition }}"
+    dos_protection:
+      dns_publisher: "/Common/{{ publisher1 }}"
+      sip_publisher: "{{ publisher2 }}"
+      network_publisher: "/Common/{{ publisher1 }}"
+  register: result
+
+- name: Assert Create a log profile with dos protection, different partition - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change dos settings, different partition
+  bigip_firewall_log_profile:
+    name: "{{ log_profile2 }}"
+    partition: "{{ partition }}"
+    dos_protection:
+      dns_publisher: "{{ publisher2 }}"
+      sip_publisher: ""
+      network_publisher: "{{ publisher2 }}"
+  register: result
+
+- name: Assert Change dos settings, different partition
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change dos settings, different partition - Idempotent check
+  bigip_firewall_log_profile:
+    name: "{{ log_profile2 }}"
+    partition: "{{ partition }}"
+    dos_protection:
+      dns_publisher: "{{ publisher2 }}"
+      sip_publisher: ""
+      network_publisher: "{{ publisher2 }}"
+  register: result
+
+- name: Assert Change dos settings, different partition - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove log profiles
+  bigip_firewall_log_profile:
+    name: "{{ item.name }}"
+    partition: "{{ item.partition }}"
+    state: absent
+  with_items:
+    - { name: "{{ log_profile }}", partition: "Common" }
+    - { name: "{{ log_profile2 }}", partition: "{{ partition }}" }
+
+- import_tasks: teardown.yaml
