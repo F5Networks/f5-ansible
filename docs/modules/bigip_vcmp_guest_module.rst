@@ -28,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -72,6 +72,16 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>When <code>state</code> is <code>absent</code>, will additionally delete the virtual disk associated with the vCMP guest. By default, this value is <code>no</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>initial_hotfix</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the hotfix ISO image file which will be applied on top of the base image.</div>
                                                                                 </td>
             </tr>
                                 <tr>

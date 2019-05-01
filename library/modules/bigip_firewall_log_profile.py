@@ -66,7 +66,7 @@ options:
             format, e.g. C(/Foobar/log-publisher), otherwise the partition for log publisher
             is inferred from C(partition) module parameter.
         type: str
-      aggregate_rate:
+      rate_limit:
         description:
           - Defines a rate limit for all combined IP intelligence log messages per second. Beyond this rate limit,
             log messages are not logged until the threshold drops below the specified rate.
@@ -100,7 +100,7 @@ options:
           - To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath
             format, e.g. C(/Foobar/log-publisher), otherwise the partition for log publisher
             is inferred from C(partition) module parameter.
-      aggregate_rate:
+      rate_limit:
         description:
           - Defines a rate limit for all combined port misuse log messages per second. Beyond this rate limit,
             log messages are not logged until the threshold drops below the specified rate.
@@ -116,7 +116,8 @@ options:
   state:
     description:
       - When C(state) is C(present), ensures the resource exists.
-      - When C(state) is C(absent), ensures that resource is removed.
+      - When C(state) is C(absent), ensures that resource is removed. Attempts to remove built-in system profiles are
+        ignored and no change is returned.
     type: str
     choices:
       - present
@@ -132,7 +133,7 @@ EXAMPLES = r'''
   bigip_firewall_log_profile:
     name: barbaz
     port_misuse:
-      aggregate_rate: 30000
+      rate_limit: 30000
       log_publisher: local-db-pub
     provider:
       password: secret
@@ -144,7 +145,7 @@ EXAMPLES = r'''
   bigip_firewall_log_profile:
     name: barbaz
     ip_intelligence:
-      aggregate_rate: 400000
+      rate_limit: 400000
       log_translation_fields: yes
       log_rtbh: yes
       log_publisher: "/foobar/non-local-db"
@@ -219,7 +220,7 @@ ip_intelligence:
       returned: changed
       type: str
       sample: "/Common/local-db-publisher"
-    aggregate_rate:
+    rate_limit:
       description: The rate limit for all combined IP intelligence log messages per second.
       returned: changed
       type: str
@@ -250,7 +251,7 @@ port_misuse:
       returned: changed
       type: str
       sample: "/Common/local-db-publisher"
-    aggregate_rate:
+    rate_limit:
       description: The rate limit for all combined Port Misuse log messages per second.
       returned: changed
       type: str
@@ -314,11 +315,11 @@ class Parameters(AnsibleF5Parameters):
         'network_publisher',
         'description',
         'ip_log_publisher',
-        'ip_aggregate_rate',
+        'ip_rate_limit',
         'ip_log_rthb',
         'ip_log_shun',
         'ip_log_translation_fields',
-        'port_aggregate_rate',
+        'port_rate_limit',
         'port_log_publisher',
     ]
 
@@ -330,11 +331,11 @@ class ApiParameters(Parameters):
         return result
 
     @property
-    def ip_aggregate_rate(self):
+    def ip_rate_limit(self):
         return self._values['ip_intelligence']['aggregateRate']
 
     @property
-    def port_aggregate_rate(self):
+    def port_rate_limit(self):
         return self._values['port_misuse']['aggregateRate']
 
     @property
@@ -365,13 +366,13 @@ class ModuleParameters(Parameters):
             return {}
         return fq_name(self.partition, log_publisher)
 
-    def _validate_aggregate_rate(self, aggregate_rate):
-        if aggregate_rate is None:
+    def _validate_rate_limit(self, rate_limit):
+        if rate_limit is None:
             return None
-        if aggregate_rate == 'indefinite':
+        if rate_limit == 'indefinite':
             return 4294967295
-        if 0 <= int(aggregate_rate) <= 4294967295:
-            return int(aggregate_rate)
+        if 0 <= int(rate_limit) <= 4294967295:
+            return int(rate_limit)
         raise F5ModuleError(
             "Valid 'maximum_age' must be in range 0 - 4294967295, or 'indefinite'."
         )
@@ -382,7 +383,7 @@ class ModuleParameters(Parameters):
             return None
         to_filter = dict(
             logPublisher=self.ip_log_publisher,
-            aggregateRate=self._values.ip_aggregate_rate,
+            aggregateRate=self.ip_rate_limit,
             logRtbh=self.ip_log_rtbh,
             logShun=self.ip_log_shun,
             logTranslationFields=self.ip_log_translation_fields
@@ -396,7 +397,7 @@ class ModuleParameters(Parameters):
             return None
         to_filter = dict(
             logPublisher=self.port_log_publisher,
-            aggregateRate=self.port_aggregate_rate,
+            aggregateRate=self.port_rate_limit,
         )
         result = self._filter_params(to_filter)
         return result
@@ -444,16 +445,16 @@ class ModuleParameters(Parameters):
         return result
 
     @property
-    def ip_aggregate_rate(self):
+    def ip_rate_limit(self):
         if self._values['ip_intelligence'] is None:
             return None
-        return self._validate_aggregate_rate(self._values['ip_intelligence']['aggregate_rate'])
+        return self._validate_rate_limit(self._values['ip_intelligence']['rate_limit'])
 
     @property
-    def port_aggregate_rate(self):
+    def port_rate_limit(self):
         if self._values['port_misuse'] is None:
             return None
-        return self._validate_aggregate_rate(self._values['port_misuse']['aggregate_rate'])
+        return self._validate_rate_limit(self._values['port_misuse']['rate_limit'])
 
     @property
     def port_log_publisher(self):
@@ -503,7 +504,7 @@ class UsableChanges(Changes):
             return self._values['ip_intelligence']
         to_filter = dict(
             logPublisher=self._values['ip_log_publisher'],
-            aggregateRate=self._values['ip_aggregate_rate'],
+            aggregateRate=self._values['ip_rate_limit'],
             logRtbh=self._values['ip_log_rtbh'],
             logShun=self._values['ip_log_shun'],
             logTranslationFields=self._values['ip_log_translation_fields']
@@ -518,7 +519,7 @@ class UsableChanges(Changes):
             return self._values['port_misuse']
         to_filter = dict(
             logPublisher=self._values['port_log_publisher'],
-            aggregateRate=self._values['port_aggregate_rate']
+            aggregateRate=self._values['port_rate_limit']
         )
         result = self._filter_params(to_filter)
         if result:
@@ -526,7 +527,7 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    def _change_aggregate_rate_value(self, value):
+    def _change_rate_limit_value(self, value):
         if value == 4294967295:
             return 'indefinite'
         else:
@@ -553,7 +554,7 @@ class ReportableChanges(Changes):
             return None
         to_filter = dict(
             log_publisher=self._values['ip_log_publisher'],
-            aggregate_rate=self._change_aggregate_rate_value(self._values['ip_aggregate_rate']),
+            rate_limit=self._change_rate_limit_value(self._values['ip_rate_limit']),
             log_rtbh=self.ip_log_rtbh,
             log_shun=self.ip_log_shun,
             log_translation_fields=self.ip_log_translation_fields
@@ -568,7 +569,7 @@ class ReportableChanges(Changes):
             return None
         to_filter = dict(
             log_publisher=self._values['port_log_publisher'],
-            aggregate_rate=self._change_aggregate_rate_value(self._values['port_aggregate_rate']),
+            rate_limit=self._change_rate_limit_value(self._values['port_rate_limit']),
         )
         result = self._filter_params(to_filter)
         if result:
@@ -698,6 +699,13 @@ class ModuleManager(object):
             return self.create()
 
     def absent(self):
+        # Built-in profiles cannot be removed
+        built_ins = [
+            'Log all requests', 'Log illegal requests',
+            'global-network', 'local-dos'
+        ]
+        if self.want.name in built_ins:
+            return False
         if self.exists():
             return self.remove()
         return False
@@ -839,7 +847,7 @@ class ArgumentSpec(object):
                 options=dict(
                     log_publisher=dict(),
                     log_translation_fields=dict(type='bool'),
-                    aggregate_rate=dict(),
+                    rate_limit=dict(),
                     log_rtbh=dict(type='bool'),
                     log_shun=dict(type='bool')
                 )
@@ -848,7 +856,7 @@ class ArgumentSpec(object):
                 type='dict',
                 options=dict(
                     log_publisher=dict(),
-                    aggregate_rate=dict()
+                    rate_limit=dict()
                 )
             ),
             partition=dict(

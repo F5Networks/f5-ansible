@@ -1,0 +1,266 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Add network settings to log profile
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    rate_limit: 150000
+    log_publisher: "{{ publisher1 }}"
+    log_tcp_errors:
+      enabled: yes
+      rate_limit: 10000
+    log_tcp_events:
+      enabled: yes
+      rate_limit: 40000
+    log_storage_format: "field-list"
+    log_message_fields:
+      - vlan
+      - translated_vlan
+      - src_ip
+  register: result
+
+- name: Assert Add network settings to log profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add network settings to log profile - Idempotent check
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    rate_limit: 150000
+    log_publisher: "{{ publisher1 }}"
+    log_tcp_errors:
+      enabled: yes
+      rate_limit: 10000
+    log_tcp_events:
+      enabled: yes
+      rate_limit: 40000
+    log_storage_format: "field-list"
+    log_message_fields:
+      - vlan
+      - translated_vlan
+      - src_ip
+  register: result
+
+- name: Assert Add network settings to log profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change delimiter and log fields
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    log_format_delimiter: '.'
+    log_message_fields:
+      - translated_dest_ip
+      - translated_dest_port
+  register: result
+
+- name: Assert Change delimiter and log fields
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change delimiter and log fields - Idempotent check
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    log_format_delimiter: '.'
+    log_message_fields:
+      - translated_dest_ip
+      - translated_dest_port
+  register: result
+
+- name: Assert Change delimiter and log fields - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove log fields, storage-format to none
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    log_storage_format: "none"
+    log_message_fields: ""
+  register: result
+
+- name: Assert Remove log fields, storage-format to none
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove log fields, storage-format to none - Idempotent check
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    log_storage_format: "none"
+    log_message_fields: ""
+  register: result
+
+- name: Assert Remove log fields, storage-format to none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove network log publisher
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    log_publisher: ""
+  register: result
+
+- name: Assert Remove network log publisher
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove network log publisher - Idempotent check
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    log_publisher: ""
+  register: result
+
+- name: Assert Remove network log publisher - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Modify built-in profile
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile2 }}"
+    log_publisher: "{{ publisher2 }}"
+    log_ip_errors:
+      enabled: yes
+      rate_limit: 60000
+    log_matches_reject_rule:
+      enabled: yes
+      rate_limit: 2000
+    log_translation_fields: yes
+    log_storage_format: "field-list"
+    log_format_delimiter: '.'
+    log_message_fields:
+      - protocol
+      - dest_ip
+      - dest_port
+  register: result
+
+- name: Assert Modify built-in profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Modify built-in profile - Idempotent check
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile2 }}"
+    log_publisher: "{{ publisher2 }}"
+    log_ip_errors:
+      enabled: yes
+      rate_limit: 60000
+    log_matches_reject_rule:
+      enabled: yes
+      rate_limit: 2000
+    log_translation_fields: yes
+    log_storage_format: "field-list"
+    log_format_delimiter: '.'
+    log_message_fields:
+      - protocol
+      - dest_ip
+      - dest_port
+  register: result
+
+- name: Assert Modify built-in profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Revert built-in profile to its defaults
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile2 }}"
+    log_publisher: ""
+    log_ip_errors:
+      enabled: no
+      rate_limit: "indefinite"
+    log_matches_reject_rule:
+      enabled: no
+      rate_limit: "indefinite"
+    log_translation_fields: no
+    log_storage_format: "none"
+    log_format_delimiter: ','
+    log_message_fields: ""
+  register: result
+
+- name: Assert Revert built-in profile to its defaults
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Attempt to remove built-in profile network log settings - Expect No Change
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile2 }}"
+    state: absent
+  register: result
+
+- name: Assert Attempt to remove built-in profile network log settings - Expect No Change
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove custom log profile network log settings
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    state: absent
+  register: result
+
+- name: Assert Remove custom log profile network log settings
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove custom log profile network log settings - Idempotent check
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    state: absent
+  register: result
+
+- name: Assert Remove custom log profile network log settings - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Specify invalid delimiter length - Except Failure
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    log_format_delimiter: ".,fobarbazfoobarbazbazbazbazbazbbazbbaz"
+  register: result
+  failed_when: "'The maximum length of delimiter is 31 characters.' not in result['msg']"
+
+- name: Specify reserved character in delimiter - Except Failure
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile }}"
+    log_format_delimiter: "$"
+  register: result
+  failed_when: "'character as a part of delimiter.' not in result['msg']"
+
+- name: Attempt to enable network log on a different built-in profile - Expect No Change
+  bigip_firewall_log_profile_network:
+    profile_name: "{{ log_profile3 }}"
+  register: result
+
+- name: Assert Attempt to enable network log on a different built-in profile - Expect No Change
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- import_tasks: teardown.yaml
