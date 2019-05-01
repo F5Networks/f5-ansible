@@ -1769,9 +1769,9 @@ class ModuleParameters(Parameters):
             return None
         result = self._values['destination'].split("%")
         if len(result) > 1:
-            pattern = r'([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}|(\d{1,3}\.){3}\d{1,3}'
+            pattern = r'^[a-zA-Z0-9_.-]+'
             matches = re.search(pattern, result[0])
-            if matches and not is_valid_ip(matches.group(0)):
+            if matches and not is_valid_ip(result[0]):
                 # we need to strip RD because when using Virtual Address names the RD is not needed.
                 return None
             return int(result[1])
