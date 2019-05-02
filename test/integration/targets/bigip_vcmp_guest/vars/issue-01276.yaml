@@ -1,0 +1,5 @@
+---
+
+guest_name: issue-01276
+initial_image: "{{ role_path }}/files/BIGIP-14.1.0.3-0.0.6.iso"
+initial_hotfix: "{{ role_path }}/files/Hotfix-BIGIP-14.1.0.3.0.5.6-ENG.iso"

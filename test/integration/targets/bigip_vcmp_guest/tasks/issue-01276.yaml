@@ -1,0 +1,101 @@
+---
+
+- name: Issue 01276 - Include issue variables
+  include_vars:
+    file: issue-01276.yaml
+
+- name: Issue 01276 - Provision vCMP
+  bigip_provision:
+    module: vcmp
+    level: dedicated
+  tags:
+    - module-provisioning
+
+- name: Issue 01276 - Upload initial image to be used
+  bigip_software_image:
+    image: "{{ initial_image }}"
+
+- name: Issue 01276 - Upload initial hotfix to be used
+  bigip_software_image:
+    image: "{{ initial_hotfix }}"
+
+- name: Issue 01276 - Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - f5-vlan1
+    - f5-vlan2
+    - f5-vlan3
+
+- name: Issue 01276 - Create vCMP guest using base image and hotfix
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    initial_image: "{{ initial_image|basename }}"
+    initial_hotfix: "{{ initial_hotfix|basename }}"
+    mgmt_network: bridged
+    mgmt_address: 10.20.30.41/24
+    mgmt_route: 10.20.30.1
+    vlans:
+      - f5-vlan1
+      - f5-vlan2
+      - f5-vlan3
+  register: result
+
+- name: Issue 01276 - Assert Create vCMP guest
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01276 - Create vCMP guest using base image and hotfix - Idempotent check
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    initial_image: "{{ initial_image|basename }}"
+    initial_hotfix: "{{ initial_hotfix|basename }}"
+    mgmt_network: bridged
+    mgmt_address: 10.20.30.41/24
+    mgmt_route: 10.20.30.1
+    vlans:
+      - f5-vlan1
+      - f5-vlan2
+      - f5-vlan3
+  register: result
+
+- name: Issue 01276 - Assert Create vCMP guest using base image and hotfix - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01276 - Remove vCMP guest
+  bigip_vcmp_guest:
+    name: "{{ guest_name }}"
+    state: absent
+    delete_virtual_disk: yes
+  register: result
+
+- name: Issue 01276 - Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - f5-vlan1
+    - f5-vlan2
+    - f5-vlan3
+
+- name: Issue 01276 - Deprovision vCMP
+  bigip_provision:
+    module: vcmp
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
+
+#- name: Issue 01276 - Remove uploaded hotfix
+#  bigip_software:
+#    base_image: "{{ initial_hotfix }}"
+#    state: absent
+
+#- name: Issue 01276 - Remove uploaded image
+#  bigip_software:
+#    base_image: "{{ initial_image }}"
+#    state: absent
+#
