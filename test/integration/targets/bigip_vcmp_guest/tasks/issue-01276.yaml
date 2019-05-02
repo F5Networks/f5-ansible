@@ -69,6 +69,7 @@
   bigip_vcmp_guest:
     name: "{{ guest_name }}"
     state: absent
+    delete_virtual_disk: yes
   register: result
 
 - name: Issue 01276 - Remove VLANs
