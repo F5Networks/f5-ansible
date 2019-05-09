@@ -1,14 +1,14 @@
-:source: bigip_device_auth_ldap.py
+:source: bigip_firewall_log_profile.py
 
 :orphan:
 
-.. _bigip_device_auth_ldap_module:
+.. _bigip_firewall_log_profile_module:
 
 
-bigip_device_auth_ldap - Manage LDAP device authentication settings on BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_firewall_log_profile - Manages AFM logging profiles configured in the system
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.8
+.. versionadded:: 2.9
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_device_auth_ldap - Manage LDAP device authentication settings on BIG-IP
 
 Synopsis
 --------
-- Manage LDAP device authentication settings on BIG-IP.
+- Manages AFM logging profiles configured in the system along with basic information about each profile.
 
 
 
@@ -28,49 +28,111 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>bind_dn</b>
+                    <b>description</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the distinguished name for the Active Directory or LDAP server user ID.</div>
-                                                    <div>The BIG-IP client authentication module does not support Active Directory or LDAP servers that do not perform bind referral when authenticating referred accounts.</div>
-                                                    <div>Therefore, if you plan to use Active Directory or LDAP as your authentication source and want to use referred accounts, make sure your servers perform bind referral.</div>
+                                                                        <div>Description of the log profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>bind_password</b>
+                    <b>dos_protection</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies a password for the Active Directory or LDAP server user ID.</div>
+                                                                        <div>Configures DoS related settings of the log profile.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>dns_publisher</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the log publisher used for DNS DoS events.</div>
+                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>ca_cert</b>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>sip_publisher</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of an SSL certificate from a certificate authority (CA).</div>
-                                                    <div>To remove this value, use the reserved value <code>none</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: ssl_ca_cert</div>
-                                    </td>
+                                                                        <div>Specifies the name of the log publisher used for SIP DoS events.</div>
+                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
+                                                                                </td>
             </tr>
                                 <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>network_publisher</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the log publisher used for DoS Network events.</div>
+                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
-                    <b>check_member_attr</b>
+                    <b>ip_intelligence</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Configures IP Intelligence related settings of the log profile.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>log_publisher</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the log publisher used for IP Intelligence events.</div>
+                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>aggregate_rate</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Defines a rate limit for all combined IP intelligence log messages per second. Beyond this rate limit, log messages are not logged until the threshold drops below the specified rate.</div>
+                                                    <div>To specify an indefinite rate, use the value <code>indefinite</code>.</div>
+                                                    <div>If specifying a numeric rate, the value must be between <code>1</code> and <code>4294967295</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>log_rtbh</b>
                                                         </td>
                                 <td>
                                                                                                                                                                         <ul><b>Choices:</b>
@@ -79,36 +141,13 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Checks the user&#x27;s member attribute in the remote LDAP or AD group.</div>
+                                                                        <div>Specifies, when <code>yes</code>, that remotely triggered blackholing events are logged.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                                <td colspan="2">
-                    <b>client_cert</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of an SSL client certificate.</div>
-                                                    <div>To remove this value, use the reserved value <code>none</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: ssl_client_cert</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>client_key</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of an SSL client key.</div>
-                                                    <div>To remove this value, use the reserved value <code>none</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: ssl_client_key</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>fallback_to_local</b>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>log_shun</b>
                                                         </td>
                                 <td>
                                                                                                                                                                         <ul><b>Choices:</b>
@@ -117,18 +156,47 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies that the system uses the Local authentication method if the remote authentication method is not available.</div>
+                                                                        <div>Specifies, when <code>yes</code>, that IP Intelligence shun list events are logged.</div>
+                                                    <div>This option can only be set on <code>global-network</code> built-in profile</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>log_translation_fields</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>This option is used to enable or disable the logging of translated (i.e server side) fields in IP Intelligence log messages.</div>
+                                                    <div>Translated fields include (but are not limited to) source address/port, destination address/port, IP protocol, route domain, and VLAN.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the log profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>login_ldap_attr</b>
+                    <b>partition</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
+                                    </td>
                                                                 <td>
-                                                                        <div>Specifies the LDAP directory attribute containing the local user name that is associated with the selected directory entry.</div>
-                                                    <div>When configuring LDAP device authentication for the first time, if this parameter is not specified, the default port is <code>samaccountname</code>.</div>
+                                                                        <div>Device partition to create log profile on.</div>
+                                                    <div>Parameter also used when specifying names for log publishers, unless log publisher names are in fullpath format.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -145,16 +213,41 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>port</b>
+                    <b>port_misuse</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the port that the system uses for access to the remote host server.</div>
-                                                    <div>When configuring LDAP device authentication for the first time, if this parameter is not specified, the default port is <code>389</code>.</div>
+                                                                        <div>Port Misuse log configuration.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>log_publisher</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the log publisher used for Port Misuse events.</div>
+                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
                                                                                 </td>
             </tr>
                                 <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>aggregate_rate</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Defines a rate limit for all combined port misuse log messages per second. Beyond this rate limit, log messages are not logged until the threshold drops below the specified rate.</div>
+                                                    <div>To specify an indefinite rate, use the value <code>indefinite</code>.</div>
+                                                    <div>If specifying a numeric rate, the value must be between <code>1</code> and <code>4294967295</code>.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
@@ -272,31 +365,6 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>remote_directory_tree</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the file location (tree) of the user authentication database on the server.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>scope</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>sub</li>
-                                                                                                                                                                                                <li>one</li>
-                                                                                                                                                                                                <li>base</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the level of the remote Active Directory or LDAP directory that the system should search for the user authentication.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -320,31 +388,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>servers</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the LDAP servers that the system must use to obtain authentication information. You must specify a server when you create an LDAP configuration object.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>ssl</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>yes</li>
-                                                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>start-tls</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether the system uses an SSL port to communicate with the LDAP server.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
@@ -354,23 +397,8 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>present</code>, ensures the device authentication method exists.</div>
-                                                    <div>When <code>absent</code>, ensures the device authentication method does not exist.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>update_password</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>on_create</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div><code>always</code> will always update the <code>bind_password</code>.</div>
-                                                    <div><code>on_create</code> will only set the <code>bind_password</code> for newly created authentication mechanisms.</div>
+                                                                        <div>When <code>state</code> is <code>present</code>, ensures the resource exists.</div>
+                                                    <div>When <code>state</code> is <code>absent</code>, ensures that resource is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -386,21 +414,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>user_template</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the distinguished name of the user who is logging on.</div>
-                                                    <div>You specify the template as a variable that the system replaces with user-specific information during the logon attempt.</div>
-                                                    <div>For example, you could specify a user template such as <code>%s@siterequest.com</code> or <code>uxml:id=%s,ou=people,dc=siterequest,dc=com</code>.</div>
-                                                    <div>When a user attempts to log on, the system replaces <code>%s</code> with the name the user specified in the Basic Authentication dialog box, and passes that as the distinguished name for the bind operation.</div>
-                                                    <div>The system passes the associated password as the password for the bind operation.</div>
-                                                    <div>This field can contain only one <code>%s</code> and cannot contain any other format specifiers.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>validate_certs</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
                                 <td>
@@ -410,9 +423,9 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies whether the system checks an SSL peer, as a result of which the system requires and verifies the server certificate.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: ssl_check_peer</div>
-                                    </td>
+                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
+                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
+                                                                                </td>
             </tr>
                         </table>
     <br/>
@@ -433,9 +446,53 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create an LDAP authentication object
-      bigip_device_auth_ldap:
-        name: foo
+    - name: Create a basic log profile with port misuse
+      bigip_firewall_log_profile:
+        name: barbaz
+        port_misuse:
+          aggregate_rate: 30000
+          log_publisher: local-db-pub
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Change ip_intelligence settings, publisher on different partition, remove port misuse
+      bigip_firewall_log_profile:
+        name: barbaz
+        ip_intelligence:
+          aggregate_rate: 400000
+          log_translation_fields: yes
+          log_rtbh: yes
+          log_publisher: "/foobar/non-local-db"
+        port_misuse:
+          log_publisher: ""
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Create a log profile with dos protection, different partition
+      bigip_firewall_log_profile:
+        name: foobar
+        partition: foobar
+        dos_protection:
+          dns_publisher: "/Common/local-db-pub"
+          sip_publisher: "non-local-db"
+          network_publisher: "/Common/local-db-pub""
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Remove log profile
+      bigip_firewall_log_profile:
+        name: barbaz
+        partition: Common
+        state: absent
         provider:
           password: secret
           server: lb.mydomain.com
@@ -452,194 +509,206 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
-            <th colspan="1">Key</th>
+                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                
+                                                                                                                                                                
+                                            <tr>
+            <th colspan="2">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
-                                <td colspan="1">
-                    <b>bind_dn</b>
+                                <td colspan="2">
+                    <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The distinguished name for the Active Directory or LDAP server user ID.</div>
+                                            <div>New description of the AFM log profile.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">user@foobar.local</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This is my description</div>
                                     </td>
             </tr>
                                 <tr>
+                                <td colspan="2">
+                    <b>dos_protection</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Log publishers used in DoS related settings of the log profile.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>ca_cert</b>
+                    <b>dns_publisher</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The name of an SSL certificate from a certificate authority.</div>
+                                            <div>The name of the log publisher used for DNS DoS events.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My-Trusted-CA-Bundle.crt</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
                                     </td>
             </tr>
                                 <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>check_member_attr</b>
+                    <b>sip_publisher</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The name of the log publisher used for SIP DoS events.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>network_publisher</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The name of the log publisher used for DoS Network events.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="2">
+                    <b>ip_intelligence</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>IP Intelligence related settings of the log profile.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>log_publisher</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The name of the log publisher used for IP Intelligence events.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>aggregate_rate</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The rate limit for all combined IP intelligence log messages per second.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">indefinite</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>log_rtbh</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The user&#x27;s member attribute in the remote LDAP or AD group.</div>
+                                            <div>Logging of remotely triggered blackholing events.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>client_cert</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The name of an SSL client certificate.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">MyCert.crt</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>client_key</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The name of an SSL client key.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">MyKey.key</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>fallback_to_local</b>
+                    <b>log_shun</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Specifies that the system uses the Local authentication method as fallback</div>
+                                            <div>Logging of IP Intelligence shun list events.</div>
                                         <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>login_ldap_attr</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The LDAP directory attribute containing the local user name associated with the selected directory entry.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">samaccountname</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>port</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The port that the system uses for access to the remote LDAP server.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">389</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>remote_directory_tree</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>File location (tree) of the user authentication database on the server.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">CN=Users,DC=FOOBAR,DC=LOCAL</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>scope</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The level of the remote Active Directory or LDAP directory searched for user authentication.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">base</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>servers</b>
-                    <br/><div style="font-size: small; color: red">list</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>LDAP servers used by the system to obtain authentication information.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;192.168.1.1&#x27;, &#x27;192.168.1.2&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ssl</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Specifies whether the system uses an SSL port to communicate with the LDAP server.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">start-tls</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>user_template</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The distinguished name of the user who is logging on.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">uid=%s,ou=people,dc=foobar,dc=local</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>validate_certs</b>
+                    <b>log_translation_fields</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Indicates if the system checks an SSL peer.</div>
+                                            <div>Logging of translated fields in IP Intelligence log messages.</div>
                                         <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
-                        </table>
+                    
+                                                <tr>
+                                <td colspan="2">
+                    <b>port_misuse</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Port Misuse related settings of the log profile.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>log_publisher</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The name of the log publisher used for Port Misuse events.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>aggregate_rate</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The rate limit for all combined Port Misuse log messages per second.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">indefinite</div>
+                                    </td>
+            </tr>
+                    
+                                        </table>
     <br/><br/>
 
 
@@ -656,6 +725,5 @@ This module is **preview** which means that it is not guaranteed to have a backw
 Author
 ~~~~~~
 
-- Tim Rupp (@caphrim007)
 - Wojciech Wypior (@wojtek0806)
 
