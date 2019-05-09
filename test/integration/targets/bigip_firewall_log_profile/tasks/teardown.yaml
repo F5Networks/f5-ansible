@@ -1,0 +1,19 @@
+---
+- name: Remove log publisher
+  bigip_log_publisher:
+    name: "{{ log_name }}"
+    partition: "{{ partition }}"
+    state: absent
+
+- name: Remove partition
+  bigip_partition:
+    name: "{{ partition }}"
+    state: absent
+
+- name: Deprovision AFM
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
