@@ -45,6 +45,7 @@ All modules
   * :ref:`bigip_firewall_dos_profile_module`
   * :ref:`bigip_firewall_dos_vector_module`
   * :ref:`bigip_firewall_global_rules_module`
+  * :ref:`bigip_firewall_log_profile_module`
   * :ref:`bigip_firewall_policy_module`
   * :ref:`bigip_firewall_port_list_module`
   * :ref:`bigip_firewall_rule_module`
