@@ -72,14 +72,14 @@ class TestParameters(unittest.TestCase):
             partition='Common',
             ip_intelligence=dict(
                 log_publisher='foobar',
-                aggregate_rate='300000',
+                rate_limit='300000',
                 log_translation_fields='yes',
                 log_rtbh='yes',
                 log_shun='yes',
             ),
             port_misuse=dict(
                 log_publisher='/Part/bazbar',
-                aggregate_rate='indefinite',
+                rate_limit='indefinite',
             ),
             dos_protection=dict(
                 sip_publisher='sip-pub',
@@ -91,13 +91,13 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
         assert p.name == 'foo'
         assert p.description == 'my description'
-        assert p.ip_aggregate_rate == 300000
+        assert p.ip_rate_limit == 300000
         assert p.ip_log_publisher == '/Common/foobar'
         assert p.ip_log_translation_fields == 'enabled'
         assert p.ip_log_shun is None
         assert p.ip_log_rtbh == 'enabled'
         assert p.port_log_publisher == '/Part/bazbar'
-        assert p.port_aggregate_rate == 4294967295
+        assert p.port_rate_limit == 4294967295
         assert p.dns_publisher == '/Temp/dns-pub'
         assert p.sip_publisher == '/Common/sip-pub'
         assert p.network_publisher == '/Common/net-pub'
@@ -110,8 +110,8 @@ class TestParameters(unittest.TestCase):
         assert p.description == 'Default logging profile for network events'
         assert p.ip_log_shun == 'disabled'
         assert p.ip_log_translation_fields == 'disabled'
-        assert p.ip_aggregate_rate == 4294967295
-        assert p.port_aggregate_rate == 4294967295
+        assert p.ip_rate_limit == 4294967295
+        assert p.port_rate_limit == 4294967295
         assert p.ip_log_publisher is None
         assert p.port_log_publisher is None
 
