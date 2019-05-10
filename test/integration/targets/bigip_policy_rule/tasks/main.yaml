@@ -109,7 +109,7 @@
   assert:
     that:
       - result is not changed
-      - result|failed
+      - result is not success
       - "'parameters are mutually exclusive' in result.msg"
 
 - name: Create published rule with actions
@@ -220,7 +220,7 @@
   assert:
     that:
       - result is not changed
-      - result|failed
+      - result is not success
       - "'condition is required when using' in result.msg"
 
 - name: Blank all conditions and actions
