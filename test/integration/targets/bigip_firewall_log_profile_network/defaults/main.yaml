@@ -1,0 +1,7 @@
+log_profile: profile1
+log_profile2: "global-network"
+log_profile3: "local-dos"
+partition: foobar
+log_name: log1
+publisher1: "local-db-publisher"
+publisher2: "/foobar/log1"
