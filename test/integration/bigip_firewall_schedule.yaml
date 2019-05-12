@@ -1,25 +1,25 @@
 ---
 
-# Test the bigip_security_log_profile module
+# Test the bigip_firewall_schedule module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# bigip_security_log_profile module behaves as expected.
+# bigip_firewall_schedule module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, test/integration/bigip_security_log_profile.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_firewall_schedule.yaml
 #
 # Examples:
 #
-#    Run all tests on the bigip_security_log_profile module
+#    Run all tests on the bigip_firewall_schedule module
 #
-#    ansible-playbook -i notahost, test/integration/bigip_security_log_profile.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_firewall_schedule.yaml
 #
 
-- name: Metadata of bigip_security_log_profile
+- name: Metadata of bigip_firewall_schedule
   hosts: localhost
   connection: local
   gather_facts: false
@@ -33,7 +33,7 @@
       tested_platforms:
         - NA
 
-- name: Test the bigip_security_log_profile module
+- name: Test the bigip_firewall_schedule module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
@@ -49,4 +49,4 @@
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-    - bigip_security_log_profile
+    - bigip_firewall_schedule

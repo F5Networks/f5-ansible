@@ -1,6 +1,6 @@
 ---
 
-- name: De-provision AFM
+- name: De-provision modules
   bigip_provision:
     name: afm
     state: absent
