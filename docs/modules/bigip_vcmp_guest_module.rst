@@ -77,7 +77,7 @@ Parameters
                                 <tr>
                                                                 <td colspan="2">
                     <b>initial_hotfix</b>
-                                                        </td>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>

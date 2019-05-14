@@ -1,12 +1,12 @@
-:source: bigip_firewall_log_profile.py
+:source: bigip_device_certificate.py
 
 :orphan:
 
-.. _bigip_firewall_log_profile_module:
+.. _bigip_device_certificate_module:
 
 
-bigip_firewall_log_profile - Manages AFM logging profiles configured in the system
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_certificate - Manage self-signed device certificates
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.9
 
@@ -17,7 +17,7 @@ bigip_firewall_log_profile - Manages AFM logging profiles configured in the syst
 
 Synopsis
 --------
-- Manages AFM logging profiles configured in the system along with basic information about each profile.
+- Module used to create and/or renew self-signed defice certificates for BIG-IP.
 
 
 
@@ -28,10 +28,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -39,203 +37,191 @@ Parameters
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>description</b>
+                    <b>add_to_trusted</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Description of the log profile.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>dos_protection</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Configures DoS related settings of the log profile.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>dns_publisher</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of the log publisher used for DNS DoS events.</div>
-                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>sip_publisher</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of the log publisher used for SIP DoS events.</div>
-                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>network_publisher</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of the log publisher used for DoS Network events.</div>
-                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
-                                                                <td colspan="2">
-                    <b>ip_intelligence</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Configures IP Intelligence related settings of the log profile.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>log_publisher</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of the log publisher used for IP Intelligence events.</div>
-                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>rate_limit</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Defines a rate limit for all combined IP intelligence log messages per second. Beyond this rate limit, log messages are not logged until the threshold drops below the specified rate.</div>
-                                                    <div>To specify an indefinite rate, use the value <code>indefinite</code>.</div>
-                                                    <div>If specifying a numeric rate, the value must be between <code>1</code> and <code>4294967295</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>log_rtbh</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                 <li>yes</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies, when <code>yes</code>, that remotely triggered blackholing events are logged.</div>
+                                                                        <div>Specified if the certificate should be added to the trusted client and server certificate files.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>log_shun</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies, when <code>yes</code>, that IP Intelligence shun list events are logged.</div>
-                                                    <div>This option can only be set on <code>global-network</code> built-in profile</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>log_translation_fields</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>This option is used to enable or disable the logging of translated (i.e server side) fields in IP Intelligence log messages.</div>
-                                                    <div>Translated fields include (but are not limited to) source address/port, destination address/port, IP protocol, route domain, and VLAN.</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
                                                                 <td colspan="2">
-                    <b>name</b>
+                    <b>cert_name</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">server.crt</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specifies the full name of the certificate file.</div>
+                                                    <div>If the name is not default <code>server.crt</code>, the module will configure <code>httpd</code> to use them prior to restarting the <code>httpd</code> daemon.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>days_valid</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the log profile.</div>
+                                                                        <div>Specifies the interval for which the self-signed certificate is valid.</div>
+                                                    <div>The maximum value is 25 years: <code>9125</code> days</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>partition</b>
+                    <b>force</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
-                                    </td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Device partition to create log profile on.</div>
-                                                    <div>Parameter also used when specifying names for log publishers, unless log publisher names are in fullpath format.</div>
+                                                                        <div>When <code>yes</code>, will update or overwrite the existing certificate when it is not expired device.</div>
+                                                    <div>When <code>no</code>, the certificate will only be updated/overwritten if expired.</div>
+                                                    <div>Generally should be <code>yes</code> only in cases where you need to update certificate that is about to expire.</div>
+                                                    <div>This option is also needed when generating new certificate to replace non expired one.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>port_misuse</b>
+                    <b>issuer</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Port Misuse log configuration.</div>
+                                                                        <div>Certificate properties, required when generating new certificates.</div>
                                                                                 </td>
             </tr>
                                                             <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>log_publisher</b>
+                    <b>country</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the log publisher used for Port Misuse events.</div>
-                                                    <div>To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath format, e.g. <code>/Foobar/log-publisher</code>, otherwise the partition for log publisher is inferred from <code>partition</code> module parameter.</div>
+                                                                        <div>Specifies the Country name attribute for the certificate.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                     <td class="elbow-placeholder"></td>
                                                 <td colspan="1">
-                    <b>rate_limit</b>
+                    <b>state</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Defines a rate limit for all combined port misuse log messages per second. Beyond this rate limit, log messages are not logged until the threshold drops below the specified rate.</div>
-                                                    <div>To specify an indefinite rate, use the value <code>indefinite</code>.</div>
-                                                    <div>If specifying a numeric rate, the value must be between <code>1</code> and <code>4294967295</code>.</div>
+                                                                        <div>Specifies the State or Province attribute for the certificate.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>locality</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the city or town name for the certificate.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>organization</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the Organization attribute for the certificate.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>division</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the department name attribute for the certificate.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>common_name</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies Common Name attribute for the certificate.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>email</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the domain administrator&#x27;s email address.</div>
                                                                                 </td>
             </tr>
                     
                                                 <tr>
+                                                                <td colspan="2">
+                    <b>key_name</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">server.key</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Specifies the full name of the key file.</div>
+                                                    <div>If the name is not default <code>server.key</code>, the module will configure <code>httpd</code> to use them prior to restarting the <code>httpd</code> daemon.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>key_size</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>512</li>
+                                                                                                                                                                                                <li>1024</li>
+                                                                                                                                                                                                <li>2048</li>
+                                                                                                                                                                                                <li>4096</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the desired key size in bits.</div>
+                                                    <div>Mandatory option when generating a new certificate.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>new_cert</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specified if the module should generate new certificate.</div>
+                                                    <div>When <code>yes</code> the device certificate and key will be replaced</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
@@ -353,17 +339,16 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>state</b>
-                                                        </td>
+                    <b>transport</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>absent</li>
+                                                                                                                                                                <li><div style="color: blue"><b>cli</b>&nbsp;&larr;</div></li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>state</code> is <code>present</code>, ensures the resource exists.</div>
-                                                    <div>When <code>state</code> is <code>absent</code>, ensures that resource is removed. Attempts to remove built-in system profiles are ignored and no change is returned.</div>
+                                                                        <div>Configures the transport connection to use when connecting to the remote device.</div>
+                                                    <div>This module currently supports only connectivity to the device over cli (ssh).</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -385,57 +370,76 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a basic log profile with port misuse
-      bigip_firewall_log_profile:
-        name: barbaz
-        port_misuse:
-          rate_limit: 30000
-          log_publisher: local-db-pub
+    - name: Update expired certificate
+      bigip_device_certificate:
+        days_valid: 365
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
+          transport: cli
+          server_port: 22
       delegate_to: localhost
 
-    - name: Change ip_intelligence settings, publisher on different partition, remove port misuse
-      bigip_firewall_log_profile:
-        name: barbaz
-        ip_intelligence:
-          rate_limit: 400000
-          log_translation_fields: yes
-          log_rtbh: yes
-          log_publisher: "/foobar/non-local-db"
-        port_misuse:
-          log_publisher: ""
+    - name: Update expired certificate non-default names
+      bigip_device_certificate:
+        days_valid: 60
+        cert_name: custom.crt
+        key_name: custom.key
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
+          transport: cli
+          server_port: 22
       delegate_to: localhost
 
-    - name: Create a log profile with dos protection, different partition
-      bigip_firewall_log_profile:
-        name: foobar
-        partition: foobar
-        dos_protection:
-          dns_publisher: "/Common/local-db-pub"
-          sip_publisher: "non-local-db"
-          network_publisher: "/Common/local-db-pub"
+    - name: Force update not expired certificate
+      bigip_device_certificate:
+        days_valid: 365
+        force: yes
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
+          transport: cli
+          server_port: 22
       delegate_to: localhost
 
-    - name: Remove log profile
-      bigip_firewall_log_profile:
-        name: barbaz
-        partition: Common
-        state: absent
+    - name: Create a new certificate to replace expired certificate
+      bigip_device_certificate:
+        days_valid: 365
+        new_cert: yes
+        issuer:
+          country: US
+          state: WA
+          common_name: foobar.foo.local
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
+          transport: cli
+          server_port: 22
+      delegate_to: localhost
+
+    - name: Force create a new custom named certificate to replace not expired certificate
+      bigip_device_certificate:
+        days_valid: 365
+        cert_name: custom.crt
+        key_name: custom.key
+        new_cert: yes
+        force: yes
+        issuer:
+          country: US
+          state: WA
+          common_name: foobar.foo.local
+        key_size: 2048
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+          transport: cli
+          server_port: 22
       delegate_to: localhost
 
 
@@ -448,206 +452,175 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                                
-                                                                                                                                                                
-                                            <tr>
+                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                            <tr>
             <th colspan="2">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="2">
-                    <b>description</b>
+                    <b>cert_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>New description of the AFM log profile.</div>
+                                            <div>The full name of the certificate file.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This is my description</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">common.crt</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="2">
-                    <b>dos_protection</b>
+                    <b>days_valid</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The interval for which the self-signed certificate is valid.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">365</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>issuer</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Log publishers used in DoS related settings of the log profile.</div>
+                                            <div>Specifies certificate properties.</div>
                                         <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
                                                             <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>dns_publisher</b>
+                    <b>country</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The name of the log publisher used for DNS DoS events.</div>
+                                            <div>The Country name attribute of the certificate.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">US</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>sip_publisher</b>
+                    <b>state</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The name of the log publisher used for SIP DoS events.</div>
+                                            <div>The State or Province attribute of the certificate.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">WA</div>
                                     </td>
             </tr>
                                 <tr>
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
-                    <b>network_publisher</b>
+                    <b>locality</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The name of the log publisher used for DoS Network events.</div>
+                                            <div>The city or town name attribute of the certificate.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Seattle</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>organization</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The Organization attribute of the certificate.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">F5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>division</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The department name attribute of the certificate.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">IT</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>common_name</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The Common Name attribute of the certificate.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo.bar.local</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>email</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The domain administrator&#x27;s email address.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">admin@foo.bar.local</div>
                                     </td>
             </tr>
                     
                                                 <tr>
                                 <td colspan="2">
-                    <b>ip_intelligence</b>
-                    <br/><div style="font-size: small; color: red">complex</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>IP Intelligence related settings of the log profile.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
-                                    </td>
-            </tr>
-                                                            <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>log_publisher</b>
+                    <b>key_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The name of the log publisher used for IP Intelligence events.</div>
+                                            <div>The full name of the key file.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">common.key</div>
                                     </td>
             </tr>
                                 <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>rate_limit</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The rate limit for all combined IP intelligence log messages per second.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">indefinite</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>log_rtbh</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Logging of remotely triggered blackholing events.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>log_shun</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Logging of IP Intelligence shun list events.</div>
-                                        <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>log_translation_fields</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Logging of translated fields in IP Intelligence log messages.</div>
-                                        <br/>
-                                    </td>
-            </tr>
-                    
-                                                <tr>
                                 <td colspan="2">
-                    <b>port_misuse</b>
-                    <br/><div style="font-size: small; color: red">complex</div>
+                    <b>key_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Port Misuse related settings of the log profile.</div>
+                                            <div>The desired key size in bits.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2048</div>
                                     </td>
             </tr>
-                                                            <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>log_publisher</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The name of the log publisher used for Port Misuse events.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/local-db-publisher</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>rate_limit</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The rate limit for all combined Port Misuse log messages per second.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">indefinite</div>
-                                    </td>
-            </tr>
-                    
-                                        </table>
+                        </table>
     <br/><br/>
 
 
