@@ -420,6 +420,7 @@ Parameters
                                                                 <td>
                                                                         <div>Specifies an existing rule list to use in the rule.</div>
                                                     <div>This parameter is mutually exclusive with many of the other individual-rule specific settings. This includes <code>logging</code>, <code>action</code>, <code>source</code>, <code>destination</code>, <code>irule&#x27;</code>, <code>protocol</code> and <code>logging</code>.</div>
+                                                    <div>This parameter is only used when parent_policy is specified, otherwise it is ignored.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -690,9 +691,10 @@ Examples
           user: admin
       delegate_to: localhost
 
-    - name: Add a new rule that is uses an existing rule list
+    - name: Add a new policy rule that uses an existing rule list
       bigip_firewall_rule:
         name: foo
+        parent_policy: foo_policy
         rule_list: rule-list1
         provider:
           password: secret
@@ -981,7 +983,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>An existing rule list to use in the rule.</div>
+                                            <div>An existing rule list to use in the parent policy.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">rule-list-1</div>

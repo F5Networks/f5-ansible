@@ -1,0 +1,20 @@
+---
+rule_list_cricket:
+    name: CRICKET-RL-IPV4
+    description: 'Rule List for Cricket IPv4 Flows'
+    rule1_name: ALLOW-CRICKET-TCP
+    rule1_desc: 'Allow Cricket IT DRA to Originate TCP'
+    rule1_act: accept
+    rule1_proto: tcp
+    rule1_dst_addr: 'ZRDM6BFRWL44-VSCP-BE'
+    rule1_dst_port: DIAMETER-TCP
+    rule1_src_addr: 'VSCP-CRICKET-IT-DRA'
+    rule2_name: ALLOW-CRICKET-ICMP
+    rule2_desc: 'Allow Cricket IT DRA to Originate ICMP PING/TRACEROUTE'
+    rule2_act: accept
+    rule2_proto: icmp
+    rule2_dst_addr: 'ZRDM6BFRWL44-VSCP-BE'
+    rule2_src_addr: 'VSCP-CRICKET-IT-DRA'
+    rule3_name: DEFAULT-DROP
+    rule3_desc: 'Drop Policy with Logging'
+    rule3_act: drop
