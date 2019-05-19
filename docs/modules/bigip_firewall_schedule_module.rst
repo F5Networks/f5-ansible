@@ -1,14 +1,14 @@
-:source: bigip_device_httpd.py
+:source: bigip_firewall_schedule.py
 
 :orphan:
 
-.. _bigip_device_httpd_module:
+.. _bigip_firewall_schedule_module:
 
 
-bigip_device_httpd - Manage HTTPD related settings on BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_firewall_schedule - Manage BIG-IP AFM schedule configurations
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.9
 
 .. contents::
    :local:
@@ -17,15 +17,9 @@ bigip_device_httpd - Manage HTTPD related settings on BIG-IP
 
 Synopsis
 --------
-- Manages HTTPD related settings on the BIG-IP. These settings are interesting to change when you want to set GUI timeouts and other TMUI related settings.
+- Manage BIG-IP AFM schedule configurations.
 
 
-
-Requirements
-~~~~~~~~~~~~
-The below requirements are needed on the host that executes this module.
-
-- requests
 
 
 Parameters
@@ -34,125 +28,116 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>allow</b>
+                    <b>daily_hour_end</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies, if you have enabled HTTPD access, the IP address or address range for other systems that can communicate with this system.</div>
-                                                    <div>To specify all addresses, use the value <code>all</code>.</div>
-                                                    <div>IP address can be specified, such as 172.27.1.10.</div>
-                                                    <div>IP ranges can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.</div>
+                                                                        <div>Specifies the time of day the rule will stop being used.</div>
+                                                    <div>When not defined, the default of <code>24:00</code> is used when creating a new schedule.</div>
+                                                    <div>The time zone is always assumed to be UTC and values must be provided as <code>HH:MM</code> using 24hour clock format.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>auth_name</b>
+                    <b>daily_hour_start</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Sets the BIG-IP authentication realm name.</div>
+                                                                        <div>Specifies the time of day the rule will start to be in use.</div>
+                                                    <div>The value must be a time before <code>daily_hour_end</code>.</div>
+                                                    <div>When not defined, the default of <code>0:00</code> is used when creating a new schedule.</div>
+                                                    <div>When the value is set to <code>all-day</code> both <code>daily_hour_end</code> and <code>daily_hour_start</code> are reset to their respective defaults.</div>
+                                                    <div>The time zone is always assumed to be UTC and values must be provided as <code>HH:MM</code> using 24hour clock format.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>auth_pam_dashboard_timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Sets whether or not the BIG-IP dashboard will timeout.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>auth_pam_idle_timeout</b>
+                    <b>date_valid_end</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Sets the GUI timeout for automatic logout, in seconds.</div>
+                                                                        <div>Specifies the end date/time this schedule will apply to the rule.</div>
+                                                    <div>The date must be after <code>date_valid_start</code></div>
+                                                    <div>When not defined the default of <code>indefinite</code> is used when creating a new schedule.</div>
+                                                    <div>The time zone is always assumed to be UTC.</div>
+                                                    <div>The datetime format should always be the following <code>YYYY-MM-DD:HH:MM:SS</code> format.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>auth_pam_validate_ip</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Sets the authPamValidateIp setting.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>fast_cgi_timeout</b>
+                    <b>date_valid_start</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Sets the timeout of FastCGI.</div>
+                                                                        <div>Specifies the start date/time this schedule will apply to the rule.</div>
+                                                    <div>When not defined the default of <code>epoch</code> is used when creating a new schedule.</div>
+                                                    <div>The time zone is always assumed to be UTC.</div>
+                                                    <div>The datetime format should always be the following <code>YYYY-MM-DD:HH:MM:SS</code> format.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>hostname_lookup</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Sets whether or not to display the hostname, if possible.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>log_level</b>
+                    <b>days_of_week</b>
                                                         </td>
                                 <td>
                                                                                                                             <ul><b>Choices:</b>
-                                                                                                                                                                <li>alert</li>
-                                                                                                                                                                                                <li>crit</li>
-                                                                                                                                                                                                <li>debug</li>
-                                                                                                                                                                                                <li>emerg</li>
-                                                                                                                                                                                                <li>error</li>
-                                                                                                                                                                                                <li>info</li>
-                                                                                                                                                                                                <li>notice</li>
-                                                                                                                                                                                                <li>warn</li>
+                                                                                                                                                                <li>sunday</li>
+                                                                                                                                                                                                <li>monday</li>
+                                                                                                                                                                                                <li>tuesday</li>
+                                                                                                                                                                                                <li>wednesday</li>
+                                                                                                                                                                                                <li>thursday</li>
+                                                                                                                                                                                                <li>friday</li>
+                                                                                                                                                                                                <li>saturday</li>
+                                                                                                                                                                                                <li>all</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Sets the minimum httpd log level.</div>
+                                                                        <div>Specifies which days of the week the rule will be applied.</div>
+                                                    <div>When not defined the default value of <code>all</code> is used when creating a new schedule.</div>
+                                                    <div>The <code>all</code> value is mutually exclusive with other choices.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>max_clients</b>
+                    <b>description</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Sets the maximum number of clients that can connect to the GUI at once.</div>
+                                                                        <div>Specifies the user defined description text.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of the AFM schedule configuration.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>partition</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">Common</div>
+                                    </td>
+                                                                <td>
+                                                                        <div>Device partition to manage resources on.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -285,20 +270,6 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>redirect_http_to_https</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Whether or not to redirect http requests to the GUI to https.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
@@ -322,38 +293,17 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>ssl_cipher_suite</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the ciphers that the system uses.</div>
-                                                    <div>The values in the suite are separated by colons (:).</div>
-                                                    <div>Can be specified in either a string or list form. The list form is the recommended way to provide the cipher suite. See examples for usage.</div>
-                                                    <div>Use the value <code>default</code> to set the cipher suite to the system default. This value is equivalent to specifying a list of <code>ECDHE-RSA-AES128-GCM-SHA256, ECDHE-RSA-AES256-GCM-SHA384,ECDHE-RSA-AES128-SHA,ECDHE-RSA-AES256-SHA, ECDHE-RSA-AES128-SHA256,ECDHE-RSA-AES256-SHA384,ECDHE-ECDSA-AES128-GCM-SHA256, ECDHE-ECDSA-AES256-GCM-SHA384,ECDHE-ECDSA-AES128-SHA,ECDHE-ECDSA-AES256-SHA, ECDHE-ECDSA-AES128-SHA256,ECDHE-ECDSA-AES256-SHA384,AES128-GCM-SHA256, AES256-GCM-SHA384,AES128-SHA,AES256-SHA,AES128-SHA256,AES256-SHA256, ECDHE-RSA-DES-CBC3-SHA,ECDHE-ECDSA-DES-CBC3-SHA,DES-CBC3-SHA</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>ssl_port</b>
+                    <b>state</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>absent</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>The HTTPS port to listen on.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>ssl_protocols</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The list of SSL protocols to accept on the management console.</div>
-                                                    <div>A space-separated list of tokens in the format accepted by the Apache mod_ssl SSLProtocol directive.</div>
-                                                    <div>Can be specified in either a string or list form. The list form is the recommended way to provide the cipher suite. See examples for usage.</div>
-                                                    <div>Use the value <code>default</code> to set the SSL protocols to the system default. This value is equivalent to specifying a list of <code>all,-SSLv2,-SSLv3</code>.</div>
+                                                                        <div>When <code>present</code>, ensures that the resource exists.</div>
+                                                    <div>When <code>absent</code>, ensures the resource is removed.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -390,7 +340,6 @@ Notes
 -----
 
 .. note::
-    - Requires the requests Python package on the host. This is as easy as ``pip install requests``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
@@ -402,70 +351,59 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Set the BIG-IP authentication realm name
-      bigip_device_httpd:
-        auth_name: BIG-IP
+    - name: Create a 6 hour two day schedule, no start/end date
+      bigip_firewall_schedule:
+        name: barfoo
+        daily_hour_start: 13:00
+        daily_hour_end: 19:00
+        days_of_week:
+          - monday
+          - tuesday
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
       delegate_to: localhost
 
-    - name: Set the auth pam timeout to 3600 seconds
-      bigip_device_httpd:
-        auth_pam_idle_timeout: 1200
+    - name: Create a seven day schedule with start/end date
+      bigip_firewall_schedule:
+        name: foobar
+        date_valid_start: "{{ lookup('pipe','date +%Y-%m-%d:%H:%M:%S') }}"
+        date_valid_end: "{{ lookup('pipe','date -d \"now + 7 days\" +%Y-%m-%d:%H:%M:%S') }}"
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
       delegate_to: localhost
 
-    - name: Set the validate IP settings
-      bigip_device_httpd:
-        auth_pam_validate_ip: on
+    - name: Modify created schedule to all-day
+      bigip_firewall_schedule:
+        name: barfoo
+        daily_hour_start: all-day
+        days_of_week:
+          - monday
+          - tuesday
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
       delegate_to: localhost
 
-    - name: Set SSL cipher suite by list
-      bigip_device_httpd:
-        ssl_cipher_suite:
-          - ECDHE-RSA-AES128-GCM-SHA256
-          - ECDHE-RSA-AES256-GCM-SHA384
-          - ECDHE-RSA-AES128-SHA
-          - AES256-SHA256
+    - name: Modify a schedule to have no end date
+      bigip_firewall_schedule:
+        name: foobar
+        date_valid_start: "{{ lookup('pipe','date +%Y-%m-%d:%H:%M:%S') }}"
+        date_valid_end: "indefinite"
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
       delegate_to: localhost
 
-    - name: Set SSL cipher suite by string
-      bigip_device_httpd:
-        ssl_cipher_suite: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA:AES256-SHA256
-        provider:
-          password: secret
-          server: lb.mydomain.com
-          user: admin
-      delegate_to: localhost
-
-    - name: Set SSL protocols by list
-      bigip_device_httpd:
-        ssl_protocols:
-          - all
-          - -SSLv2
-          - -SSLv3
-        provider:
-          password: secret
-          server: lb.mydomain.com
-          user: admin
-      delegate_to: localhost
-
-    - name: Set SSL protocols by string
-      bigip_device_httpd:
-        ssl_protocols: all -SSLv2 -SSLv3
+    - name: Remove created schedule
+      bigip_firewall_schedule:
+        name: foobar
+        state: absent
         provider:
           password: secret
           server: lb.mydomain.com
@@ -482,176 +420,87 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>auth_name</b>
-                    <br/><div style="font-size: small; color: red">str</div>
+                    <b>daily_hour_end</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new authentication realm name.</div>
+                                            <div>The time of day the rule will stop being used.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">18:00</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>auth_pam_dashboard_timeout</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>daily_hour_start</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Whether or not the BIG-IP dashboard will timeout.</div>
+                                            <div>The time of day the rule will start to be in use.</div>
                                         <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">13:00</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>auth_pam_idle_timeout</b>
-                    <br/><div style="font-size: small; color: red">str</div>
+                    <b>date_valid_end</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new number of seconds for GUI timeout.</div>
+                                            <div>The end date/time schedule will apply to the rule.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1200</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2019-03-11:15:30:00</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>auth_pam_validate_ip</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>date_valid_start</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new authPamValidateIp setting.</div>
+                                            <div>The start date/time schedule will apply to the rule.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2019-03-01:15:30:00</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>fast_cgi_timeout</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>days_of_week</b>
+                    <br/><div style="font-size: small; color: red">list</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The new timeout of FastCGI.</div>
+                                            <div>The days of the week the rule will be applied.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">500</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;monday&#x27;, &#x27;tuesday&#x27;]</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>hostname_lookup</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">string</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Whether or not to display the hostname, if possible.</div>
+                                            <div>The user defined description text.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>log_level</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new minimum httpd log level.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">crit</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>max_clients</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new maximum number of clients that can connect to the GUI at once.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">20</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>redirect_http_to_https</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>Whether or not to redirect http requests to the GUI to https.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ssl_cipher_suite</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new ciphers that the system uses.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ssl_cipher_suite_list</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>List of the new ciphers that the system uses.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;ECDHE-RSA-AES256-GCM-SHA384&#x27;, &#x27;ECDHE-RSA-AES128-SHA&#x27;]</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ssl_port</b>
-                    <br/><div style="font-size: small; color: red">int</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new HTTPS port to listen on.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10443</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>ssl_protocols</b>
-                    <br/><div style="font-size: small; color: red">str</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new list of SSL protocols to accept on the management console.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">all -SSLv2 -SSLv3</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
                                     </td>
             </tr>
                         </table>
@@ -663,7 +512,7 @@ Status
 
 
 
-This module is **stableinterface** which means that the maintainers for this module guarantee that no backward incompatible interface changes will be made.
+This module is **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
 
 
@@ -671,6 +520,5 @@ This module is **stableinterface** which means that the maintainers for this mod
 Author
 ~~~~~~
 
-- Joe Reifel (@JoeReifel)
-- Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

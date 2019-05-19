@@ -59,6 +59,7 @@ F5
   * :ref:`bigip_firewall_port_list_module`
   * :ref:`bigip_firewall_rule_module`
   * :ref:`bigip_firewall_rule_list_module`
+  * :ref:`bigip_firewall_schedule_module`
   * :ref:`bigip_gtm_datacenter_module`
   * :ref:`bigip_gtm_facts_module` **(D)**
   * :ref:`bigip_gtm_global_module`
