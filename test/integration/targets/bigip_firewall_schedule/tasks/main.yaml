@@ -1,0 +1,156 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a 6 hour three day schedule, no start/end date
+  bigip_firewall_schedule:
+    name: "{{ name_1 }}"
+    description: "{{ desc }}"
+    daily_hour_start: "{{ hour1 }}"
+    daily_hour_end: "{{ hour2 }}"
+    days_of_week: "{{ week1 }}"
+  register: result
+
+- name: Assert Create a 6 hour three day schedule, no start/end date
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a 6 hour three day schedule, no start/end date - Idempotent check
+  bigip_firewall_schedule:
+    name: "{{ name_1 }}"
+    description: "{{ desc }}"
+    daily_hour_start: "{{ hour1 }}"
+    daily_hour_end: "{{ hour2 }}"
+    days_of_week: "{{ week1 }}"
+  register: result
+
+- name: Assert Create a 6 hour three day schedule, no start/end date - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change 6 hour schedule to all days no start/end date
+  bigip_firewall_schedule:
+    name: "{{ name_1 }}"
+    days_of_week: "{{ week3 }}"
+  register: result
+
+- name: Assert Change 6 hour schedule to all days no start/end date
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Change 6 hour schedule to all days no start/end date - Idempotent check
+  bigip_firewall_schedule:
+    name: "{{ name_1 }}"
+    days_of_week: "{{ week3 }}"
+  register: result
+
+- name: Assert Change 6 hour schedule to all days no start/end date - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create a schedule with start/end date
+  bigip_firewall_schedule:
+    name: "{{ name_2 }}"
+    daily_hour_start: "{{ hour1 }}"
+    daily_hour_end: "{{ hour2 }}"
+    date_valid_start: "{{ date_start_1 }}"
+    date_valid_end: "{{ date_end_1 }}"
+    days_of_week: "{{ week2 }}"
+  register: result
+
+- name: Assert Create a schedule with start/end date
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a schedule with start/end date - Idempotent check
+  bigip_firewall_schedule:
+    name: "{{ name_2 }}"
+    daily_hour_start: "{{ hour1 }}"
+    daily_hour_end: "{{ hour2 }}"
+    date_valid_start: "{{ date_start_1 }}"
+    date_valid_end: "{{ date_end_1 }}"
+    days_of_week: "{{ week2 }}"
+  register: result
+
+- name: Assert Create a schedule with start/end date - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Modify created schedule to all-day, change days of week
+  bigip_firewall_schedule:
+    name: "{{ name_2 }}"
+    daily_hour_start: "all-day"
+    days_of_week:
+      - monday
+      - tuesday
+  register: result
+
+- name: Assert Modify created schedule to all-day, change days of week
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Modify created schedule to all-day, change days of week - Idempotent check
+  bigip_firewall_schedule:
+    name: "{{ name_2 }}"
+    daily_hour_start: "all-day"
+    days_of_week:
+      - monday
+      - tuesday
+  register: result
+
+- name: Assert Modify created schedule to all-day, change days of week - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Modify a schedule to have no end date, change start date
+  bigip_firewall_schedule:
+    name: "{{ name_2 }}"
+    date_valid_start: "{{ date_start_2 }}"
+    date_valid_end: "indefinite"
+  register: result
+
+- name: Assert Modify a schedule to have no end date, change start date
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Modify a schedule to have no end date, change start date - Idempotent check
+  bigip_firewall_schedule:
+    name: "{{ name_2 }}"
+    date_valid_start: "{{ date_start_2 }}"
+    date_valid_end: "indefinite"
+  register: result
+
+- name: Assert Modify a schedule to have no end date, change start date - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove created schedules
+  bigip_firewall_schedule:
+    name: "{{ item }}"
+    state: absent
+  register: result
+  with_items:
+    - "{{ name_1 }}"
+    - "{{ name_2 }}"
+
+- import_tasks: teardown.yaml

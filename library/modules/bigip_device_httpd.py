@@ -27,7 +27,7 @@ options:
         range for other systems that can communicate with this system.
       - To specify all addresses, use the value C(all).
       - IP address can be specified, such as 172.27.1.10.
-      - IP rangees can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
+      - IP ranges can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
     type: list
   auth_name:
     description:
