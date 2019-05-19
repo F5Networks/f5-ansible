@@ -1,6 +1,6 @@
 ---
 
-- name: Provision AFM
+- name: Provision necessary modules
   bigip_provision:
     name: afm
   tags:

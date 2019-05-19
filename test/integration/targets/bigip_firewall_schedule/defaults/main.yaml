@@ -1,0 +1,25 @@
+name_1: sched1
+name_2: sched2
+
+hour1: "14:00"
+hour2: "20:00"
+
+week1:
+  - monday
+  - tuesday
+  - friday
+
+week2:
+  - thursday
+  - saturday
+  - sunday
+
+week3: all
+
+date_start_1: "2019-08-20:12:30:00"
+date_start_2: "2019-09-25:12:30:00"
+
+date_end_1: "2023-08-23:15:30:00"
+date_end_2: "2024-11-17:15:30:00"
+
+desc: "This is a schedule"
