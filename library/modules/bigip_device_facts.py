@@ -69,6 +69,7 @@ options:
       - internal-data-groups
       - irules
       - ltm-pools
+      - ltm-policies
       - nodes
       - oneconnect-profiles
       - partitions
@@ -131,6 +132,7 @@ options:
       - "!internal-data-groups"
       - "!irules"
       - "!ltm-pools"
+      - "!ltm-policies"
       - "!nodes"
       - "!oneconnect-profiles"
       - "!partitions"
@@ -3575,6 +3577,171 @@ ltm_pools:
       returned: queried
       type: int
       sample: 8
+  sample: hash/dictionary of values
+ltm_policies:
+  description: List of LTM (Local Traffic Manager) policies.
+  returned: When C(ltm-policies) is specified in C(gather_subset).
+  type: complex
+  contains:
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: queried
+      type: str
+      sample: policy1
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: queried
+      type: str
+      sample: /Common/policy1
+    description:
+      description:
+        - Description of the policy.
+      returned: queried
+      type: str
+      sample: My policy
+    strategy:
+      description:
+        - The match strategy for the policy.
+      returned: queried
+      type: str
+      sample: /Common/first-match
+    requires:
+      description:
+        - Aspects of the system required by this policy.
+      returned: queried
+      type: list
+      sample: ['http']
+    controls:
+      description:
+        - Aspects of the system controlled by this policy.
+      returned: queried
+      type: list
+      sample: ['forwarding']
+    status:
+      description:
+        - Indicates published or draft policy status.
+      returned: queried
+      type: str
+      sample: draft
+    rules:
+      description:
+        - List of LTM (Local Traffic Manager) policy rules.
+      returned: when rules are defined in the policy.
+      type: complex
+      contains:
+        actions:
+          description:
+            - The actions the policy will take when a match is encountered.
+          returned: when actions are defined in the rule.
+          type: complex
+          contains:
+            http_reply:
+              description:
+                - Indicate if the action will affects a reply to a given HTTP request.
+              returned: when defined in the action.
+              type: bool
+              sample: yes
+            redirect:
+              description:
+                - This action will redirect a request.
+              returned: when defined in the action.
+              type: bool
+              sample: no
+            request:
+              description:
+                - This policy action is performed on connection requests.
+              returned: when defined in the action.
+              type: bool
+              sample: no
+            location:
+              description:
+                - This action will come from the given location.
+              returned: when defined in the action.
+              type: str
+              sample: "tcl:https://[getfield [HTTP::host] \\\":\\\" 1][HTTP::uri]"
+          sample: hash/dictionary of values
+        conditions:
+          description:
+            - The conditions that a policy will match on.
+          returned: when conditions are defined in the rule.
+          type: complex
+          contains:
+          case_insensitive:
+            description:
+              - The value matched on is case insensitive.
+            returned: when defined in the condition.
+            type: bool
+            sample: no
+          case_insensitive:
+            description:
+              - The value matched on is case insensitive.
+            returned: when defined in the condition.
+            type: bool
+            sample: no
+          case_sensitive:
+            description:
+              - The value matched on is case sensitive.
+            returned: when defined in the condition.
+            type: bool
+            sample: yes
+          contains:
+            description:
+              - The value matches if it contains a certain string.
+            returned: when defined in the condition.
+            type: bool
+            sample: yes
+          external:
+            description:
+              - The value matched on is from the external side of a connection.
+            returned: when defined in the condition.
+            type: bool
+            sample: yes
+          http_basic_auth:
+            description:
+              - This condition matches on basic HTTP authorization.
+            returned: when defined in the condition.
+            type: bool
+            sample: no
+          http_host:
+            description:
+              - This condition matches on an HTTP host.
+            returned: when defined in the condition.
+            type: bool
+            sample: yes
+          http_uri:
+            description:
+              - This condition matches on an HTTP URI.
+            returned: when defined in the condition.
+            type: bool
+            sample: no
+          request:
+            description:
+              - This policy will match on a request.
+            returned: when defined in the condition.
+            type: bool
+            sample: yes
+          username:
+            description:
+              - Matches on a username.
+            returned: when defined in the condition.
+            type: bool
+            sample: yes
+          all:
+            description:
+              - Matches all.
+            returned: when defined in the condition.
+            type: bool
+            sample: yes
+          values:
+            description:
+              - The specified values will be matched on.
+            returned: when defined in the condition.
+            type: list
+            sample: ['foo.bar.com', 'baz.cool.com']
+          sample: hash/dictionary of values
+      sample: hash/dictionary of values
   sample: hash/dictionary of values
 nodes:
   description: Node related facts.
@@ -11514,6 +11681,121 @@ class LtmPoolsFactManager(BaseManager):
             return {}
 
 
+class LtmPolicyParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'rulesReference': 'rules',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'status',
+        'description',
+        'strategy',
+        'rules',
+        'requires',
+        'controls',
+    ]
+
+    def _handle_conditions(self, conditions):
+        result = []
+        if conditions is None or 'items' not in conditions:
+            return result
+        for condition in conditions['items']:
+            tmp = dict()
+            tmp['case_insensitive'] = flatten_boolean(condition.pop('caseInsensitive', None))
+            tmp['case_sensitive'] = flatten_boolean(condition.pop('caseSensitive', None))
+            tmp['contains'] = flatten_boolean(condition.pop('contains', None))
+            tmp['external'] = flatten_boolean(condition.pop('external', None))
+            tmp['http_basic_auth'] = flatten_boolean(condition.pop('httpBasicAuth', None))
+            tmp['http_host'] = flatten_boolean(condition.pop('httpHost', None))
+            tmp['http_uri'] = flatten_boolean(condition.pop('httpUri', None))
+            tmp['request'] = flatten_boolean(condition.pop('request', None))
+            tmp['username'] = flatten_boolean(condition.pop('username', None))
+            tmp['external'] = flatten_boolean(condition.pop('external', None))
+            tmp['values'] = condition.pop('values', None)
+            tmp['all'] = flatten_boolean(condition.pop('all', None))
+            result.append(self._filter_params(tmp))
+        return result
+
+    def _handle_actions(self, actions):
+        result = []
+        if actions is None or 'items' not in actions:
+            return result
+        for action in actions['items']:
+            tmp = dict()
+            tmp['httpReply'] = flatten_boolean(action.pop('http_reply', None))
+            tmp['redirect'] = flatten_boolean(action.pop('redirect', None))
+            tmp['request'] = flatten_boolean(action.pop('request', None))
+            tmp['location'] = action.pop('location', None)
+            result.append(self._filter_params(tmp))
+        return result
+
+    @property
+    def rules(self):
+        result = []
+        if self._values['rules'] is None or 'items' not in self._values['rules']:
+            return result
+        for item in self._values['rules']['items']:
+            self._remove_internal_keywords(item)
+            item['conditions'] = self._handle_conditions(item.pop('conditionsReference', None))
+            item['actions'] = self._handle_actions(item.pop('actionsReference', None))
+            result.append(item)
+        return result
+
+
+class LtmPolicyFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(LtmPolicyFactManager, self).__init__(**kwargs)
+        self.want = LtmPolicyParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(ltm_policies=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = LtmPolicyParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/policy/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        query = "?expandSubcollections=true"
+        resp = self.client.api.get(uri + query)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
 class NodesParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -15462,6 +15744,7 @@ class ModuleManager(object):
             'internal-data-groups': InternalDataGroupsFactManager,
             'irules': IrulesFactManager,
             'ltm-pools': LtmPoolsFactManager,
+            'ltm-policies': LtmPolicyFactManager,
             'nodes': NodesFactManager,
             'oneconnect-profiles': OneConnectProfilesFactManager,
             'partitions': PartitionFactManager,
@@ -15661,6 +15944,7 @@ class ArgumentSpec(object):
                     'internal-data-groups',
                     'irules',
                     'ltm-pools',
+                    'ltm-policies',
                     'nodes',
                     'oneconnect-profiles',
                     'partitions',
@@ -15727,6 +16011,7 @@ class ArgumentSpec(object):
                     '!internal-data-groups',
                     '!irules',
                     '!ltm-pools',
+                    '!ltm-policies',
                     '!nodes',
                     '!oneconnect-profiles',
                     '!partitions',
