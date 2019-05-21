@@ -11,6 +11,7 @@ f5-sphinx-theme>=1.0.9
 cloud_sptheme
 sphinxjp.themes.basicstrap
 sphinxcontrib-napoleon
+sphinx-copybutton
 
 # Test running for style, unit and sanity tests
 pycodestyle

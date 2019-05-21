@@ -6,3 +6,4 @@ sphinxjp.themes.basicstrap
 sphinxcontrib-napoleon
 awscli
 invoke
+sphinx-copybutton
