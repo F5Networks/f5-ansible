@@ -1,0 +1,6 @@
+---
+
+- name: Remove partition
+  bigip_partition:
+    name: "{{ partition }}"
+    state: absent
