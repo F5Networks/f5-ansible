@@ -115,6 +115,7 @@ Modules Maintained by the Ansible Partners
   * :ref:`bigip_qkview_module`
   * :ref:`bigip_remote_role_module`
   * :ref:`bigip_remote_syslog_module`
+  * :ref:`bigip_remote_user_module`
   * :ref:`bigip_routedomain_module`
   * :ref:`bigip_selfip_module`
   * :ref:`bigip_service_policy_module`

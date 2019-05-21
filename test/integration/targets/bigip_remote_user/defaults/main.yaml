@@ -1,0 +1,5 @@
+partition: Foobar
+role1: "manager"
+role2: "application-editor"
+role3: "no-access"
+desc: "Foo is bar"
