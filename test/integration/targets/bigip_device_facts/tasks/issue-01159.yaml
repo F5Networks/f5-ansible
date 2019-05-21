@@ -32,7 +32,7 @@
   assert:
     that:
       - result is success
-      - result is changed
+      - result is queried
 
 - name: Issue 01159 - Remove pools
   bigip_pool:

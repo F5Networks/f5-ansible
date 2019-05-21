@@ -489,7 +489,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -503,7 +503,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -517,7 +517,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>policy_id</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Generated ID of the ASM policy resource.</div>
                                                                 <br/>
@@ -531,7 +531,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>active</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates if an ASM policy is active.</div>
                                                                 <br/>
@@ -545,7 +545,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>protocol_independent</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates if the ASM policy differentiates between HTTP/WS and HTTPS/WSS URLs.</div>
                                                                 <br/>
@@ -557,7 +557,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>has_parent</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates if the ASM policy is a child of another ASM policy.</div>
                                                                 <br/>
@@ -569,7 +569,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The type of policy, can be <code>Security</code> or <code>Parent</code>.</div>
                                                                 <br/>
@@ -583,7 +583,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>virtual_servers</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Virtual server or servers which have this policy assigned to them.</div>
                                                                 <br/>
@@ -597,7 +597,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allowed_response_codes</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Lists the response status codes between 400 and 599 that the security profile considers legal.</div>
                                                                 <br/>
@@ -611,7 +611,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -625,7 +625,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>learning_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Determine how the policy is built.</div>
                                                                 <br/>
@@ -639,7 +639,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enforcement_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether blocking is active or inactive for the ASM policy.</div>
                                                                 <br/>
@@ -653,7 +653,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>trust_xff</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates the system has confidence in an XFF (X-Forwarded-For) header in the request.</div>
                                                                 <br/>
@@ -667,7 +667,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>custom_xff_headers</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of custom XFF headers trusted by the system.</div>
                                                                 <br/>
@@ -681,7 +681,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>case_insensitive</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates if the ASM policy treats file types, URLs, and parameters as case sensitive.</div>
                                                                 <br/>
@@ -695,7 +695,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>signature_staging</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies if the staging feature is active on the ASM policy.</div>
                                                                 <br/>
@@ -709,7 +709,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>place_signatures_in_staging</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies if the system places new or updated signatures in staging for the number of days specified in the enforcement readiness period.</div>
                                                                 <br/>
@@ -721,7 +721,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enforcement_readiness_period</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Period in days both security policy entities and attack signatures remain in staging mode before the system suggests to enforce them.</div>
                                                                 <br/>
@@ -735,7 +735,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>path_parameter_handling</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how the system handles path parameters that are attached to path segments in URIs.</div>
                                                                 <br/>
@@ -749,7 +749,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>trigger_asm_irule_event</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates if iRule event is enabled.</div>
                                                                 <br/>
@@ -763,7 +763,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>inspect_http_uploads</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specify if the system should inspect all http uploads.</div>
                                                                 <br/>
@@ -777,7 +777,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mask_credit_card_numbers_in_request</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates if the system masks credit card numbers.</div>
                                                                 <br/>
@@ -789,7 +789,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>maximum_http_header_length</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum length of an HTTP header name and value that the system processes.</div>
                                                                 <br/>
@@ -803,7 +803,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>use_dynamic_session_id_in_url</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how the security policy processes URLs that use dynamic sessions.</div>
                                                                 <br/>
@@ -815,7 +815,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>maximum_cookie_header_length</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum length of a cookie header name and value that the system processes.</div>
                                                                 <br/>
@@ -829,7 +829,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>application_language</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The language encoding for the web application.</div>
                                                                 <br/>
@@ -843,7 +843,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>disallowed_geolocations</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays countries that may not access the web application.</div>
                                                                 <br/>
@@ -857,7 +857,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_protection_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies if CSRF protection is active on the ASM policy.</div>
                                                                 <br/>
@@ -871,7 +871,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_protection_ssl_only</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that only HTTPS URLs will be checked for CSRF protection.</div>
                                                                 <br/>
@@ -885,7 +885,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_protection_expiration_time_in_seconds</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how long, in seconds, a configured CSRF token is valid before it expires.</div>
                                                                 <br/>
@@ -899,7 +899,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_urls</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a list of URLs for CSRF token verification.</div>
                                                     <div>In version 13.0.0 and above this has become a sub-collection and a list of dictionaries.</div>
@@ -914,7 +914,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_url_required_parameters</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates whether to ignore or require one of the specified parameters is present in a request when checking if the URL entry matches the request.</div>
                                                                 <br/>
@@ -929,7 +929,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_url_parameters_list</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of parameters to look for in a request when checking if the URL entry matches the request.</div>
                                                                 <br/>
@@ -944,7 +944,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_url</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies an URL to protect.</div>
                                                                 <br/>
@@ -959,7 +959,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_url_method</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Method for the specified URL.</div>
                                                                 <br/>
@@ -974,7 +974,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_url_enforcement_action</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates the action specified for the system to take when the URL entry matches.</div>
                                                                 <br/>
@@ -989,7 +989,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_url_id</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specified the generated ID for the configured CSRF url resource.</div>
                                                                 <br/>
@@ -1004,7 +1004,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>csrf_url_wildcard_order</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specified the order in which the wildcard URLs are enforced.</div>
                                                                 <br/>
@@ -1033,7 +1033,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>policies</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The total number of ASM policies on the device.</div>
                                                                 <br/>
@@ -1047,7 +1047,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>policies_active</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The number of ASM policies that are marked as active.</div>
                                                                 <br/>
@@ -1061,7 +1061,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>policies_attached</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The number of ASM policies that are attached to virtual servers.</div>
                                                                 <br/>
@@ -1075,7 +1075,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>policies_inactive</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The number of ASM policies that are marked as inactive.</div>
                                                                 <br/>
@@ -1087,7 +1087,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>policies_unattached</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The number of ASM policies that are not attached to a virtual server.</div>
                                                                 <br/>
@@ -1115,7 +1115,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>id</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the generated ID for the server technology resource.</div>
                                                                 <br/>
@@ -1129,7 +1129,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_technology_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Human friendly name of the server technology resource.</div>
                                                                 <br/>
@@ -1143,7 +1143,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_technology_references</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of dictionaries containing API self links of the associated technology resources.</div>
                                                                 <br/>
@@ -1185,7 +1185,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Name of the signature set</div>
                                                                 <br/>
@@ -1199,7 +1199,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>id</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the generated ID for the signature set resource.</div>
                                                                 <br/>
@@ -1213,7 +1213,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The method used to select signatures to be a part of the signature set.</div>
                                                                 <br/>
@@ -1227,7 +1227,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>category</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the category of the signature set.</div>
                                                                 <br/>
@@ -1241,7 +1241,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>is_user_defined</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that this signature set was added by a user.</div>
                                                                 <br/>
@@ -1253,7 +1253,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>assign_to_policy_by_default</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates whether the system assigns this signature set to a new created security policy by default.</div>
                                                                 <br/>
@@ -1267,7 +1267,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>default_alarm</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays whether the security policy logs the request data in the Statistics screen if a request matches a signature that is included in the signature set</div>
                                                                 <br/>
@@ -1281,7 +1281,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>default_block</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays, when the security policy&#x27;s enforcement mode is Blocking, how the system treats requests that match a signature included in the signature set.</div>
                                                                 <br/>
@@ -1295,7 +1295,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>default_learn</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays whether the security policy learns all requests that match a signature that is included in the signature set.</div>
                                                                 <br/>
@@ -1323,7 +1323,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -1337,7 +1337,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -1351,7 +1351,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>alert_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum time period in seconds to keep the SSL session active after alert message is sent, or indefinite.</div>
                                                                 <br/>
@@ -1363,7 +1363,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allow_non_ssl</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables non-SSL connections.</div>
                                                                 <br/>
@@ -1377,7 +1377,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>authenticate_depth</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the authenticate depth. This is the client certificate chain maximum traversal depth.</div>
                                                                 <br/>
@@ -1391,7 +1391,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>authenticate_frequency</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how often the system authenticates a user.</div>
                                                                 <br/>
@@ -1405,7 +1405,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ca_file</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the certificate authority (CA) file name.</div>
                                                                 <br/>
@@ -1419,7 +1419,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cache_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the SSL session cache size.</div>
                                                                 <br/>
@@ -1433,7 +1433,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cache_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the SSL session cache timeout value.</div>
                                                                 <br/>
@@ -1447,7 +1447,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>certificate_file</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the name of the certificate installed on the traffic management system for the purpose of terminating or initiating an SSL connection.</div>
                                                                 <br/>
@@ -1461,7 +1461,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>chain_file</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies or builds a certificate chain file that a client can use to authenticate the profile.</div>
                                                                 <br/>
@@ -1475,7 +1475,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ciphers</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a list of cipher names.</div>
                                                                 <br/>
@@ -1489,7 +1489,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>crl_file</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the certificate revocation list file name.</div>
                                                                 <br/>
@@ -1503,7 +1503,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Parent of the profile</div>
                                                                 <br/>
@@ -1517,7 +1517,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the profile.</div>
                                                                 <br/>
@@ -1531,7 +1531,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>modssl_methods</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables ModSSL method emulation.</div>
                                                                 <br/>
@@ -1543,7 +1543,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>peer_certification_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the peer certificate mode.</div>
                                                                 <br/>
@@ -1557,7 +1557,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sni_require</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When this option is <code>yes</code>, a client connection that does not specify a known server name or does not support SNI extension will be rejected.</div>
                                                                 <br/>
@@ -1569,7 +1569,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sni_default</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, this profile is the default SSL profile when the server name in a client connection does not match any configured server names, or a client connection does not specify any server name at all.</div>
                                                                 <br/>
@@ -1583,7 +1583,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>strict_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables strict-resume.</div>
                                                                 <br/>
@@ -1597,7 +1597,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>profile_mode_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the profile mode, which enables or disables SSL processing.</div>
                                                                 <br/>
@@ -1611,7 +1611,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>renegotiation_maximum_record_delay</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of SSL records that the traffic management system can receive before it renegotiates an SSL session.</div>
                                                                 <br/>
@@ -1623,7 +1623,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>renegotiation_period</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of seconds required to renegotiate an SSL session.</div>
                                                                 <br/>
@@ -1635,7 +1635,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>renegotiation</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether renegotiations are enabled.</div>
                                                                 <br/>
@@ -1649,7 +1649,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the server names to be matched with SNI (server name indication) extension information in ClientHello from a client connection.</div>
                                                                 <br/>
@@ -1663,7 +1663,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>session_ticket</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables session-ticket.</div>
                                                                 <br/>
@@ -1675,7 +1675,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>unclean_shutdown</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether to force the SSL profile to perform a clean shutdown of all SSL connections or not</div>
                                                                 <br/>
@@ -1687,7 +1687,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>retain_certificate</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>APM module requires storing certificate in SSL session. When <code>no</code>, certificate will not be stored in SSL session.</div>
                                                                 <br/>
@@ -1701,7 +1701,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>secure_renegotiation_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the secure renegotiation mode.</div>
                                                                 <br/>
@@ -1715,7 +1715,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>handshake_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the handshake timeout in seconds.</div>
                                                                 <br/>
@@ -1729,7 +1729,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>forward_proxy_certificate_extension_include</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the extensions of the web server certificates to be included in the generated certificates using SSL Forward Proxy.</div>
                                                                 <br/>
@@ -1743,7 +1743,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>forward_proxy_certificate_lifespan</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the lifespan of the certificate generated using the SSL forward proxy feature.</div>
                                                                 <br/>
@@ -1757,7 +1757,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>forward_proxy_lookup_by_ipaddr_port</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to perform certificate look up by IP address and port number.</div>
                                                                 <br/>
@@ -1769,7 +1769,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>forward_proxy_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables SSL forward proxy feature.</div>
                                                                 <br/>
@@ -1783,7 +1783,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>forward_proxy_ca_passphrase</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the passphrase of the key file that is used as the certification authority key when SSL forward proxy feature is enabled.</div>
                                                                 <br/>
@@ -1795,7 +1795,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>forward_proxy_ca_certificate_file</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the name of the certificate file that is used as the certification authority certificate when SSL forward proxy feature is enabled.</div>
                                                                 <br/>
@@ -1807,7 +1807,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>forward_proxy_ca_key_file</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the name of the key file that is used as the certification authority key when SSL forward proxy feature is enabled.</div>
                                                                 <br/>
@@ -1833,7 +1833,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -1847,7 +1847,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -1861,7 +1861,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>autosync_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the device group automatically synchronizes configuration data to its members.</div>
                                                                 <br/>
@@ -1873,7 +1873,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the device group.</div>
                                                                 <br/>
@@ -1887,7 +1887,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>devices</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of devices that are in the group. Devices are listed by their <code>full_path</code>.</div>
                                                                 <br/>
@@ -1901,7 +1901,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_load_on_sync</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that the entire configuration for a device group is sent when configuration synchronization is performed.</div>
                                                                 <br/>
@@ -1915,7 +1915,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>incremental_config_sync_size_maximum</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum size (in KB) to devote to incremental config sync cached transactions.</div>
                                                                 <br/>
@@ -1929,7 +1929,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>network_failover_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether network failover is used.</div>
                                                                 <br/>
@@ -1943,7 +1943,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the type of device group.</div>
                                                                 <br/>
@@ -1957,7 +1957,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>asm_sync_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to synchronize ASM configurations of device group members.</div>
                                                                 <br/>
@@ -1985,7 +1985,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -1999,7 +1999,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -2013,7 +2013,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>active_modules</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The currently licensed and provisioned modules on the device.</div>
                                                                 <br/>
@@ -2027,7 +2027,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>base_mac_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Media Access Control address (MAC address) of the device.</div>
                                                                 <br/>
@@ -2041,7 +2041,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>build</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The minor version information of the total product version.</div>
                                                                 <br/>
@@ -2055,7 +2055,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>chassis_id</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Serial number of the device.</div>
                                                                 <br/>
@@ -2069,7 +2069,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>chassis_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the chassis type. The possible values are <code>individual</code> and <code>viprion</code>.</div>
                                                                 <br/>
@@ -2083,7 +2083,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>comment</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>User comments about the device.</div>
                                                                 <br/>
@@ -2097,7 +2097,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>configsync_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>IP address used for configuration synchronization.</div>
                                                                 <br/>
@@ -2111,7 +2111,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>contact</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Administrator contact information.</div>
                                                                 <br/>
@@ -2125,7 +2125,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the device.</div>
                                                                 <br/>
@@ -2139,7 +2139,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>edition</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the software edition.</div>
                                                                 <br/>
@@ -2153,7 +2153,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>failover_state</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Device failover state.</div>
                                                                 <br/>
@@ -2167,7 +2167,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hostname</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Device hostname</div>
                                                                 <br/>
@@ -2181,7 +2181,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>location</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the physical location of the device.</div>
                                                                 <br/>
@@ -2195,7 +2195,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>management_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>IP address of the management interface.</div>
                                                                 <br/>
@@ -2209,7 +2209,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>marketing_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Marketing name of the device platform.</div>
                                                                 <br/>
@@ -2223,7 +2223,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>multicast_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the multicast IP address used for failover.</div>
                                                                 <br/>
@@ -2237,7 +2237,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>optional_modules</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Modules that are available for the current platform, but are not currently licensed.</div>
                                                                 <br/>
@@ -2251,7 +2251,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>platform_id</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the device platform identifier.</div>
                                                                 <br/>
@@ -2265,7 +2265,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>primary_mirror_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the IP address used for state mirroring.</div>
                                                                 <br/>
@@ -2279,7 +2279,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the software product name.</div>
                                                                 <br/>
@@ -2293,7 +2293,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>secondary_mirror_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Secondary IP address used for state mirroring.</div>
                                                                 <br/>
@@ -2307,7 +2307,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>self</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether this device is the one that was queried for facts, or not.</div>
                                                                 <br/>
@@ -2321,7 +2321,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>software_version</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the software version number.</div>
                                                                 <br/>
@@ -2335,7 +2335,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timelimited_modules</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the licensed modules that are time-limited.</div>
                                                                 <br/>
@@ -2349,7 +2349,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timezone</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the time zone configured on the device.</div>
                                                                 <br/>
@@ -2363,7 +2363,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>unicast_addresses</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the entire set of unicast addresses used for failover.</div>
                                                                 <br/>
@@ -2376,7 +2376,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>effective_ip</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The IP address that peers can use to reach this unicast address IP.</div>
                                                                 <br/>
@@ -2391,7 +2391,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>effective_port</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The port that peers can use to reach this unicast address.</div>
                                                                 <br/>
@@ -2406,7 +2406,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The IP address that the failover daemon will listen on for packets from its peers.</div>
                                                                 <br/>
@@ -2421,7 +2421,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>port</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The IP port that the failover daemon uses to accept packets from its peers.</div>
                                                                 <br/>
@@ -2450,7 +2450,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -2464,7 +2464,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -2478,7 +2478,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -2492,7 +2492,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -2506,7 +2506,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
                                                                 <br/>
@@ -2520,7 +2520,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>args</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies any command-line arguments that the script requires.</div>
                                                                 <br/>
@@ -2534,7 +2534,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>external_program</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the name of the file for the monitor to use.</div>
                                                                 <br/>
@@ -2562,7 +2562,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
                                                                 <br/>
@@ -2576,7 +2576,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>manual_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
                                                                 <br/>
@@ -2590,7 +2590,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_until_up</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
                                                                 <br/>
@@ -2602,7 +2602,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
                                                                 <br/>
@@ -2616,7 +2616,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>up_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
                                                                 <br/>
@@ -2642,7 +2642,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -2656,7 +2656,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -2670,7 +2670,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_close_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of seconds after which the system closes a client connection, when the system either receives a client FIN packet or sends a FIN packet to the client.</div>
                                                                 <br/>
@@ -2684,7 +2684,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>oneconnect_idle_timeout_override</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of seconds after which a server-side connection in a OneConnect pool is eligible for deletion, when the connection has no traffic.</div>
                                                                 <br/>
@@ -2696,7 +2696,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>oneconnect_maximum_reuse</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of times that the system can re-use a current connection.</div>
                                                                 <br/>
@@ -2708,7 +2708,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>oneconnect_maximum_pool_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of connections to a load balancing pool.</div>
                                                                 <br/>
@@ -2722,7 +2722,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>oneconnect_minimum_pool_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Minimum number of connections to a load balancing pool.</div>
                                                                 <br/>
@@ -2734,7 +2734,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>oneconnect_replenish'</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system will not keep a steady-state maximum of connections to the back-end unless the number of connections to the pool have dropped beneath the <code>minimum_pool_size</code> specified in the profile.</div>
                                                                 <br/>
@@ -2748,7 +2748,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>oneconnect_ramp_up_increment</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The increment in which the system makes additional connections available, when all available connections are in use.</div>
                                                                 <br/>
@@ -2762,7 +2762,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -2776,7 +2776,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -2790,7 +2790,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>force_http_1_0_response</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the server sends responses to clients in the HTTP/1.0 format.</div>
                                                                 <br/>
@@ -2802,7 +2802,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>request_header_insert</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>A string that the system inserts as a header in an HTTP request. If the header exists already, the system does not replace it.</div>
                                                                 <br/>
@@ -2816,7 +2816,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>http_1_1_close_workarounds</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the server uses workarounds for HTTP 1.1 close issues.</div>
                                                                 <br/>
@@ -2828,7 +2828,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>idle_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Length of time that a connection is idle (has no traffic) before the connection is eligible for deletion.</div>
                                                                 <br/>
@@ -2842,7 +2842,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>insert_x_forwarded_for</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the system inserts the X-Forwarded-For header in an HTTP request with the client IP address, to use with connection pooling.</div>
                                                                 <br/>
@@ -2854,7 +2854,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>maximum_header_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum amount of HTTP header data that the system buffers before making a load balancing decision.</div>
                                                                 <br/>
@@ -2868,7 +2868,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>maximum_requests</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of requests that the system can receive on a client-side connection, before the system closes the connection.</div>
                                                                 <br/>
@@ -2880,7 +2880,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>maximum_segment_size_override</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum segment size (MSS) override for server-side connections.</div>
                                                                 <br/>
@@ -2892,7 +2892,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>receive_window_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Amount of data the BIG-IP system can accept without acknowledging the server.</div>
                                                                 <br/>
@@ -2904,7 +2904,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>reset_on_timeout</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system sends a reset packet (RST) in addition to deleting the connection, when a connection exceeds the idle timeout value.</div>
                                                                 <br/>
@@ -2918,7 +2918,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_close_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of seconds after which the system closes a client connection, when the system either receives a server FIN packet or sends a FIN packet to the server.</div>
                                                                 <br/>
@@ -2932,7 +2932,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_sack</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the BIG-IP system processes Selective ACK (Sack) packets in cookie responses from the server.</div>
                                                                 <br/>
@@ -2944,7 +2944,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_timestamp</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the BIG-IP system processes timestamp request packets in cookie responses from the server.</div>
                                                                 <br/>
@@ -2956,7 +2956,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>unclean_shutdown</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>How the system handles closing connections. Values provided may be <code>enabled</code>, <code>disabled</code>, or <code>fast</code>.</div>
                                                                 <br/>
@@ -2984,7 +2984,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -2998,7 +2998,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -3012,7 +3012,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies late binding client timeout in seconds.</div>
                                                     <div>This is the number of seconds allowed for a client to transmit enough data to select a server pool.</div>
@@ -3028,7 +3028,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -3042,7 +3042,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -3056,7 +3056,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>explicit_flow_migration</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to have the iRule code determine exactly when the FIX stream drops down to the ePVA hardware.</div>
                                                                 <br/>
@@ -3070,7 +3070,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hardware_syn_cookie</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables hardware SYN cookie support when PVA10 is present on the system.</div>
                                                     <div>This option is deprecated in version 13.0.0 and is replaced by <code>syn-cookie-enable</code>.</div>
@@ -3083,7 +3083,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>idle_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds that a connection is idle before the connection is eligible for deletion.</div>
                                                     <div>Values will be in the range of 0 to 4294967295 (inclusive).</div>
@@ -3100,7 +3100,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>dont_fragment_flag</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Describes the Don&#x27;t Fragment (DF) bit setting in the IP Header of the outgoing TCP packet.</div>
                                                     <div>When <code>pmtu</code>, sets the outgoing IP Header DF bit based on IP pmtu setting(tm.pathmtudiscovery).</div>
@@ -3118,7 +3118,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_tos_to_client</b>
                     <br/><div style="font-size: small; color: red">str or int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies an IP Type of Service (ToS) number for the client-side.</div>
                                                     <div>This option specifies the ToS level that the traffic management system assigns to IP packets when sending them to clients.</div>
@@ -3133,7 +3133,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_tos_to_server</b>
                     <br/><div style="font-size: small; color: red">str or int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies an IP ToS number for the server side.</div>
                                                     <div>This option specifies the ToS level that the traffic management system assigns to IP packets when sending them to servers.</div>
@@ -3148,7 +3148,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ttl_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Describe the outgoing TCP packet&#x27;s IP Header TTL mode.</div>
                                                     <div>When <code>proxy</code>, sets the outgoing IP Header TTL value to 255/64 for ipv4/ipv6 respectively.</div>
@@ -3166,7 +3166,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ttl_v4</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specify the outgoing packet&#x27;s IP Header TTL value for IPv4 traffic.</div>
                                                     <div>Maximum value that can be specified is 255.</div>
@@ -3181,7 +3181,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ttl_v6</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specify the outgoing packet&#x27;s IP Header TTL value for IPv6 traffic.</div>
                                                     <div>Maximum value that can be specified is 255.</div>
@@ -3196,7 +3196,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>keep_alive_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the keep-alive probe interval, in seconds.</div>
                                                     <div>A value of 0 indicates keep-alive is disabled.</div>
@@ -3211,7 +3211,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>late_binding</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to enable or disable intelligent selection of a back-end server pool.</div>
                                                                 <br/>
@@ -3225,7 +3225,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>link_qos_to_client</b>
                     <br/><div style="font-size: small; color: red">int or string</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a Link Quality of Service (QoS) (VLAN priority) number for the client side.</div>
                                                     <div>This option specifies the QoS level that the system assigns to packets when sending them to clients.</div>
@@ -3240,7 +3240,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>link_qos_to_server</b>
                     <br/><div style="font-size: small; color: red">int or string</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a Link QoS (VLAN priority) number for the server side.</div>
                                                     <div>This option specifies the QoS level that the system assigns to packets when sending them to servers.</div>
@@ -3255,7 +3255,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>loose_close</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that the system closes a loosely-initiated connection when the system receives the first FIN packet from either the client or the server.</div>
                                                                 <br/>
@@ -3267,7 +3267,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>loose_init</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that the system initializes a connection when it receives any Transmission Control Protocol (TCP) packet, rather than requiring a SYN packet for connection initiation.</div>
                                                                 <br/>
@@ -3281,7 +3281,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mss_override</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a maximum segment size (MSS) override for server connections. Note that this is also the MSS advertised to a client when a client first connects.</div>
                                                     <div><code>0</code> (zero), means the option is disabled. Otherwise, the value will be between 256 and 9162.</div>
@@ -3296,7 +3296,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>priority_to_client</b>
                     <br/><div style="font-size: small; color: red">int or string</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies internal packet priority for the client side.</div>
                                                     <div>This option specifies the internal packet priority that the system assigns to packets when sending them to clients.</div>
@@ -3311,7 +3311,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>priority_to_server</b>
                     <br/><div style="font-size: small; color: red">int or string</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies internal packet priority for the server side.</div>
                                                     <div>This option specifies the internal packet priority that the system assigns to packets when sending them to servers.</div>
@@ -3326,7 +3326,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pva_acceleration</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the Packet Velocity(r) ASIC acceleration policy.</div>
                                                                 <br/>
@@ -3340,7 +3340,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pva_dynamic_client_packets</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of client packets before dynamic ePVA hardware re-offloading occurs.</div>
                                                     <div>Values will be between 0 and 10.</div>
@@ -3355,7 +3355,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pva_dynamic_server_packets</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of server packets before dynamic ePVA hardware re-offloading occurs.</div>
                                                     <div>Values will be between 0 and 10.</div>
@@ -3370,7 +3370,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pva_flow_aging</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies if automatic aging from ePVA flow cache is enabled or not.</div>
                                                                 <br/>
@@ -3384,7 +3384,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pva_flow_evict</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies if this flow can be evicted upon hash collision with a new flow learn snoop request.</div>
                                                                 <br/>
@@ -3396,7 +3396,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pva_offload_dynamic</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether PVA flow dynamic offloading is enabled or not.</div>
                                                                 <br/>
@@ -3410,7 +3410,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pva_offload_state</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies at what stage the ePVA performs hardware offload.</div>
                                                     <div>When <code>embryonic</code>, implies at TCP CSYN or the first client UDP packet.</div>
@@ -3426,7 +3426,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>reassemble_fragments</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to reassemble fragments.</div>
                                                                 <br/>
@@ -3440,7 +3440,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>receive_window</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the window size to use, in bytes.</div>
                                                     <div>The maximum is 2^31 for window scale enabling.</div>
@@ -3455,7 +3455,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>reset_on_timeout</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether you want to reset connections on timeout.</div>
                                                                 <br/>
@@ -3469,7 +3469,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rtt_from_client</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables the TCP timestamp options to measure the round trip time to the client.</div>
                                                                 <br/>
@@ -3481,7 +3481,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rtt_from_server</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables the TCP timestamp options to measure the round trip time to the server.</div>
                                                                 <br/>
@@ -3495,7 +3495,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_sack</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to support server sack option in cookie response by default.</div>
                                                                 <br/>
@@ -3507,7 +3507,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_timestamp</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to support server timestamp option in cookie response by default.</div>
                                                                 <br/>
@@ -3521,7 +3521,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>software_syn_cookie</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables software SYN cookie support when PVA10 is not present on the system.</div>
                                                     <div>This option is deprecated in version 13.0.0 and is replaced by <code>syn_cookie_enabled</code>.</div>
@@ -3536,7 +3536,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>syn_cookie_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables syn-cookies capability on this virtual server.</div>
                                                                 <br/>
@@ -3548,7 +3548,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>syn_cookie_mss</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a maximum segment size (MSS) for server connections when SYN Cookie is enabled.</div>
                                                                 <br/>
@@ -3562,7 +3562,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>syn_cookie_whitelist</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether or not to use a SYN Cookie WhiteList when doing software SYN Cookies.</div>
                                                                 <br/>
@@ -3574,7 +3574,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tcp_close_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a TCP close timeout in seconds.</div>
                                                                 <br/>
@@ -3588,7 +3588,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>generate_init_seq_number</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether you want to generate TCP sequence numbers on all SYNs that conform with RFC1948, and allow timestamp recycling.</div>
                                                                 <br/>
@@ -3602,7 +3602,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tcp_handshake_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a TCP handshake timeout in seconds.</div>
                                                                 <br/>
@@ -3616,7 +3616,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>strip_sack</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether you want to block the TCP SackOK option from passing to the server on an initiating SYN.</div>
                                                                 <br/>
@@ -3630,7 +3630,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tcp_time_wait_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a TCP time_wait timeout in milliseconds.</div>
                                                                 <br/>
@@ -3644,7 +3644,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tcp_timestamp_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how you want to handle the TCP timestamp.</div>
                                                                 <br/>
@@ -3658,7 +3658,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tcp_window_scale_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how you want to handle the TCP window scale.</div>
                                                                 <br/>
@@ -3672,7 +3672,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timeout_recovery</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies late binding timeout recovery mode. This is the action to take when late binding timeout occurs on a connection.</div>
                                                     <div>When <code>disconnect</code>, only the L7 iRule actions are acceptable to pick a server.</div>
@@ -3702,7 +3702,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -3716,7 +3716,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -3730,7 +3730,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -3744,7 +3744,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -3758,7 +3758,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
                                                                 <br/>
@@ -3770,7 +3770,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
                                                                 <br/>
@@ -3784,7 +3784,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_value</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
                                                                 <br/>
@@ -3798,7 +3798,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
                                                                 <br/>
@@ -3812,7 +3812,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_sampling_timespan</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
                                                                 <br/>
@@ -3826,7 +3826,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
                                                                 <br/>
@@ -3840,7 +3840,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
                                                                 <br/>
@@ -3854,7 +3854,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>manual_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
                                                                 <br/>
@@ -3868,7 +3868,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_until_up</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
                                                                 <br/>
@@ -3880,7 +3880,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
                                                                 <br/>
@@ -3894,7 +3894,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>transparent</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in transparent mode.</div>
                                                                 <br/>
@@ -3906,7 +3906,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>up_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
                                                                 <br/>
@@ -3933,7 +3933,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -3947,7 +3947,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -3961,7 +3961,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>alternate_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>The load balancing mode that the system uses to load balance name resolution requests among the members of the pool.</div>
                                                                 <br/>
@@ -3975,7 +3975,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>dynamic_ratio</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not the dynamic ratio load balancing algorithm is enabled for this pool.</div>
                                                                 <br/>
@@ -3989,7 +3989,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Is the pool enabled.</div>
                                                                 <br/>
@@ -4001,9 +4001,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>disabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Is the pool disabled</div>
+                                                                        <div>Is the pool disabled.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -4013,7 +4013,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>fallback_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the load balancing mode that the system uses to load balance name resolution amongst the pool members if the preferred and alternate modes are unsuccessful in picking a pool.</div>
                                                                 <br/>
@@ -4025,7 +4025,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>load_balancing_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the preferred load balancing mode that the system uses to load balance requests across pool members.</div>
                                                                 <br/>
@@ -4037,9 +4037,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>manual_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Whether manual resume is enabled for this pool</div>
+                                                                        <div>Whether manual resume is enabled for this pool.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -4049,7 +4049,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_answers_returned</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of available virtual servers that the system lists in a response.</div>
                                                                 <br/>
@@ -4061,7 +4061,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>members</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Lists of members (and their configurations) in the pool.</div>
                                                                 <br/>
@@ -4073,7 +4073,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>partition</b>
                     <br/><div style="font-size: small; color: red"></div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Partition the pool exists on.</div>
                                                                 <br/>
@@ -4085,9 +4085,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_hit_ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Weight of the Hit Ratio performance factor for the QoS dynamic load balancing method</div>
+                                                                        <div>Weight of the Hit Ratio performance factor for the QoS dynamic load balancing method.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -4097,7 +4097,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_hops</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Weight of the Hops performance factor when load balancing mode or fallback mode is QoS.</div>
                                                                 <br/>
@@ -4109,7 +4109,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_kilobytes_second</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Weight assigned to Kilobytes per Second performance factor when load balancing option is QoS.</div>
                                                                 <br/>
@@ -4121,7 +4121,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_lcs</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Weight assign to the Link Capacity performance factor when load balacing option is QoS.</div>
                                                                 <br/>
@@ -4133,7 +4133,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_packet_rate</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Weight assign to the Packet Rate performance factor when load balacing option is QoS.</div>
                                                                 <br/>
@@ -4145,7 +4145,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_rtt</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Weight assign to the Round Trip Time performance factor when load balacing option is QoS.</div>
                                                                 <br/>
@@ -4157,7 +4157,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_topology</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Weight assign to the Topology performance factor when load balacing option is QoS.</div>
                                                                 <br/>
@@ -4169,7 +4169,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_vs_capacity</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Weight assign to the Virtual Server performance factor when load balacing option is QoS.</div>
                                                                 <br/>
@@ -4181,7 +4181,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>qos_vs_score</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Weight assign to the Virtual Server Score performance factor when load balacing option is QoS.</div>
                                                                 <br/>
@@ -4193,7 +4193,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ttl</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of seconds that the IP address, once found, is valid.</div>
                                                                 <br/>
@@ -4205,7 +4205,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>verify_member_availability</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not the system verifies the availability of the members before sending a connection to them.</div>
                                                                 <br/>
@@ -4231,7 +4231,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -4245,7 +4245,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -4259,7 +4259,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>datacenter</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the datacenter this server belongs to.</div>
                                                                 <br/>
@@ -4271,7 +4271,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the server is enabled.</div>
                                                                 <br/>
@@ -4283,7 +4283,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>disabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the server is disabled.</div>
                                                                 <br/>
@@ -4295,7 +4295,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>expose_route_domains</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Allow the GTM server to auto-discover the LTM virtual servers from all route domains.</div>
                                                                 <br/>
@@ -4307,7 +4307,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>iq_allow_path</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the GTM uses this BIG-IP system to conduct a path probe before delegating traffic to it.</div>
                                                                 <br/>
@@ -4319,7 +4319,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>iq_allow_service_check</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the GTM uses this BIG-IP system to conduct a service check probe before delegating traffic to it.</div>
                                                                 <br/>
@@ -4331,7 +4331,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>iq_allow_snmp</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the GTM uses this BIG-IP system to conduct an SNMP probe before delegating traffic to it.</div>
                                                                 <br/>
@@ -4341,9 +4341,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>limit_cpu_usage</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>For a server configured as a generic host, specifies the percent of CPU usage, otherwise has no effect.</div>
                                                                 <br/>
@@ -4355,7 +4355,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>limit_cpu_usage_status</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether <code>limit_cpu_usage</code> is enabled for this server.</div>
                                                                 <br/>
@@ -4365,9 +4365,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>limit_max_bps</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum allowable data throughput rate in bits per second for this server.</div>
                                                                 <br/>
@@ -4379,7 +4379,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>limit_max_bps_status</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether <code>limit_max_bps</code> is enabled for this server.</div>
                                                                 <br/>
@@ -4389,11 +4389,11 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>limit_max_connections</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Maximum number of concurrent connections, combind, for this server.</div>
+                                                                        <div>Maximum number of concurrent connections, combined, for this server.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -4413,9 +4413,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>limit_max_pps</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum allowable data transfer rate, in packets per second, for this server.</div>
                                                                 <br/>
@@ -4427,7 +4427,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>limit_max_pps_status</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether <code>limit_max_pps</code> is enabled for this server.</div>
                                                                 <br/>
@@ -4437,9 +4437,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>limit_mem_available</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>For a server configured as a generic host, specifies the available memory required by the virtual servers on the server.</div>
                                                     <div>If available memory falls below this limit, the system marks the server as unavailable.</div>
@@ -4452,7 +4452,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>limit_mem_available_status</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether <code>limit_mem_available</code> is enabled for this server.</div>
                                                                 <br/>
@@ -4464,7 +4464,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>link_discovery</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system auto-discovers the links for this server.</div>
                                                                 <br/>
@@ -4476,7 +4476,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>monitors</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies health monitors that the system uses to determine whether this server is available for load balancing.</div>
                                                                 <br/>
@@ -4490,7 +4490,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>monitor_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether one or monitors need to pass, or all monitors need to pass.</div>
                                                                 <br/>
@@ -4502,9 +4502,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>product</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the server type.</div>
                                                                 <br/>
@@ -4514,9 +4514,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>prober_fallback</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>The type of prober to use to monitor this servers resources when the preferred type is not available.</div>
                                                                 <br/>
@@ -4526,9 +4526,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>prober_preference</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the type of prober to use to monitor this servers resources.</div>
                                                                 <br/>
@@ -4540,7 +4540,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>virtual_server_discovery</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the system auto-discovers the virtual servers for this server.</div>
                                                                 <br/>
@@ -4552,7 +4552,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>addresses</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the server IP addresses for the server.</div>
                                                                 <br/>
@@ -4562,11 +4562,11 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>devices</b>
-                    <br/><div style="font-size: small; color: red">complex.</div>
+                    <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Specifies the names of the devies that represent this server.</div>
+                                                                        <div>Specifies the names of the devices that represent this server.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -4576,7 +4576,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>virtual_servers</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Virtual servers that are resources for this server.</div>
                                                                 <br/>
@@ -4603,7 +4603,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -4617,7 +4617,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -4629,9 +4629,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>description</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the wide ip.</div>
                                                                 <br/>
@@ -4643,7 +4643,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the Wide IP is enabled.</div>
                                                                 <br/>
@@ -4655,7 +4655,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>disabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the Wide IP is disabled.</div>
                                                                 <br/>
@@ -4665,9 +4665,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>failure_rcode</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the DNS RCODE used when <code>failure_rcode_response</code> is <code>yes</code>.</div>
                                                                 <br/>
@@ -4679,7 +4679,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>failure_rcode_response</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, specifies that the system returns a RCODE response to Wide IP requests after exhausting all load-balancing methods.</div>
                                                                 <br/>
@@ -4689,9 +4689,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>failure_rcode_ttl</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the negative caching TTL of the SOA for the RCODE response.</div>
                                                                 <br/>
@@ -4701,9 +4701,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>last_resort_pool</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies which pool, as listed in Pool List, for the system to use as the last resort pool for the wide IP.</div>
                                                                 <br/>
@@ -4713,9 +4713,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>minimal_response</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that the system forms the smallest allowable DNS response to a query.</div>
                                                                 <br/>
@@ -4725,9 +4725,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>persist_cidr_ipv4</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of bits the system uses to identify IPv4 addresses when persistence is enabled.</div>
                                                                 <br/>
@@ -4737,9 +4737,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>persist_cidr_ipv6</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of bits the system uses to identify IPv6 addresses when persistence is enabled.</div>
                                                                 <br/>
@@ -4749,9 +4749,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>pool_lb_mode</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the load balancing method used to select a pool in this wide IP.</div>
                                                                 <br/>
@@ -4761,9 +4761,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="3">
                     <b>ttl_persistence</b>
-                    <br/><div style="font-size: small; color: red"></div>
+                    <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the length of time for which the persistence entry is valid.</div>
                                                                 <br/>
@@ -4775,7 +4775,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pools</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the pools that this wide IP uses for load balancing.</div>
                                                                 <br/>
@@ -4801,7 +4801,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -4815,7 +4815,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -4829,7 +4829,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -4843,7 +4843,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -4857,7 +4857,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
                                                                 <br/>
@@ -4869,7 +4869,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
                                                                 <br/>
@@ -4883,7 +4883,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_value</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
                                                                 <br/>
@@ -4897,7 +4897,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
                                                                 <br/>
@@ -4911,7 +4911,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_sampling_timespan</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
                                                                 <br/>
@@ -4925,7 +4925,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
                                                                 <br/>
@@ -4939,7 +4939,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
                                                                 <br/>
@@ -4953,7 +4953,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_dscp</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the differentiated services code point (DSCP).</div>
                                                                 <br/>
@@ -4965,7 +4965,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>manual_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
                                                                 <br/>
@@ -4979,7 +4979,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>receive_string</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the text string that the monitor looks for in the returned resource.</div>
                                                                 <br/>
@@ -4993,7 +4993,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>receive_disable_string</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a text string that the monitor looks for in the returned resource. If the text string is matched in the returned resource, the corresponding node or pool member is marked session disabled.</div>
                                                                 <br/>
@@ -5007,7 +5007,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>reverse</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in reverse mode. When the monitor is in reverse mode, a successful check marks the monitored object down instead of up.</div>
                                                                 <br/>
@@ -5019,7 +5019,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>send_string</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the text string that the monitor sends to the target object.</div>
                                                                 <br/>
@@ -5033,7 +5033,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_until_up</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
                                                                 <br/>
@@ -5045,7 +5045,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
                                                                 <br/>
@@ -5059,7 +5059,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>transparent</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in transparent mode.</div>
                                                                 <br/>
@@ -5071,7 +5071,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>up_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
                                                                 <br/>
@@ -5083,7 +5083,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>username</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the username, if the monitored target requires authentication.</div>
                                                                 <br/>
@@ -5111,7 +5111,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -5125,7 +5125,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -5139,7 +5139,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -5153,7 +5153,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -5167,7 +5167,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>accept_xff</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables trusting the client IP address, and statistics from the client IP address, based on the request&#x27;s X-Forwarded-For (XFF) headers, if they exist.</div>
                                                                 <br/>
@@ -5181,7 +5181,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allow_truncated_redirects</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the pass-through behavior when a redirect lacking the trailing carriage-return and line feed pair at the end of the headers is parsed.</div>
                                                     <div>When <code>no</code>, will silently drop the invalid HTTP.</div>
@@ -5194,7 +5194,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>excess_client_headers</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the pass-through behavior when <code>max_header_count</code> value is exceeded by the client.</div>
                                                     <div>When <code>reject</code>, rejects the connection.</div>
@@ -5209,7 +5209,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>excess_server_headers</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the pass-through behavior when <code>max_header_count</code> value is exceeded by the server.</div>
                                                     <div>When <code>reject</code>, rejects the connection.</div>
@@ -5224,7 +5224,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>known_methods</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Optimizes the behavior of a known HTTP method in the list.</div>
                                                     <div>The default methods include the following HTTP/1.1 methods. CONNECT, DELETE, GET, HEAD, LOCK, OPTIONS, POST, PROPFIND, PUT, TRACE, UNLOCK.</div>
@@ -5240,7 +5240,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_header_count</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum number of headers the system supports.</div>
                                                                 <br/>
@@ -5254,7 +5254,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_header_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum size in bytes the system allows for all HTTP request headers combined, including the request line.</div>
                                                                 <br/>
@@ -5268,7 +5268,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_requests</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of requests that the system accepts on a per-connection basis.</div>
                                                                 <br/>
@@ -5280,7 +5280,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>oversize_client_headers</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the pass-through behavior when the <code>max_header_size</code> value is exceeded by the client.</div>
                                                                 <br/>
@@ -5294,7 +5294,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>oversize_server_headers</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the pass-through behavior when the <code>max_header_size</code> value is exceeded by the server.</div>
                                                                 <br/>
@@ -5308,7 +5308,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pipeline_action</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables HTTP/1.1 pipelining.</div>
                                                                 <br/>
@@ -5322,7 +5322,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>unknown_method</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the behavior (allow, reject, or pass through) when an unknown HTTP method is parsed.</div>
                                                                 <br/>
@@ -5336,7 +5336,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>default_connect_handling</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the behavior of the proxy service when handling outbound requests.</div>
                                                                 <br/>
@@ -5350,7 +5350,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hsts_include_subdomains</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, applies the HSTS policy to the HSTS host and its subdomains.</div>
                                                                 <br/>
@@ -5364,7 +5364,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hsts_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, enables the HTTP Strict Transport Security settings.</div>
                                                                 <br/>
@@ -5378,7 +5378,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>insert_x_forwarded_for</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, specifies that the system inserts an X-Forwarded-For header in an HTTP request with the client IP address, to use with connection pooling.</div>
                                                                 <br/>
@@ -5390,7 +5390,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>lws_max_columns</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum column width for any given line, when inserting an HTTP header in an HTTP request.</div>
                                                                 <br/>
@@ -5404,7 +5404,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>onconnect_transformations</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, specifies, that the system performs HTTP header transformations for the purpose of keeping connections open.</div>
                                                                 <br/>
@@ -5418,7 +5418,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>proxy_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the proxy mode for this profile. Either reverse, explicit, or transparent.</div>
                                                                 <br/>
@@ -5432,7 +5432,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>redirect_rewrite</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system rewrites the URIs that are part of HTTP redirect (3XX) responses</div>
                                                                 <br/>
@@ -5446,7 +5446,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>request_chunking</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how the system handles HTTP content that is chunked by a client.</div>
                                                                 <br/>
@@ -5460,7 +5460,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>response_chunking</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how the system handles HTTP content that is chunked by a server.</div>
                                                                 <br/>
@@ -5474,7 +5474,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_agent_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the string used as the server name in traffic generated by LTM.</div>
                                                                 <br/>
@@ -5488,7 +5488,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sflow_poll_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The maximum interval in seconds between two pollings.</div>
                                                                 <br/>
@@ -5500,7 +5500,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sflow_sampling_rate</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the ratio of packets observed to the samples generated.</div>
                                                                 <br/>
@@ -5512,7 +5512,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>via_request</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to Remove, Preserve, or Append Via headers included in a client request to an origin web server.</div>
                                                                 <br/>
@@ -5526,7 +5526,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>via_response</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether to Remove, Preserve, or Append Via headers included in an origin web server response to a client.</div>
                                                                 <br/>
@@ -5554,7 +5554,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -5568,7 +5568,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -5582,7 +5582,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -5596,7 +5596,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -5610,7 +5610,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
                                                                 <br/>
@@ -5622,7 +5622,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
                                                                 <br/>
@@ -5636,7 +5636,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_value</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
                                                                 <br/>
@@ -5650,7 +5650,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
                                                                 <br/>
@@ -5664,7 +5664,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_sampling_timespan</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
                                                                 <br/>
@@ -5678,7 +5678,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
                                                                 <br/>
@@ -5692,7 +5692,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
                                                                 <br/>
@@ -5706,7 +5706,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_dscp</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the differentiated services code point (DSCP).</div>
                                                                 <br/>
@@ -5718,7 +5718,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>manual_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
                                                                 <br/>
@@ -5732,7 +5732,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>receive_string</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the text string that the monitor looks for in the returned resource.</div>
                                                                 <br/>
@@ -5746,7 +5746,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>receive_disable_string</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a text string that the monitor looks for in the returned resource. If the text string is matched in the returned resource, the corresponding node or pool member is marked session disabled.</div>
                                                                 <br/>
@@ -5760,7 +5760,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>reverse</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in reverse mode. When the monitor is in reverse mode, a successful check marks the monitored object down instead of up.</div>
                                                                 <br/>
@@ -5772,7 +5772,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>send_string</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the text string that the monitor sends to the target object.</div>
                                                                 <br/>
@@ -5786,7 +5786,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ssl_profile</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the SSL profile to use for the HTTPS monitor.</div>
                                                                 <br/>
@@ -5800,7 +5800,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_until_up</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
                                                                 <br/>
@@ -5812,7 +5812,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
                                                                 <br/>
@@ -5826,7 +5826,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>transparent</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in transparent mode.</div>
                                                                 <br/>
@@ -5838,7 +5838,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>up_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
                                                                 <br/>
@@ -5850,7 +5850,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>username</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the username, if the monitored target requires authentication.</div>
                                                                 <br/>
@@ -5878,7 +5878,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -5892,7 +5892,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -5906,7 +5906,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>device_group</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The device group the iApp service is part of.</div>
                                                                 <br/>
@@ -5920,7 +5920,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>inherited_device_group</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the device group is inherited or not.</div>
                                                                 <br/>
@@ -5934,7 +5934,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>inherited_traffic_group</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the traffic group is inherited or not.</div>
                                                                 <br/>
@@ -5948,7 +5948,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>strict_updates</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether strict updates are enabled or not.</div>
                                                                 <br/>
@@ -5962,7 +5962,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>template_modified</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether template that the service is based on is modified from its default value, or not.</div>
                                                                 <br/>
@@ -5976,7 +5976,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>traffic_group</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Traffic group the service is a part of.</div>
                                                                 <br/>
@@ -5990,7 +5990,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tables</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of the tabular data used to create the service.</div>
                                                                 <br/>
@@ -6004,7 +6004,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>variables</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of the variable data used to create the service.</div>
                                                                 <br/>
@@ -6018,7 +6018,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>metadata</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of the metadata data used to create the service..</div>
                                                                 <br/>
@@ -6032,7 +6032,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>lists</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of the lists data used to create the service.</div>
                                                                 <br/>
@@ -6046,7 +6046,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the service</div>
                                                                 <br/>
@@ -6074,7 +6074,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -6088,7 +6088,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -6102,7 +6102,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -6116,7 +6116,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -6130,7 +6130,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
                                                                 <br/>
@@ -6142,7 +6142,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
                                                                 <br/>
@@ -6156,7 +6156,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_value</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
                                                                 <br/>
@@ -6170,7 +6170,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
                                                                 <br/>
@@ -6184,7 +6184,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_sampling_timespan</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
                                                                 <br/>
@@ -6198,7 +6198,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
                                                                 <br/>
@@ -6212,7 +6212,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
                                                                 <br/>
@@ -6240,7 +6240,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_until_up</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
                                                                 <br/>
@@ -6252,7 +6252,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
                                                                 <br/>
@@ -6266,7 +6266,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>transparent</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in transparent mode.</div>
                                                                 <br/>
@@ -6278,7 +6278,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>up_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
                                                                 <br/>
@@ -6304,12 +6304,12 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/irul1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/interface1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -6318,12 +6318,12 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">irule1</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">interface1</div>
                                     </td>
             </tr>
                                 <tr>
@@ -6332,7 +6332,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>active_media_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the current media setting for the interface.</div>
                                                                 <br/>
@@ -6346,7 +6346,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>flow_control</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how the system controls the sending of PAUSE frames for flow control.</div>
                                                                 <br/>
@@ -6360,7 +6360,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the interface</div>
                                                                 <br/>
@@ -6374,7 +6374,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>bundle</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The bundle capability on the port.</div>
                                                                 <br/>
@@ -6388,7 +6388,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>bundle_speed</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The bundle-speed on the port when bundle capability is enabled.</div>
                                                                 <br/>
@@ -6402,7 +6402,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the interface is enabled or not</div>
                                                                 <br/>
@@ -6416,7 +6416,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>if_index</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The index assigned to this interface.</div>
                                                                 <br/>
@@ -6430,7 +6430,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mac_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the 6-byte ethernet address in non-case-sensitive hexadecimal colon notation.</div>
                                                                 <br/>
@@ -6444,7 +6444,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>media_sfp</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The settings for an SFP (pluggable) interface.</div>
                                                                 <br/>
@@ -6458,7 +6458,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>lldp_admin</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Sets the sending or receiving of LLDP packets on that interface. Should be one of <code>disable</code>, <code>txonly</code>, <code>rxonly</code> or <code>txrx</code>.</div>
                                                                 <br/>
@@ -6472,7 +6472,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mtu</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the Maximum Transmission Unit (MTU) of the interface, which is the maximum number of bytes in a frame without IP fragmentation.</div>
                                                                 <br/>
@@ -6486,7 +6486,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>prefer_port</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates which side of a combo port the interface uses, if both sides of the port have the potential for external links.</div>
                                                                 <br/>
@@ -6500,7 +6500,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sflow_poll_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum interval in seconds between two pollings.</div>
                                                                 <br/>
@@ -6512,7 +6512,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sflow_poll_interval_global</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the global interface poll-interval setting overrides the object-level poll-interval setting.</div>
                                                                 <br/>
@@ -6526,7 +6526,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>stp_auto_edge_port</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>STP edge port detection.</div>
                                                                 <br/>
@@ -6540,7 +6540,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>stp_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether STP is enabled or not.</div>
                                                                 <br/>
@@ -6552,7 +6552,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>stp_link_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the STP link type for the interface.</div>
                                                                 <br/>
@@ -6580,7 +6580,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -6594,7 +6594,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -6608,7 +6608,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ignore_verification</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the verification of the iRule should be ignored or not.</div>
                                                                 <br/>
@@ -6620,7 +6620,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>checksum</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Checksum of the iRule as calculated by BIG-IP.</div>
                                                                 <br/>
@@ -6634,7 +6634,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>definition</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The actual definition of the iRule.</div>
                                                                 <br/>
@@ -6648,7 +6648,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>signature</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The calculated signature of the iRule.</div>
                                                                 <br/>
@@ -6676,7 +6676,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>active_member_count</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The number of active pool members in the pool.</div>
                                                                 <br/>
@@ -6690,7 +6690,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>all_avg_queue_entry_age</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Average queue entry age, for both the pool and its members.</div>
                                                                 <br/>
@@ -6704,7 +6704,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>all_max_queue_entry_age_ever</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum queue entry age ever, for both the pool and its members.</div>
                                                                 <br/>
@@ -6718,7 +6718,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>all_max_queue_entry_age_recently</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum queue entry age recently, for both the pool and its members.</div>
                                                                 <br/>
@@ -6732,7 +6732,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>all_num_connections_queued_now</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of connections queued now, for both the pool and its members.</div>
                                                                 <br/>
@@ -6746,7 +6746,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>all_num_connections_serviced</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of connections serviced, for both the pool and its members.</div>
                                                                 <br/>
@@ -6760,7 +6760,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>all_queue_head_entry_age</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Queue head entry age, for both the pool and its members.</div>
                                                                 <br/>
@@ -6774,7 +6774,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>available_member_count</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The number of available pool members in the pool.</div>
                                                                 <br/>
@@ -6788,7 +6788,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>availability_status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The availability of the pool.</div>
                                                                 <br/>
@@ -6802,7 +6802,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allow_nat</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether NATs are automatically enabled or disabled for any connections using this pool.</div>
                                                                 <br/>
@@ -6816,7 +6816,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allow_snat</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether SNATs are automatically enabled or disabled for any connections using this pool.</div>
                                                                 <br/>
@@ -6830,7 +6830,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_ip_tos</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the system sets a Type of Service (ToS) level within a packet sent to the client, based on the targeted pool.</div>
                                                     <div>Values can range from <code>0</code> to <code>255</code>, or be set to <code>pass-through</code> or <code>mimic</code>.</div>
@@ -6845,7 +6845,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_link_qos</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the system sets a Quality of Service (QoS) level within a packet sent to the client, based on the targeted pool.</div>
                                                     <div>Values can range from <code>0</code> to <code>7</code>, or be set to <code>pass-through</code>.</div>
@@ -6860,7 +6860,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>current_sessions</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                                     <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
@@ -6873,7 +6873,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the pool.</div>
                                                                 <br/>
@@ -6887,7 +6887,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enabled_status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The enabled-ness of the pool.</div>
                                                                 <br/>
@@ -6901,7 +6901,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -6915,7 +6915,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ignore_persisted_weight</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Do not count the weight of persisted connections on pool members when making load balancing decisions.</div>
                                                                 <br/>
@@ -6927,7 +6927,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>lb_method</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Load balancing method used by the pool.</div>
                                                                 <br/>
@@ -6941,7 +6941,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>member_count</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Total number of members in the pool.</div>
                                                                 <br/>
@@ -6955,7 +6955,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>metadata</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Dictionary of arbitrary key/value pairs set on the pool.</div>
                                                                 <br/>
@@ -6969,7 +6969,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>minimum_active_members</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the system load balances traffic according to the priority number assigned to the pool member.</div>
                                                     <div>This parameter is identical to <code>priority_group_activation</code> and is just an alias for it.</div>
@@ -6984,7 +6984,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>minimum_up_members</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The minimum number of pool members that must be up.</div>
                                                                 <br/>
@@ -6998,7 +6998,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>minimum_up_members_action</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The action to take if the <code>minimum_up_members_checking</code> is enabled and the number of active pool members falls below the number specified in <code>minimum_up_members</code>.</div>
                                                                 <br/>
@@ -7012,7 +7012,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>minimum_up_members_checking</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables the <code>minimum_up_members</code> feature.</div>
                                                                 <br/>
@@ -7024,7 +7024,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -7038,7 +7038,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pool_avg_queue_entry_age</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Average queue entry age, for the pool only.</div>
                                                                 <br/>
@@ -7052,7 +7052,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pool_max_queue_entry_age_ever</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum queue entry age ever, for the pool only.</div>
                                                                 <br/>
@@ -7066,7 +7066,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pool_max_queue_entry_age_recently</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum queue entry age recently, for the pool only.</div>
                                                                 <br/>
@@ -7080,7 +7080,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pool_num_connections_queued_now</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of connections queued now, for the pool only.</div>
                                                                 <br/>
@@ -7094,7 +7094,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pool_num_connections_serviced</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of connections serviced, for the pool only.</div>
                                                                 <br/>
@@ -7108,7 +7108,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pool_queue_head_entry_age</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Queue head entry age, for the pool only.</div>
                                                                 <br/>
@@ -7122,7 +7122,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>priority_group_activation</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the system load balances traffic according to the priority number assigned to the pool member.</div>
                                                     <div>This parameter is identical to <code>minimum_active_members</code> and is just an alias for it.</div>
@@ -7137,7 +7137,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>queue_depth_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The maximum number of connections that may simultaneously be queued to go to any member of this pool.</div>
                                                                 <br/>
@@ -7151,7 +7151,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>queue_on_connection_limit</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enable or disable queuing connections when pool member or node connection limits are reached.</div>
                                                                 <br/>
@@ -7165,7 +7165,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>queue_time_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum time, in milliseconds, a connection will remain enqueued.</div>
                                                                 <br/>
@@ -7177,7 +7177,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>real_session</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The actual REST API value for the <code>session</code> attribute.</div>
                                                     <div>This is different from the <code>state</code> return value, insofar as the return value can be considered a generalization of all available sessions, instead of the specific value of the session.</div>
@@ -7192,7 +7192,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>real_state</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The actual REST API value for the <code>state</code> attribute.</div>
                                                     <div>This is different from the <code>state</code> return value, insofar as the return value can be considered a generalization of all available states, instead of the specific value of the state.</div>
@@ -7207,7 +7207,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>reselect_tries</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The number of times the system tries to contact a pool member after a passive failure.</div>
                                                                 <br/>
@@ -7219,7 +7219,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_ip_tos</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The Type of Service (ToS) level to use when sending packets to a server.</div>
                                                                 <br/>
@@ -7233,7 +7233,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_link_qos</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The Quality of Service (QoS) level to use when sending packets to a server.</div>
                                                                 <br/>
@@ -7247,7 +7247,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>service_down_action</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The action to take if the service specified in the pool is marked down.</div>
                                                                 <br/>
@@ -7261,7 +7261,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_side_bits_in</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of server-side ingress bits.</div>
                                                                 <br/>
@@ -7275,7 +7275,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_side_bits_out</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of server-side egress bits.</div>
                                                                 <br/>
@@ -7289,7 +7289,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_side_current_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of current connections server-side.</div>
                                                                 <br/>
@@ -7303,7 +7303,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_side_max_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of connections server-side.</div>
                                                                 <br/>
@@ -7317,7 +7317,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_side_pkts_in</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of server-side ingress packets.</div>
                                                                 <br/>
@@ -7331,7 +7331,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_side_pkts_out</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of server-side egress packets.</div>
                                                                 <br/>
@@ -7345,7 +7345,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_side_total_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Total number of connections.</div>
                                                                 <br/>
@@ -7359,7 +7359,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>slow_ramp_time</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The ramp time for the pool.</div>
                                                     <div>This provides the ability to cause a pool member that has just been enabled, or marked up, to receive proportionally less traffic than other members in the pool.</div>
@@ -7374,7 +7374,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>status_reason</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>If there is a problem with the status of the pool, that problem is reported here.</div>
                                                                 <br/>
@@ -7401,7 +7401,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                             <div>IP address of the pool member.</div>
                                         <br/>
@@ -7416,7 +7416,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>connection_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                             <div>The maximum number of concurrent connections allowed for a pool member.</div>
                                         <br/>
@@ -7429,7 +7429,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                             <div>The description of the pool member.</div>
                                         <br/>
@@ -7444,7 +7444,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>dynamic_ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>A range of numbers that you want the system to use in conjunction with the ratio load balancing method.</div>
                                                                 <br/>
@@ -7459,7 +7459,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the node backing the pool member is ephemeral or not.</div>
                                                                 <br/>
@@ -7474,7 +7474,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>fqdn_autopopulate</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the node should scale to the IP address set returned by DNS.</div>
                                                                 <br/>
@@ -7489,7 +7489,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                     <div>Includes the port in the name</div>
@@ -7505,7 +7505,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>inherit_profile</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the pool member inherits the encapsulation profile from the parent pool.</div>
                                                                 <br/>
@@ -7518,7 +7518,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>logging</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the monitor applied should log its actions.</div>
                                                                 <br/>
@@ -7531,7 +7531,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>monitors</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Monitors active on the pool member. Monitor names are in their &quot;full_path&quot; form.</div>
                                                                 <br/>
@@ -7546,7 +7546,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -7561,7 +7561,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>partition</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Partition that the member exists on.</div>
                                                                 <br/>
@@ -7576,7 +7576,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>priority_group</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The priority group within the pool for this pool member.</div>
                                                                 <br/>
@@ -7589,7 +7589,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>encapsulation_profile</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The encapsulation profile to use for the pool member.</div>
                                                                 <br/>
@@ -7604,7 +7604,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_limit</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The maximum number of connections per second allowed for a pool member.</div>
                                                                 <br/>
@@ -7617,7 +7617,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The weight of the pool for load balancing purposes.</div>
                                                                 <br/>
@@ -7632,7 +7632,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>session</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables the pool member for new sessions.</div>
                                                                 <br/>
@@ -7647,7 +7647,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>state</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Controls the state of the pool member, overriding any monitors.</div>
                                                                 <br/>
@@ -7662,7 +7662,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>total_requests</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Total requests.</div>
                                                                 <br/>
@@ -7690,7 +7690,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -7704,7 +7704,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -7718,7 +7718,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Fixed size ratio used for node during <code>Ratio</code> load balancing.</div>
                                                                 <br/>
@@ -7732,7 +7732,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the node.</div>
                                                                 <br/>
@@ -7746,7 +7746,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>connection_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of connections that node can handle.</div>
                                                                 <br/>
@@ -7760,7 +7760,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>IP address of the node.</div>
                                                                 <br/>
@@ -7774,7 +7774,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>dynamic_ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Dynamic ratio number for the node used when doing <code>Dynamic Ratio</code> load balancing.</div>
                                                                 <br/>
@@ -7788,7 +7788,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of connections per second allowed for node.</div>
                                                                 <br/>
@@ -7802,7 +7802,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>monitor_status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Status of the node as reported by the monitor(s) associated with it.</div>
                                                     <div>This value is also used in determining node <code>state</code>.</div>
@@ -7817,7 +7817,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>session_status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>This value is also used in determining node <code>state</code>.</div>
                                                                 <br/>
@@ -7831,7 +7831,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>availability_status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The availability of the node.</div>
                                                                 <br/>
@@ -7845,7 +7845,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enabled_status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The enabled-ness of the node.</div>
                                                                 <br/>
@@ -7859,7 +7859,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>status_reason</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>If there is a problem with the status of the node, that problem is reported here.</div>
                                                                 <br/>
@@ -7873,7 +7873,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>monitor_rule</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>A string representation of the full monitor rule.</div>
                                                                 <br/>
@@ -7887,7 +7887,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>monitors</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>A list of the monitors identified in the <code>monitor_rule</code>.</div>
                                                                 <br/>
@@ -7901,7 +7901,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>monitor_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The <code>monitor_type</code> field related to the <code>bigip_node</code> module, for this nodes monitors.</div>
                                                                 <br/>
@@ -7929,7 +7929,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -7943,7 +7943,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -7957,7 +7957,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -7971,7 +7971,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -7985,7 +7985,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>idle_timeout_override</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds that a connection is idle before the connection flow is eligible for deletion.</div>
                                                                 <br/>
@@ -7999,7 +7999,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>limit_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>none</code>, simultaneous in-flight requests and responses over TCP connections to a pool member are counted toward the limit.</div>
                                                     <div>When <code>idle</code>, idle connections will be dropped as the TCP connection limit is reached.</div>
@@ -8015,7 +8015,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_age</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum age, in number of seconds, of a connection in the connection reuse pool.</div>
                                                                 <br/>
@@ -8029,7 +8029,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_reuse</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum number of times that a server connection can be reused.</div>
                                                                 <br/>
@@ -8043,7 +8043,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum number of connections that the system holds in the connection reuse pool.</div>
                                                     <div>If the pool is already full, then the server connection closes after the response is completed.</div>
@@ -8058,7 +8058,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>share_pools</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates that connections may be shared not only within a virtual server, but also among similar virtual servers.</div>
                                                                 <br/>
@@ -8072,7 +8072,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>source_mask</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a source IP mask.</div>
                                                     <div>If no mask is provided, the value <code>any6</code> is used.</div>
@@ -8101,7 +8101,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -8115,7 +8115,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -8129,7 +8129,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the partition.</div>
                                                                 <br/>
@@ -8143,7 +8143,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>default_route_domain</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>ID of the route domain that is associated with the IP addresses that reside in the partition.</div>
                                                                 <br/>
@@ -8169,7 +8169,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -8183,7 +8183,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -8197,7 +8197,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cpu_ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Ratio of CPU allocated to this module.</div>
                                                     <div>Only relevant if <code>level</code> was specified as <code>custom</code>. Otherwise, this value will be reported as <code>0</code>.</div>
@@ -8210,7 +8210,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>disk_ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Ratio of disk allocated to this module.</div>
                                                     <div>Only relevant if <code>level</code> was specified as <code>custom</code>. Otherwise, this value will be reported as <code>0</code>.</div>
@@ -8223,7 +8223,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>memory_ratio</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Ratio of memory allocated to this module.</div>
                                                     <div>Only relevant if <code>level</code> was specified as <code>custom</code>. Otherwise, this value will be reported as <code>0</code>.</div>
@@ -8236,7 +8236,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>level</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Provisioned level of the module on BIG-IP.</div>
                                                     <div>Valid return values can include <code>none</code>, <code>minimum</code>, <code>nominal</code>, <code>dedicated</code> and <code>custom</code>.</div>
@@ -8263,7 +8263,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -8277,7 +8277,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -8291,7 +8291,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the Self-IP.</div>
                                                                 <br/>
@@ -8305,7 +8305,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>netmask</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Netmask portion of the IP address. In dotted notation.</div>
                                                                 <br/>
@@ -8319,7 +8319,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>netmask_cidr</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Netmask portion of the IP address. In CIDR notation.</div>
                                                                 <br/>
@@ -8333,7 +8333,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>floating</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the Self-IP is a floating address or not.</div>
                                                                 <br/>
@@ -8347,7 +8347,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>traffic_group</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Traffic group the Self-IP is associated with.</div>
                                                                 <br/>
@@ -8361,7 +8361,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>service_policy</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Service policy assigned to the Self-IP.</div>
                                                                 <br/>
@@ -8375,7 +8375,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>vlan</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>VLAN associated with the Self-IP.</div>
                                                                 <br/>
@@ -8389,7 +8389,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allow_access_list</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of protocols and optionally their ports that are allowed to access the Self-IP. Also known as port-lockdown in the web interface.</div>
                                                     <div>Items in the list are in the format of &quot;protocol:port&quot;. Some items may not have a port associated with them and in those cases the port is <code>0</code>.</div>
@@ -8404,7 +8404,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>traffic_group_inherited</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not the traffic group is inherited.</div>
                                                                 <br/>
@@ -8430,7 +8430,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -8444,7 +8444,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -8458,7 +8458,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -8472,7 +8472,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -8486,7 +8486,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>alert_timeout</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum time period in seconds to keep the SSL session active after alert message is sent, or indefinite.</div>
                                                                 <br/>
@@ -8500,7 +8500,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allow_expired_crl</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Use the specified CRL file even if it has expired.</div>
                                                                 <br/>
@@ -8514,7 +8514,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>authentication_frequency</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the frequency of authentication.</div>
                                                                 <br/>
@@ -8528,7 +8528,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>authenticate_depth</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The client certificate chain maximum traversal depth</div>
                                                                 <br/>
@@ -8542,7 +8542,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>authenticate_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Common Name (CN) that is embedded in a server certificate.</div>
                                                     <div>The system authenticates a server based on the specified CN.</div>
@@ -8557,7 +8557,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>bypass_on_client_cert_fail</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables SSL forward proxy bypass on failing to get client certificate that server asks for.</div>
                                                                 <br/>
@@ -8571,7 +8571,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>bypass_on_handshake_alert</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables SSL forward proxy bypass on receiving handshake_failure, protocol_version or unsupported_extension alert message during the serverside SSL handshake.</div>
                                                                 <br/>
@@ -8583,7 +8583,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>c3d_ca_cert</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Name of the certificate file that is used as the certification authority certificate when SSL client certificate constrained delegation is enabled.</div>
                                                                 <br/>
@@ -8597,7 +8597,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>c3d_ca_key</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Name of the key file that is used as the certification authority key when SSL client certificate constrained delegation is enabled.</div>
                                                                 <br/>
@@ -8611,7 +8611,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>c3d_cert_extension_includes</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Extensions of the client certificates to be included in the generated certificates using SSL client certificate constrained delegation.</div>
                                                                 <br/>
@@ -8625,7 +8625,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>c3d_cert_lifespan</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Lifespan of the certificate generated using the SSL client certificate constrained delegation.</div>
                                                                 <br/>
@@ -8639,7 +8639,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ca_file</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Certificate authority file name.</div>
                                                                 <br/>
@@ -8653,7 +8653,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cache_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>The SSL session cache size.</div>
                                                                 <br/>
@@ -8667,7 +8667,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cache_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>The SSL session cache timeout value, which is the usable lifetime seconds of negotiated SSL session IDs.</div>
                                                                 <br/>
@@ -8681,7 +8681,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cert</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>The name of the certificate installed on the traffic management system for the purpose of terminating or initiating an SSL connection.</div>
                                                                 <br/>
@@ -8695,7 +8695,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>chain</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies or builds a certificate chain file that a client can use to authenticate the profile.</div>
                                                                 <br/>
@@ -8709,7 +8709,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cipher_group</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a cipher group.</div>
                                                                 <br/>
@@ -8721,9 +8721,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ciphers</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Specifies a cipher name</div>
+                                                                        <div>Specifies a cipher name.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">DEFAULT</div>
@@ -8735,7 +8735,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>crl_file</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the certificate revocation list file name.</div>
                                                                 <br/>
@@ -8747,7 +8747,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>expire_cert_response_control</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the BIGIP action when the server certificate has expired.</div>
                                                                 <br/>
@@ -8761,7 +8761,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>handshake_timeout</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the handshake timeout in seconds.</div>
                                                                 <br/>
@@ -8775,7 +8775,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>key</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the key file name. Specifies the name of the key installed on the traffic management system for the purpose of terminating or initiating an SSL connection.</div>
                                                                 <br/>
@@ -8789,7 +8789,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_active_handshakes</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum number allowed SSL active handshakes.</div>
                                                                 <br/>
@@ -8803,7 +8803,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mod_ssl_methods</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables ModSSL methods.</div>
                                                                 <br/>
@@ -8817,7 +8817,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mode</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables SSL processing.</div>
                                                                 <br/>
@@ -8829,7 +8829,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ocsp</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the name of ocsp profile for purpose of validating status of server certificate.</div>
                                                                 <br/>
@@ -8841,7 +8841,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>options</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables options, including some industry-related workarounds.</div>
                                                                 <br/>
@@ -8855,7 +8855,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>peer_cert_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the peer certificate mode.</div>
                                                                 <br/>
@@ -8869,7 +8869,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>proxy_ssl</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Allows further modification of application traffic within an SSL tunnel while still allowing the server to perform necessary authorization, authentication, auditing steps.</div>
                                                                 <br/>
@@ -8883,7 +8883,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>proxy_ssl_passthrough</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Allows Proxy SSL to passthrough the traffic when ciphersuite negotiated between the client and server is not supported.</div>
                                                                 <br/>
@@ -8897,7 +8897,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>renegotiate_period</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of seconds from the initial connect time after which the system renegotiates an SSL session.</div>
                                                                 <br/>
@@ -8911,7 +8911,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>renegotiate_size</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a throughput size, in megabytes, of SSL renegotiation.</div>
                                                                 <br/>
@@ -8925,7 +8925,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>renegotiation</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether renegotiations are enabled.</div>
                                                                 <br/>
@@ -8939,7 +8939,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>retain_certificate</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>APM module requires storing certificate in SSL session. When <code>no</code>, certificate will not be stored in SSL session.</div>
                                                                 <br/>
@@ -8951,7 +8951,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>generic_alert</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables generic-alert.</div>
                                                                 <br/>
@@ -8965,7 +8965,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>secure_renegotiation</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the secure renegotiation mode.</div>
                                                                 <br/>
@@ -8979,7 +8979,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>server_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Server name to be included in SNI (server name indication) extension during SSL handshake in ClientHello.</div>
                                                                 <br/>
@@ -8991,7 +8991,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>session_mirroring</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables the mirroring of sessions to high availability peer.</div>
                                                                 <br/>
@@ -9005,7 +9005,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>session_ticket</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables session-ticket.</div>
                                                                 <br/>
@@ -9017,7 +9017,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sni_default</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, this profile is the default SSL profile when the server name in a client connection does not match any configured server names, or a client connection does not specify any server name at all.</div>
                                                                 <br/>
@@ -9031,7 +9031,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sni_require</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, connections to a server that does not support SNI extension will be rejected.</div>
                                                                 <br/>
@@ -9043,7 +9043,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ssl_c3d</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables SSL Client certificate constrained delegation.</div>
                                                                 <br/>
@@ -9057,7 +9057,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ssl_forward_proxy_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables ssl-forward-proxy feature.</div>
                                                                 <br/>
@@ -9069,7 +9069,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ssl_sign_hash</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies SSL sign hash algorithm which is used to sign and verify SSL Server Key Exchange and Certificate Verify messages for the specified SSL profiles.</div>
                                                                 <br/>
@@ -9083,7 +9083,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ssl_forward_proxy_bypass</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables ssl-forward-proxy-bypass feature.</div>
                                                                 <br/>
@@ -9097,7 +9097,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>strict_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables the resumption of SSL sessions after an unclean shutdown.</div>
                                                                 <br/>
@@ -9109,7 +9109,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>unclean_shutdown</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the SSL profile performs unclean shutdowns of all SSL connections, which means that underlying TCP connections are closed without exchanging the required SSL shutdown alerts.</div>
                                                                 <br/>
@@ -9123,7 +9123,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>untrusted_cert_response_control</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the BIGIP action when the server certificate has untrusted CA.</div>
                                                                 <br/>
@@ -9151,7 +9151,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Name of the image.</div>
                                                                 <br/>
@@ -9165,7 +9165,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -9179,7 +9179,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>build</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Build number of the image.</div>
                                                     <div>This is usually a sub-string of the <code>name</code>.</div>
@@ -9194,7 +9194,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>checksum</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>MD5 checksum of the image.</div>
                                                     <div>Note that this is the checksum that is stored inside the ISO. It is not the actual checksum of the ISO.</div>
@@ -9209,7 +9209,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Product contained in the ISO.</div>
                                                                 <br/>
@@ -9223,7 +9223,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>id</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>ID component of the image.</div>
                                                     <div>This is usually a sub-string of the <code>name</code>.</div>
@@ -9238,7 +9238,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>title</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Human friendly name of the image.</div>
                                                                 <br/>
@@ -9252,7 +9252,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>verified</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not the system has verified this image.</div>
                                                                 <br/>
@@ -9266,7 +9266,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>version</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Version of software contained in the image.</div>
                                                     <div>This is a sub-string of the <code>name</code>.</div>
@@ -9295,7 +9295,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Name of the image.</div>
                                                                 <br/>
@@ -9309,7 +9309,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -9323,7 +9323,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>build</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Build number of the image.</div>
                                                     <div>This is usually a sub-string of the <code>name</code>.</div>
@@ -9338,7 +9338,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>build_date</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Date of the build.</div>
                                                                 <br/>
@@ -9352,7 +9352,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>checksum</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>MD5 checksum of the image.</div>
                                                     <div>Note that this is the checksum that is stored inside the ISO. It is not the actual checksum of the ISO.</div>
@@ -9367,7 +9367,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>file_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Size, in megabytes, of the image.</div>
                                                                 <br/>
@@ -9381,7 +9381,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>last_modified</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Last modified date of the ISO.</div>
                                                                 <br/>
@@ -9395,7 +9395,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Product contained in the ISO.</div>
                                                                 <br/>
@@ -9409,7 +9409,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>verified</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not the system has verified this image.</div>
                                                                 <br/>
@@ -9423,7 +9423,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>version</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Version of software contained in the image.</div>
                                                     <div>This is a sub-string of the <code>name</code>.</div>
@@ -9452,7 +9452,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>active</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the volume is currently active or not.</div>
                                                     <div>An active volume contains the currently running version of software.</div>
@@ -9467,7 +9467,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>base_build</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Base build version of the software installed in the volume.</div>
                                                     <div>When a hotfix is installed, this refers to the base version of software that the hotfix requires.</div>
@@ -9482,7 +9482,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>build</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Build version of the software installed in the volume.</div>
                                                                 <br/>
@@ -9496,7 +9496,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -9510,7 +9510,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>default_boot_location</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether this volume is the default boot location or not.</div>
                                                                 <br/>
@@ -9524,7 +9524,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                     <div>This usually matches the <code>full_name</code>.</div>
@@ -9539,7 +9539,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The F5 product installed in this slot.</div>
                                                     <div>This should always be BIG-IP.</div>
@@ -9554,7 +9554,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Status of the software installed, or being installed, in the volume.</div>
                                                     <div>When <code>complete</code>, indicates that the software has completed installing.</div>
@@ -9569,7 +9569,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>version</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Version of software installed in the volume, excluding the <code>build</code> number.</div>
                                                                 <br/>
@@ -9597,7 +9597,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -9611,7 +9611,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -9625,7 +9625,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>key_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the type of cryptographic key associated with this certificate.</div>
                                                                 <br/>
@@ -9639,7 +9639,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>key_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the size (in bytes) of the file associated with this file object.</div>
                                                                 <br/>
@@ -9653,7 +9653,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>system_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Path on the BIG-IP where the cert can be found.</div>
                                                                 <br/>
@@ -9667,7 +9667,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sha1_checksum</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>SHA1 checksum of the certificate.</div>
                                                                 <br/>
@@ -9681,7 +9681,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>subject</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies X509 information of the certificate&#x27;s subject.</div>
                                                                 <br/>
@@ -9695,7 +9695,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>last_update_time</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the last time at which the file-object was updated/modified.</div>
                                                                 <br/>
@@ -9709,7 +9709,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>issuer</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies X509 information of the certificate&#x27;s issuer.</div>
                                                                 <br/>
@@ -9723,7 +9723,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>is_bundle</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the certificate file is a bundle (that is, whether it contains more than one certificate).</div>
                                                                 <br/>
@@ -9735,7 +9735,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>fingerprint</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the SHA-256 fingerprint of the certificate.</div>
                                                                 <br/>
@@ -9749,7 +9749,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>expiration_date</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a string representation of the expiration date of the certificate.</div>
                                                                 <br/>
@@ -9763,7 +9763,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>expiration_timestamp</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the date at which this certificate expires. Stored as a POSIX time.</div>
                                                                 <br/>
@@ -9777,7 +9777,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>create_time</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the time at which the file-object was created.</div>
                                                                 <br/>
@@ -9805,7 +9805,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -9819,7 +9819,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -9833,7 +9833,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>key_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the cryptographic type of the key in question. That is, which algorithm this key is compatible with.</div>
                                                                 <br/>
@@ -9847,7 +9847,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>key_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the size of the cryptographic key associated with this file object, in bits.</div>
                                                                 <br/>
@@ -9861,7 +9861,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>security_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the type of security used to handle or store the key.</div>
                                                                 <br/>
@@ -9875,7 +9875,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>system_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The path on the filesystem where the key is stored.</div>
                                                                 <br/>
@@ -9889,7 +9889,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sha1_checksum</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The SHA1 checksum of the key.</div>
                                                                 <br/>
@@ -9917,7 +9917,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -9931,7 +9931,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -9945,7 +9945,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>default</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Default value of the key.</div>
                                                                 <br/>
@@ -9959,7 +9959,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>scf_config</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the database key would be found in an SCF config or not.</div>
                                                                 <br/>
@@ -9971,7 +9971,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>value</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The value of the key</div>
                                                                 <br/>
@@ -9985,7 +9985,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>value_range</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The accepted range of values for the key</div>
                                                                 <br/>
@@ -10013,7 +10013,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>base_mac_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Media Access Control address (MAC address) of the device.</div>
                                                                 <br/>
@@ -10027,7 +10027,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>marketing_name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Marketing name of the device platform.</div>
                                                                 <br/>
@@ -10041,7 +10041,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Mapping of the current time information to specific time-named keys.</div>
                                                                 <br/>
@@ -10054,7 +10054,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>day</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The current day of the month, in numeric form.</div>
                                                                 <br/>
@@ -10069,7 +10069,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hour</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The current hour of the day in 24-hour form.</div>
                                                                 <br/>
@@ -10084,7 +10084,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>minute</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The current minute of the hour.</div>
                                                                 <br/>
@@ -10099,7 +10099,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>month</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The current month, in numeric form.</div>
                                                                 <br/>
@@ -10114,7 +10114,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>second</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The current second of the minute.</div>
                                                                 <br/>
@@ -10129,7 +10129,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>year</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The current year in 4-digit form.</div>
                                                                 <br/>
@@ -10144,7 +10144,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hardware_information</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Information related to the hardware (drives and CPUs) of the system.</div>
                                                                 <br/>
@@ -10157,7 +10157,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>model</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>The model of the hardware.</div>
                                                                 <br/>
@@ -10172,7 +10172,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>The name of the hardware.</div>
                                                                 <br/>
@@ -10187,7 +10187,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>The type of hardware.</div>
                                                                 <br/>
@@ -10202,9 +10202,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>versions</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Hardware specific properties</div>
+                                                                        <div>Hardware specific properties.</div>
                                                                 <br/>
                                     </td>
             </tr>
@@ -10216,9 +10216,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Name of the property</div>
+                                                                        <div>Name of the property.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Size</div>
@@ -10232,9 +10232,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>version</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Value of the property</div>
+                                                                        <div>Value of the property.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">154.00G</div>
@@ -10248,7 +10248,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>package_edition</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Displays the software edition.</div>
                                                                 <br/>
@@ -10262,7 +10262,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>package_version</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>A string combining the <code>product_build</code> and <code>product_build_date</code>.</div>
                                                                 <br/>
@@ -10276,7 +10276,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product_code</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Code identifying the product.</div>
                                                                 <br/>
@@ -10290,7 +10290,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product_build</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Build version of the release version.</div>
                                                                 <br/>
@@ -10304,7 +10304,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product_version</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Major product version of the running software.</div>
                                                                 <br/>
@@ -10318,7 +10318,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product_built</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Unix timestamp of when the product was built.</div>
                                                                 <br/>
@@ -10332,7 +10332,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product_build_date</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Human readable build date.</div>
                                                                 <br/>
@@ -10346,7 +10346,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product_changelist</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Changelist that product branches from.</div>
                                                                 <br/>
@@ -10360,7 +10360,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>product_jobid</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>ID of the job that built the product version.</div>
                                                                 <br/>
@@ -10374,9 +10374,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>chassis_serial</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
-                                                                        <div>Serial of the chassis</div>
+                                                                        <div>Serial of the chassis.</div>
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">11111111-2222-3333-444444444444</div>
@@ -10388,7 +10388,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>host_board_part_revision</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Revision of the host board.</div>
                                                                 <br/>
@@ -10400,7 +10400,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>host_board_serial</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Serial of the host board.</div>
                                                                 <br/>
@@ -10412,7 +10412,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>platform</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Platform identifier.</div>
                                                                 <br/>
@@ -10426,7 +10426,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>switch_board_part_revision</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Switch board revision.</div>
                                                                 <br/>
@@ -10438,7 +10438,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>switch_board_serial</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Serial of the switch board.</div>
                                                                 <br/>
@@ -10450,7 +10450,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>uptime</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Time, in seconds, since the system booted.</div>
                                                                 <br/>
@@ -10478,7 +10478,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -10492,7 +10492,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -10506,7 +10506,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -10520,7 +10520,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -10534,7 +10534,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
                                                                 <br/>
@@ -10548,7 +10548,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
                                                                 <br/>
@@ -10562,7 +10562,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>manual_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
                                                                 <br/>
@@ -10576,7 +10576,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_until_up</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
                                                                 <br/>
@@ -10588,7 +10588,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
                                                                 <br/>
@@ -10602,7 +10602,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>transparent</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in transparent mode.</div>
                                                                 <br/>
@@ -10614,7 +10614,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>up_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
                                                                 <br/>
@@ -10640,7 +10640,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -10654,7 +10654,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -10668,7 +10668,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -10682,7 +10682,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -10696,7 +10696,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether adaptive response time monitoring is enabled for this monitor.</div>
                                                                 <br/>
@@ -10708,7 +10708,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the adaptive-divergence-value is <code>relative</code> or <code>absolute</code>.</div>
                                                                 <br/>
@@ -10722,7 +10722,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_divergence_value</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how far from mean latency each monitor probe is allowed to be.</div>
                                                                 <br/>
@@ -10736,7 +10736,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the hard limit, in milliseconds, which the probe is not allowed to exceed, regardless of the divergence value.</div>
                                                                 <br/>
@@ -10750,7 +10750,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>adaptive_sampling_timespan</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the size of the sliding window, in seconds, which records probe history.</div>
                                                                 <br/>
@@ -10764,7 +10764,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the IP address and service port of the resource that is the destination of this monitor.</div>
                                                                 <br/>
@@ -10778,7 +10778,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div>
                                                                 <br/>
@@ -10792,7 +10792,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_dscp</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the differentiated services code point (DSCP).</div>
                                                                 <br/>
@@ -10804,7 +10804,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>manual_resume</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system automatically changes the status of a resource to up at the next successful monitor check.</div>
                                                                 <br/>
@@ -10818,7 +10818,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>reverse</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in reverse mode. When the monitor is in reverse mode, a successful check marks the monitored object down instead of up.</div>
                                                                 <br/>
@@ -10830,7 +10830,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_until_up</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the amount of time, in seconds, after the first successful response before a node is marked up.</div>
                                                                 <br/>
@@ -10842,7 +10842,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds the target has in which to respond to the monitor request.</div>
                                                                 <br/>
@@ -10856,7 +10856,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>transparent</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the monitor operates in transparent mode.</div>
                                                                 <br/>
@@ -10868,7 +10868,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>up_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the frequency at which the system issues the monitor check when the resource is up.</div>
                                                                 <br/>
@@ -10894,7 +10894,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -10908,7 +10908,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -10922,7 +10922,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -10936,7 +10936,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -10950,7 +10950,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>abc</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Appropriate Byte Counting (RFC 3465)</div>
                                                     <div>When <code>yes</code>, increases the congestion window by basing the increase amount on the number of previously unacknowledged bytes that each ACK covers.</div>
@@ -10965,7 +10965,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ack_on_push</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, significantly improved performance to Microsoft Windows and MacOS peers who are writing out on a very small send buffer.</div>
                                                                 <br/>
@@ -10977,7 +10977,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>auto_proxy_buffer</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, <code>yes</code>, that the system uses the network measurements to set the optimal proxy buffer size.</div>
                                                                 <br/>
@@ -10991,7 +10991,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>auto_receive_window</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses the network measurements to set the optimal receive window size.</div>
                                                                 <br/>
@@ -11003,7 +11003,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>auto_send_buffer</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses the network measurements to set the optimal send buffer size.</div>
                                                                 <br/>
@@ -11017,7 +11017,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>close_wait</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the length of time that a TCP connection remains in the LAST-ACK state before quitting.</div>
                                                     <div>In addition to a numeric value, the value of this fact may also be one of <code>immediate</code> or <code>indefinite</code>.</div>
@@ -11034,7 +11034,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>congestion_metrics_cache</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses a cache for storing congestion metrics.</div>
                                                     <div>Subsequently, because these metrics are already known and cached, the initial slow-start ramp for previously-encountered peers improves.</div>
@@ -11049,7 +11049,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>congestion_metrics_cache_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds for which entries in the congestion metrics cache are valid.</div>
                                                                 <br/>
@@ -11061,7 +11061,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>congestion_control</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the algorithm to use to share network resources among competing users to reduce congestion.</div>
                                                     <div>Return values may include, <code>high-speed</code>, <code>cdg</code>, <code>chd</code>, <code>none</code>, <code>cubic</code>, <code>illinois</code>, <code>new-reno</code>, <code>reno</code>, <code>scalable</code>, <code>vegas</code>, <code>westwood</code>, and <code>woodside</code>.</div>
@@ -11076,7 +11076,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>deferred_accept</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system defers allocation of the connection chain context until the system has received the payload from the client.</div>
                                                     <div>Enabling this setting is useful in dealing with 3-way handshake denial-of-service attacks.</div>
@@ -11091,7 +11091,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>delay_window_control</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that the system uses an estimate of queuing delay as a measure of congestion to control, in addition to the normal loss-based control, the amount of data sent.</div>
                                                                 <br/>
@@ -11105,7 +11105,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>delayed_acks</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when checked (enabled), that the system can send fewer than one ACK (acknowledgment) segment per data segment received.</div>
                                                                 <br/>
@@ -11119,7 +11119,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>dsack</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>D-SACK (RFC 2883)</div>
                                                     <div>Specifies, when <code>yes</code>, the use of the selective ACK (SACK) option to acknowledge duplicate segments.</div>
@@ -11134,7 +11134,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>early_retransmit</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses early retransmit (as specified in RFC 5827) to reduce the recovery time for connections that are receive- buffer or user-data limited.</div>
                                                                 <br/>
@@ -11148,7 +11148,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>explicit_congestion_notification</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses the TCP flags CWR (congestion window reduction) and ECE (ECN-Echo) to notify its peer of congestion and congestion counter-measures.</div>
                                                                 <br/>
@@ -11162,7 +11162,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enhanced_loss_recovery</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system uses enhanced loss recovery to recover from random packet losses more effectively.</div>
                                                                 <br/>
@@ -11176,7 +11176,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>fast_open</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system supports TCP Fast Open, which reduces latency by allowing a client to include the first packet of data with the SYN</div>
                                                                 <br/>
@@ -11190,7 +11190,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>fast_open_cookie_expiration</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds that a Fast Open Cookie delivered to a client is valid for SYN packets from that client.</div>
                                                                 <br/>
@@ -11204,7 +11204,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>fin_wait_1</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the length of time that a TCP connection is in the FIN-WAIT-1 or CLOSING state before quitting.</div>
                                                                 <br/>
@@ -11218,7 +11218,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>fin_wait_2</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the length of time that a TCP connection is in the FIN-WAIT-2 state before quitting.</div>
                                                                 <br/>
@@ -11232,7 +11232,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>idle_timeout</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the length of time that a connection is idle (has no traffic) before the connection is eligible for deletion.</div>
                                                                 <br/>
@@ -11246,7 +11246,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>initial_congestion_window_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the initial congestion window size for connections to this destination.</div>
                                                                 <br/>
@@ -11260,7 +11260,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>initial_receive_window_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the initial receive window size for connections to this destination.</div>
                                                                 <br/>
@@ -11274,7 +11274,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>dont_fragment_flag</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the Don&#x27;t Fragment (DF) bit setting in the IP Header of the outgoing TCP packet.</div>
                                                                 <br/>
@@ -11288,7 +11288,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_tos</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the L3 Type of Service (ToS) level that the system inserts in TCP packets destined for clients.</div>
                                                                 <br/>
@@ -11302,7 +11302,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_to_live</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the outgoing TCP packet&#x27;s IP Header TTL mode.</div>
                                                                 <br/>
@@ -11316,7 +11316,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_to_live_v4</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the outgoing packet&#x27;s IP Header TTL value for IPv4 traffic.</div>
                                                                 <br/>
@@ -11330,7 +11330,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_to_live_v6</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the outgoing packet&#x27;s IP Header TTL value for IPv6 traffic.</div>
                                                                 <br/>
@@ -11344,7 +11344,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>keep_alive_interval</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how frequently the system sends data over an idle TCP connection, to determine whether the connection is still valid.</div>
                                                                 <br/>
@@ -11358,7 +11358,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>limited_transmit_recovery</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses limited transmit recovery revisions for fast retransmits (as specified in RFC 3042) to reduce the recovery time for connections on a lossy network.</div>
                                                                 <br/>
@@ -11372,7 +11372,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>link_qos</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the L2 Quality of Service (QoS) level that the system inserts in TCP packets destined for clients.</div>
                                                                 <br/>
@@ -11386,7 +11386,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_segment_retrans</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum number of times that the system resends data segments.</div>
                                                                 <br/>
@@ -11400,7 +11400,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_syn_retrans</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum number of times that the system resends a SYN packet when it does not receive a corresponding SYN-ACK.</div>
                                                                 <br/>
@@ -11414,7 +11414,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_segment_size</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the largest amount of data that the system can receive in a single TCP segment, not including the TCP and IP headers.</div>
                                                                 <br/>
@@ -11428,7 +11428,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>md5_signature</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, to use RFC2385 TCP-MD5 signatures to protect TCP traffic against intermediate tampering.</div>
                                                                 <br/>
@@ -11442,7 +11442,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>minimum_rto</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the minimum length of time the system waits for acknowledgements of data sent before resending the data.</div>
                                                                 <br/>
@@ -11456,7 +11456,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>multipath_tcp</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system accepts Multipath TCP (MPTCP) connections, which allow multiple client-side flows to connect to a single server-side flow.</div>
                                                                 <br/>
@@ -11470,7 +11470,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_checksum</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system calculates the checksum for MPTCP connections.</div>
                                                                 <br/>
@@ -11482,7 +11482,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_checksum_verify</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system verifies the checksum for MPTCP connections.</div>
                                                                 <br/>
@@ -11494,7 +11494,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_fallback</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies an action on fallback, that is, when MPTCP transitions to regular TCP, because something prevents MPTCP from working correctly.</div>
                                                                 <br/>
@@ -11508,7 +11508,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_fast_join</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, a FAST join, allowing data to be sent on the MP_JOIN_SYN, which can allow a server response to occur in parallel with the JOIN.</div>
                                                                 <br/>
@@ -11520,7 +11520,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_idle_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of seconds that an MPTCP connection is idle before the connection is eligible for deletion.</div>
                                                                 <br/>
@@ -11534,7 +11534,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_join_max</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the highest number of MPTCP connections that can join to a given connection.</div>
                                                                 <br/>
@@ -11548,7 +11548,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_make_after_break</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that make-after-break functionality is supported, allowing for long-lived MPTCP sessions.</div>
                                                                 <br/>
@@ -11560,7 +11560,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_no_join_dss_ack</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when checked (enabled), that no DSS option is sent on the JOIN ACK.</div>
                                                                 <br/>
@@ -11572,7 +11572,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_rto_max</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                                     <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
@@ -11585,7 +11585,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_retransmit_min</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the minimum value (in msec) of the retransmission timer for these MPTCP flows.</div>
                                                                 <br/>
@@ -11599,7 +11599,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_subflow_max</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum number of MPTCP subflows for a single flow.</div>
                                                                 <br/>
@@ -11613,7 +11613,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mptcp_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, in seconds, the timeout value to discard long-lived sessions that do not have an active flow.</div>
                                                                 <br/>
@@ -11627,7 +11627,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>nagle_algorithm</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system applies Nagle&#x27;s algorithm to reduce the number of short segments on the network.</div>
                                                                 <br/>
@@ -11639,7 +11639,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pkt_loss_ignore_burst</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the probability of performing congestion control when multiple packets are lost, even if the Packet Loss Ignore Rate was not exceeded.</div>
                                                                 <br/>
@@ -11651,7 +11651,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>pkt_loss_ignore_rate</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the threshold of packets lost per million at which the system performs congestion control.</div>
                                                                 <br/>
@@ -11663,7 +11663,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>proxy_buffer_high</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the proxy buffer level, in bytes, at which the receive window is closed.</div>
                                                                 <br/>
@@ -11677,7 +11677,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>proxy_buffer_low</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the proxy buffer level, in bytes, at which the receive window is opened.</div>
                                                                 <br/>
@@ -11691,7 +11691,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>proxy_max_segment</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system attempts to advertise the same maximum segment size (MSS) to the server-side connection as that of the client-side connection.</div>
                                                                 <br/>
@@ -11705,7 +11705,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>proxy_options</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system advertises an option (such as time stamps) to the server only when the option is negotiated with the client.</div>
                                                                 <br/>
@@ -11717,7 +11717,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>push_flag</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how the BIG-IP system receives ACKs.</div>
                                                                 <br/>
@@ -11731,7 +11731,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_pace</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system paces the egress packets to avoid dropping packets, allowing for optimum goodput.</div>
                                                                 <br/>
@@ -11745,7 +11745,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_pace_max_rate</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum rate in bytes per second to which the system paces TCP data transmission.</div>
                                                                 <br/>
@@ -11757,7 +11757,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>receive_window</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the maximum advertised RECEIVE window size.</div>
                                                                 <br/>
@@ -11771,7 +11771,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>reset_on_timeout</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system sends a reset packet (RST) in addition to deleting the connection, when a connection exceeds the idle timeout value.</div>
                                                                 <br/>
@@ -11785,7 +11785,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>retransmit_threshold</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of duplicate ACKs (retransmit threshold) to start fast recovery.</div>
                                                                 <br/>
@@ -11799,7 +11799,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>selective_acks</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system processes data using selective ACKs (SACKs) whenever possible, to improve system performance.</div>
                                                                 <br/>
@@ -11813,7 +11813,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>selective_nack</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system processes data using a selective negative acknowledgment (SNACK) whenever possible, to improve system performance.</div>
                                                                 <br/>
@@ -11827,7 +11827,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>send_buffer</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the SEND window size.</div>
                                                                 <br/>
@@ -11841,7 +11841,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>slow_start</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses Slow-Start Congestion Avoidance as described in RFC3390 in order to ramp up traffic without causing excessive congestion on the link.</div>
                                                                 <br/>
@@ -11855,7 +11855,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>syn_cookie_enable</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the default (if no DoS profile is associated) number of embryonic connections that are allowed on any virtual server, before SYN Cookie challenges are enabled for that virtual server.</div>
                                                                 <br/>
@@ -11869,7 +11869,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>syn_cookie_white_list</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether or not to use a SYN Cookie WhiteList when doing software SYN Cookies.</div>
                                                                 <br/>
@@ -11881,7 +11881,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>syn_retrans_to_base</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the initial RTO (Retransmission TimeOut) base multiplier for SYN retransmissions.</div>
                                                                 <br/>
@@ -11895,7 +11895,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tail_loss_probe</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses Tail Loss Probe to reduce the number of retransmission timeouts.</div>
                                                                 <br/>
@@ -11909,7 +11909,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_wait_recycle</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that connections in a TIME-WAIT state are reused when the system receives a SYN packet, indicating a request for a new connection.</div>
                                                                 <br/>
@@ -11923,7 +11923,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>time_wait</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the length of time that a TCP connection remains in the TIME-WAIT state before entering the CLOSED state.</div>
                                                                 <br/>
@@ -11937,7 +11937,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>timestamps</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system uses the timestamps extension for TCP (as specified in RFC 1323) to enhance high-speed network performance.</div>
                                                                 <br/>
@@ -11951,7 +11951,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>verified_accept</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies, when <code>yes</code>, that the system can actually communicate with the server before establishing a client connection.</div>
                                                                 <br/>
@@ -11965,7 +11965,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>zero_window_timeout</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td></td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the timeout in milliseconds for terminating a connection with an effective zero length TCP transmit window.</div>
                                                                 <br/>
@@ -11993,7 +11993,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -12007,7 +12007,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -12021,7 +12021,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the traffic group.</div>
                                                                 <br/>
@@ -12035,7 +12035,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>auto_failback_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the traffic group fails back to the default device.</div>
                                                                 <br/>
@@ -12049,7 +12049,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>auto_failback_time</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the time required to fail back.</div>
                                                                 <br/>
@@ -12063,7 +12063,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ha_load_factor</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a number for this traffic group that represents the load this traffic group presents to the system relative to other traffic groups.</div>
                                                                 <br/>
@@ -12077,7 +12077,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ha_order</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>This list of devices specifies the order in which the devices will become active for the traffic group when a failure occurs.</div>
                                                                 <br/>
@@ -12091,7 +12091,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>is_floating</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates whether the traffic group can fail over to other devices in the device group.</div>
                                                                 <br/>
@@ -12103,7 +12103,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mac_masquerade_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a MAC address for the traffic group.</div>
                                                                 <br/>
@@ -12131,7 +12131,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -12145,7 +12145,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -12159,7 +12159,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the Trunk.</div>
                                                                 <br/>
@@ -12173,7 +12173,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>media_speed</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Speed of the media attached to the trunk.</div>
                                                                 <br/>
@@ -12187,7 +12187,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>lacp_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The operation mode for LACP.</div>
                                                                 <br/>
@@ -12201,7 +12201,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>lacp_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether LACP is enabled or not.</div>
                                                                 <br/>
@@ -12215,7 +12215,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>stp_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether Spanning Tree Protocol (STP) is enabled or not.</div>
                                                                 <br/>
@@ -12229,7 +12229,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>operational_member_count</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of working members associated with the trunk.</div>
                                                                 <br/>
@@ -12243,7 +12243,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>media_status</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the media that is part of the trunk is up or not.</div>
                                                                 <br/>
@@ -12257,7 +12257,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>link_selection_policy</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The LACP policy that the trunk uses to determine which member link can handle new traffic.</div>
                                                                 <br/>
@@ -12271,7 +12271,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>lacp_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The rate at which the system sends the LACP control packets.</div>
                                                                 <br/>
@@ -12285,7 +12285,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interfaces</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The list of interfaces that are part of the trunk.</div>
                                                                 <br/>
@@ -12299,7 +12299,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>distribution_hash</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The basis for the has that the system uses as the frame distribution algorithm.</div>
                                                     <div>The system uses this hash to determine which interface to use for forwarding traffic.</div>
@@ -12314,7 +12314,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>configured_member_count</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The number of configured members that are associated with the trunk.</div>
                                                                 <br/>
@@ -12342,7 +12342,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -12356,7 +12356,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -12370,7 +12370,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parent</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Profile from which this profile inherits settings.</div>
                                                                 <br/>
@@ -12384,7 +12384,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the resource.</div>
                                                                 <br/>
@@ -12398,7 +12398,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allow_no_payload</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Allow the passage of datagrams that contain header information, but no essential data.</div>
                                                                 <br/>
@@ -12412,7 +12412,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>buffer_max_bytes</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Ingress buffer byte limit. Maximum allowed value is 16777215.</div>
                                                                 <br/>
@@ -12426,7 +12426,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>buffer_max_packets</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Ingress buffer packet limit. Maximum allowed value is 255.</div>
                                                                 <br/>
@@ -12438,7 +12438,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>datagram_load_balancing</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Load balance UDP datagram by datagram</div>
                                                                 <br/>
@@ -12452,7 +12452,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>idle_timeout</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of seconds that a connection is idle before the connection is eligible for deletion.</div>
                                                     <div>In addition to a number, may be one of the values <code>indefinite</code>, or <code>immediate</code>.</div>
@@ -12467,7 +12467,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_df_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Describes the Don&#x27;t Fragment (DF) bit setting in the outgoing UDP packet.</div>
                                                     <div>May be one of <code>pmtu</code>, <code>preserve</code>, <code>set</code>, or <code>clear</code>.</div>
@@ -12486,7 +12486,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_tos_to_client</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The Type of Service level that the traffic management system assigns to UDP packets when sending them to clients.</div>
                                                     <div>May be numeric, or the values <code>pass-through</code> or <code>mimic</code>.</div>
@@ -12501,7 +12501,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_ttl_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The outgoing UDP packet&#x27;s TTL mode.</div>
                                                     <div>Valid modes are <code>proxy</code>, <code>preserve</code>, <code>decrement</code>, and <code>set</code>.</div>
@@ -12520,7 +12520,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_ttl_v4</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>IPv4 TTL.</div>
                                                                 <br/>
@@ -12534,7 +12534,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_ttl_v6</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>IPv6 TTL.</div>
                                                                 <br/>
@@ -12548,7 +12548,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>link_qos_to_client</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The Quality of Service level that the system assigns to UDP packets when sending them to clients.</div>
                                                     <div>May be either numberic, or the value <code>pass-through</code>.</div>
@@ -12563,7 +12563,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>no_checksum</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the checksum processing is enabled or disabled.</div>
                                                     <div>Note that if the datagram is IPv6, the system always performs checksum processing.</div>
@@ -12578,7 +12578,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>proxy_mss</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When <code>yes</code>, specifies that the system advertises the same mss to the server as was negotiated with the client.</div>
                                                                 <br/>
@@ -12606,7 +12606,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -12620,7 +12620,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -12634,7 +12634,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>allowed_slots</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of slots that the guest is allowed to be assigned to.</div>
                                                                 <br/>
@@ -12648,7 +12648,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>assigned_slots</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Slots that the guest is assigned to.</div>
                                                                 <br/>
@@ -12662,7 +12662,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>boot_priority</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies boot priority of the guest. Lower number means earlier to boot.</div>
                                                                 <br/>
@@ -12676,7 +12676,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cores_per_slot</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of cores that the system allocates to the guest.</div>
                                                                 <br/>
@@ -12690,7 +12690,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hostname</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>FQDN assigned to the guest.</div>
                                                                 <br/>
@@ -12704,7 +12704,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hotfix_image</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>hotfix image to install onto any of this guest&#x27;s newly created virtual disks.</div>
                                                                 <br/>
@@ -12718,7 +12718,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>initial_image</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Software image to install onto any of this guest&#x27;s newly created virtual disks.</div>
                                                                 <br/>
@@ -12732,7 +12732,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mgmt_route</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Management gateway IP address for the guest.</div>
                                                                 <br/>
@@ -12746,7 +12746,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mgmt_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Management IP address configuration for the guest.</div>
                                                                 <br/>
@@ -12760,7 +12760,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mgmt_network</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Accessibility of this vCMP guest&#x27;s management network.</div>
                                                                 <br/>
@@ -12774,7 +12774,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>min_number_of_slots</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the minimum number of slots that the guest must be assigned to.</div>
                                                                 <br/>
@@ -12788,7 +12788,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>number_of_slots</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the number of slots the guest should be assigned to.</div>
                                                     <div>This number is always greater than, or equal to, <code>min_number_of_slots</code>.</div>
@@ -12803,7 +12803,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ssl_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The SSL hardware allocation mode for the guest.</div>
                                                                 <br/>
@@ -12817,7 +12817,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>state</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the state of the guest.</div>
                                                     <div>May be one of <code>configured</code>, <code>provisioned</code>, or <code>deployed</code>.</div>
@@ -12833,7 +12833,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>virtual_disk</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The filename of the virtual disk to use for this guest.</div>
                                                                 <br/>
@@ -12861,7 +12861,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -12875,7 +12875,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -12889,7 +12889,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The virtual IP address.</div>
                                                                 <br/>
@@ -12903,7 +12903,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>arp_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not ARP is enabled for the specified virtual address.</div>
                                                                 <br/>
@@ -12917,7 +12917,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>auto_delete_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates if the virtual address will be deleted automatically on deletion of the last associated virtual server or not.</div>
                                                                 <br/>
@@ -12929,7 +12929,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>connection_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Concurrent connection limit for one or more virtual servers.</div>
                                                                 <br/>
@@ -12941,7 +12941,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The description of the virtual address.</div>
                                                                 <br/>
@@ -12955,7 +12955,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the virtual address is enabled or not.</div>
                                                                 <br/>
@@ -12969,7 +12969,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>icmp_echo</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the virtual address should reply to ICMP echo requests.</div>
                                                                 <br/>
@@ -12983,7 +12983,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>floating</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Property derived from traffic-group. A floating virtual address is a virtual address for a VLAN that serves as a shared address by all devices of a BIG-IP traffic-group.</div>
                                                                 <br/>
@@ -12997,7 +12997,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>netmask</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Netmask of the virtual address.</div>
                                                                 <br/>
@@ -13011,7 +13011,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>route_advertisement</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the route advertisement setting for the virtual address.</div>
                                                                 <br/>
@@ -13023,7 +13023,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>traffic_group</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Traffic group on which the virtual address is active.</div>
                                                                 <br/>
@@ -13037,7 +13037,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>spanning</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not spanning is enabled for the specified virtual address.</div>
                                                                 <br/>
@@ -13049,7 +13049,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>inherited_traffic_group</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates if the traffic-group is inherited from the parent folder.</div>
                                                                 <br/>
@@ -13075,7 +13075,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>availability_status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The availability of the virtual server.</div>
                                                                 <br/>
@@ -13089,7 +13089,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -13103,7 +13103,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -13117,7 +13117,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>auto_lasthop</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>When enabled, allows the system to send return traffic to the MAC address that transmitted the request, even if the routing table points to a different network or interface.</div>
                                                                 <br/>
@@ -13131,7 +13131,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>bw_controller_policy</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The bandwidth controller for the system to use to enforce a throughput policy for incoming network traffic.</div>
                                                                 <br/>
@@ -13145,7 +13145,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_bits_in</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of client-side ingress bits.</div>
                                                                 <br/>
@@ -13159,7 +13159,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_bits_out</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of client-side egress bits.</div>
                                                                 <br/>
@@ -13173,7 +13173,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_current_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of current connections client-side.</div>
                                                                 <br/>
@@ -13187,7 +13187,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_evicted_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of evicted connections client-side.</div>
                                                                 <br/>
@@ -13201,7 +13201,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_max_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of connections client-side.</div>
                                                                 <br/>
@@ -13215,7 +13215,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_pkts_in</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of client-side ingress packets.</div>
                                                                 <br/>
@@ -13229,7 +13229,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_pkts_out</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of client-side egress packets.</div>
                                                                 <br/>
@@ -13243,7 +13243,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_slow_killed</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of slow connections killed, client-side.</div>
                                                                 <br/>
@@ -13257,7 +13257,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>client_side_total_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Total number of connections.</div>
                                                                 <br/>
@@ -13271,7 +13271,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cmp_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not clustered multi-processor (CMP) acceleration is enabled.</div>
                                                                 <br/>
@@ -13285,7 +13285,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cmp_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The clustered-multiprocessing mode.</div>
                                                                 <br/>
@@ -13299,7 +13299,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>connection_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of concurrent connections you want to allow for the virtual server.</div>
                                                                 <br/>
@@ -13313,7 +13313,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The description of the virtual server.</div>
                                                                 <br/>
@@ -13327,7 +13327,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not the virtual is enabled.</div>
                                                                 <br/>
@@ -13341,7 +13341,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_bits_in</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of ephemeral ingress bits.</div>
                                                                 <br/>
@@ -13355,7 +13355,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_bits_out</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of ephemeral egress bits.</div>
                                                                 <br/>
@@ -13369,7 +13369,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_current_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of ephemeral current connections.</div>
                                                                 <br/>
@@ -13383,7 +13383,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_evicted_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of ephemeral evicted connections.</div>
                                                                 <br/>
@@ -13397,7 +13397,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_max_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of ephemeral connections.</div>
                                                                 <br/>
@@ -13411,7 +13411,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_pkts_in</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of ephemeral ingress packets.</div>
                                                                 <br/>
@@ -13425,7 +13425,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_pkts_out</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of ephemeral egress packets.</div>
                                                                 <br/>
@@ -13439,7 +13439,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_slow_killed</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of ephemeral slow connections killed.</div>
                                                                 <br/>
@@ -13453,7 +13453,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ephemeral_total_connections</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Total number of ephemeral connections.</div>
                                                                 <br/>
@@ -13467,7 +13467,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>total_software_accepted_syn_cookies</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>SYN Cookies Total Software Accepted.</div>
                                                                 <br/>
@@ -13479,7 +13479,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>total_hardware_accepted_syn_cookies</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>SYN Cookies Total Hardware Accepted.</div>
                                                                 <br/>
@@ -13491,7 +13491,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>total_hardware_syn_cookies</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>SYN Cookies Total Hardware</div>
                                                                 <br/>
@@ -13503,7 +13503,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>hardware_syn_cookie_instances</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Hardware SYN Cookie Instances</div>
                                                                 <br/>
@@ -13515,7 +13515,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>total_software_rejected_syn_cookies</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Total Software Rejected</div>
                                                                 <br/>
@@ -13527,7 +13527,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>software_syn_cookie_instances</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Software SYN Cookie Instances</div>
                                                                 <br/>
@@ -13539,7 +13539,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>current_syn_cache</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Current SYN Cache</div>
                                                                 <br/>
@@ -13551,7 +13551,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>max_conn_duration</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Max Conn Duration/msec</div>
                                                                 <br/>
@@ -13563,7 +13563,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mean_conn_duration</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Mean Conn Duration/msec</div>
                                                                 <br/>
@@ -13575,7 +13575,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>min_conn_duration</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Min Conn Duration/msec</div>
                                                                 <br/>
@@ -13587,7 +13587,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cpu_usage_ratio_last_5_min</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>CPU Usage Ratio (%) Last 5 Minutes</div>
                                                                 <br/>
@@ -13599,7 +13599,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cpu_usage_ratio_last_5_sec</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>CPU Usage Ratio (%) Last 5 Seconds</div>
                                                                 <br/>
@@ -13611,7 +13611,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cpu_usage_ratio_last_1_min</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>CPU Usage Ratio (%) Last 1 Minute</div>
                                                                 <br/>
@@ -13623,7 +13623,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>syn_cache_overflow</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>SYN Cache Overflow</div>
                                                                 <br/>
@@ -13635,7 +13635,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>total_software_syn_cookies</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Total Software</div>
                                                                 <br/>
@@ -13647,7 +13647,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>syn_cookies_status</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>SYN Cookies Status</div>
                                                                 <br/>
@@ -13661,7 +13661,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>fallback_persistence_profile</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Fallback persistence profile for the virtual server to use when the default persistence profile is not available.</div>
                                                                 <br/>
@@ -13675,7 +13675,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>persistence_profile</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>The persistence profile you want the system to use as the default for this virtual server.</div>
                                                                 <br/>
@@ -13689,7 +13689,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>translate_port</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables port translation.</div>
                                                                 <br/>
@@ -13703,7 +13703,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>translate_address</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Enables or disables address translation for the virtual server.</div>
                                                                 <br/>
@@ -13717,7 +13717,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>vlans</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of VLANs on which the virtual server is either enabled or disabled.</div>
                                                                 <br/>
@@ -13731,7 +13731,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Name of the virtual address and service on which the virtual server listens for connections.</div>
                                                                 <br/>
@@ -13745,7 +13745,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>last_hop_pool</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Name of the last hop pool that you want the virtual server to use to direct reply traffic to the last hop router.</div>
                                                                 <br/>
@@ -13759,7 +13759,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>nat64_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not NAT64 is enabled.</div>
                                                                 <br/>
@@ -13773,7 +13773,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>source_port_behavior</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies whether the system preserves the source port of the connection.</div>
                                                                 <br/>
@@ -13787,7 +13787,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>ip_intelligence_policy</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>IP Intelligence policy assigned to the virtual</div>
                                                                 <br/>
@@ -13801,7 +13801,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>protocol</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>IP protocol for which you want the virtual server to direct traffic.</div>
                                                                 <br/>
@@ -13815,7 +13815,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>default_pool</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Pool name that you want the virtual server to use as the default pool.</div>
                                                                 <br/>
@@ -13829,7 +13829,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_limit_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Indicates whether the rate limit is applied per virtual object, per source address, per destination address, or some combination thereof.</div>
                                                                 <br/>
@@ -13843,7 +13843,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_limit_source_mask</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a mask, in bits, to be applied to the source address as part of the rate limiting.</div>
                                                                 <br/>
@@ -13855,7 +13855,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_limit</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum number of connections per second allowed for a virtual server.</div>
                                                                 <br/>
@@ -13869,7 +13869,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>snat_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the type of source address translation associated with the specified virtual server.</div>
                                                                 <br/>
@@ -13883,7 +13883,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>snat_pool</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the name of a LSN or SNAT pool used by the specified virtual server.</div>
                                                                 <br/>
@@ -13897,7 +13897,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>status_reason</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>If there is a problem with the status of the virtual, that problem is reported here.</div>
                                                                 <br/>
@@ -13911,7 +13911,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>gtm_score</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a score that is associated with the virtual server.</div>
                                                                 <br/>
@@ -13923,7 +13923,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_class</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Name of an existing rate class that you want the virtual server to use to enforce a throughput policy for incoming network traffic.</div>
                                                                 <br/>
@@ -13935,7 +13935,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>rate_limit_destination_mask</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a mask, in bits, to be applied to the destination address as part of the rate limiting.</div>
                                                                 <br/>
@@ -13949,7 +13949,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>source_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies an IP address or network from which the virtual server will accept traffic.</div>
                                                                 <br/>
@@ -13963,7 +13963,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>authentication_profile</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies a list of authentication profile names, separated by spaces, that the virtual server uses to manage authentication.</div>
                                                                 <br/>
@@ -13977,7 +13977,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>connection_mirror_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether or not connection mirroring is enabled.</div>
                                                                 <br/>
@@ -13991,7 +13991,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>irules</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of iRules that customize the virtual server to direct and manage traffic.</div>
                                                                 <br/>
@@ -14005,7 +14005,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>security_log_profiles</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies the log profile applied to the virtual server.</div>
                                                                 <br/>
@@ -14019,7 +14019,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Virtual server type.</div>
                                                                 <br/>
@@ -14033,7 +14033,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Address portion of the <code>destination</code>.</div>
                                                                 <br/>
@@ -14047,7 +14047,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>destination_port</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Port potion of the <code>destination</code>.</div>
                                                                 <br/>
@@ -14074,7 +14074,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>context</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Which side of the connection the profile affects; either <code>all</code>, <code>client-side</code> or <code>server-side</code>.</div>
                                                                 <br/>
@@ -14089,7 +14089,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -14104,7 +14104,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -14119,7 +14119,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>total_requests</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Total requests.</div>
                                                                 <br/>
@@ -14147,7 +14147,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>auto_lasthop</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Allows the system to send return traffic to the MAC address that transmitted the request, even if the routing table points to a different network or interface.</div>
                                                                 <br/>
@@ -14161,7 +14161,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>cmp_hash_algorithm</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies how the traffic on the VLAN will be disaggregated.</div>
                                                                 <br/>
@@ -14175,7 +14175,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Description of the VLAN.</div>
                                                                 <br/>
@@ -14189,7 +14189,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>failsafe_action</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Action for the system to take when the fail-safe mechanism is triggered.</div>
                                                                 <br/>
@@ -14203,7 +14203,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>failsafe_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether failsafe is enabled or not.</div>
                                                                 <br/>
@@ -14217,7 +14217,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>failsafe_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Number of seconds that an active unit can run without detecting network traffic on this VLAN before it starts a failover.</div>
                                                                 <br/>
@@ -14231,7 +14231,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>if_index</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Index assigned to this VLAN. It is a unique identifier assigned for all objects displayed in the SNMP IF-MIB.</div>
                                                                 <br/>
@@ -14245,7 +14245,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>learning_mode</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether switch ports placed in the VLAN are configured for switch learning, forwarding only, or dropped.</div>
                                                                 <br/>
@@ -14259,7 +14259,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>interfaces</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>List of tagged or untagged interfaces and trunks that you want to configure for the VLAN.</div>
                                                                 <br/>
@@ -14272,7 +14272,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>full_path</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Full name of the resource as known to BIG-IP.</div>
                                                                 <br/>
@@ -14287,7 +14287,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Relative name of the resource in BIG-IP.</div>
                                                                 <br/>
@@ -14302,7 +14302,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tagged</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the interface is tagged or not.</div>
                                                                 <br/>
@@ -14315,7 +14315,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>mtu</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specific maximum transition unit (MTU) for the VLAN.</div>
                                                                 <br/>
@@ -14329,7 +14329,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sflow_poll_interval</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Maximum interval in seconds between two pollings.</div>
                                                                 <br/>
@@ -14341,7 +14341,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sflow_poll_interval_global</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the global VLAN poll-interval setting, overrides the object-level poll-interval setting.</div>
                                                                 <br/>
@@ -14353,7 +14353,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sflow_sampling_rate</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Ratio of packets observed to the samples generated.</div>
                                                                 <br/>
@@ -14365,7 +14365,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>sflow_sampling_rate_global</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Whether the global VLAN sampling-rate setting, overrides the object-level sampling-rate setting.</div>
                                                                 <br/>
@@ -14379,7 +14379,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>source_check_enabled</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Specifies that only connections that have a return route in the routing table are accepted.</div>
                                                                 <br/>
@@ -14393,7 +14393,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>true_mac_address</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Media access control (MAC) address for the lowest-numbered interface assigned to this VLAN.</div>
                                                                 <br/>
@@ -14407,7 +14407,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>tag</b>
                     <br/><div style="font-size: small; color: red">int</div>
                 </td>
-                <td>changed</td>
+                <td>queried</td>
                 <td>
                                                                         <div>Tag number for the VLAN.</div>
                                                                 <br/>
