@@ -1,0 +1,6 @@
+---
+
+- name: Create partition
+  bigip_partition:
+    name: "{{ partition }}"
+

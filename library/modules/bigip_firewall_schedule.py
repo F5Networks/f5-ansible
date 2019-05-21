@@ -371,7 +371,31 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    def _convert_datetime(self, value):
+        if value is None:
+            return None
+        p = r'(\d{4})-(\d{1,2})-(\d{1,2})[:, T](\d{2}):(\d{2}):(\d{2})'
+        match = re.match(p, value)
+        if match:
+            date = '{0}-{1}-{2}:{3}:{4}:{5}'.format(*match.group(1, 2, 3, 4, 5, 6))
+            return date
+
+    @property
+    def date_valid_end(self):
+        result = self._convert_datetime(self._values['date_valid_end'])
+        return result
+
+    @property
+    def date_valid_start(self):
+        result = self._convert_datetime(self._values['date_valid_start'])
+        return result
+
+    @property
+    def days_of_week(self):
+        if self._values['days_of_week'] is None:
+            return None
+        if len(self._values['days_of_week']) == 7:
+            return 'all'
 
 
 class Difference(object):
@@ -605,14 +629,14 @@ class ArgumentSpec(object):
             days_of_week=dict(
                 type='list',
                 choices=[
-                    "sunday",
-                    "monday",
-                    "tuesday",
-                    "wednesday",
-                    "thursday",
-                    "friday",
-                    "saturday",
-                    "all",
+                    'sunday',
+                    'monday',
+                    'tuesday',
+                    'wednesday',
+                    'thursday',
+                    'friday',
+                    'saturday',
+                    'all',
                 ]
             ),
             state=dict(default='present', choices=['absent', 'present']),

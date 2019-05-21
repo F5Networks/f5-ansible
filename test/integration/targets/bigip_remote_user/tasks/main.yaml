@@ -1,0 +1,105 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Modify default partition and console access
+  bigip_remote_user:
+    default_partition: Common
+    console_access: yes
+  register: result
+
+- name: Assert Modify default partition and console access
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify default partition and console access - Idempotent check
+  bigip_remote_user:
+    default_partition: Common
+    console_access: yes
+  register: result
+
+- name: Assert Modify default partition and console access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify default role, partition and console access
+  bigip_remote_user:
+    default_partition: "{{ partition }}"
+    default_role: "{{ role1 }}"
+    console_access: yes
+  register: result
+
+- name: Assert Modify default role, partition and console access
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify default role, partition and console access - Idempotent check
+  bigip_remote_user:
+    default_partition: "{{ partition }}"
+    default_role: "{{ role1 }}"
+    console_access: yes
+  register: result
+
+- name: Assert Modify default role, partition and console access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify role and description
+  bigip_remote_user:
+    default_role: "{{ role2 }}"
+    description: "{{ desc }}"
+  register: result
+
+- name: Assert Modify role and description
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify role and description - Idempotent check
+  bigip_remote_user:
+    default_role: "{{ role2 }}"
+    description: "{{ desc }}"
+  register: result
+
+- name: Assert Modify role and description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Revert to default settings
+  bigip_remote_user:
+    default_partition: all
+    default_role: "no-access"
+    console_access: no
+  register: result
+
+- name: Assert Revert to default settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Revert to default settings - Idempotent check
+  bigip_remote_user:
+    default_partition: all
+    default_role: "no-access"
+    console_access: no
+  register: result
+
+- name: Assert Revert to default settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
