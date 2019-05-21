@@ -7,51 +7,100 @@ Use these modules to create, edit, update, and delete configuration objects on B
 
 The code is open source and |f5_ansible_github|. Additionally, some modules have been promoted to the |ansible_core| and |ansible_extras|.
 
+
+Set Up
+------
+
+:doc:`Install </usage/getting_started>`  (connection vs delegation sub-topic (not in table of contents))
+
+Get Started
+-----------
+
+:doc:`Run your first playbook </usage/playbook_tutorial>`
+
+Work with the Modules
+---------------------
+
+- Work with output (jinja filters)
+
+- Use F5 aggregate functionality
+
+- Use galaxy role
+
+- Use modules with tower
+
+Tutorials
+---------
+
+https://github.com/F5Networks/f5-ansible/tree/devel/examples
+
+
+Module Reference
+----------------
+
+:doc:`Module Index </modules/modules_by_category>`
+
+
+Get Help
+--------
+
+Supported versions--
+How to get help for the supported versions
+
 |
 |
 
 .. toctree::
    :maxdepth: 2
-   :includehidden:
-   :caption: Support Details
+   :caption: Set Up
    :glob:
-
-   /usage/supported-versions
-
-.. toctree::
-   :maxdepth: 2
-   :includehidden:
-   :caption: User's Guide
-   :glob:
+   :hidden:
 
    /usage/getting_started
-   /usage/playbook_tutorial
    /usage/connection-local-or-delegate-to
-   /usage/support
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Get Started
+   :glob:
+
+   /usage/playbook_tutorial
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Work with the Modules
+   :glob:
+
    /usage/module-usage-with-tower
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
+   :caption: Tutorials
+   :glob:
+
+   https://github.com/F5Networks/f5-ansible/tree/devel/examples
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
    :caption: Module Reference
 
    /modules/modules_by_category
 
+
 .. toctree::
    :maxdepth: 2
-   :caption: Developer's Guide
+   :hidden:
+   :caption: Get Help
+   :glob:
 
-   /development/cla-landing
-   /development/getting-involved
-   /development/write-module/index
-   /development/code-conventions
-   /development/parameters
-   /development/module-patterns
-   /development/ssh-functionality-for-modules
-   /development/tests
-   /development/upstreaming
-   /development/playbook-metadata
-   /development/deprecating-code
-   Backporting Changes <https://docs.ansible.com/ansible/latest/community/development_process.html#backport-pull-request-process>
+   /usage/supported-versions
+   /usage/support
+
+
 
 .. |f5_ansible_github| raw:: html
 
