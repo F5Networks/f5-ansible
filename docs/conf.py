@@ -44,7 +44,8 @@ extensions = [
     'sphinxcontrib.napoleon',
     'sphinxjp.themes.basicstrap',
     'cloud_sptheme.ext.table_styling',
-    'sphinx.ext.extlinks'
+    'sphinx.ext.extlinks',
+	'sphinx_copybutton'
 ]
 
 autodoc_default_flags = ['inherited-members', 'show-inheritance']
@@ -66,7 +67,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'F5 Modules for Ansible'
-copyright = u'2018, F5 Networks'
+copyright = u'2019, F5 Networks'
 author = u'F5 Networks'
 
 # The version info for the project you're documenting, acts as replacement for
