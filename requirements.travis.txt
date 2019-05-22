@@ -4,12 +4,13 @@ cffi
 
 # For test building documentation with inv docs.build
 awscli
-sphinx == 1.8.2
+sphinx<2.0
 markupsafe
-git+https://github.com/f5devcentral/f5-sphinx-theme@master
+f5-sphinx-theme>=1.0.9
 cloud_sptheme
 sphinxjp.themes.basicstrap
 sphinxcontrib-napoleon
+sphinx-copybutton
 
 # Test running
 pycodestyle
