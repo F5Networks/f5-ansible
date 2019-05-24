@@ -3674,19 +3674,13 @@ ltm_policies:
             returned: when defined in the condition.
             type: bool
             sample: no
-          case_insensitive:
-            description:
-              - The value matched on is case insensitive.
-            returned: when defined in the condition.
-            type: bool
-            sample: no
           case_sensitive:
             description:
               - The value matched on is case sensitive.
             returned: when defined in the condition.
             type: bool
             sample: yes
-          contains:
+          contains_string:
             description:
               - The value matches if it contains a certain string.
             returned: when defined in the condition.
@@ -11706,7 +11700,7 @@ class LtmPolicyParameters(BaseParameters):
             tmp = dict()
             tmp['case_insensitive'] = flatten_boolean(condition.pop('caseInsensitive', None))
             tmp['case_sensitive'] = flatten_boolean(condition.pop('caseSensitive', None))
-            tmp['contains'] = flatten_boolean(condition.pop('contains', None))
+            tmp['contains_string'] = flatten_boolean(condition.pop('contains', None))
             tmp['external'] = flatten_boolean(condition.pop('external', None))
             tmp['http_basic_auth'] = flatten_boolean(condition.pop('httpBasicAuth', None))
             tmp['http_host'] = flatten_boolean(condition.pop('httpHost', None))
