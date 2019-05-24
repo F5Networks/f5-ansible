@@ -1,0 +1,37 @@
+---
+
+- name: Issue 01321 - Create published policy
+  bigip_policy:
+    name: issue-01321
+
+- name: Issue 01321 - Create published rule with actions and conditions
+  bigip_policy_rule:
+    policy: issue-01321
+    name: rule1
+    conditions:
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+          - baz.cool.com
+    actions:
+      - type: redirect
+        location: tcl:https://[getfield [HTTP::host] \":\" 1][HTTP::uri]
+
+- name: Issue 01321 - Select LTM policy facts
+  bigip_device_facts:
+    gather_subset:
+      - ltm-policies
+  register: result
+
+- name: Issue 01191 - Assert Select LTM policy facts
+  assert:
+    that:
+      - result is success
+      - result.ltm_policies | json_query("[?name=='issue-01321'].rules[].name") | first == "rule1"
+      - result.ltm_policies | json_query("[?name=='issue-01321'].rules[].actions[].location") | first == "tcl:https://[getfield [HTTP::host] \\\":\\\" 1][HTTP::uri]"
+      - result.ltm_policies | json_query("[?name=='issue-01321'].rules[].conditions[].values[0]") | first == "foo.bar.com"
+
+- name: Issue 01321 - Remove published policy
+  bigip_policy:
+    name: issue-01321
+    state: absent

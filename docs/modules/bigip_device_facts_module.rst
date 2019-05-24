@@ -79,6 +79,7 @@ Parameters
                                                                                                                                                                                                 <li>internal-data-groups</li>
                                                                                                                                                                                                 <li>irules</li>
                                                                                                                                                                                                 <li>ltm-pools</li>
+                                                                                                                                                                                                <li>ltm-policies</li>
                                                                                                                                                                                                 <li>nodes</li>
                                                                                                                                                                                                 <li>oneconnect-profiles</li>
                                                                                                                                                                                                 <li>partitions</li>
@@ -141,6 +142,7 @@ Parameters
                                                                                                                                                                                                 <li>!internal-data-groups</li>
                                                                                                                                                                                                 <li>!irules</li>
                                                                                                                                                                                                 <li>!ltm-pools</li>
+                                                                                                                                                                                                <li>!ltm-policies</li>
                                                                                                                                                                                                 <li>!nodes</li>
                                                                                                                                                                                                 <li>!oneconnect-profiles</li>
                                                                                                                                                                                                 <li>!partitions</li>
@@ -435,6 +437,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                
+                                    
+                                    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                                                                     
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
@@ -6657,6 +6663,277 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                     
+                                                <tr>
+                                <td colspan="4">
+                    <b>ltm_policies</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>ltm-policies</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>List of LTM (Local Traffic Manager) policies.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">policy1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/policy1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Description of the policy.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My policy</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>strategy</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>The match strategy for the policy.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/first-match</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>requires</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Aspects of the system required by this policy.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;http&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>controls</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Aspects of the system controlled by this policy.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;forwarding&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>status</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Indicates published or draft policy status.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">draft</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>rules</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>when rules are defined in the policy.</td>
+                <td>
+                                                                        <div>List of LTM (Local Traffic Manager) policy rules.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>actions</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>when actions are defined in the rule.</td>
+                <td>
+                                                                        <div>The actions the policy will take when a match is encountered.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>http_reply</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the action.</td>
+                <td>
+                                                                        <div>Indicate if the action will affects a reply to a given HTTP request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>redirect</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the action.</td>
+                <td>
+                                                                        <div>This action will redirect a request.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>request</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the action.</td>
+                <td>
+                                                                        <div>This policy action is performed on connection requests.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>location</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when defined in the action.</td>
+                <td>
+                                                                        <div>This action will come from the given location.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tcl:https://[getfield [HTTP::host] \&quot;:\&quot; 1][HTTP::uri]</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>conditions</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>when conditions are defined in the rule.</td>
+                <td>
+                                                                        <div>The conditions that a policy will match on.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red"></div>
+                </td>
+                <td></td>
+                <td>
+                                                                                    <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>returned</b>
+                    <br/><div style="font-size: small; color: red"></div>
+                </td>
+                <td></td>
+                <td>
+                                                                                    <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red"></div>
+                </td>
+                <td></td>
+                <td>
+                                                                                    <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>sample</b>
+                    <br/><div style="font-size: small; color: red"></div>
+                </td>
+                <td></td>
+                <td>
+                                                                                    <br/>
+                                    </td>
+            </tr>
+                    
+                                    
+                                    
                                                 <tr>
                                 <td colspan="4">
                     <b>ltm_pools</b>
