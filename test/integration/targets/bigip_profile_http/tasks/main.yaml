@@ -373,3 +373,5 @@
 - import_tasks: issue-01022.yaml
   tags: issue-01022
 
+- import_tasks: issue-01310.yaml
+  tags: issue-01310
