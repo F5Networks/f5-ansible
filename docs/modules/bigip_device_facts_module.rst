@@ -438,8 +438,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                
-                                    
+                                                                    
                                     
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                                                                     
@@ -6879,60 +6878,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
-                                                            <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>description</b>
-                    <br/><div style="font-size: small; color: red"></div>
-                </td>
-                <td></td>
-                <td>
-                                                                                    <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>returned</b>
-                    <br/><div style="font-size: small; color: red"></div>
-                </td>
-                <td></td>
-                <td>
-                                                                                    <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>type</b>
-                    <br/><div style="font-size: small; color: red"></div>
-                </td>
-                <td></td>
-                <td>
-                                                                                    <br/>
-                                    </td>
-            </tr>
-                                <tr>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                    <td class="elbow-placeholder">&nbsp;</td>
-                                <td colspan="1">
-                    <b>sample</b>
-                    <br/><div style="font-size: small; color: red"></div>
-                </td>
-                <td></td>
-                <td>
-                                                                                    <br/>
-                                    </td>
-            </tr>
                     
-                                    
                                     
                                                 <tr>
                                 <td colspan="4">
