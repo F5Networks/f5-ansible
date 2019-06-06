@@ -14,20 +14,20 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_message_routing_peer
-short_description: Manage peers for routing generic message protocol messages
+module: bigip_message_routing_route
+short_description: Manages static routes for routing message protocol messages
 description:
-  - Manage peers for routing generic message protocol messages.
+  - Manages static routes for routing message protocol messages.
 version_added: 2.9
 options:
   name:
     description:
-      - Specifies the name of the peer to manage.
-    type: str
+      - Specifies the name of the static route.
     required: True
+    type: str
   description:
     description:
-      - The user defined description of the peer.
+      - The user defined description of the static route.
     type: str
   type:
     description:
@@ -37,59 +37,39 @@ options:
     choices:
       - generic
     default: generic
-  auto_init:
+  src_address:
     description:
-      - If C(yes), the BIGIP will automatically create outbound connections to the active pool members in the
-        specified C(pool) using the configuration of the specified C(transport_config).
-      - For auto-initialization to attempt to create a connection, the peer must be included in a route that is attached
-        to a router instance. For each router instance that the peer is contained in, a connection will be initiated.
-      - The C(auto_init) logic will verify at C(auto_init_interval) if the a connection exists between
-        the BIG-IP and the pool members of the pool. If a connection does not exist, it will attempt to reestablish one.
-    type: bool
-  auto_init_interval:
+      - Specifies the source address of the route.
+      - Setting the attribute to an empty string will create a wildcard matching all message source-addresses, which is
+        the default when creating a new route.
+    type: str
+  dst_address:
     description:
-      - Specifies the interval that attempts to initiate a connection occur.
-      - The default value upon peer object creation, that supplied by the system is C(5000) milliseconds.
-      - The accepted range is between 0 and 4294967295 inclusive.
-    type: int
-  connection_mode:
+      - Specifies the destination address of the route.
+      - Setting the attribute to an empty string will create a wildcard matching all message destination-addresses,
+        which is the default when creating a new route.
+    type: str
+  peer_selection_mode:
     description:
-      - Specifies how the number of connections per host are to be limited.
+      - Specifies the method to use when selecting a peer from the provided list of C(peers).
     type: str
     choices:
-      - per-blade
-      - per-client
-      - per-peer
-      - per-tmm
-  number_of_connections:
+      - ratio
+      - sequential
+  peers:
     description:
-      - Specifies the distribution of connections between the BIG-IP and a remote host.
-      - The accepted range is between 0 and 65535 inclusive.
-    type: int
-  pool:
-    description:
-      - Specifies the name of the pool that messages will be routed towards.
-      - The specified pool must be on the same partition as the peer.
-    type: str
-  ratio:
-    description:
-      - Specifies the ratio to be used for selection of a peer within a list of peers in a ltm route.
-      - The accepted range is between 0 and 4294967295 inclusive.
-    type: int
-  transport_config:
-    description:
-      - The name of the ltm virtual or ltm transport-config to use for creating an outgoing connection.
-      - The resource must exist on the same partition as the peer object.
-    type: str
+      - Specifies a list of ltm messagerouting-peer objects.
+      - The specified peer must be on the same partition as the route.
+    type: list
   partition:
     description:
-      - Device partition to create peer object on.
+      - Device partition to create route object on.
     type: str
     default: Common
   state:
     description:
-      - When C(present), ensures that the peer exists.
-      - When C(absent), ensures the peer is removed.
+      - When C(present), ensures that the route exists.
+      - When C(absent), ensures the route is removed.
     type: str
     choices:
       - present
@@ -103,8 +83,8 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Create a simple peer
-  bigip_message_routing_peer:
+- name: Create a simple generic route
+  bigip_message_routing_route:
     name: foobar
     provider:
       password: secret
@@ -112,37 +92,24 @@ EXAMPLES = r'''
       user: admin
   delegate_to: localhost
 
-- name: Create message routing peer with additional settings
-  bigip_message_routing_peer:
+- name: Modify a generic route
+  bigip_message_routing_route:
     name: foobar
-    connection_mode: per-blade
-    pool: /baz/bar
-    partition: baz
-    transport_config: foovirtual
-    ratio: 10
-    auto_init: yes
+    peers:
+      - peer1
+      - peer2
+    peer_selection_mode: ratio
+    src_address: annoying_user
+    dst_address: blackhole
     provider:
       password: secret
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
 
-- name: Modify message routing peer settings
-  bigip_message_routing_peer:
+- name: Remove a generic
+  bigip_message_routing_route:
     name: foobar
-    partition: baz
-    ratio: 20
-    auto_init_interval: 2000
-    provider:
-      password: secret
-      server: lb.mydomain.com
-      user: admin
-  delegate_to: localhost
-
-- name: Remove message routing peer
-  bigip_message_routing_peer:
-    name: foobar
-    partition: baz
     state: absent
     provider:
       password: secret
@@ -152,46 +119,31 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-auto_init:
-  description: Enables creation of outbound connections to the active pool members.
-  returned: changed
-  type: bool
-  sample: yes
-auto_init_interval:
-  description: The interval that attempts to initiate a connection occur.
-  returned: changed
-  type: int
-  sample: 2000
-connection_mode:
-  description: Specifies how the number of connections per host are to be limited.
-  returned: changed
-  type: str
-  sample: per-peer
-number_of_connections:
-  description: The distribution of connections between the BIG-IP and a remote host.
-  returned: changed
-  type: int
-  sample: 2000
-transport_config:
-  description: The ltm virtual or ltm transport-config to use for creating an outgoing connection.
-  returned: changed
-  type: str
-  sample: /Common/foobar
 description:
-  description: The user defined description of the peer.
+  description: The user defined description of the route.
   returned: changed
   type: string
   sample: Some description
-pool:
-  description: The name of the pool that messages will be routed towards.
+src_address:
+  description: The source address of the route.
   returned: changed
   type: str
-  sample: /Bazbar/foobar
-ratio:
-  description: The ratio to be used for selection of a peer within a list of peers in a ltm route.
+  sample: annyoing_user
+dst_address:
+  description: The destination address of the route.
   returned: changed
-  type: int
-  sample: 500
+  type: str
+  sample: blackhole
+peer_selection_mode:
+  description: The method to use when selecting a peer.
+  returned: changed
+  type: str
+  sample: ratio
+peers:
+  description: The list of ltm messagerouting-peer object.
+  returned: changed
+  type: list
+  sample: ['/Common/peer1', '/Common/peer2']
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -207,6 +159,7 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.compare import cmp_str_with_none
+    from library.module_utils.network.f5.compare import cmp_simple_list
     from library.module_utils.network.f5.icontrol import tmos_version
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
@@ -217,49 +170,40 @@ except ImportError:
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.compare import cmp_str_with_none
+    from ansible.module_utils.network.f5.compare import cmp_simple_list
     from ansible.module_utils.network.f5.icontrol import tmos_version
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'autoInitialization': 'auto_init',
-        'autoInitializationInterval': 'auto_init_interval',
-        'connectionMode': 'connection_mode',
-        'numberConnections': 'number_of_connections',
-        'transportConfig': 'transport_config',
+        'peerSelectionMode': 'peer_selection_mode',
+        'sourceAddress': 'src_address',
+        'destinationAddress': 'dst_address',
+
     }
 
     api_attributes = [
-        'autoInitialization',
-        'autoInitializationInterval',
-        'connectionMode',
         'description',
-        'numberConnections',
-        'pool',
-        'ratio',
-        'transportConfig',
+        'peerSelectionMode',
+        'peers',
+        'sourceAddress',
+        'destinationAddress',
     ]
 
     returnables = [
-        'auto_init',
-        'auto_init_interval',
-        'connection_mode',
-        'number_of_connections',
-        'transport_config',
+        'peer_selection_mode',
+        'peers',
         'description',
-        'pool',
-        'ratio',
+        'src_address',
+        'dst_address'
     ]
 
     updatables = [
-        'auto_init',
-        'auto_init_interval',
-        'connection_mode',
-        'number_of_connections',
-        'transport_config',
+        'peer_selection_mode',
+        'peers',
         'description',
-        'pool',
-        'ratio',
+        'src_address',
+        'dst_address'
     ]
 
 
@@ -269,60 +213,12 @@ class ApiParameters(Parameters):
 
 class ModuleParameters(Parameters):
     @property
-    def auto_init(self):
-        result = flatten_boolean(self._values['auto_init'])
-        if result is None:
+    def peers(self):
+        if self._values['peers'] is None:
             return None
-        if result == 'yes':
-            return 'enabled'
-        return 'disabled'
-
-    @property
-    def auto_init_interval(self):
-        if self._values['auto_init_interval'] is None:
-            return None
-        if 0 <= self._values['auto_init_interval'] <= 4294967295:
-            return self._values['auto_init_interval']
-        raise F5ModuleError(
-            "Valid 'auto_init_interval' must be in range 0 - 4294967295 milliseconds."
-        )
-
-    @property
-    def number_of_connections(self):
-        if self._values['number_of_connections'] is None:
-            return None
-        if 0 <= self._values['number_of_connections'] <= 65535:
-            return self._values['number_of_connections']
-        raise F5ModuleError(
-            "Valid 'number_of_connections' must be in range 0 - 65535."
-        )
-
-    @property
-    def ratio(self):
-        if self._values['ratio'] is None:
-            return None
-        if 0 <= self._values['ratio'] <= 4294967295:
-            return self._values['ratio']
-        raise F5ModuleError(
-            "Valid 'ratio' must be in range 0 - 4294967295."
-        )
-
-    @property
-    def pool(self):
-        if self._values['pool'] is None:
-            return None
-        if self._values['pool'] == "":
+        if len(self._values['peers']) == 1 and self._values['peers'][0] == "":
             return ""
-        result = fq_name(self.partition, self._values['pool'])
-        return result
-
-    @property
-    def transport_config(self):
-        if self._values['transport_config'] is None:
-            return None
-        if self._values['transport_config'] == "":
-            return ""
-        result = fq_name(self.partition, self._values['transport_config'])
+        result = [fq_name(self.partition, peer) for peer in self._values['peers']]
         return result
 
 
@@ -343,10 +239,7 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    @property
-    def auto_init(self):
-        result = flatten_boolean(self._values['auto_init'])
-        return result
+    pass
 
 
 class Difference(object):
@@ -376,13 +269,18 @@ class Difference(object):
         return result
 
     @property
-    def transport_config(self):
-        result = cmp_str_with_none(self.want.transport_config, self.have.transport_config)
+    def dst_address(self):
+        result = cmp_str_with_none(self.want.dst_address, self.have.dst_address)
         return result
 
     @property
-    def pool(self):
-        result = cmp_str_with_none(self.want.pool, self.have.pool)
+    def src_address(self):
+        result = cmp_str_with_none(self.want.src_address, self.have.src_address)
+        return result
+
+    @property
+    def peers(self):
+        result = cmp_simple_list(self.want.peers, self.have.peers)
         return result
 
 
@@ -489,7 +387,7 @@ class BaseManager(object):
 
 class GenericModuleManager(BaseManager):
     def exists(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/peer/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/route/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -507,7 +405,7 @@ class GenericModuleManager(BaseManager):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
-        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/peer/".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/route/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
@@ -526,7 +424,7 @@ class GenericModuleManager(BaseManager):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/peer/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/route/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -544,7 +442,7 @@ class GenericModuleManager(BaseManager):
                 raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/peer/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/route/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -555,7 +453,7 @@ class GenericModuleManager(BaseManager):
         raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/peer/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/generic/route/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -607,16 +505,15 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            auto_init=dict(type='bool'),
-            auto_init_interval=dict(type='int'),
-            connection_mode=dict(
-                choices=['per-blade', 'per-client', 'per-peer', 'per-tmm']
-            ),
             description=dict(),
-            number_of_connections=dict(type='int'),
-            pool=dict(),
-            ratio=dict(type='int'),
-            transport_config=dict(),
+            src_address=dict(),
+            dst_address=dict(),
+            peer_selection_mode=dict(
+                choices=['ratio', 'sequential']
+            ),
+            peers=dict(
+                type='list'
+            ),
             type=dict(
                 choices=['generic'],
                 default='generic'
@@ -629,10 +526,8 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['present', 'absent']
             )
+
         )
-        self.required_if = [
-            ['auto_init', True, ['transport_config']]
-        ]
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
@@ -644,7 +539,6 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        required_if=spec.required_if,
     )
 
     try:
