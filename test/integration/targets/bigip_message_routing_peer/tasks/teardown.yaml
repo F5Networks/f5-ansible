@@ -1,0 +1,16 @@
+---
+
+- name: Remove transport-config
+  bigip_command:
+    commands:
+      - tmsh delete ltm message-routing generic transport-config foo
+
+- name: Remove pools
+  bigip_pool:
+    lb_method: round-robin
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ pool_1 }}"
+    - "{{ pool_2 }}"
+

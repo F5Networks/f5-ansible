@@ -32,11 +32,12 @@ F5
   * :ref:`bigip_device_auth_ldap_module`
   * :ref:`bigip_device_connectivity_module`
   * :ref:`bigip_device_dns_module`
-  * :ref:`bigip_device_facts_module`
+  * :ref:`bigip_device_facts_module` **(D)**
   * :ref:`bigip_device_group_module`
   * :ref:`bigip_device_group_member_module`
   * :ref:`bigip_device_ha_group_module`
   * :ref:`bigip_device_httpd_module`
+  * :ref:`bigip_device_info_module`
   * :ref:`bigip_device_license_module`
   * :ref:`bigip_device_ntp_module`
   * :ref:`bigip_device_sshd_module`
@@ -88,6 +89,7 @@ F5
   * :ref:`bigip_log_publisher_module`
   * :ref:`bigip_lx_package_module`
   * :ref:`bigip_management_route_module`
+  * :ref:`bigip_message_routing_peer_module`
   * :ref:`bigip_monitor_dns_module`
   * :ref:`bigip_monitor_external_module`
   * :ref:`bigip_monitor_gateway_icmp_module`
@@ -161,7 +163,8 @@ F5
   * :ref:`bigiq_application_https_offload_module`
   * :ref:`bigiq_application_https_waf_module`
   * :ref:`bigiq_device_discovery_module`
-  * :ref:`bigiq_device_facts_module`
+  * :ref:`bigiq_device_facts_module` **(D)**
+  * :ref:`bigiq_device_info_module`
   * :ref:`bigiq_regkey_license_module`
   * :ref:`bigiq_regkey_license_assignment_module`
   * :ref:`bigiq_regkey_pool_module`
