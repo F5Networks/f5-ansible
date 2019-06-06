@@ -1,25 +1,25 @@
 ---
 
-# Test the bigip_device_facts module
+# Test the bigip_message_routing_peer module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# bigip_device_facts module behaves as expected.
+# bigip_message_routing_peer module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, playbooks/bigip_device_facts.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_message_routing_peer.yaml
 #
 # Examples:
 #
-#    Run all tests on the bigip_device_facts module
+#    Run all tests on the bigip_message_routing_peer module
 #
-#    ansible-playbook -i notahost, playbooks/bigip_device_facts.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_message_routing_peer.yaml
 #
 
-- name: Metadata of bigip_device_facts
+- name: Metadata of bigip_message_routing_peer
   hosts: localhost
   connection: local
   gather_facts: false
@@ -33,7 +33,7 @@
       tested_platforms:
         - NA
 
-- name: Test the bigip_device_facts module
+- name: Test the bigip_message_routing_peer module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
@@ -49,4 +49,4 @@
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-    - bigip_device_facts
+    - bigip_message_routing_peer

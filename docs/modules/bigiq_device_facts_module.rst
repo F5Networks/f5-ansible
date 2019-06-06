@@ -1,12 +1,12 @@
-:source: bigiq_device_facts.py
+:source: _bigiq_device_facts.py
 
 :orphan:
 
-.. _bigiq_device_facts_module:
+.. _bigiq_device_info_module:
 
 
-bigiq_device_facts - Collect facts from F5 BIG-IQ devices
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_device_info - Collect information from F5 BIG-IQ devices
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.8
 
@@ -17,7 +17,8 @@ bigiq_device_facts - Collect facts from F5 BIG-IQ devices
 
 Synopsis
 --------
-- Collect facts from F5 BIG-IQ devices.
+- Collect information from F5 BIG-IQ devices.
+- This module was called ``bigiq_device_facts`` before Ansible 2.9. The usage did not change.
 
 
 
@@ -57,7 +58,7 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When supplied, this argument will restrict the facts returned to a given subset.</div>
+                                                                        <div>When supplied, this argument will restrict the information returned to a given subset.</div>
                                                     <div>Can specify a list of values to include a larger subset.</div>
                                                     <div>Values can also be used with an initial <code>!</code> to specify that a specific subset should not be collected.</div>
                                                                                 </td>
@@ -258,8 +259,8 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Collect BIG-IQ facts
-      bigiq_device_facts:
+    - name: Collect BIG-IQ information
+      bigiq_device_info:
         gather_subset:
           - system-info
           - vlans
@@ -269,8 +270,8 @@ Examples
           password: secret
       delegate_to: localhost
 
-    - name: Collect all BIG-IQ facts
-      bigiq_device_facts:
+    - name: Collect all BIG-IQ information
+      bigiq_device_info:
         gather_subset:
           - all
         provider:
@@ -279,8 +280,8 @@ Examples
           password: secret
       delegate_to: localhost
 
-    - name: Collect all BIG-IP facts except trunks
-      bigiq_device_facts:
+    - name: Collect all BIG-IP information except trunks
+      bigiq_device_info:
         gather_subset:
           - all
           - "!trunks"
@@ -323,7 +324,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>managed-devices</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>Application related facts</div>
+                                            <div>Application related information</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -516,7 +517,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>managed-devices</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>Managed device related facts.</div>
+                                            <div>Managed device related information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -836,7 +837,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>purchased-pool-licenses</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>Purchased Pool License related facts.</div>
+                                            <div>Purchased Pool License related information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -1060,7 +1061,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>regkey-pools</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>Regkey Pool related facts.</div>
+                                            <div>Regkey Pool related information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -1281,7 +1282,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>system-info</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>System info related facts.</div>
+                                            <div>System info related information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -1786,7 +1787,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>vlans</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>List of VLAN facts.</div>
+                                            <div>List of VLAN information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
