@@ -1,0 +1,156 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a simple generic route
+  bigip_message_routing_route:
+    name: "{{ route_1 }}"
+    description: "{{ desc_1 }}"
+    peer_selection_mode: "{{ select_1 }}"
+  register: result
+
+- name: Assert Create a simple generic route
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_1
+      - result.peer_selection_mode == select_1
+
+- name: Create a simple generic route - Idempotent check
+  bigip_message_routing_route:
+    name: "{{ route_1 }}"
+    description: "{{ desc_1 }}"
+    peer_selection_mode: "{{ select_1 }}"
+  register: result
+
+- name: Assert Create a simple generic route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify a generic route
+  bigip_message_routing_route:
+    name: "{{ route_1 }}"
+    description: "{{ desc_2 }}"
+    peers: "{{ peer1 }}"
+    peer_selection_mode: "{{ select_2 }}"
+  register: result
+
+- name: Assert Create a simple generic route
+  assert:
+    that:
+      - result is changed
+      - result.peers == ['/Common/foobar1','/Common/foobar2']
+      - result.peer_selection_mode == select_2
+
+- name: Modify a generic route - Idempotent check
+  bigip_message_routing_route:
+    name: "{{ route_1 }}"
+    description: "{{ desc_2 }}"
+    peers: "{{ peer1 }}"
+    peer_selection_mode: "{{ select_2 }}"
+  register: result
+
+- name: Assert Modify a generic route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a second generic route
+  bigip_message_routing_route:
+    name: "{{ route_2 }}"
+    peer_selection_mode: "{{ select_1 }}"
+    peers: "{{ peer2 }}"
+    src_address: "{{ src1 }}"
+    dst_address: "{{ dst1 }}"
+  register: result
+
+- name: Assert Create a second generic route
+  assert:
+    that:
+      - result is changed
+      - result.peers == ['/Common/foobar1']
+      - result.peer_selection_mode == select_1
+      - result.src_address == src1
+      - result.dst_address == dst1
+
+- name: Create a second generic route  - Idempotent check
+  bigip_message_routing_route:
+    name: "{{ route_2 }}"
+    peer_selection_mode: "{{ select_1 }}"
+    peers: "{{ peer2 }}"
+    src_address: "{{ src1 }}"
+    dst_address: "{{ dst1 }}"
+  register: result
+
+- name: Assert Create a second generic route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify a second generic route
+  bigip_message_routing_route:
+    name: "{{ route_2 }}"
+    peer_selection_mode: "{{ select_2 }}"
+    peers: "{{ peer3 }}"
+    src_address: "{{ src2 }}"
+    dst_address: "{{ dst2 }}"
+  register: result
+
+- name: Assert Create a second generic route
+  assert:
+    that:
+      - result is changed
+      - result.peers == []
+      - result.peer_selection_mode == select_2
+      - result.src_address == src2
+      - result.dst_address == dst2
+
+- name: Modify a second generic route - Idempotent check
+  bigip_message_routing_route:
+    name: "{{ route_2 }}"
+    peer_selection_mode: "{{ select_2 }}"
+    peers: "{{ peer3 }}"
+    src_address: "{{ src2 }}"
+    dst_address: "{{ dst2 }}"
+  register: result
+
+- name: Assert Modify a second generic route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove a generic route
+  bigip_message_routing_route:
+    name: "{{ route_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a generic route
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove a generic route  - Idempotent check
+  bigip_message_routing_route:
+    name: "{{ route_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a generic route  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove a generic route - Cleanup
+  bigip_message_routing_route:
+    name: "{{ route_2 }}"
+    state: absent
+
+- import_tasks: teardown.yaml
