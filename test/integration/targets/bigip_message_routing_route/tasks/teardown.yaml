@@ -1,0 +1,9 @@
+---
+
+- name: Remove few generic peers
+  bigip_message_routing_peer:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ peer_1 }}"
+    - "{{ peer_2 }}"

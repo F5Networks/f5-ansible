@@ -17,11 +17,11 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_message_routing_peer import ApiParameters
-    from library.modules.bigip_message_routing_peer import ModuleParameters
-    from library.modules.bigip_message_routing_peer import ModuleManager
-    from library.modules.bigip_message_routing_peer import GenericModuleManager
-    from library.modules.bigip_message_routing_peer import ArgumentSpec
+    from library.modules.bigip_message_routing_route import ApiParameters
+    from library.modules.bigip_message_routing_route import ModuleParameters
+    from library.modules.bigip_message_routing_route import ModuleManager
+    from library.modules.bigip_message_routing_route import GenericModuleManager
+    from library.modules.bigip_message_routing_route import ArgumentSpec
 
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
@@ -30,11 +30,11 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_message_routing_peer import ApiParameters
-    from ansible.modules.network.f5.bigip_message_routing_peer import ModuleParameters
-    from ansible.modules.network.f5.bigip_message_routing_peer import ModuleManager
-    from ansible.modules.network.f5.bigip_message_routing_peer import GenericModuleManager
-    from ansible.modules.network.f5.bigip_message_routing_peer import ArgumentSpec
+    from ansible.modules.network.f5.bigip_message_routing_route import ApiParameters
+    from ansible.modules.network.f5.bigip_message_routing_route import ModuleParameters
+    from ansible.modules.network.f5.bigip_message_routing_route import ModuleManager
+    from ansible.modules.network.f5.bigip_message_routing_route import GenericModuleManager
+    from ansible.modules.network.f5.bigip_message_routing_route import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -72,59 +72,46 @@ class TestParameters(unittest.TestCase):
             name='foo',
             partition='foobar',
             description='my description',
-            auto_init='yes',
-            auto_init_interval=1234,
-            connection_mode='per-peer',
-            number_of_connections=20,
-            pool='/Common/example',
-            ratio=10,
-            transport_config='/Common/virtual'
+            dst_address='some_destination',
+            src_address='some_address',
+            peer_selection_mode='ratio',
+            peers=['/Common/example']
         )
 
         p = ModuleParameters(params=args)
         assert p.name == 'foo'
         assert p.partition == 'foobar'
         assert p.description == 'my description'
-        assert p.auto_init == 'enabled'
-        assert p.auto_init_interval == 1234
-        assert p.connection_mode == 'per-peer'
-        assert p.number_of_connections == 20
-        assert p.pool == '/Common/example'
-        assert p.ratio == 10
-        assert p.transport_config == '/Common/virtual'
+        assert p.dst_address == 'some_destination'
+        assert p.src_address == 'some_address'
+        assert p.peer_selection_mode == 'ratio'
+        assert p.peers == ['/Common/example']
 
     def test_api_parameters(self):
-        args = load_fixture('load_generic_peer.json')
+        args = load_fixture('load_generic_route.json')
 
         p = ApiParameters(params=args)
-        assert p.name == 'test'
+        assert p.name == 'some'
         assert p.partition == 'Common'
-        assert p.description == 'foobar'
-        assert p.auto_init == 'disabled'
-        assert p.auto_init_interval == 5000
-        assert p.connection_mode == 'per-peer'
-        assert p.number_of_connections == 1
-        assert p.pool == '/Common/example'
-        assert p.ratio == 1
-        assert p.transport_config == '/Common/test_tranport'
+        assert p.dst_address == 'annoying_user'
+        assert p.src_address == '99.99.99.99'
+        assert p.peer_selection_mode == 'sequential'
+        assert p.peers == ['/Common/testy']
 
 
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_generic_peer(self, *args):
+    def test_create_generic_route(self, *args):
         set_module_args(dict(
-            name='foo',
+            name='some',
             partition='foobar',
             description='my description',
-            auto_init='yes',
-            auto_init_interval=1234,
-            connection_mode='per-peer',
-            number_of_connections=20,
-            pool='/Common/example',
-            ratio=10,
-            transport_config='/Common/virtual',
+            dst_address='some_destination',
+            src_address='some_address',
+            peer_selection_mode='ratio',
+            peers=['/Common/example'],
             provider=dict(
                 server='localhost',
                 password='password',
@@ -134,8 +121,7 @@ class TestManager(unittest.TestCase):
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            required_if=self.spec.required_if
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods in the specific type of manager
@@ -150,20 +136,18 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['auto_init'] == 'yes'
         assert results['description'] == 'my description'
-        assert results['auto_init_interval'] == 1234
-        assert results['connection_mode'] == 'per-peer'
-        assert results['number_of_connections'] == 20
-        assert results['pool'] == '/Common/example'
-        assert results['ratio'] == 10
-        assert results['transport_config'] == '/Common/virtual'
+        assert results['dst_address'] == 'some_destination'
+        assert results['src_address'] == 'some_address'
+        assert results['peer_selection_mode'] == 'ratio'
+        assert results['peers'] == ['/Common/example']
 
     def test_update_generic_peer(self, *args):
         set_module_args(dict(
-            name='test',
-            auto_init_interval=3000,
-            ratio=120,
+            name='some',
+            dst_address="blackhole",
+            peer_selection_mode='ratio',
+            peers=['/Common/example'],
             provider=dict(
                 server='localhost',
                 password='password',
@@ -171,12 +155,11 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = ApiParameters(params=load_fixture('load_generic_peer.json'))
+        current = ApiParameters(params=load_fixture('load_generic_route.json'))
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            required_if=self.spec.required_if
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods in the specific type of manager
@@ -192,5 +175,6 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['auto_init_interval'] == 3000
-        assert results['ratio'] == 120
+        assert results['dst_address'] == 'blackhole'
+        assert results['peer_selection_mode'] == 'ratio'
+        assert results['peers'] == ['/Common/example']
