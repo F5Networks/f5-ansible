@@ -1,25 +1,25 @@
 ---
 
-# Test the bigiq_device_facts module
+# Test the bigiq_device_info module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# bigiq_device_facts module behaves as expected.
+# bigiq_device_info module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, test/integration/bigiq_device_facts.yaml
+#    ansible-playbook -i notahost, test/integration/bigiq_device_info.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigiq_device_facts module
 #
-#    ansible-playbook -i notahost, test/integration/bigiq_device_facts.yaml
+#    ansible-playbook -i notahost, test/integration/bigiq_device_info.yaml
 #
 
-- name: Metadata of bigiq_device_facts
+- name: Metadata of bigiq_device_info
   hosts: localhost
   connection: local
   gather_facts: false
@@ -33,7 +33,7 @@
       tested_platforms:
         - NA
 
-- name: Test the bigiq_device_facts module
+- name: Test the bigiq_device_info module
   hosts: "f5-bigiq[0]"
   connection: local
   any_errors_fatal: true
@@ -50,4 +50,4 @@
     F5_AUTH_PROVIDER: "{{ f5_auth_provider|default(omit) }}"
 
   roles:
-    - bigiq_device_facts
+    - bigiq_device_info
