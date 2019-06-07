@@ -91,6 +91,7 @@ F5
   * :ref:`bigip_management_route_module`
   * :ref:`bigip_message_routing_peer_module`
   * :ref:`bigip_message_routing_route_module`
+  * :ref:`bigip_message_routing_router_module`
   * :ref:`bigip_monitor_dns_module`
   * :ref:`bigip_monitor_external_module`
   * :ref:`bigip_monitor_gateway_icmp_module`
