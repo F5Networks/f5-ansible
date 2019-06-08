@@ -1,0 +1,14 @@
+---
+
+- name: Remove generic routes
+  bigip_message_routing_route:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ route_1 }}"
+    - "{{ route_2 }}"
+
+- name: Remove a traffic group
+  bigip_device_traffic_group:
+    name: "{{ traffic_2 }}"
+    state: absent
