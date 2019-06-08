@@ -17,4 +17,3 @@ interval: 3000
 desc_1: "Some description"
 desc_2: ""
 
-invalid_value: 99999999
