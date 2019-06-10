@@ -1,0 +1,17 @@
+---
+
+name_1: foobar
+name_2: barfoo
+
+desc_1: "Some description"
+desc_2: ""
+
+size_1: 1000
+buffer_1: 3000
+
+size_2: 3000
+buffer_2: 5000
+
+term_1: "%%%%"
+
+term_2: ""
