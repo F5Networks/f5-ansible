@@ -1,0 +1,14 @@
+---
+- name: Remove iRules in LTM
+  bigip_irule:
+    state: absent
+    module: ltm
+    name: "{{ item }}"
+  with_items:
+    - "{{ rule_1 }}"
+    - "{{ rule_2 }}"
+
+- name: Remove a pool
+  bigip_snat_pool:
+    name: "{{ pool_name }}"
+    state: absent

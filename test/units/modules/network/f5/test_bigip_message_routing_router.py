@@ -170,7 +170,7 @@ class TestManager(unittest.TestCase):
         assert results['traffic_group'] == '/Common/footraffic'
         assert results['routes'] == ['/foobar/test1', '/foobar/test2']
 
-    def test_update_generic_peer(self, *args):
+    def test_update_generic_router(self, *args):
         set_module_args(dict(
             name='messagerouter',
             use_local_connection='no',
