@@ -1,0 +1,172 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a generic parser
+  bigip_message_routing_protocol:
+    name: "{{ name_1 }}"
+    description: "{{ desc_1 }}"
+    no_response: yes
+  register: result
+
+- name: Assert Create a generic parser
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_1
+      - result.no_response == 'yes'
+
+- name: Create a generic parser - Idempotent check
+  bigip_message_routing_protocol:
+    name: "{{ name_1 }}"
+    description: "{{ desc_1 }}"
+    no_response: yes
+  register: result
+
+- name: Assert Create a generic parser - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify a generic parser
+  bigip_message_routing_protocol:
+    name: "{{ name_1 }}"
+    description: "{{ desc_2 }}"
+    no_response: no
+    msg_terminator: "{{ term_1 }}"
+    disable_parser: yes
+    max_msg_size: "{{ size_1 }}"
+    max_egress_buffer: "{{ buffer_1 }}"
+  register: result
+
+- name: Assert Modify a generic parser
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_2
+      - result.no_response == 'no'
+      - result.msg_terminator == term_1
+      - result.disable_parser == 'yes'
+      - result.max_msg_size == size_1
+      - result.max_egress_buffer == buffer_1
+
+- name: Modify a generic parser - Idempotent check
+  bigip_message_routing_protocol:
+    name: "{{ name_1 }}"
+    description: "{{ desc_2 }}"
+    no_response: no
+    msg_terminator: "{{ term_1 }}"
+    disable_parser: yes
+    max_msg_size: "{{ size_1 }}"
+    max_egress_buffer: "{{ buffer_1 }}"
+  register: result
+
+- name: Assert Modify a generic parser - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a generic parser with multiple settings
+  bigip_message_routing_protocol:
+    name: "{{ name_2 }}"
+    description: "{{ desc_1 }}"
+    no_response: yes
+    msg_terminator: "{{ term_1 }}"
+    max_msg_size: "{{ size_1 }}"
+    max_egress_buffer: "{{ buffer_1 }}"
+  register: result
+
+- name: Assert Create a generic parser with multiple settings
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_1
+      - result.no_response == 'yes'
+      - result.msg_terminator == term_1
+      - result.max_msg_size == size_1
+      - result.max_egress_buffer == buffer_1
+
+- name: Create a generic parser with multiple settings - Idempotent check
+  bigip_message_routing_protocol:
+    name: "{{ name_2 }}"
+    description: "{{ desc_1 }}"
+    no_response: yes
+    msg_terminator: "{{ term_1 }}"
+    max_msg_size: "{{ size_1 }}"
+    max_egress_buffer: "{{ buffer_1 }}"
+  register: result
+
+- name: Assert Create a generic parser with multiple settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify second generic parser
+  bigip_message_routing_protocol:
+    name: "{{ name_2 }}"
+    description: "{{ desc_2 }}"
+    no_response: no
+    msg_terminator: "{{ term_2 }}"
+    max_msg_size: "{{ size_2 }}"
+    max_egress_buffer: "{{ buffer_2 }}"
+  register: result
+
+- name: Assert Modify second generic parser
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_2
+      - result.no_response == 'no'
+      - result.msg_terminator == term_2
+      - result.max_msg_size == size_2
+      - result.max_egress_buffer == buffer_2
+
+- name: Modify second generic parser - Idempotent check
+  bigip_message_routing_protocol:
+    name: "{{ name_2 }}"
+    description: "{{ desc_2 }}"
+    no_response: no
+    msg_terminator: "{{ term_2 }}"
+    max_msg_size: "{{ size_2 }}"
+    max_egress_buffer: "{{ buffer_2 }}"
+  register: result
+
+- name: Assert Modify second generic parser - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove generic parser
+  bigip_message_routing_protocol:
+    name: "{{ name_2 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove generic parser
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove generic parser - Idempotent check
+  bigip_message_routing_protocol:
+    name: "{{ name_2 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove generic parser - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove generic parser - Cleanup
+  bigip_message_routing_protocol:
+    name: "{{ name_1 }}"
+    state: absent
+
+- import_tasks: teardown.yaml

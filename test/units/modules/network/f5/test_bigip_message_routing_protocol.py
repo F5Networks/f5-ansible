@@ -17,11 +17,10 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_message_routing_route import ApiParameters
-    from library.modules.bigip_message_routing_route import ModuleParameters
-    from library.modules.bigip_message_routing_route import ModuleManager
-    from library.modules.bigip_message_routing_route import GenericModuleManager
-    from library.modules.bigip_message_routing_route import ArgumentSpec
+    from library.modules.bigip_message_routing_protocol import ApiParameters
+    from library.modules.bigip_message_routing_protocol import ModuleParameters
+    from library.modules.bigip_message_routing_protocol import ModuleManager
+    from library.modules.bigip_message_routing_protocol import ArgumentSpec
 
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
@@ -30,11 +29,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_message_routing_route import ApiParameters
-    from ansible.modules.network.f5.bigip_message_routing_route import ModuleParameters
-    from ansible.modules.network.f5.bigip_message_routing_route import ModuleManager
-    from ansible.modules.network.f5.bigip_message_routing_route import GenericModuleManager
-    from ansible.modules.network.f5.bigip_message_routing_route import ArgumentSpec
+    from ansible.modules.network.f5.bigip_message_routing_protocol import ApiParameters
+    from ansible.modules.network.f5.bigip_message_routing_protocol import ModuleParameters
+    from ansible.modules.network.f5.bigip_message_routing_protocol import ModuleManager
+    from ansible.modules.network.f5.bigip_message_routing_protocol import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -72,31 +70,36 @@ class TestParameters(unittest.TestCase):
             name='foo',
             partition='foobar',
             description='my description',
-            dst_address='some_destination',
-            src_address='some_address',
-            peer_selection_mode='ratio',
-            peers=['/Common/example']
+            parent='barfoo',
+            disable_parser=True,
+            max_egress_buffer=10000,
+            max_msg_size=2000,
+            msg_terminator='%%%%',
+            no_response=False,
         )
 
         p = ModuleParameters(params=args)
         assert p.name == 'foo'
         assert p.partition == 'foobar'
         assert p.description == 'my description'
-        assert p.dst_address == 'some_destination'
-        assert p.src_address == 'some_address'
-        assert p.peer_selection_mode == 'ratio'
-        assert p.peers == ['/Common/example']
+        assert p.parent == '/foobar/barfoo'
+        assert p.disable_parser == 'yes'
+        assert p.max_egress_buffer == 10000
+        assert p.max_msg_size == 2000
+        assert p.msg_terminator == '%%%%'
+        assert p.no_response == 'no'
 
     def test_api_parameters(self):
-        args = load_fixture('load_generic_route.json')
+        args = load_fixture('load_generic_parser.json')
 
         p = ApiParameters(params=args)
-        assert p.name == 'some'
+        assert p.name == 'foobar'
         assert p.partition == 'Common'
-        assert p.dst_address == 'annoying_user'
-        assert p.src_address == '99.99.99.99'
-        assert p.peer_selection_mode == 'sequential'
-        assert p.peers == ['/Common/testy']
+        assert p.parent == '/Common/genericmsg'
+        assert p.disable_parser == 'no'
+        assert p.max_egress_buffer == 32768
+        assert p.max_msg_size == 32768
+        assert p.no_response == 'no'
 
 
 class TestManager(unittest.TestCase):
@@ -105,13 +108,15 @@ class TestManager(unittest.TestCase):
 
     def test_create_generic_route(self, *args):
         set_module_args(dict(
-            name='some',
+            name='foo',
             partition='foobar',
             description='my description',
-            dst_address='some_destination',
-            src_address='some_address',
-            peer_selection_mode='ratio',
-            peers=['/Common/example'],
+            parent='barfoo',
+            disable_parser=True,
+            max_egress_buffer=10000,
+            max_msg_size=2000,
+            msg_terminator='%%%%',
+            no_response=False,
             provider=dict(
                 server='localhost',
                 password='password',
@@ -125,29 +130,28 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        gm = GenericModuleManager(module=module)
-        gm.exists = Mock(return_value=False)
-        gm.create_on_device = Mock(return_value=True)
-
         mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
         mm.version_less_than_14 = Mock(return_value=False)
-        mm.get_manager = Mock(return_value=gm)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['description'] == 'my description'
-        assert results['dst_address'] == 'some_destination'
-        assert results['src_address'] == 'some_address'
-        assert results['peer_selection_mode'] == 'ratio'
-        assert results['peers'] == ['/Common/example']
+        assert results['parent'] == '/foobar/barfoo'
+        assert results['disable_parser'] == 'yes'
+        assert results['max_egress_buffer'] == 10000
+        assert results['max_msg_size'] == 2000
+        assert results['msg_terminator'] == '%%%%'
+        assert results['no_response'] == 'no'
 
     def test_update_generic_peer(self, *args):
         set_module_args(dict(
-            name='some',
-            dst_address="blackhole",
-            peer_selection_mode='ratio',
-            peers=['/Common/example'],
+            name='foobar',
+            disable_parser=True,
+            max_egress_buffer=10000,
+            max_msg_size=2000,
             provider=dict(
                 server='localhost',
                 password='password',
@@ -163,18 +167,15 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        gm = GenericModuleManager(module=module)
-        gm.exists = Mock(return_value=True)
-        gm.update_on_device = Mock(return_value=True)
-        gm.read_current_from_device = Mock(return_value=current)
-
         mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
         mm.version_less_than_14 = Mock(return_value=False)
-        mm.get_manager = Mock(return_value=gm)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['dst_address'] == 'blackhole'
-        assert results['peer_selection_mode'] == 'ratio'
-        assert results['peers'] == ['/Common/example']
+        assert results['disable_parser'] == 'yes'
+        assert results['max_egress_buffer'] == 10000
+        assert results['max_msg_size'] == 2000
