@@ -82,6 +82,7 @@ Modules Maintained by the Ansible Partners
   * :ref:`bigip_lx_package_module`
   * :ref:`bigip_management_route_module`
   * :ref:`bigip_message_routing_peer_module`
+  * :ref:`bigip_message_routing_protocol_module`
   * :ref:`bigip_message_routing_route_module`
   * :ref:`bigip_message_routing_router_module`
   * :ref:`bigip_monitor_dns_module`
