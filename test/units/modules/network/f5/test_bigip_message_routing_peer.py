@@ -181,8 +181,8 @@ class TestManager(unittest.TestCase):
 
         # Override methods in the specific type of manager
         gm = GenericModuleManager(module=module)
-        gm.exists = Mock(return_value=False)
-        gm.create_on_device = Mock(return_value=True)
+        gm.exists = Mock(return_value=True)
+        gm.update_on_device = Mock(return_value=True)
         gm.read_current_from_device = Mock(return_value=current)
 
         mm = ModuleManager(module=module)
