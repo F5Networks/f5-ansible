@@ -85,6 +85,7 @@ All modules
   * :ref:`bigip_message_routing_protocol_module`
   * :ref:`bigip_message_routing_route_module`
   * :ref:`bigip_message_routing_router_module`
+  * :ref:`bigip_message_routing_transport_config_module`
   * :ref:`bigip_monitor_dns_module`
   * :ref:`bigip_monitor_external_module`
   * :ref:`bigip_monitor_gateway_icmp_module`
