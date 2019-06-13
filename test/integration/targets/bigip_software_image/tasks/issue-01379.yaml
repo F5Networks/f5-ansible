@@ -1,0 +1,25 @@
+---
+
+# these tests require a multi-blade Viprion, and a valid ISO image in files, the current files are just dummy placeholders as we cannot commit ISO to the repository
+
+- name: Issue 01379 - Upload an image to Multiblade Viprion BIG-IP
+  bigip_software_image:
+    image: "{{ viprion_image }}"
+  register: result
+
+- name: Issue 01379 - Assert Upload an image to Multiblade Viprion BIG-IP
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01379 - Upload an image to Multiblade Viprion BIG-IP - Idempotent check
+  bigip_software_image:
+    image: "{{ viprion_image }}"
+  register: result
+
+- name: Assert Upload an image to Multiblade Viprion BIG-IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
