@@ -1,0 +1,22 @@
+---
+
+# defaults
+snat_translation_name: my-snat-translation
+st_address: 10.10.10.10
+st_arp: yes
+st_connection_limit: 0
+st_description: none
+st_ip_idle_timeout: indefinite
+st_state_absent: absent
+st_tcp_idle_timeout: indefinite
+st_udp_idle_timeout: indefinite
+
+# none-defaults
+st_arp2: no
+st_connection_limit2: 300
+st_description2: My snat translation description
+st_ip_idle_timeout2: '50'
+st_tcp_idle_timeout2: '100'
+st_udp_idle_timeout2: '200'
+st_partition: test
+st_traffic_group: /Common/test

@@ -1,0 +1,9 @@
+---
+
+- name: Create partition for SNAT translation test
+  bigip_partition:
+    name: "{{ st_partition }}"
+
+- name: Create a traffic group for SNAT translation test
+  bigip_device_traffic_group:
+    name: "{{ st_traffic_group }}"

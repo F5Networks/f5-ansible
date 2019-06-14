@@ -1,0 +1,243 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create SNAT translation using defaults
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    arp: "{{ st_arp }}"
+    connection_limit: "{{ st_connection_limit }}"
+    description: "{{ st_description }}"
+    ip_idle_timeout: "{{ st_ip_idle_timeout }}"
+    tcp_idle_timeout: "{{ st_tcp_idle_timeout }}"
+    udp_idle_timeout: "{{ st_udp_idle_timeout }}"
+  register: result
+
+- name: Assert Create SNAT translation using defaults
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.address == st_address
+      - result.arp == 'yes'
+      - result.connection_limit == st_connection_limit
+      - result.description == ''
+      - result.ip_idle_timeout == st_ip_idle_timeout
+      - result.tcp_idle_timeout == st_tcp_idle_timeout
+      - result.udp_idle_timeout == st_udp_idle_timeout
+
+- name: Create SNAT translation using defaults - Idempotent check
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    arp: "{{ st_arp }}"
+    connection_limit: "{{ st_connection_limit }}"
+    description: "{{ st_description }}"
+    ip_idle_timeout: "{{ st_ip_idle_timeout }}"
+    tcp_idle_timeout: "{{ st_tcp_idle_timeout }}"
+    udp_idle_timeout: "{{ st_udp_idle_timeout }}"
+  register: result
+
+- name: Assert Create SNAT translation using defaults - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify SNAT translation settings
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    arp: "{{ st_arp2 }}"
+    connection_limit: "{{ st_connection_limit2 }}"
+    description: "{{ st_description2 }}"
+    ip_idle_timeout: "{{ st_ip_idle_timeout2 }}"
+    tcp_idle_timeout: "{{ st_tcp_idle_timeout2 }}"
+    udp_idle_timeout: "{{ st_udp_idle_timeout2 }}"
+  register: result
+
+- name: Assert modify SNAT translation settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.arp == 'no'
+      - result.connection_limit == st_connection_limit2
+      - result.description == st_description2
+      - result.ip_idle_timeout == st_ip_idle_timeout2
+      - result.tcp_idle_timeout == st_tcp_idle_timeout2
+      - result.udp_idle_timeout == st_udp_idle_timeout2
+
+- name: Modify SNAT translation settings - Idempotent check
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    arp: "{{ st_arp2 }}"
+    connection_limit: "{{ st_connection_limit2 }}"
+    description: "{{ st_description2 }}"
+    ip_idle_timeout: "{{ st_ip_idle_timeout2 }}"
+    tcp_idle_timeout: "{{ st_tcp_idle_timeout2 }}"
+    udp_idle_timeout: "{{ st_udp_idle_timeout2 }}"
+  register: result
+
+- name: Assert Modify SNAT translation settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete a SNAT translation
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    state: "{{ st_state_absent }}"
+  register: result
+
+- name: Assert Delete a SNAT translation
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete a SNAT translation - Idempotent check
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    state: "{{ st_state_absent }}"
+  register: result
+
+- name: Assert Delete a SNAT translation - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create SNAT translation using alternate partition and traffic group
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    arp: "{{ st_arp2 }}"
+    connection_limit: "{{ st_connection_limit2 }}"
+    description: "{{ st_description2 }}"
+    ip_idle_timeout: "{{ st_ip_idle_timeout2 }}"
+    partition: "{{ st_partition }}"
+    tcp_idle_timeout: "{{ st_tcp_idle_timeout2 }}"
+    traffic_group: "{{ st_traffic_group }}"
+    udp_idle_timeout: "{{ st_udp_idle_timeout2 }}"
+  register: result
+
+- name: Assert Create SNAT translation using alternate partition and traffic group
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.address == st_address
+      - result.arp == 'no'
+      - result.connection_limit == st_connection_limit2
+      - result.description == st_description2
+      - result.ip_idle_timeout == st_ip_idle_timeout2
+      - result.tcp_idle_timeout == st_tcp_idle_timeout2
+      - result.traffic_group == '/Common/test'
+      - result.udp_idle_timeout == st_udp_idle_timeout2
+
+- name: Create SNAT translation using alternate partition and traffic group - Idempotent check
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    arp: "{{ st_arp2 }}"
+    connection_limit: "{{ st_connection_limit2 }}"
+    description: "{{ st_description2 }}"
+    ip_idle_timeout: "{{ st_ip_idle_timeout2 }}"
+    partition: "{{ st_partition }}"
+    tcp_idle_timeout: "{{ st_tcp_idle_timeout2 }}"
+    traffic_group: "{{ st_traffic_group }}"
+    udp_idle_timeout: "{{ st_udp_idle_timeout2 }}"
+  register: result
+
+- name: Create SNAT translation using alternate partition and traffic group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete SNAT translation using alternate partition and traffic group
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    partition: "{{ st_partition }}"
+    state: "{{ st_state_absent }}"
+  register: result
+
+- name: Assert Delete SNAT translation using alternate partition and traffic group
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create SNAT translation using disabled state
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    state: disabled
+  register: result
+
+- name: Assert SNAT translation using disabled state
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.disabled == true
+      - result.state == 'disabled'
+
+- name: Create SNAT translation using disabled state - Idempotent check
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    state: disabled
+  register: result
+
+- name: Create SNAT translation using disabled state - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify SNAT translation to enabled state
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    state: enabled
+  register: result
+
+- name: Assert SNAT translation using enabled state
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.enabled == true
+
+- name: Modify SNAT translation to enabled state - Idempotent check
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+    state: enabled
+  register: result
+
+- name: Modify SNAT translation to enabled state - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete Modify SNAT translation to enabled state
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    state: "{{ st_state_absent }}"
+  register: result
+
+- name: Assert Delete Modify SNAT translation to enabled state
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+
+- import_tasks: teardown.yaml
