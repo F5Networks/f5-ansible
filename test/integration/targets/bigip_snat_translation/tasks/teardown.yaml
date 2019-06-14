@@ -1,0 +1,11 @@
+---
+
+- name: Delete partition for SNAT translation test
+  bigip_partition:
+    name: "{{ st_partition }}"
+    state: absent
+
+- name: Delete a traffic group for SNAT translation test
+  bigip_device_traffic_group:
+    name: "{{ st_traffic_group }}"
+    state: absent
