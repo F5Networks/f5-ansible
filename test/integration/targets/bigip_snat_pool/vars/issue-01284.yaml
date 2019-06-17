@@ -1,0 +1,8 @@
+---
+
+snat_pool_name: my-snat-pool
+members_list:
+  - 10.10.10.10
+  - 20.20.20.20
+snat_pool_description: A SNAT pool description
+snat_pool_new_description: A new SNAT pool description

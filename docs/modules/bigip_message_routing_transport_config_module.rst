@@ -1,14 +1,14 @@
-:source: bigip_gtm_topology_region.py
+:source: bigip_message_routing_transport_config.py
 
 :orphan:
 
-.. _bigip_gtm_topology_region_module:
+.. _bigip_message_routing_transport_config_module:
 
 
-bigip_gtm_topology_region - Manages GTM Topology Regions
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_message_routing_transport_config - Manages configuration for an outgoing connection
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.8
+.. versionadded:: 2.9
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_gtm_topology_region - Manages GTM Topology Regions
 
 Synopsis
 --------
-- Manages GTM Topology Regions.
+- Manages configuration for an outgoing connection in BIG-IP message routing.
 
 
 
@@ -28,8 +28,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -37,12 +37,22 @@ Parameters
         </tr>
                     <tr>
                                                                 <td colspan="2">
+                    <b>description</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>The user defined description of the transport config.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>name</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the region.</div>
+                                                                        <div>Specifies the name of the transport config to manage.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -53,8 +63,7 @@ Parameters
                                                                                                                                                                     <b>Default:</b><br/><div style="color: blue">Common</div>
                                     </td>
                                                                 <td>
-                                                                        <div>Device partition to manage resources on.</div>
-                                                    <div>Partition parameter is also taken into account when used in conjunction with <code>pool</code>, <code>data_center</code>, and <code>region</code> parameters.</div>
+                                                                        <div>Device partition to create transport-config object on.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -68,6 +77,16 @@ Parameters
                                                     <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                     </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>profiles</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies a list profiles for the outgoing connection to use to direct and manage traffic.</div>
+                                                                                </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -187,152 +206,15 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>region_members</b>
+                    <b>rules</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the list of region members.</div>
-                                                    <div>This list of members is all or nothing, in order to add or remove a member, you must specify the entire list of members.</div>
-                                                    <div>The list will override what is on the device if different.</div>
-                                                    <div>If <code>none</code> value is specified the region members list will be removed.</div>
-                                                                                </td>
-            </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>negate</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>When set to c(yes) the system selects this topology region, when the request source does not match.</div>
-                                                    <div>Only a single list entry can be specified together with negate.</div>
+                                                                        <div>The iRules you want run on this transport config. iRules help automate the intercepting, processing, and routing of application traffic.</div>
                                                                                 </td>
             </tr>
                                 <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>subnet</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>An IP address and network mask in the CIDR format.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>region</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of region already defined in the configuration.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>continent</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies one of the seven continents, along with the <code>Unknown</code> setting.</div>
-                                                    <div>Specifying <code>Unknown</code> forces the system to use a default resolution if the system cannot determine the location of the local DNS making the request.</div>
-                                                    <div>Full continent names and their abbreviated versions are supported.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>country</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The country name, or code to use.</div>
-                                                    <div>In addition to the country full names, you may also specify their abbreviated form, such as <code>US</code> instead of <code>United States</code>.</div>
-                                                    <div>Valid country codes can be found here https://countrycode.org/.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>state</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a state in a given country.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>pool</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of GTM pool already defined in the configuration.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>datacenter</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the name of GTM data center already defined in the configuration.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>isp</b>
-                                                        </td>
-                                <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>AOL</li>
-                                                                                                                                                                                                <li>BeijingCNC</li>
-                                                                                                                                                                                                <li>CNC</li>
-                                                                                                                                                                                                <li>ChinaEducationNetwork</li>
-                                                                                                                                                                                                <li>ChinaMobilNetwork</li>
-                                                                                                                                                                                                <li>ChinaRailwayTelcom</li>
-                                                                                                                                                                                                <li>ChinaTelecom</li>
-                                                                                                                                                                                                <li>ChinaUnicom</li>
-                                                                                                                                                                                                <li>Comcast</li>
-                                                                                                                                                                                                <li>Earthlink</li>
-                                                                                                                                                                                                <li>ShanghaiCNC</li>
-                                                                                                                                                                                                <li>ShanghaiTelecom</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies an Internet service provider.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
-                    <b>geo_isp</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies a geolocation ISP</div>
-                                                                                </td>
-            </tr>
-                    
-                                                <tr>
                                                                 <td colspan="2">
                     <b>server</b>
                     <br/><div style="font-size: small; color: red">required</div>                                    </td>
@@ -357,6 +239,59 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>src_addr_translation</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the type of source address translation enabled for the transport config and the pool that the source address translation will use.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>type</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>snat</li>
+                                                                                                                                                                                                <li>none</li>
+                                                                                                                                                                                                <li>automap</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the type of source address translation associated with the specified transport config.</div>
+                                                    <div>When set to <code>snat</code> the <code>pool</code> parameter needs to contain a name for a valid LSN or SNAT pool.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>pool</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the name of a LSN or SNAT pool used by the specified transport config.</div>
+                                                    <div>Name can also be specified in <code>fullPath</code> format: <code>/Common/foobar</code></div>
+                                                    <div>When <code>type</code> is <code>none</code> or <code>automap</code> the pool parameter will be replaced by <code>none</code> keyword, thus any defined <code>pool</code> parameter will be ignored.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>src_port</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the source port to be used for the connection being created.</div>
+                                                    <div>If no value is specified an ephemeral port is chosen for the connection being created.</div>
+                                                    <div>The accepted range is between 0 and 65535 inclusive.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>state</b>
                                                         </td>
                                 <td>
@@ -366,8 +301,22 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When <code>state</code> is <code>present</code>, ensures that the region exists.</div>
-                                                    <div>When <code>state</code> is <code>absent</code>, ensures that the region is removed.</div>
+                                                                        <div>When <code>present</code>, ensures that the transport-config object exists.</div>
+                                                    <div>When <code>absent</code>, ensures the transport-config object is removed.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>type</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>generic</b>&nbsp;&larr;</div></li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Parameter used to specify the type of the transport-config object to manage.</div>
+                                                    <div>Default setting is <code>generic</code> with more options added in future.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -404,6 +353,7 @@ Notes
 -----
 
 .. note::
+    - Requires BIG-IP >= 14.0.0
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.
@@ -415,25 +365,35 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create topology region
-      bigip_gtm_topology_region:
-        name: foobar
-        region_members:
-          - country: CN
-            negate: yes
-          - datacenter: baz
+    - name: Create generic transport config
+      bigip_message_routing_transport_config:
+        name: foo
+        profiles:
+          transport: genericmsg
+          tcp: tcp-lan-optimized
+        description: new_transport
         provider:
           password: secret
           server: lb.mydomain.com
           user: admin
       delegate_to: localhost
 
-    - name: Modify topology region
-      bigip_gtm_topology_region:
-        name: foobar
-        region_members:
-          - continent: EU
-          - country: PL
+    - name: Modify generic transport config
+      bigip_message_routing_transport_config:
+        name: foo
+        rules:
+          - rule_1
+          - rule_2
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Remove generic transport config
+      bigip_message_routing_transport_config:
+        name: foo
+        state: absent
         provider:
           password: secret
           server: lb.mydomain.com
@@ -450,38 +410,107 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                        <tr>
-            <th colspan="1">Key</th>
+                                                                                                                                                                                                                                                                            
+                                            <tr>
+            <th colspan="2">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
-                                <td colspan="1">
-                    <b>name</b>
+                                <td colspan="2">
+                    <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The name value of the GTM region.</div>
+                                            <div>The user defined description of the router profile.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foobar</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My description</div>
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
-                    <b>region_members</b>
+                                <td colspan="2">
+                    <b>profiles</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The list of members of the GTM region.</div>
+                                            <div>The profiles for the outgoing connection .</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;continent&#x27;: &#x27;EU&#x27;}, {&#x27;country&#x27;: &#x27;PL&#x27;}]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/profile1&#x27;, &#x27;/Common/profile2&#x27;]</div>
                                     </td>
             </tr>
-                        </table>
+                                <tr>
+                                <td colspan="2">
+                    <b>rules</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The iRules running on transport config.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/rule1&#x27;, &#x27;/Common/rule2&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>source_port</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The source port to be used for the connection being created.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10041</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>src_addr_translation</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The type of source address translation enabled for the transport config.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>the type of source address translation associated with the specified transport config.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">automap</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>pool</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The name of a LSN or SNAT pool used by the specified transport config.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
+                                    </td>
+            </tr>
+                    
+                                        </table>
     <br/><br/>
 
 
