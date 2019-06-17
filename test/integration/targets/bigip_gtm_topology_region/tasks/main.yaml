@@ -228,3 +228,6 @@
     - "{{ name2 }}"
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01355.yaml
+  tags: issue-01355

@@ -28,13 +28,23 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>description</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>A general description of the SNAT pool, provided by the user for their benefit. It is optional.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>members</b>
                                                         </td>
@@ -304,6 +314,20 @@ Examples
       bigip_snat_pool:
         name: johnd
         state: absent
+        provider:
+          server: lb.mydomain.com
+          user: admin
+          password: secret
+      delegate_to: localhost
+
+    - name: Add the SNAT pool 'my-snat-pool' with a description
+      bigip_snat_pool:
+        name: my-snat-pool
+        state: present
+        members:
+          - 10.10.10.10
+          - 20.20.20.20
+        description: A SNAT pool description
         provider:
           server: lb.mydomain.com
           user: admin
