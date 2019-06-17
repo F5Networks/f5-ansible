@@ -28,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -105,6 +105,21 @@ Parameters
                                                                         <div>Specifies whether to use IPComp encapsulation.</div>
                                                     <div>When <code>none</code>, specifies that IPComp is disabled.</div>
                                                     <div>When <code>deflate</code>, specifies that IPComp is enabled and uses the Deflate compression algorithm.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>ipv4_interface</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>mode</code> is <code>interface</code> indicate if the IPv4 <code>any</code> address should be used. By default <code>BIG-IP</code> assumes <code>any6</code> address for tunnel addresses when <code>mode</code> is <code>interface</code>.</div>
+                                                    <div>This option takes effect only when <code>mode</code> is set to <code>interface</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -650,4 +665,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Wojciech Wypior (@wojtek0806)
 

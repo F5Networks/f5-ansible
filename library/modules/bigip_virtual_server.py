@@ -3618,8 +3618,6 @@ def main():
         mutually_exclusive=spec.mutually_exclusive
     )
 
-    client = F5RestClient(**module.params)
-
     try:
         mm = ModuleManager(module=module)
         results = mm.exec_module()
