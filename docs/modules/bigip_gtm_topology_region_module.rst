@@ -29,7 +29,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -212,6 +212,17 @@ Parameters
                                                                 <td>
                                                                         <div>When set to c(yes) the system selects this topology region, when the request source does not match.</div>
                                                     <div>Only a single list entry can be specified together with negate.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>subnet</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>An IP address and network mask in the CIDR format.</div>
                                                                                 </td>
             </tr>
                                 <tr>
