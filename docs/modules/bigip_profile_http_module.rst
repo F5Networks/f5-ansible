@@ -29,9 +29,9 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -443,18 +443,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>provider</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                </td>
                                 <td>
@@ -640,17 +628,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>server</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The BIG-IP host.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>server_agent_name</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.8)</div>                </td>
                                 <td>
@@ -659,18 +636,6 @@ Parameters
                                                                         <div>Specifies the string used as the server name in traffic generated by BIG-IP.</div>
                                                     <div>To remove the entry completely a value of <code>none</code> or <code>&#x27;&#x27;</code> should be set.</div>
                                                     <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>server_port</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The BIG-IP server port.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -773,32 +738,6 @@ Parameters
                                                                 <td>
                                                                         <div><code>always</code> will update passwords if the <code>encrypt_cookie_secret</code> is specified.</div>
                                                     <div><code>on_create</code> will only set the password for newly created profiles.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>validate_certs</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
