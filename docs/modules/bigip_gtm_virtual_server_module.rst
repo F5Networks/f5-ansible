@@ -30,8 +30,8 @@ Parameters
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                     
                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                
                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -261,18 +261,6 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>port</b>
                                                         </td>
                                 <td>
@@ -401,35 +389,12 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>server</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The BIG-IP host.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
                     <b>server_name</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the name of the server that the virtual server is associated with.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>server_port</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The BIG-IP server port.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -471,32 +436,6 @@ Parameters
                                                                         <div>Specifies the translation port number or service name for the virtual server.</div>
                                                     <div>To specify all ports, use an <code>*</code>.</div>
                                                     <div>When creating a new GTM virtual server, if this parameter is not specified, a default of <code>*</code> will be used.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>validate_certs</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
                                 <tr>

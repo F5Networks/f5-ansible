@@ -78,19 +78,3 @@
         tasks_from: provider.yaml
       tags:
         - provider
-
-- name: Test the bigip_gtm_pool module - Args
-  hosts: "f5-test[0]"
-  connection: local
-  any_errors_fatal: true
-
-  vars:
-    limit_to: '*'
-
-  tasks:
-    - name: Include role - Args
-      import_role:
-        name: bigip_gtm_pool
-        tasks_from: args.yaml
-      tags:
-        - args
