@@ -66,17 +66,3 @@
       tags:
         - provider
         - provider-rest
-
-- name: Test the bigiq_application_http module - Args-rest
-  hosts: "f5-bigiq[0]"
-  connection: local
-  any_errors_fatal: true
-
-  tasks:
-    - name: Include role - Args-rest
-      import_role:
-        name: bigiq_application_http
-        tasks_from: args-rest.yaml
-      tags:
-        - args
-        - args-rest
