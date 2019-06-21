@@ -158,22 +158,22 @@ RETURN = r'''
 daily_hour_start:
   description: The time of day the rule will start to be in use.
   returned: changed
-  type: string
+  type: str
   sample: '13:00'
 daily_hour_end:
   description: The time of day the rule will stop being used.
   returned: changed
-  type: string
+  type: str
   sample: '18:00'
 date_valid_start:
   description: The start date/time schedule will apply to the rule.
   returned: changed
-  type: string
+  type: str
   sample: 2019-03-01:15:30:00
 date_valid_end:
   description: The end date/time schedule will apply to the rule.
   returned: changed
-  type: string
+  type: str
   sample: 2019-03-11:15:30:00
 days_of_week:
   description: The days of the week the rule will be applied.
@@ -183,7 +183,7 @@ days_of_week:
 description:
   description: The user defined description text.
   returned: changed
-  type: string
+  type: str
   sample: Foo is bar
 '''
 
