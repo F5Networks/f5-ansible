@@ -47,6 +47,7 @@ options:
       - Specifies the hotfix ISO image file which will be applied on top of the base
         image.
     type: str
+    version_added: 2.9
   mgmt_network:
     description:
       - Specifies the method by which the management address is used in the vCMP guest.

@@ -106,7 +106,7 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_generic_route(self, *args):
+    def test_create_generic_protocol(self, *args):
         set_module_args(dict(
             name='foo',
             partition='foobar',
@@ -146,7 +146,7 @@ class TestManager(unittest.TestCase):
         assert results['msg_terminator'] == '%%%%'
         assert results['no_response'] == 'no'
 
-    def test_update_generic_peer(self, *args):
+    def test_update_generic_protocol(self, *args):
         set_module_args(dict(
             name='foobar',
             disable_parser=True,
@@ -159,7 +159,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = ApiParameters(params=load_fixture('load_generic_route.json'))
+        current = ApiParameters(params=load_fixture('load_generic_parser.json'))
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,

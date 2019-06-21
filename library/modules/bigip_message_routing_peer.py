@@ -180,7 +180,7 @@ transport_config:
 description:
   description: The user defined description of the peer.
   returned: changed
-  type: string
+  type: str
   sample: Some description
 pool:
   description: The name of the pool that messages will be routed towards.

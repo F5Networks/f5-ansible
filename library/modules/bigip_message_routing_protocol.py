@@ -128,7 +128,7 @@ description:
 parent:
   description: The parent template of this parser profile.
   returned: changed
-  type: string
+  type: str
   sample: /Common/genericmsg
 disable_parser:
   description: Disables generic message parser.
@@ -148,7 +148,7 @@ max_msg_size:
 msg_terminator:
   description: The string of characters used to terminate a message.
   returned: changed
-  type: string
+  type: str
   sample: '%%%%'
 no_response:
   description: Disables matching of responses to requests.
