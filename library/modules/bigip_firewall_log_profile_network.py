@@ -54,7 +54,7 @@ options:
             configured with an "accept" or "accept decisively" action.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: list
+    type: dict
   log_matches_drop_rule:
     description:
       - Modify log settings for ACL rules configured with a drop action.
@@ -70,7 +70,7 @@ options:
             configured with a drop action.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: list
+    type: dict
   log_matches_reject_rule:
     description:
       - Modify log settings for ACL rules configured with a reject action.
@@ -86,7 +86,7 @@ options:
             configured with a reject action.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: list
+    type: dict
   log_ip_errors:
     description:
       - Modify log settings for logging of IP error packets.
@@ -100,7 +100,7 @@ options:
           - This option is used to set rate limits for the logging of IP error packets.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: list
+    type: dict
   log_tcp_errors:
     description:
       - Modify log settings for logging of TCP error packets.
@@ -114,7 +114,7 @@ options:
           - This option is used to set rate limits for the logging of TCP error packets.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: list
+    type: dict
   log_tcp_events:
     description:
       - Modify log settings for logging of TCP events on the client side.
@@ -129,7 +129,7 @@ options:
           - This option is used to set rate limits for the logging of TCP events on the client side.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: list
+    type: dict
   log_translation_fields:
     description:
       - This option is used to enable or disable the logging of translated (i.e server side) fields in ACL
@@ -165,6 +165,7 @@ options:
       - The special character C($) should not be used, and will raise an error if used,
         as it is reserved for internal use.
       - The maximum length allowed for this parameter is C(31) characters.
+    type: str
   log_message_fields:
     description:
       - Specifies a set of fields to be logged.
@@ -306,7 +307,7 @@ log_publisher:
 rate_limit:
   description: The rate limit for all combined network firewall log messages per second.
   returned: changed
-  type: string
+  type: str
   sample: "indefinite"
 log_matches_accept_rule:
   description: Log settings for ACL rules configured with an "accept" or "accept decisively" action.
@@ -409,7 +410,7 @@ log_translation_fields:
   returned: changed
   type: bool
   sample: yes
-log_translation_fields:
+log_storage_format:
   description: The type of the storage format.
   returned: changed
   type: str

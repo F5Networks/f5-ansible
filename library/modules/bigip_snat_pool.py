@@ -32,6 +32,7 @@ options:
       - A general description of the SNAT pool, provided by the user for their
         benefit. It is optional.
     type: str
+    version_added: 2.9
   name:
     description:
       - The name of the SNAT pool.
