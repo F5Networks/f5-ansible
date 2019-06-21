@@ -107,6 +107,7 @@ options:
           - To specify an indefinite rate, use the value C(indefinite).
           - If specifying a numeric rate, the value must be between C(1) and C(4294967295).
         type: str
+    type: dict
   partition:
     description:
       - Device partition to create log profile on.
@@ -164,7 +165,7 @@ EXAMPLES = r'''
     dos_protection:
       dns_publisher: "/Common/local-db-pub"
       sip_publisher: "non-local-db"
-      network_publisher: "/Common/local-db-pub""
+      network_publisher: "/Common/local-db-pub"
     provider:
       password: secret
       server: lb.mydomain.com

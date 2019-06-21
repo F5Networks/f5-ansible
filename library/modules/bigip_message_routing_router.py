@@ -169,7 +169,7 @@ description:
 parent:
   description: The parent template of this router profile.
   returned: changed
-  type: string
+  type: str
   sample: /Common/messagerouter
 ignore_client_port:
   description: Enables ignoring of the remote port on clientside connections when searching for an existing connection.
@@ -184,7 +184,7 @@ inherited_traffic_group:
 traffic_group:
   description: The traffic-group of the router profile.
   returned: changed
-  type: string
+  type: str
   sample: /Common/traffic-group-1
 use_local_connection:
   description: Enables routing of messages to an existing connection on the same TMM as the message was received on.

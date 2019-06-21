@@ -122,7 +122,7 @@ RETURN = r'''
 description:
   description: The user defined description of the route.
   returned: changed
-  type: string
+  type: str
   sample: Some description
 src_address:
   description: The source address of the route.
