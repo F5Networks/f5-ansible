@@ -1,0 +1,67 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Update not expired certificate - force yes
+  bigip_device_certificate:
+    days_valid: 365
+    force: yes
+    provider: "{{ cli_provider }}"
+  register: results
+
+- name: Assert Update not expired certificate - force yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update not expired certificate - force no - No Change Expected
+  bigip_device_certificate:
+    days_valid: 365
+    provider: "{{ cli_provider }}"
+  register: result
+
+- name: Assert Update not expired certificate - force no - No Change Expected
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Replace not expired certificate with new - force yes
+  bigip_device_certificate:
+    days_valid: 365
+    new_cert: yes
+    force: yes
+    key_size: 1024
+    issuer:
+      country: US
+      state: WA
+      common_name: foobar.foo.local
+    provider: "{{ cli_provider }}"
+  register: result
+
+- name: Assert Replace not expired certificate with new - force yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Replace not expired certificate with new - force no - No Change Expected
+  bigip_device_certificate:
+    days_valid: 365
+    new_cert: yes
+    key_size: 1024
+    issuer:
+      country: US
+      state: WA
+      common_name: foobar.foo.local
+    provider: "{{ cli_provider }}"
+  register: result
+
+- name: Assert Replace not expired certificate with new - force no - No Change Expected
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml

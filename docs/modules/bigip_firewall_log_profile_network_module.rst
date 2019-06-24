@@ -640,7 +640,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                 
                                                                                                                                                                 
                                                                                                                                                                 
-                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                
                                                                                                                                                                 
                                                                                                             <tr>
             <th colspan="2">Key</th>
@@ -856,6 +856,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="2">
+                    <b>log_storage_format</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The type of the storage format.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">field-list</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
                     <b>log_tcp_errors</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -941,20 +954,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <tr>
                                 <td colspan="2">
                     <b>log_translation_fields</b>
-                    <br/><div style="font-size: small; color: red">str</div>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The type of the storage format.</div>
+                                            <div>Enable or disable the logging of translated (i.e server side) fields in ACL match and TCP events.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">field-list</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="2">
                     <b>rate_limit</b>
-                    <br/><div style="font-size: small; color: red">string</div>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
