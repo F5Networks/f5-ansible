@@ -205,7 +205,7 @@ options:
       - This parameter is mutually exclusive with many of the other individual-rule
         specific settings. This includes C(logging), C(action), C(source),
         C(destination), C(irule'), C(protocol) and C(logging).
-      - This parameter is only used when parent_policy is specified, otherwise it is ignored.
+      - This parameter is only used when C(parent_policy) is specified, otherwise it is ignored.
     type: str
   icmp_message:
     description:
