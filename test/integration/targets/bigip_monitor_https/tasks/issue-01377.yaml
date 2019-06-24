@@ -1,0 +1,41 @@
+---
+- name: Issue 01377 - Include issue variables
+  include_vars:
+    file: issue-01377.yaml
+
+- name: Issue 01377 - Create Monitor with receive string
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    receive: "{{ receive_string_1 }}"
+    ip: '*'
+    port: '*'
+
+- name: Issue 01377 - Remove Monitor receive
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    receive: "{{ receive_string_2 }}"
+  register: result
+
+- name: Issue 01377 - Remove Monitor receive
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01377 - Remove Monitor receive - Idempotent check
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    receive: "{{ receive_string_2 }}"
+  register: result
+
+- name: Issue 01377 - Remove Monitor receive - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01377 - Remove monitor
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
