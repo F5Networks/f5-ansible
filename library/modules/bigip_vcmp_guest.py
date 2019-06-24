@@ -322,7 +322,7 @@ class ModuleParameters(Parameters):
             return self._values['mgmt_route']
         else:
             raise F5ModuleError(
-                "The specified 'mgmt_route' is not a valid IP address"
+                "The specified 'mgmt_route' is not a valid IP address."
             )
 
     @property
@@ -377,7 +377,7 @@ class ModuleParameters(Parameters):
         if self.initial_image_exists(self._values['initial_image']):
             return self._values['initial_image']
         raise F5ModuleError(
-            "The specified 'initial_image' does not exist on the remote device"
+            "The specified 'initial_image' does not exist on the remote device."
         )
 
     @property
@@ -387,7 +387,7 @@ class ModuleParameters(Parameters):
         if self.initial_hotfix_exists(self._values['initial_hotfix']):
             return self._values['initial_hotfix']
         raise F5ModuleError(
-            "The specified 'initial_hotfix' does not exist on the remote device"
+            "The specified 'initial_hotfix' does not exist on the remote device."
         )
 
     def initial_image_exists(self, image):
