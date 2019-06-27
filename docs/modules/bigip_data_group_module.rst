@@ -240,6 +240,7 @@ Parameters
                                                     <div>If you have a large number of records, it is recommended that you use <code>records_content</code> instead of typing all those records here.</div>
                                                     <div>The technical limit of either 1. the number of records, or 2. the total size of all records, varies with the size of the total resources on your system; in particular, RAM.</div>
                                                     <div>When <code>internal</code> is <code>no</code>, at least one record must be specified in either <code>records</code> or <code>records_content</code>.</div>
+                                                    <div>When <code>type</code> is: <code>ip</code>, <code>address</code>, <code>addr</code> if the addresses use non default route domain, they must be explicit about it that is they must contain a route domain notation <code>%</code> eg. 10.10.1.1%11. This is true regardless if the data group resides in a partition or not.</div>
                                                                                 </td>
             </tr>
                                                             <tr>
