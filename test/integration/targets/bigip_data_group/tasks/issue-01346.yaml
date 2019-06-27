@@ -1,70 +1,70 @@
 ---
 
-- name: Issue 1210 - Create Route Domain
+- name: Issue 1346 - Create Route Domain
   bigip_routedomain:
-    name: issue_1210
-    id: 10
+    name: issue_1346
+    id: 11
     state: present
 
-- name: Issue 1210 - Create Other partition
+- name: Issue 1346 - Create Other partition
   bigip_partition:
     name: Other
-    route_domain: 10
+    route_domain: 11
     state: present
 
-- name: Issue 1210 - Create datagroup on Other partition
+- name: Issue 1346 - Create datagroup on Other partition
   bigip_data_group:
     internal: "yes"
     partition: 'Other'
     name: 'data_group_Other'
     type: 'ip'
     records:
-      - key: '10.10.10.0%10/24'
+      - key: '10.10.10.0%11/24'
         value: ''
-      - key: '20.20.20.0%10/24'
+      - key: '20.20.20.11%11/32'
         value: ''
     state: present
   register: result
 
-- name: Issue 1210 - Assert Create datagroup on Other partition
+- name: Issue 1346 - Assert Create datagroup on Other partition
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 1210 - Create datagroup on Other partition - Idempotent check
+- name: Issue 1346 - Create datagroup on Other partition - Idempotent check
   bigip_data_group:
     internal: "yes"
     partition: 'Other'
     name: 'data_group_Other'
     type: 'ip'
     records:
-      - key: '10.10.10.0%10/24'
+      - key: '10.10.10.0%11/24'
         value: ''
-      - key: '20.20.20.0%10/24'
+      - key: '20.20.20.11%11/32'
         value: ''
     state: present
   register: result
 
-- name: Issue 1210 - Assert Create datagroup on Other partition - Idempotent check
+- name: Issue 1346 - Assert Create datagroup on Other partition - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 1210 - Remove datagroup on Other partition
+- name: Issue 1346 - Remove datagroup on Other partition
   bigip_data_group:
     internal: "yes"
     partition: 'Other'
     name: 'data_group_Other'
     state: absent
 
-- name: Issue 1210 - Remove Other partition
+- name: Issue 1346 - Remove Other partition
   bigip_partition:
     name: Other
     state: absent
 
-- name: Issue 1210 - Remove Route Domain
+- name: Issue 1346 - Remove Route Domain
   bigip_routedomain:
-    name: issue_1210
+    name: issue_1346
     state: absent
