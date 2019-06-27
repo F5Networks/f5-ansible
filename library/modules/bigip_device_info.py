@@ -15322,7 +15322,6 @@ class VirtualServersParameters(BaseParameters):
         result = [x['name'] for x in response['items']]
         return result
 
-
     @property
     def security_log_profiles(self):
         if self._values['security_log_profiles'] is None:

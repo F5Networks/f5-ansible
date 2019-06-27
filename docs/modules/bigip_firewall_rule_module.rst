@@ -408,7 +408,7 @@ Parameters
                                                                 <td>
                                                                         <div>Specifies an existing rule list to use in the rule.</div>
                                                     <div>This parameter is mutually exclusive with many of the other individual-rule specific settings. This includes <code>logging</code>, <code>action</code>, <code>source</code>, <code>destination</code>, <code>irule&#x27;</code>, <code>protocol</code> and <code>logging</code>.</div>
-                                                    <div>This parameter is only used when parent_policy is specified, otherwise it is ignored.</div>
+                                                    <div>This parameter is only used when <code>parent_policy</code> is specified, otherwise it is ignored.</div>
                                                                                 </td>
             </tr>
                                 <tr>
