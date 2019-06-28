@@ -1,12 +1,12 @@
-:source: bigiq_device_facts.py
+:source: _bigiq_device_facts.py
 
 :orphan:
 
-.. _bigiq_device_facts_module:
+.. _bigiq_device_info_module:
 
 
-bigiq_device_facts - Collect facts from F5 BIG-IQ devices
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_device_info - Collect information from F5 BIG-IQ devices
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.8
 
@@ -17,7 +17,8 @@ bigiq_device_facts - Collect facts from F5 BIG-IQ devices
 
 Synopsis
 --------
-- Collect facts from F5 BIG-IQ devices.
+- Collect information from F5 BIG-IQ devices.
+- This module was called ``bigiq_device_facts`` before Ansible 2.9. The usage did not change.
 
 
 
@@ -28,8 +29,8 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                    
+                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -57,22 +58,10 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>When supplied, this argument will restrict the facts returned to a given subset.</div>
+                                                                        <div>When supplied, this argument will restrict the information returned to a given subset.</div>
                                                     <div>Can specify a list of values to include a larger subset.</div>
                                                     <div>Values can also be used with an initial <code>!</code> to specify that a specific subset should not be collected.</div>
                                                                                 </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -190,56 +179,7 @@ Parameters
                                                                                 </td>
             </tr>
                     
-                                                <tr>
-                                                                <td colspan="2">
-                    <b>server</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The BIG-IP host.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>server_port</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The BIG-IP server port.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>validate_certs</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
-                                                                                </td>
-            </tr>
-                        </table>
+                                        </table>
     <br/>
 
 
@@ -258,8 +198,8 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Collect BIG-IQ facts
-      bigiq_device_facts:
+    - name: Collect BIG-IQ information
+      bigiq_device_info:
         gather_subset:
           - system-info
           - vlans
@@ -269,8 +209,8 @@ Examples
           password: secret
       delegate_to: localhost
 
-    - name: Collect all BIG-IQ facts
-      bigiq_device_facts:
+    - name: Collect all BIG-IQ information
+      bigiq_device_info:
         gather_subset:
           - all
         provider:
@@ -279,8 +219,8 @@ Examples
           password: secret
       delegate_to: localhost
 
-    - name: Collect all BIG-IP facts except trunks
-      bigiq_device_facts:
+    - name: Collect all BIG-IP information except trunks
+      bigiq_device_info:
         gather_subset:
           - all
           - "!trunks"
@@ -323,7 +263,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>managed-devices</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>Application related facts</div>
+                                            <div>Application related information</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -516,7 +456,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>managed-devices</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>Managed device related facts.</div>
+                                            <div>Managed device related information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -836,7 +776,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>purchased-pool-licenses</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>Purchased Pool License related facts.</div>
+                                            <div>Purchased Pool License related information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -1060,7 +1000,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>regkey-pools</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>Regkey Pool related facts.</div>
+                                            <div>Regkey Pool related information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -1281,7 +1221,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>system-info</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>System info related facts.</div>
+                                            <div>System info related information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
@@ -1786,7 +1726,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>When <code>vlans</code> is specified in <code>gather_subset</code>.</td>
                 <td>
-                                            <div>List of VLAN facts.</div>
+                                            <div>List of VLAN information.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>

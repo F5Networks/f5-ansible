@@ -1,0 +1,348 @@
+---
+- name: Issue 01310 - Include issue variables
+  include_vars:
+    file: issue-01310.yaml
+
+- name: Issue 01310 - Create HTTP profile multiple parameters
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    accept_xff: yes
+    oneconnect_transformations: no
+    xff_alternative_names: "{{ xff_names_1 }}"
+    fallback_host: "{{ host_1 }}"
+    fallback_status_codes: "{{ codes_1 }}"
+    request_chunking: "{{ chunk_1 }}"
+    response_chunking: "{{ chunk_1 }}"
+  register: result
+
+- name: Issue 01310 - Assert Create HTTP profile multiple parameters
+  assert:
+    that:
+      - result is changed
+      - result.accept_xff == 'yes'
+      - result.oneconnect_transformations == 'no'
+      - result.xff_alternative_names == xff_names_1
+      - result.fallback_host == host_1
+      - result.fallback_status_codes == codes_1
+      - result.request_chunking == chunk_1
+      - result.response_chunking == chunk_1
+
+- name: Issue 01310 - Create HTTP profile multiple parameters - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    accept_xff: yes
+    oneconnect_transformations: no
+    xff_alternative_names: "{{ xff_names_1 }}"
+    fallback_host: "{{ host_1 }}"
+    fallback_status_codes: "{{ codes_1 }}"
+    request_chunking: "{{ chunk_1 }}"
+    response_chunking: "{{ chunk_1 }}"
+  register: result
+
+- name: Issue 01310 - Assert Create HTTP profile multiple parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Change HTTP profile multiple parameters
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    accept_xff: no
+    oneconnect_transformations: yes
+    xff_alternative_names: "{{ xff_names_2 }}"
+    fallback_host: "{{ host_2 }}"
+    fallback_status_codes: "{{ codes_2 }}"
+    request_chunking: "{{ chunk_2 }}"
+    response_chunking: "{{ chunk_2 }}"
+  register: result
+
+- name: Issue 01310 - Assert Change HTTP profile multiple parameters
+  assert:
+    that:
+      - result is changed
+      - result.accept_xff == 'no'
+      - result.oneconnect_transformations == 'yes'
+      - result.xff_alternative_names == xff_names_2
+      - result.fallback_host == host_2
+      - result.fallback_status_codes == codes_2
+      - result.request_chunking == chunk_2
+      - result.response_chunking == chunk_2
+
+- name: Issue 01310 - Change HTTP profile multiple parameters - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    accept_xff: no
+    oneconnect_transformations: yes
+    xff_alternative_names: "{{ xff_names_2 }}"
+    fallback_host: "{{ host_2 }}"
+    fallback_status_codes: "{{ codes_2 }}"
+    request_chunking: "{{ chunk_2 }}"
+    response_chunking: "{{ chunk_2 }}"
+  register: result
+
+- name: Issue 01310 - Assert Change HTTP profile multiple parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Create second HTTP profile with enforcement
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    enforcement:
+      truncated_redirects: yes
+      excess_client_headers: "{{ choice_1 }}"
+      excess_server_headers: "{{ choice_1 }}"
+      oversize_client_headers: "{{ choice_1 }}"
+      oversize_server_headers: "{{ choice_1 }}"
+      pipeline: "{{ choice_1 }}"
+      unknown_method: "{{ choice_1 }}"
+      known_methods: "{{ methods_1 }}"
+      max_header_count: "{{ max_count }}"
+      max_header_size: "{{ max_size }}"
+      max_requests: "{{ max_req }}"
+  register: result
+
+- name: Issue 01310 - Assert Create second HTTP profile with enforcement
+  assert:
+    that:
+      - result is changed
+      - result.enforcement.truncated_redirects == 'yes'
+      - result.enforcement.excess_client_headers == choice_1
+      - result.enforcement.excess_server_headers == choice_1
+      - result.enforcement.oversize_client_headers == choice_1
+      - result.enforcement.oversize_server_headers == choice_1
+      - result.enforcement.pipeline == choice_1
+      - result.enforcement.unknown_method == choice_1
+      - result.enforcement.known_methods == methods_1
+      - result.enforcement.max_header_count == max_count
+      - result.enforcement.max_header_size == max_size
+      - result.enforcement.max_requests == max_req
+
+- name: Issue 01310 - Create second HTTP profile with enforcement - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    enforcement:
+      truncated_redirects: yes
+      excess_client_headers: "{{ choice_1 }}"
+      excess_server_headers: "{{ choice_1 }}"
+      oversize_client_headers: "{{ choice_1 }}"
+      oversize_server_headers: "{{ choice_1 }}"
+      pipeline: "{{ choice_1 }}"
+      unknown_method: "{{ choice_1 }}"
+      known_methods: "{{ methods_1 }}"
+      max_header_count: "{{ max_count }}"
+      max_header_size: "{{ max_size }}"
+      max_requests: "{{ max_req }}"
+  register: result
+
+- name: Issue 01310 - Assert Create second HTTP profile with enforcement - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Modify HTTP profile enforcement settings
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    enforcement:
+      truncated_redirects: no
+      excess_client_headers: "{{ choice_2 }}"
+      excess_server_headers: "{{ choice_2 }}"
+      oversize_client_headers: "{{ choice_2 }}"
+      oversize_server_headers: "{{ choice_2 }}"
+      pipeline: "{{ choice_3 }}"
+      unknown_method: "{{ choice_3 }}"
+      known_methods: "{{ methods_2 }}"
+      max_header_count: "default"
+      max_header_size: "default"
+      max_requests: "default"
+  register: result
+
+- name: Issue 01310 - Assert Modify HTTP profile enforcement settings
+  assert:
+    that:
+      - result is changed
+      - result.enforcement.truncated_redirects == 'no'
+      - result.enforcement.excess_client_headers == choice_2
+      - result.enforcement.excess_server_headers == choice_2
+      - result.enforcement.oversize_client_headers == choice_2
+      - result.enforcement.oversize_server_headers == choice_2
+      - result.enforcement.pipeline == choice_3
+      - result.enforcement.unknown_method == choice_3
+      - result.enforcement.known_methods == methods_2
+      - result.enforcement.max_header_count == "default"
+      - result.enforcement.max_header_size == "default"
+      - result.enforcement.max_requests == "default"
+
+- name: Issue 01310 - Modify HTTP profile enforcement settings - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    enforcement:
+      truncated_redirects: no
+      excess_client_headers: "{{ choice_2 }}"
+      excess_server_headers: "{{ choice_2 }}"
+      oversize_client_headers: "{{ choice_2 }}"
+      oversize_server_headers: "{{ choice_2 }}"
+      pipeline: "{{ choice_3 }}"
+      unknown_method: "{{ choice_3 }}"
+      known_methods: "{{ methods_2 }}"
+      max_header_count: "default"
+      max_header_size: "default"
+      max_requests: "default"
+  register: result
+
+- name: Issue 01310 - Assert Modify HTTP profile enforcement settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Modify HTTP profile known methods back to default
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    enforcement:
+      known_methods: "default"
+  register: result
+
+- name: Issue 01310 - Assert Modify HTTP profile enforcement settings
+  assert:
+    that:
+      - result is changed
+      - result.enforcement.known_methods == ["default"]
+
+- name: Issue 01310 - Modify HTTP profile known methods back to default - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_2 }}"
+    enforcement:
+      known_methods: "default"
+  register: result
+
+- name: Issue 01310 - Assert Modify HTTP profile known methods back to default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Modify HTTP profile invalid response codes - Expect Failure
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    fallback_status_codes: "{{ invalid_codes }}"
+  register: result
+  failed_when: "'Invalid HTTP error code or error code range specified' not in result['msg']"
+
+- name: Issue 01310 - Modify HTTP profile invalid response codes - Expect no Change
+  bigip_profile_http:
+    name: "{{ profile_1 }}"
+    xff_alternative_names: "{{ xff_names_inverted }}"
+  register: result
+
+- name: Issue 01310 - Assert Modify HTTP profile invalid response codes - Expect no Change
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Create HTTP profile with sFlow settings
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    sflow:
+      poll_interval: 60
+      poll_interval_global: no
+      sampling_rate: 2500
+      sampling_rate_global: no
+  register: result
+
+- name: Issue 01310 - Assert Create HTTP profile with sFlow settings
+  assert:
+    that:
+      - result is changed
+      - result.sflow.poll_interval == 60
+      - result.sflow.poll_interval_global == 'no'
+      - result.sflow.sampling_rate == 2500
+      - result.sflow.sampling_rate_global == 'no'
+
+- name: Issue 01310 - Create HTTP profile with sFlow settings - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    sflow:
+      poll_interval: 60
+      poll_interval_global: no
+      sampling_rate: 2500
+      sampling_rate_global: no
+  register: result
+
+- name: Issue 01310 - Assert Create HTTP profile with sFlow settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Modify HTTP profile sFlow settings
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    sflow:
+      poll_interval: 900
+      sampling_rate: 15000
+  register: result
+
+- name: Issue 01310 - Assert Modify HTTP profile sFlow settings
+  assert:
+    that:
+      - result is changed
+      - result.sflow.poll_interval == 900
+      - result.sflow.sampling_rate == 15000
+
+- name: Issue 01310 - Modify HTTP profile sFlow settings - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    sflow:
+      poll_interval: 900
+      sampling_rate: 15000
+  register: result
+
+- name: Issue 01310 - Assert Modify HTTP profile sFlow settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Enable HTTP profile global sFlow settings
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    sflow:
+      sampling_rate_global: yes
+      poll_interval_global: yes
+  register: result
+
+- name: Issue 01310 - Assert Enable HTTP profile global sFlow settings
+  assert:
+    that:
+      - result is changed
+      - result.sflow.sampling_rate_global == 'yes'
+      - result.sflow.poll_interval_global == 'yes'
+
+
+- name: Issue 01310 - Enable HTTP profile global sFlow settings  - Idempotent check
+  bigip_profile_http:
+    name: "{{ profile_3 }}"
+    sflow:
+      sampling_rate_global: yes
+      poll_interval_global: yes
+  register: result
+
+- name: Issue 01310 - Assert Enable HTTP profile global sFlow settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01310 - Remove HTTP profiles
+  bigip_profile_http:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ profile_1 }}"
+    - "{{ profile_2 }}"
+    - "{{ profile_3 }}"

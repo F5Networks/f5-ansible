@@ -1,0 +1,4 @@
+---
+partition: "optus-cust-mgmt"
+name: "ansible-test-ipsec-policy"
+rd: 71

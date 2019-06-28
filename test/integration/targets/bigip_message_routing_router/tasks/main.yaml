@@ -1,0 +1,205 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a generic router profile with some parameters
+  bigip_message_routing_router:
+    name: "{{ router_1 }}"
+    max_retries: "{{ retry_1 }}"
+    ignore_client_port: yes
+    routes: "{{ routes_1 }}"
+    max_pending_bytes: "{{ bytes_1 }}"
+  register: result
+
+- name: Assert Create a generic router profile with some parameters
+  assert:
+    that:
+      - result is changed
+      - result.max_retries == retry_1
+      - result.ignore_client_port == 'yes'
+      - result.routes == ['/Common/foobar1', '/Common/foobar2']
+      - result.max_pending_bytes == bytes_1
+
+- name: Create a generic router profile with some parameters - Idempotent check
+  bigip_message_routing_router:
+    name: "{{ router_1 }}"
+    max_retries: "{{ retry_1 }}"
+    ignore_client_port: yes
+    routes: "{{ routes_1 }}"
+    max_pending_bytes: "{{ bytes_1 }}"
+  register: result
+
+- name: Assert Create a generic router profile with some parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify a generic router profile
+  bigip_message_routing_router:
+    name: "{{ router_1 }}"
+    description: "{{ desc_1 }}"
+    ignore_client_port: no
+    mirror: yes
+    max_retries: "{{ retry_2 }}"
+    routes: "{{ routes_2 }}"
+    mirrored_msg_sweeper_interval: "{{ sweep_1 }}"
+    traffic_group: "{{ traffic_2 }}"
+  register: result
+
+- name: Assert Modify a generic router profile
+  assert:
+      that:
+      - result is changed
+      - result.description == desc_1
+      - result.ignore_client_port == 'no'
+      - result.mirror == 'yes'
+      - result.max_retries == retry_2
+      - result.routes == ['/Common/foobar1']
+      - result.mirrored_msg_sweeper_interval == sweep_1
+      - result.traffic_group == '/Common/test-traffic'
+
+- name: Modify a generic router profile - Idempotent check
+  bigip_message_routing_router:
+    name: "{{ router_1 }}"
+    description: "{{ desc_1 }}"
+    ignore_client_port: no
+    mirror: yes
+    max_retries: "{{ retry_2 }}"
+    routes: "{{ routes_2 }}"
+    mirrored_msg_sweeper_interval: "{{ sweep_1 }}"
+    traffic_group: "{{ traffic_2 }}"
+  register: result
+
+- name: Assert Modify a generic router profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create another generic router profile with some parameters
+  bigip_message_routing_router:
+    name: "{{ router_2 }}"
+    description: "{{ desc_1 }}"
+    ignore_client_port: yes
+    mirror: yes
+    mirrored_msg_sweeper_interval: "{{ sweep_1 }}"
+    traffic_group: "{{ traffic_2 }}"
+    routes: "{{ routes_1 }}"
+    max_pending_bytes: "{{ bytes_1 }}"
+    max_pending_messages: "{{ msg_1 }}"
+    max_retries: "{{ retry_1 }}"
+  register: result
+
+- name: Assert Create another generic router profile with some parameters
+  assert:
+      that:
+      - result is changed
+      - result.description == desc_1
+      - result.ignore_client_port == 'yes'
+      - result.mirror == 'yes'
+      - result.mirrored_msg_sweeper_interval == sweep_1
+      - result.max_retries == retry_1
+      - result.routes == ['/Common/foobar1', '/Common/foobar2']
+      - result.max_pending_bytes == bytes_1
+      - result.max_pending_messages == msg_1
+      - result.traffic_group == '/Common/test-traffic'
+
+- name: Create another generic router profile with some parameters - Idempotent check
+  bigip_message_routing_router:
+    name: "{{ router_2 }}"
+    description: "{{ desc_1 }}"
+    ignore_client_port: yes
+    mirror: yes
+    mirrored_msg_sweeper_interval: "{{ sweep_1 }}"
+    traffic_group: "{{ traffic_2 }}"
+    routes: "{{ routes_1 }}"
+    max_pending_bytes: "{{ bytes_1 }}"
+    max_pending_messages: "{{ msg_1 }}"
+    max_retries: "{{ retry_1 }}"
+  register: result
+
+- name: Assert Create another generic router profile with some parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify second generic router profile
+  bigip_message_routing_router:
+    name: "{{ router_2 }}"
+    description: "{{ desc_2 }}"
+    ignore_client_port: no
+    mirror: no
+    mirrored_msg_sweeper_interval: "{{ sweep_2 }}"
+    traffic_group: "{{ traffic_1 }}"
+    routes: "{{ routes_3 }}"
+    max_pending_bytes: "{{ bytes_2 }}"
+    max_pending_messages: "{{ msg_2 }}"
+    max_retries: "{{ retry_2 }}"
+  register: result
+
+- name: Assert Modify second generic router profile
+  assert:
+      that:
+      - result is changed
+      - result.description == desc_2
+      - result.ignore_client_port == 'no'
+      - result.mirror == 'no'
+      - result.mirrored_msg_sweeper_interval == sweep_2
+      - result.max_retries == retry_2
+      - result.routes == []
+      - result.max_pending_bytes == bytes_2
+      - result.max_pending_messages == msg_2
+      - result.traffic_group == '/Common/traffic-group-1'
+
+- name: Modify second generic router profile - Idempotent check
+  bigip_message_routing_router:
+    name: "{{ router_2 }}"
+    description: "{{ desc_2 }}"
+    ignore_client_port: no
+    mirror: no
+    mirrored_msg_sweeper_interval: "{{ sweep_2 }}"
+    traffic_group: "{{ traffic_1 }}"
+    routes: "{{ routes_3 }}"
+    max_pending_bytes: "{{ bytes_2 }}"
+    max_pending_messages: "{{ msg_2 }}"
+    max_retries: "{{ retry_2 }}"
+  register: result
+
+- name: Assert Modify second generic router profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove a generic router
+  bigip_message_routing_router:
+    name: "{{ router_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a generic router
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove a generic router  - Idempotent check
+  bigip_message_routing_route:
+    name: "{{ router_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a generic router  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove a generic router - Cleanup
+  bigip_message_routing_route:
+    name: "{{ router_2 }}"
+    state: absent
+
+- import_tasks: teardown.yaml

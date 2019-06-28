@@ -1,0 +1,51 @@
+---
+profile_1: "issue_1310_1"
+profile_2: "issue_1310_2"
+profile_3: "issue_1310_3"
+
+choice_1: "pass-through"
+choice_2: "reject"
+choice_3: "allow"
+
+chunk_1: "rechunk"
+chunk_2: "selective"
+
+methods_1:
+  - "foo"
+  - "bar"
+  - "default"
+
+methods_2:
+  - "foo"
+  - "bar"
+
+max_count: "24"
+max_req: "10"
+max_size: "4096"
+
+codes_1:
+  - "400-404"
+  - "500"
+
+codes_2:
+  - "400-417"
+  - "500-505"
+
+invalid_codes:
+  - "420-423"
+  - "506-520"
+
+xff_names_1:
+  - "BAZ"
+  - "BAR"
+
+xff_names_2:
+  - "Foo"
+  - "barfoo"
+
+xff_names_inverted:
+  - "barfoo"
+  - "Foo"
+
+host_1: "barfoo.com"
+host_2: "localhost"

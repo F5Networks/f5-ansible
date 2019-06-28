@@ -1,0 +1,26 @@
+---
+peer_1: foobar1
+peer_2: foobar2
+
+route_1: to_nowhere
+route_2: to_somewhere
+
+desc_1: "Some description"
+desc_2: ""
+
+src1: "annyoing_user"
+src2: ""
+dst1: "blackhole"
+dst2: ""
+
+peer1:
+  - foobar1
+  - foobar2
+
+peer2:
+  - foobar1
+
+peer3: ""
+
+select_1: ratio
+select_2: sequential

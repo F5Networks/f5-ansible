@@ -107,6 +107,7 @@ options:
           - To specify an indefinite rate, use the value C(indefinite).
           - If specifying a numeric rate, the value must be between C(1) and C(4294967295).
         type: str
+    type: dict
   partition:
     description:
       - Device partition to create log profile on.
@@ -164,7 +165,7 @@ EXAMPLES = r'''
     dos_protection:
       dns_publisher: "/Common/local-db-pub"
       sip_publisher: "non-local-db"
-      network_publisher: "/Common/local-db-pub""
+      network_publisher: "/Common/local-db-pub"
     provider:
       password: secret
       server: lb.mydomain.com
@@ -307,6 +308,13 @@ class Parameters(AnsibleF5Parameters):
         'network_publisher',
         'port_misuse',
         'description',
+        'ip_log_publisher',
+        'ip_rate_limit',
+        'ip_log_rthb',
+        'ip_log_shun',
+        'ip_log_translation_fields',
+        'port_rate_limit',
+        'port_log_publisher',
     ]
 
     updatables = [
@@ -376,31 +384,6 @@ class ModuleParameters(Parameters):
         raise F5ModuleError(
             "Valid 'maximum_age' must be in range 0 - 4294967295, or 'indefinite'."
         )
-
-    @property
-    def ip_intelligence(self):
-        if self._values['ip_intelligence'] is None:
-            return None
-        to_filter = dict(
-            logPublisher=self.ip_log_publisher,
-            aggregateRate=self.ip_rate_limit,
-            logRtbh=self.ip_log_rtbh,
-            logShun=self.ip_log_shun,
-            logTranslationFields=self.ip_log_translation_fields
-        )
-        result = self._filter_params(to_filter)
-        return result
-
-    @property
-    def port_misuse(self):
-        if self._values['port_misuse'] is None:
-            return None
-        to_filter = dict(
-            logPublisher=self.port_log_publisher,
-            aggregateRate=self.port_rate_limit,
-        )
-        result = self._filter_params(to_filter)
-        return result
 
     @property
     def ip_log_rtbh(self):
@@ -500,8 +483,6 @@ class Changes(Parameters):
 class UsableChanges(Changes):
     @property
     def ip_intelligence(self):
-        if self._values['ip_intelligence']:
-            return self._values['ip_intelligence']
         to_filter = dict(
             logPublisher=self._values['ip_log_publisher'],
             aggregateRate=self._values['ip_rate_limit'],
@@ -515,8 +496,6 @@ class UsableChanges(Changes):
 
     @property
     def port_misuse(self):
-        if self._values['port_misuse']:
-            return self._values['port_misuse']
         to_filter = dict(
             logPublisher=self._values['port_log_publisher'],
             aggregateRate=self._values['port_rate_limit']
@@ -527,6 +506,13 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
+    returnables = [
+        'ip_intelligence',
+        'port_misuse',
+        'description',
+        'dos_protection',
+    ]
+
     def _change_rate_limit_value(self, value):
         if value == 4294967295:
             return 'indefinite'

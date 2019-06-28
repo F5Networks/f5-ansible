@@ -1,0 +1,13 @@
+---
+
+- name: Create generic routes
+  bigip_message_routing_route:
+    name: "{{ item }}"
+  with_items:
+    - "{{ route_1 }}"
+    - "{{ route_2 }}"
+
+- name: Create a traffic group
+  bigip_device_traffic_group:
+    name: "{{ traffic_2 }}"
+
