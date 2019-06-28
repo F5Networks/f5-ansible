@@ -1,0 +1,96 @@
+---
+- name: Issue 01336 - Include issue variables
+  include_vars:
+    file: issue-01336.yaml
+
+- name: Issue 01336 - Create partition - Setup
+  bigip_partition:
+    name: "{{ partition }}"
+
+- name: Issue 01336 - Create route domain - Setup
+  bigip_routedomain:
+    id: "{{ rd }}"
+
+- name: Issue 01336 - Create a Tenant IPSec policy
+  bigip_ipsec_policy:
+    name: "{{ name }}"
+    mode: interface
+    route_domain: "{{ rd }}"
+    auth_algorithm: sha1
+    encrypt_algorithm: aes256
+    protocol: esp
+    perfect_forward_secrecy: modp1024
+    lifetime: 60
+    kb_lifetime: 4608000
+    ipv4_interface: yes
+    partition: "{{ partition }}"
+  register: result
+
+- name: Issue 01336 - Assert Create a Tenant IPSec policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01336 - Create a Tenant IPSec policy - Idempotent check
+  bigip_ipsec_policy:
+    name: "{{ name }}"
+    mode: interface
+    route_domain: "{{ rd }}"
+    auth_algorithm: sha1
+    encrypt_algorithm: aes256
+    protocol: esp
+    perfect_forward_secrecy: modp1024
+    lifetime: 60
+    kb_lifetime: 4608000
+    ipv4_interface: yes
+    partition: "{{ partition }}"
+  register: result
+
+- name: Issue 01336 - Assert Create a Tenant IPSec policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01336 - Modify a Tenant IPSec policy
+  bigip_ipsec_policy:
+    name: "{{ name }}"
+    lifetime: 600
+    partition: "{{ partition }}"
+  register: result
+
+- name: Issue 01336 - Assert Modify a Tenant IPSec policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01336 - Modify a Tenant IPSec policy - Idempotent check
+  bigip_ipsec_policy:
+    name: "{{ name }}"
+    lifetime: 600
+    partition: "{{ partition }}"
+  register: result
+
+- name: Issue 01336 - Assert Modify a Tenant IPSec policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove IPSec policy - Cleanup
+  bigip_ipsec_policy:
+    name: "{{ name }}"
+    partition: "{{ partition }}"
+    state: absent
+
+- name: Issue 01336 - Remove partition - Cleanup
+  bigip_partition:
+    name: "{{ partition }}"
+    state: absent
+
+- name: Issue 01336 - Remove route domain - Cleanup
+  bigip_routedomain:
+    id: "{{ rd }}"
+    state: absent

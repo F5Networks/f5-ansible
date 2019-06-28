@@ -15,3 +15,6 @@ country_2: "United States"
 state_1: "US/Ohio"
 
 geo_isp: foo_geo
+
+subnet_1: "10.1.1.0/24"
+subnet_2: "192.168.1.0/24"

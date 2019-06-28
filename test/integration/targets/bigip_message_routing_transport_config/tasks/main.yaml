@@ -1,0 +1,168 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create generic transport config
+  bigip_message_routing_transport_config:
+    name: "{{ config_1 }}"
+    profiles: "{{ profiles_1 }}"
+    src_addr_translation:
+      type: "{{ type_2 }}"
+      pool: "{{ pool_name }}"
+    description: "{{ desc_1 }}"
+  register: result
+
+- name: Assert Create generic transport config
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_1
+      - result.src_addr_translation == src_2
+      - result.profiles == ['/Common/genericmsg', '/Common/udp_decrement_ttl']
+
+- name: Create generic transport config - Idempotent check
+  bigip_message_routing_transport_config:
+    name: "{{ config_1 }}"
+    profiles: "{{ profiles_1 }}"
+    src_addr_translation:
+      type: "{{ type_2 }}"
+      pool: "{{ pool_name }}"
+    description: "{{ desc_1 }}"
+  register: result
+
+- name: Assert Create generic transport config - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify generic transport config
+  bigip_message_routing_transport_config:
+    name: "{{ config_1 }}"
+    profiles: "{{ profiles_2 }}"
+    src_addr_translation:
+      type: "{{ type_3 }}"
+    description: "{{ desc_2 }}"
+  register: result
+
+- name: Assert Modify generic transport config
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_2
+      - result.src_addr_translation == src_3
+      - result.profiles == ['/Common/diametersession', '/Common/tcp-lan-optimized']
+
+- name: Modify generic transport config - Idempotent check
+  bigip_message_routing_transport_config:
+    name: "{{ config_1 }}"
+    profiles: "{{ profiles_2 }}"
+    src_addr_translation:
+      type: "{{ type_3 }}"
+    description: "{{ desc_2 }}"
+  register: result
+
+- name: Assert Modify generic transport config - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create second generic transport config
+  bigip_message_routing_transport_config:
+    name: "{{ config_2 }}"
+    profiles: "{{ profiles_2 }}"
+    rules: "{{ rule_1 }}"
+    src_port: "{{ port_1 }}"
+    description: "{{ desc_1 }}"
+  register: result
+
+- name: Assert Create second generic transport config
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_1
+      - result.rules == ['/Common/test1']
+      - result.src_port == port_1
+      - result.profiles == ['/Common/diametersession', '/Common/tcp-lan-optimized']
+
+- name: Create second generic transport config - Idempotent check
+  bigip_message_routing_transport_config:
+    name: "{{ config_2 }}"
+    profiles: "{{ profiles_2 }}"
+    rules: "{{ rule_1 }}"
+    src_port: "{{ port_1 }}"
+    description: "{{ desc_1 }}"
+  register: result
+
+- name: Assert Create second generic transport config - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify second generic transport config
+  bigip_message_routing_transport_config:
+    name: "{{ config_2 }}"
+    src_addr_translation:
+      type: "{{ type_1 }}"
+    description: "{{ desc_2 }}"
+    rules: "{{ rule_2 }}"
+    src_port: "{{ port_2 }}"
+  register: result
+
+- name: Assert Modify second generic transport config
+  assert:
+    that:
+      - result is changed
+      - result.description == desc_2
+      - result.rules == ['/Common/test1', '/Common/test2']
+      - result.src_port == port_2
+      - result.src_addr_translation == src_1
+
+- name: Modify second generic transport config - Idempotent check
+  bigip_message_routing_transport_config:
+    name: "{{ config_2 }}"
+    src_addr_translation:
+      type: "{{ type_1 }}"
+    description: "{{ desc_2 }}"
+    rules: "{{ rule_2 }}"
+    src_port: "{{ port_2 }}"
+  register: result
+
+- name: Assert Modify second generic transport config - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove generic transport config
+  bigip_message_routing_transport_config:
+    name: "{{ config_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove generic transport config
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove generic transport config - Idempotent check
+  bigip_message_routing_transport_config:
+    name: "{{ config_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove generic transport config - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove generic transport config - Cleanup
+  bigip_message_routing_transport_config:
+    name: "{{ config_2 }}"
+    state: absent
+
+- import_tasks: teardown.yaml

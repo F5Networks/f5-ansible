@@ -1,0 +1,29 @@
+---
+
+# these tests require a multi-blade Viprion, and a valid ISO image in files, the current files are just dummy placeholders as we cannot commit ISO to the repository
+
+- name: Issue 01379 - Install image on VPR platform in HD1.1
+  bigip_software_install:
+    image: "{{ viprion_image|basename }}"
+    state: installed
+    volume: HD1.1
+  register: result
+
+- name: Assert Issue 01379 - Install image on VPR platform in HD1.1
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01379 - Install image on VPR platform in HD1.1 - Idempotent check
+  bigip_software_install:
+    image: "{{ viprion_image|basename }}"
+    state: installed
+    volume: HD1.1
+  register: result
+
+- name: Assert Issue 01379 - Install image on VPR platform in HD1.1 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success

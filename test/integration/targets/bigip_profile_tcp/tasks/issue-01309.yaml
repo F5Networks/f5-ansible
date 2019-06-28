@@ -1,0 +1,88 @@
+---
+
+- name: Issue 01309 - Include issue variables
+  include_vars:
+    file: issue-01309.yaml
+
+- name: Issue 01309 - Create a TCP profile with multiple parameters
+  bigip_profile_tcp:
+    name: "{{ profile_1 }}"
+    nagle: "{{ n1 }}"
+    early_retransmit: yes
+    proxy_options: yes
+    initial_congestion_window_size: "{{ icws_1 }}"
+    initial_receive_window_size: "{{ irws_1 }}"
+    syn_rto_base: "{{ srtb_1 }}"
+  register: result
+
+- name: Issue 01309 - Asert Create a TCP profile with multiple parameters
+  assert:
+    that:
+      - result is changed
+      - result.nagle == n1
+      - result.early_retransmit == "yes"
+      - result.proxy_options == "yes"
+      - result.initial_congestion_window_size == icws_1
+      - result.initial_receive_window_size == irws_1
+      - result.syn_rto_base == srtb_1
+
+- name: Issue 01309 - Create a TCP profile with multiple parameters - Idempotent check
+  bigip_profile_tcp:
+    name: "{{ profile_1 }}"
+    nagle: "{{ n1 }}"
+    early_retransmit: yes
+    proxy_options: yes
+    initial_congestion_window_size: "{{ icws_1 }}"
+    initial_receive_window_size: "{{ irws_1 }}"
+    syn_rto_base: "{{ srtb_1 }}"
+  register: result
+
+- name: Issue 01309 - Assert Create a TCP profile with multiple parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01309 - Modify a TCP profile, multiple parameters
+  bigip_profile_tcp:
+    name: "{{ profile_1 }}"
+    nagle: "{{ n2 }}"
+    early_retransmit: no
+    proxy_options: no
+    initial_congestion_window_size: "{{ icws_2 }}"
+    initial_receive_window_size: "{{ irws_2 }}"
+    syn_rto_base: "{{ srtb_2 }}"
+  register: result
+
+- name: Issue 01309 - Asert Modify a TCP profile, multiple parameters
+  assert:
+    that:
+      - result is changed
+      - result.nagle == n2
+      - result.early_retransmit == "no"
+      - result.proxy_options == "no"
+      - result.initial_congestion_window_size == icws_2
+      - result.initial_receive_window_size == irws_2
+      - result.syn_rto_base == srtb_2
+
+- name: Issue 01309 - Modify a TCP profile, multiple parameters - Idempotent check
+  bigip_profile_tcp:
+    name: "{{ profile_1 }}"
+    nagle: "{{ n2 }}"
+    early_retransmit: no
+    proxy_options: no
+    initial_congestion_window_size: "{{ icws_2 }}"
+    initial_receive_window_size: "{{ irws_2 }}"
+    syn_rto_base: "{{ srtb_2 }}"
+  register: result
+
+- name: Issue 01309 - Assert Modify a TCP profile, multiple parameters - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01309 - Delete TCP profile
+  bigip_profile_tcp:
+    name: "{{ profile_1 }}"
+    state: absent

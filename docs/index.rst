@@ -7,11 +7,8 @@ Use these modules to create, edit, update, and delete configuration objects on B
 
 The code is open source and |f5_ansible_github|. Additionally, some modules have been promoted to the |ansible_core| and |ansible_extras|.
 
-|
-|
-
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :includehidden:
    :caption: Support Details
    :glob:
@@ -19,7 +16,7 @@ The code is open source and |f5_ansible_github|. Additionally, some modules have
    /usage/supported-versions
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :includehidden:
    :caption: User's Guide
    :glob:
@@ -35,23 +32,6 @@ The code is open source and |f5_ansible_github|. Additionally, some modules have
    :caption: Module Reference
 
    /modules/modules_by_category
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Developer's Guide
-
-   /development/cla-landing
-   /development/getting-involved
-   /development/write-module/index
-   /development/code-conventions
-   /development/parameters
-   /development/module-patterns
-   /development/ssh-functionality-for-modules
-   /development/tests
-   /development/upstreaming
-   /development/playbook-metadata
-   /development/deprecating-code
-   Backporting Changes <https://docs.ansible.com/ansible/latest/community/development_process.html#backport-pull-request-process>
 
 .. |f5_ansible_github| raw:: html
 

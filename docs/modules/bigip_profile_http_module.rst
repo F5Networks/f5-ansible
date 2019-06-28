@@ -28,13 +28,30 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>accept_xff</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables or disables trusting the client IP address, and statistics from the client IP address, based on the request&#x27;s XFF (X-forwarded-for) headers, if they exist.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>description</b>
                                                         </td>
@@ -76,6 +93,220 @@ Parameters
                                                                 <td>
                                                                         <div>Cookie names for the system to encrypt.</div>
                                                     <div>To remove the entry completely a value of <code>none</code> or <code>&#x27;&#x27;</code> should be set.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>enforcement</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies protocol enforcement settings for the HTTP profile.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>truncated_redirects</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies what happens if a truncated redirect is seen from a server.</div>
+                                                    <div>If <code>yes</code>, the redirect will be forwarded to the client, otherwise the malformed HTTP will be silently ignored.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>excess_client_headers</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>reject</li>
+                                                                                                                                                                                                <li>pass-through</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the behavior when too many client headers are received.</div>
+                                                    <div>If set to <code>pass-through</code>, will switch to pass through mode, when <code>reject</code> the connection will be rejected.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>excess_server_headers</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>reject</li>
+                                                                                                                                                                                                <li>pass-through</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the behavior when too many server headers are received.</div>
+                                                    <div>If set to <code>pass-through</code>, will switch to pass through mode, when <code>reject</code> the connection will be rejected.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>oversize_client_headers</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>reject</li>
+                                                                                                                                                                                                <li>pass-through</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the behavior when too-large client headers are received.</div>
+                                                    <div>If set to <code>pass-through</code>, will switch to pass through mode, when <code>reject</code> the connection will be rejected.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>oversize_server_headers</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>reject</li>
+                                                                                                                                                                                                <li>pass-through</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the behavior when too-large server headers are received.</div>
+                                                    <div>If set to <code>pass-through</code>, will switch to pass through mode, when <code>reject</code> the connection will be rejected.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>pipeline</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>allow</li>
+                                                                                                                                                                                                <li>reject</li>
+                                                                                                                                                                                                <li>pass-through</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables HTTP/1.1 pipelining, allowing clients to make requests even when prior requests have not received a response.</div>
+                                                    <div>In order for this to succeed, however, destination servers must include support for pipelining.</div>
+                                                    <div>If set to <code>pass-through</code>, pipelined data will cause the BIG-IP to immediately switch to pass-through mode and disable the HTTP filter.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>unknown_method</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>allow</li>
+                                                                                                                                                                                                <li>reject</li>
+                                                                                                                                                                                                <li>pass-through</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether to allow, reject or switch to pass-through mode when an unknown HTTP method is parsed.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>max_header_count</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the maximum number of headers allowed in HTTP request/response.</div>
+                                                    <div>The valid value range is between 16 and 4096 inclusive.</div>
+                                                    <div>When set to <code>default</code> the value of this parameter will be <code>64</code></div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>max_header_size</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the maximum header size specified in bytes.</div>
+                                                    <div>The valid value range is between 0 and 4294967295 inclusive.</div>
+                                                    <div>When set to <code>default</code> the value of this parameter will be <code>32768</code> bytes</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>max_requests</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the number of requests that the system accepts on a per-connection basis.</div>
+                                                    <div>The valid value range is between 0 and 4294967295 inclusive.</div>
+                                                    <div>When set to <code>default</code> the value of this parameter will be <code>0</code>, which means the system will not limit the number of requests per connection.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>known_methods</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies which HTTP methods count as being known, removing RFC-defined methods from this list will cause the HTTP filter to not recognize them.</div>
+                                                    <div>The default list provided with the system include: <code>CONNECT</code>, <code>DELETE</code>, <code>GET</code>, <code>HEAD</code>, <code>LOCK</code>, <code>OPTIONS</code>, <code>POST</code>, <code>PROPFIND</code>, <code>PUT</code>, <code>TRACE</code> ,<code>UNLOCK</code>. The list can be appended by by specifying <code>default</code> keyword as one of the list elements.</div>
+                                                    <div>The <code>default</code> keyword can also be used to restore the default <code>known_methods</code> on the system.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
+                                                                <td colspan="2">
+                    <b>fallback_host</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies an HTTP fallback host.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>fallback_status_codes</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies one or more HTTP error codes from server responses that should trigger a redirection to the fallback host.</div>
+                                                    <div>The accepted valid error codes are as defined by rfc2616.</div>
+                                                    <div>The codes can be specified as individual items or as valid ranges e.g. <code>400-417</code> or <code>500-505</code>.</div>
+                                                    <div>Mixing response code range across error types is invalid e.g. defining <code>400-505</code> will raise an error.</div>
                                                     <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
@@ -174,6 +405,21 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>oneconnect_transformations</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Enables the system to perform HTTP header transformations for the purpose of keeping server-side connections open. This feature requires configuration of a OneConnect profile.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>parent</b>
                                                         </td>
                                 <td>
@@ -194,18 +440,6 @@ Parameters
                                                                 <td>
                                                                         <div>Device partition to manage resources on.</div>
                                                                                 </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -362,13 +596,34 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>server</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>request_chunking</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>rechunk</li>
+                                                                                                                                                                                                <li>selective</li>
+                                                                                                                                                                                                <li>preserve</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>The BIG-IP host.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
+                                                                        <div>Specifies how to handle chunked and unchunked requests.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>response_chunking</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>rechunk</li>
+                                                                                                                                                                                                <li>selective</li>
+                                                                                                                                                                                                <li>preserve</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies how to handle chunked and unchunked responses.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -378,24 +633,84 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the string used as the server name in traffic generated by LTM.</div>
+                                                                        <div>Specifies the string used as the server name in traffic generated by BIG-IP.</div>
                                                     <div>To remove the entry completely a value of <code>none</code> or <code>&#x27;&#x27;</code> should be set.</div>
                                                     <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>server_port</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
+                    <b>sflow</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>The BIG-IP server port.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
+                                                                        <div>Specifies sFlow settings for the HTTP profile.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                                            <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>poll_interval</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the maximum interval in seconds between two pollings.</div>
+                                                    <div>The valid value range is between 0 and 4294967295 seconds inclusive.</div>
+                                                    <div>For this setting to take effect the <code>poll_interval_global</code> parameter must be set to <code>no</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>poll_interval_global</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the global HTTP poll-interval setting overrides the object-level Cpoll-interval setting.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>sampling_rate</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the ratio of packets observed to the samples generated. For example, a sampling rate of <code>2000</code> specifies that 1 sample will be randomly generated for every 2000 packets observed.</div>
+                                                    <div>The valid value range is between 0 and 4294967295 packets inclusive.</div>
+                                                    <div>For this setting to take effect the <code>sampling_rate_global</code> parameter must be set to <code>no</code>.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>sampling_rate_global</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies whether the global HTTP sampling-rate setting overrides the object-level sampling-rate setting.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                    
+                                                <tr>
                                                                 <td colspan="2">
                     <b>state</b>
                                                         </td>
@@ -427,28 +742,13 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>xff_alternative_names</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>validate_certs</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
+                                                                        <div>Specifies alternative XFF headers instead of the default X-forwarded-for header.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -512,13 +812,28 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
-            <th colspan="1">Key</th>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                            <tr>
+            <th colspan="2">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
-                                <td colspan="1">
+                                <td colspan="2">
+                    <b>accept_xff</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Enables or disables trusting the client IP address, and statistics from the client IP address.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
                     <b>description</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -531,7 +846,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>dns_resolver</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -544,7 +859,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>encrypt_cookies</b>
                     <br/><div style="font-size: small; color: red">list</div>
                 </td>
@@ -557,7 +872,237 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
+                                <td colspan="2">
+                    <b>enforcement</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies protocol enforcement settings for the HTTP profile.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
                                 <td colspan="1">
+                    <b>truncated_redirects</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies what happens if a truncated redirect is seen from a server.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>excess_server_headers</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the behavior when too many server headers are received.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">pass-through</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>oversize_client_headers</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the behavior when too-large client headers are received.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">reject</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>oversize_server_headers</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the behavior when too-large server headers are received.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">reject</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>pipeline</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Allows, rejects or switches to pass-through mode when dealing with pipelined data.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">allow</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>unknown_method</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Allows, rejects or switches to pass-through mode when an unknown HTTP method is parsed.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">allow</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>max_header_count</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The maximum number of headers allowed in HTTP request/response.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">4096</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>max_header_size</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The maximum header size specified in bytes.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">default</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>max_requests</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The number of requests that the system accepts on a per-connection basis.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">default</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>known_methods</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The list of known HTTP methods.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;default&#x27;, &#x27;FOO&#x27;, &#x27;BAR&#x27;]</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="2">
+                    <b>fallback_host</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies an HTTP fallback host.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foobar.com</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>fallback_status_codes</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>HTTP error codes from server responses that should trigger a redirection to the fallback host.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;400-404&#x27;, &#x27;500&#x27;, &#x27;501&#x27;]</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>header_erase</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The name of a header, in an HTTP request, which the system removes from request.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">FOO:BAR</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>header_insert</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The string that the system inserts as a header in an HTTP request.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">FOO:BAR</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>hsts_mode</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Enables the HSTS settings.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>include_subdomains</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Applies the HSTS policy to the HSTS host and its sub-domains.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
                     <b>insert_xforwarded_for</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
@@ -570,7 +1115,44 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
+                    <b>maximum_age</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The maximum length of time, in seconds, that HSTS functionality requests that clients only use HTTPS.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">indefinite</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>oneconnect_transformations</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Enables or disables HTTP header transformations.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the profile from which this profile inherits settings.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/http</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
                     <b>proxy_type</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -583,7 +1165,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                     </td>
             </tr>
                                 <tr>
-                                <td colspan="1">
+                                <td colspan="2">
                     <b>redirect_rewrite</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
@@ -593,6 +1175,128 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">all</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>request_chunking</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies how to handle chunked and unchunked requests.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">rechunk</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>response_chunking</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies how to handle chunked and unchunked responses.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">rechunk</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>server_agent_name</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The string used as the server name in traffic generated by BIG-IP.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foobar</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="2">
+                    <b>sflow</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies sFlow settings for the HTTP profile.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>poll_interval</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the maximum interval in seconds between two pollings.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">30</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>poll_interval_global</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Enables/Disables overriding HTTP poll-interval setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>sampling_rate</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the ratio of packets observed to the samples generated.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>sampling_rate_global</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Enables/Disables overriding HTTP sampling-rate setting.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="2">
+                    <b>xff_alternative_names</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies alternative XFF headers instead of the default X-forwarded-for header.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;FooBar&#x27;, &#x27;client1&#x27;]</div>
                                     </td>
             </tr>
                         </table>

@@ -1,0 +1,19 @@
+---
+peer_1: foobar1
+peer_2: foobar2
+
+pool_1: "somepool"
+pool_2: "test"
+transport_1: "/Common/foo"
+transport_2: ""
+
+mode_1: "per-tmm"
+mode_2: "per-client"
+ratio_1: 20
+ratio_2: 50
+conn: 1000
+interval: 3000
+
+desc_1: "Some description"
+desc_2: ""
+

@@ -28,13 +28,28 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
+                                                                <td colspan="2">
+                    <b>early_retransmit</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code> the system uses early fast retransmits to reduce the recovery time for connections that are receive-buffer or user-data limited.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
                                                                 <td colspan="2">
                     <b>idle_timeout</b>
                                                         </td>
@@ -45,6 +60,50 @@ Parameters
                                                     <div>When creating a new profile, if this parameter is not specified, the remote device will choose a default value appropriate for the profile, based on its <code>parent</code> profile.</div>
                                                     <div>When a number is specified, indicates the number of seconds that the TCP connection can remain idle before the system deletes it.</div>
                                                     <div>When <code>0</code>, or <code>indefinite</code>, specifies that the system does not delete TCP connections regardless of how long they remain idle.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>initial_congestion_window_size</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the initial congestion window size for connections to this destination. The actual window size is this value multiplied by the MSS for the same connection.</div>
+                                                    <div>When set to <code>0</code> the system uses the values specified in RFC2414.</div>
+                                                    <div>The valid value range is 0 - 16 inclusive.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>initial_receive_window_size</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the initial receive window size for connections to this destination. The actual window size is this value multiplied by the MSS for the same connection.</div>
+                                                    <div>When set to <code>0</code> the system uses the Slow Start value.</div>
+                                                    <div>The valid value range is 0 - 16 inclusive.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>nagle</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>auto</li>
+                                                                                                                                                                                                <li>enabled</li>
+                                                                                                                                                                                                <li>disabled</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>enabled</code> the system applies Nagle&#x27;s algorithm to reduce the number of short segments on the network.</div>
+                                                    <div>When <code>auto</code>, the use of Nagle&#x27;s algorithm is decided based on network conditions.</div>
+                                                    <div>Note that for interactive protocols such as Telnet, rlogin, or SSH, F5 recommends disabling this setting on high-latency networks, to improve application responsiveness.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -78,18 +137,6 @@ Parameters
                                                                 <td>
                                                                         <div>Device partition to manage resources on.</div>
                                                                                 </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>password</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The password for the user account used to connect to the BIG-IP.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_PASSWORD</code>.</div>
-                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                    </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
@@ -209,25 +256,17 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>server</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
+                    <b>proxy_options</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>The BIG-IP host.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>server_port</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.2)</div>                </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">443</div>
-                                    </td>
-                                                                <td>
-                                                                        <div>The BIG-IP server port.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_SERVER_PORT</code>.</div>
+                                                                        <div>When <code>yes</code> the system advertises an option, such as a time-stamp to the server only if it was negotiated with the client.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -247,6 +286,19 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
+                    <b>syn_rto_base</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the initial RTO <code>Retransmission TimeOut</code> base multiplier for SYN retransmission, in <code>milliseconds</code>.</div>
+                                                    <div>This value is modified by the exponential backoff table to select the interval for subsequent retransmissions.</div>
+                                                    <div>The valid value range is 0 - 5000 inclusive.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
                     <b>time_wait_recycle</b>
                                         <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                </td>
                                 <td>
@@ -259,32 +311,6 @@ Parameters
                                                                         <div>Specifies that connections in a TIME-WAIT state are reused, if a SYN packet, indicating a request for a new connection, is received.</div>
                                                     <div>When <code>no</code>, connections in a TIME-WAIT state remain unused for a specified length of time.</div>
                                                     <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>user</b>
-                    <br/><div style="font-size: small; color: red">required</div>                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_USER</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>validate_certs</b>
-                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                </td>
-                                <td>
-                                                                                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>If <code>no</code>, SSL certificates are not validated. Use this only on personally controlled sites using self-signed certificates.</div>
-                                                    <div>You may omit this option by setting the environment variable <code>F5_VALIDATE_CERTS</code>.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -329,12 +355,25 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
+                                <td colspan="1">
+                    <b>early_retransmit</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the use of early fast retransmits.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
                                 <td colspan="1">
                     <b>idle_timeout</b>
                     <br/><div style="font-size: small; color: red">int</div>
@@ -345,6 +384,45 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>initial_congestion_window_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the initial congestion window size for connections to this destination.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>initial_receive_window_size</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the initial receive window size for connections to this destination.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>nagle</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the use of Nagle&#x27;s algorithm.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">auto</div>
                                     </td>
             </tr>
                                 <tr>
@@ -362,12 +440,36 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
+                    <b>proxy_options</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies if that the system advertises negotiated options to the server.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>syn_rto_base</b>
+                    <br/><div style="font-size: small; color: red">int</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the initial Retransmission TimeOut base multiplier for SYN retransmission.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2000</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
                     <b>time_wait_recycle</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Reuse connections in TIME-WAIT state</div>
+                                            <div>Reuse connections in TIME-WAIT state.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>

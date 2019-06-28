@@ -19,9 +19,9 @@
     name: 'data_group_Other'
     type: 'ip'
     records:
-      - key: '10.10.10.0/24'
+      - key: '10.10.10.0%10/24'
         value: ''
-      - key: '20.20.20.0/24'
+      - key: '20.20.20.0%10/24'
         value: ''
     state: present
   register: result
@@ -39,9 +39,9 @@
     name: 'data_group_Other'
     type: 'ip'
     records:
-      - key: '10.10.10.0/24'
+      - key: '10.10.10.0%10/24'
         value: ''
-      - key: '20.20.20.0/24'
+      - key: '20.20.20.0%10/24'
         value: ''
     state: present
   register: result

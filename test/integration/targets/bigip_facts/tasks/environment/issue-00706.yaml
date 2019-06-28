@@ -1,7 +1,0 @@
----
-
-- name: Collect all facts - Environment
-  bigip_facts:
-    include:
-      - vlan
-  register: result
