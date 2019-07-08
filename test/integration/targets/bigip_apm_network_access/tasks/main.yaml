@@ -1,0 +1,172 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a split tunnel IPV4 Network Access
+  bigip_apm_network_access:
+    name: "{{ name_1 }}"
+    ip_version: ipv4
+    split_tunnel: yes
+    snat_pool: "none"
+    ipv4_lease_pool: "{{ leasepool }}"
+    ipv4_address_space: "{{ inc_ipv4_1 }}"
+    excluded_ipv4_adresses: "{{ excl_ipv4_1 }}"
+  register: result
+
+- name: Assert Create a split tunnel IPV4 Network Access
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a split tunnel IPV4 Network Access - Idempotent check
+  bigip_apm_network_access:
+    name: "{{ name_1 }}"
+    ip_version: ipv4
+    split_tunnel: yes
+    snat_pool: "none"
+    ipv4_lease_pool: "{{ leasepool }}"
+    ipv4_address_space: "{{ inc_ipv4_1 }}"
+    excluded_ipv4_adresses: "{{ excl_ipv4_1 }}"
+  register: result
+
+- name: Assert Create a split tunnel IPV4 Network Access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify a split tunnel IPV4 Network Access
+  bigip_apm_network_access:
+    name: "{{ name_1 }}"
+    snat_pool: "{{ snat_pool_name }}"
+    ipv4_address_space: "{{ inc_ipv4_2 }}"
+    excluded_ipv4_adresses: "{{ excl_ipv4_2 }}"
+    allow_local_subnet: yes
+    allow_local_dns: yes
+    dns_address_space: "{{ incl_dns }}"
+    excluded_dns_addresses: "{{ excl_dns }}"
+  register: result
+
+- name: Assert Modify a split tunnel IPV4 Network Access
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify a split tunnel IPV4 Network Access - Idempotent check
+  bigip_apm_network_access:
+    name: "{{ name_1 }}"
+    snat_pool: "{{ snat_pool_name }}"
+    ipv4_address_space: "{{ inc_ipv4_2 }}"
+    excluded_ipv4_adresses: "{{ excl_ipv4_2 }}"
+    allow_local_subnet: yes
+    allow_local_dns: yes
+    dns_address_space: "{{ incl_dns }}"
+    excluded_dns_addresses: "{{ excl_dns }}"
+  register: result
+
+- name: Assert Modify a split tunnel IPV4 Network Access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a split tunnel IPV4-IPV6 Network Access
+  bigip_apm_network_access:
+    name: "{{ name_2 }}"
+    ip_version: "ipv4-ipv6"
+    split_tunnel: yes
+    snat_pool: "none"
+    ipv4_address_space: "{{ inc_ipv4_1 }}"
+    excluded_ipv4_adresses: "{{ excl_ipv4_1 }}"
+    ipv6_address_space: "{{ inc_ipv6_1 }}"
+    excluded_ipv6_adresses: "{{ excl_ipv6_1 }}"
+  register: result
+
+- name: Assert Create a split tunnel IPV4-IPV6 Network Access
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a split tunnel IPV4-IPV6 Network Access - Idempotent check
+  bigip_apm_network_access:
+    name: "{{ name_2 }}"
+    ip_version: "ipv4-ipv6"
+    split_tunnel: yes
+    snat_pool: "none"
+    ipv4_address_space: "{{ inc_ipv4_1 }}"
+    excluded_ipv4_adresses: "{{ excl_ipv4_1 }}"
+    ipv6_address_space: "{{ inc_ipv6_1 }}"
+    excluded_ipv6_adresses: "{{ excl_ipv6_1 }}"
+  register: result
+
+- name: Assert Create a split tunnel IPV4-IPV6 Network Access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify a split tunnel IPV4-IPV6 Network Access
+  bigip_apm_network_access:
+    name: "{{ name_2 }}"
+    snat_pool: "automap"
+    ipv4_address_space: "{{ inc_ipv4_2 }}"
+    excluded_ipv4_adresses: "{{ excl_ipv4_2 }}"
+    ipv6_address_space: "{{ inc_ipv6_2 }}"
+    excluded_ipv6_adresses: "{{ excl_ipv6_2 }}"
+  register: result
+
+- name: Assert Modify a split tunnel IPV4-IPV6 Network Access
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify a split tunnel IPV4-IPV6 Network Access - Idempotent check
+  bigip_apm_network_access:
+    name: "{{ name_2 }}"
+    snat_pool: "automap"
+    ipv4_address_space: "{{ inc_ipv4_2 }}"
+    excluded_ipv4_adresses: "{{ excl_ipv4_2 }}"
+    ipv6_address_space: "{{ inc_ipv6_2 }}"
+    excluded_ipv6_adresses: "{{ excl_ipv6_2 }}"
+  register: result
+
+- name: Assert Modify a split tunnel IPV4-IPV6 Network Access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove Network Access
+  bigip_apm_network_access:
+    name: "{{ name_2 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove Network Access
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove Network Access - Idempotent check
+  bigip_apm_network_access:
+    name: "{{ name_2 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove Network Access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove Network Access - Cleanup
+  bigip_apm_network_access:
+    name: "{{ name_1 }}"
+    state: absent
+
+- import_tasks: teardown.yaml
