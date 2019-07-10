@@ -28,9 +28,9 @@ from ansible.errors import AnsibleConnectionFailure
 class TerminalModule(TerminalBase):
 
     terminal_stdout_re = [
-        re.compile(br"[\r\n]?(?:\([^\)]+\)){,5}(?:>|#) ?$"),
-        re.compile(br"[\r\n]?[\w+\-\.:\/\[\]]+(?:\([^\)]+\)){,3}(?:>|#) ?$"),
-        re.compile(br"\[\w+\@[\w\-\.]+(?: [^\]])\] ?[>#\$] ?$"),
+        re.compile(br"[\r\n]?(?:\([^\)]+\)){,5}(?:>|#)\s*$"),
+        re.compile(br"[\r\n]?[\w+\-\.:\/\[\]]+(?:\([^\)]+\)){,3}(?:>|#)\s*$"),
+        re.compile(br"\[\w+\@[\w\-\.]+(?: [^\]])\] ?[>#\$]\s*$"),
         re.compile(br"(?:new|confirm) password:")
     ]
 
