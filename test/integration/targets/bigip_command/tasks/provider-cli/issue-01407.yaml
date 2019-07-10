@@ -1,0 +1,17 @@
+---
+# These tests need to be run an HA pair where the target device has Changes Pending on it, this will cause BIGIP to
+# send carriage return in response, the fix in terminal plugin addresses that.
+
+- name: Issue 01407 - Test carriage return in terminal
+  bigip_command:
+    commands: show sys version
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password }}"
+  register: result
+
+- debug:
+    msg: "{{ result.stdout_lines }}"
