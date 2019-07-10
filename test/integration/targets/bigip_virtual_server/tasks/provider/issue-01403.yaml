@@ -1,0 +1,34 @@
+---
+- name: Issue 01403 - Create Virtual Server
+  bigip_virtual_server:
+     provider: "{{ provider }}"
+     name: "issue_01403"
+     destination: "2700:200:1f10:101::6"
+     port: "80"
+     ip_protocol: tcp
+  register: result
+
+- name: Issue 01403 - Assert Create Virtual Server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01403 - Create Virtual Server - Idempotency Test
+  bigip_virtual_server:
+     provider: "{{ provider }}"
+     name: "issue_01403"
+     destination: "2700:200:1f10:101::6"
+     port: "80"
+     ip_protocol: tcp
+  register: result
+
+- name: Issue 01403 - Assert Create Virtual Server - Idempotency Test
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01403 - Remove Virtual Server
+  bigip_virtual_server:
+     provider: "{{ provider }}"
+     name: "issue_01403"
+     state: absent
