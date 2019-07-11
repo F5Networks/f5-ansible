@@ -1,5 +1,8 @@
 ---
 
+- import_tasks: setup.yaml
+  tags: setup
+
 - name: Provision GTM on the device
   bigip_provision:
     module: "{{ module1 }}"
@@ -120,3 +123,9 @@
 
 - import_tasks: issue-00669.yaml
   tags: issue-00669
+
+- import_tasks: issue-01307.yaml
+  tags: issue-01307
+
+- import_tasks: teardown.yaml
+  tags: teardown
