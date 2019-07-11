@@ -1,5 +1,9 @@
 ---
 
+- name: Issue 00798 - Include issue variables
+  include_vars:
+    file: issue-00798.yaml
+
 - name: Issue 00798 - Provision vCMP
   bigip_provision:
     module: vcmp
@@ -13,7 +17,7 @@
 
 - name: Issue 00798 - Create a deployed vCMP guest, 1 core
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     mgmt_network: bridged
     mgmt_address: 10.10.10.10/24
     initial_image: "{{ initial_image|basename }}"
@@ -28,7 +32,7 @@
 
 - name: Issue 00798 - Create a deployed vCMP guest, 1 core - Idempotent check
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     mgmt_network: bridged
     mgmt_address: 10.10.10.10/24
     initial_image: "{{ initial_image|basename }}"
@@ -43,14 +47,14 @@
 
 - name: Issue 00798 - Remove deployed vCMP guest, 1 core
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     state: absent
     delete_virtual_disk: yes
   register: result
 
 - name: Issue 00798 - Create a deployed vCMP guest, 2 cores
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     mgmt_network: bridged
     mgmt_address: 10.10.10.10/24
     initial_image: "{{ initial_image|basename }}"
@@ -65,7 +69,7 @@
 
 - name: Issue 00798 - Create a deployed vCMP guest, 2 cores - Idempotent check
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     mgmt_network: bridged
     mgmt_address: 10.10.10.10/24
     initial_image: "{{ initial_image|basename }}"
@@ -80,7 +84,7 @@
 
 - name: Issue 00798 - Remove deployed vCMP guest, 2 cores
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     state: absent
     delete_virtual_disk: yes
   register: result
