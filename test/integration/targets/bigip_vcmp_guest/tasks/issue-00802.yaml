@@ -1,5 +1,9 @@
 ---
 
+- name: Issue 00802 - Include issue variables
+  include_vars:
+    file: issue-00802.yaml
+
 - name: Issue 00802 - Provision vCMP
   bigip_provision:
     module: vcmp
@@ -13,7 +17,7 @@
 
 - name: Issue 00802 - Create a deployed vCMP guest
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     mgmt_network: bridged
     mgmt_address: 10.10.10.10/24
     initial_image: "{{ initial_image|basename }}"
@@ -34,7 +38,7 @@
 
 - name: Issue 00802 - Create a deployed vCMP guest - Idempotent check
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     mgmt_network: bridged
     mgmt_address: 10.10.10.10/24
     initial_image: "{{ initial_image|basename }}"
@@ -55,7 +59,7 @@
 
 - name: Issue 00802 - Remove deployed vCMP guest
   bigip_vcmp_guest:
-    name: guest1
+    name: "{{ guest_name }}"
     state: absent
     delete_virtual_disk: yes
   register: result
