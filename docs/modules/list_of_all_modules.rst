@@ -128,6 +128,7 @@ All modules
   * :ref:`bigip_service_policy_module`
   * :ref:`bigip_smtp_module`
   * :ref:`bigip_snat_pool_module`
+  * :ref:`bigip_snat_translation_module`
   * :ref:`bigip_snmp_module`
   * :ref:`bigip_snmp_community_module`
   * :ref:`bigip_snmp_trap_module`
