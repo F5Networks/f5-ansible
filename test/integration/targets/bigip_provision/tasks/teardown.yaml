@@ -1,0 +1,32 @@
+---
+
+- name: de-provision all modules
+  bigip_provision:
+    module: "{{ item }}"
+    state: absent
+  loop:
+    - afm
+    - am
+    - apm
+    - sam
+    - asm
+    - avr
+    - cgnat
+    - fps
+    - gtm
+    - lc
+    - pem
+    - swg
+    - ilx
+    - apm
+    - sslo
+    - urldb
+
+- name: set mgmt to system default
+  bigip_provision:
+    module: mgmt
+    memory: small
+
+- name: enable ltm module to default level
+  bigip_provision:
+    module: ltm
