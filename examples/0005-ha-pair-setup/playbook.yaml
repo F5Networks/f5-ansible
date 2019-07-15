@@ -30,8 +30,7 @@
         netmask: "{{ item.netmask }}"
         vlan: "{{ item.vlan.name }}"
         provider: "{{ provider }}"
-        allow_service:
-          - all
+        allow_service: default
       loop: "{{ nets }}"
 
     - name: Configure hostname
