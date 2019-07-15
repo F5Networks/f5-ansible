@@ -9,9 +9,9 @@
       - tmsh delete apm profile access all
       - tmsh delete apm policy access-policy all
 
-- name: De-provision ASM
+- name: De-provision APM
   bigip_provision:
-    name: asm
+    name: apm
     state: absent
   tags:
     - module-provisioning
