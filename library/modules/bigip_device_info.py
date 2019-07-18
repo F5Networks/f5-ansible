@@ -6165,6 +6165,12 @@ vcmp_guests:
       returned: queried
       type: str
       sample: bridged
+    vlans:
+      description:
+        - List of VLANs on which the guest is either enabled or disabled.
+      returned: queried
+      type: list
+      sample: ['/Common/vlan1', '/Common/vlan2']
     min_number_of_slots:
       description:
         - Specifies the minimum number of slots that the guest must be assigned to.
@@ -14672,6 +14678,7 @@ class VcmpGuestsParameters(BaseParameters):
         'mgmt_route',
         'mgmt_address',
         'mgmt_network',
+        'vlans',
         'min_number_of_slots',
         'number_of_slots',
         'ssl_mode',
