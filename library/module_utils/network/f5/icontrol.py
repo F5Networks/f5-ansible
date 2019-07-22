@@ -10,9 +10,9 @@ __metaclass__ = type
 import os
 
 try:
-    from StringIO import StringIO
-except ImportError:
     from io import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 try:
     from BytesIO import BytesIO
