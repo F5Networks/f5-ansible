@@ -6,6 +6,7 @@ Modules Maintained by the Ansible Partners
 ``````````````````````````````````````````
 
   * :ref:`bigip_apm_acl_module`
+  * :ref:`bigip_apm_network_access_module`
   * :ref:`bigip_apm_policy_fetch_module`
   * :ref:`bigip_apm_policy_import_module`
   * :ref:`bigip_appsvcs_extension_module`

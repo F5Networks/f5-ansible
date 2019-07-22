@@ -284,7 +284,7 @@ description:
 type:
   description: The type of ACL to create.
   returned: changed
-  type: string
+  type: str
   sample: static
 acl_order:
   description: The order of this ACL relative to other ACLs.

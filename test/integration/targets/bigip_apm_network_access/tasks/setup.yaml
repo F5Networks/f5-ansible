@@ -1,0 +1,15 @@
+- name: Provision APM
+  bigip_provision:
+    name: apm
+  tags:
+    - module-provisioning
+
+- name: Create SNAT pool from list of members
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
+
+- name: Create IPV4 leasepool
+  bigip_command:
+    commands:
+      - create apm resource leasepool {{ leasepool }}
