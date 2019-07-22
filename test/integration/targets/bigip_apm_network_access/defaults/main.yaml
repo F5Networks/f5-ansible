@@ -1,0 +1,45 @@
+snat_pool_name: my-snat-pool
+members_list:
+  - 10.10.10.10
+  - 20.20.20.20
+
+name_1: net_access_1
+name_2: net_access_2
+
+leasepool: ipv4lease
+
+excl_ipv4_1:
+    - subnet: "192.168.100.0/25"
+
+inc_ipv4_1:
+    - subnet: "192.168.101.128/25"
+
+excl_ipv4_2:
+    - subnet: "192.168.100.0/25"
+    - subnet: "192.168.100.129"
+
+inc_ipv4_2:
+    - subnet: "192.168.100.128/25"
+    - subnet: "10.11.11.0/24"
+
+excl_ipv6_1:
+    - subnet: "2001:0DB8:C21A:2::/64"
+    - subnet: "2001:DB8:ABCD:0012::0"
+
+inc_ipv6_1:
+    - subnet: "2001:db8:abcd:0012::0/64"
+    - subnet: "2001:db8:abcd:8000::/52"
+
+excl_ipv6_2:
+    - subnet: "2001:db8:abcd:8000::/52"
+
+inc_ipv6_2:
+    - subnet: "2001:db8:abcd:9000::/52"
+
+excl_dns:
+    - suspectfoobar.com
+    - shadyfoo.com
+
+incl_dns:
+    - legit.gov
+    - superlegit.org

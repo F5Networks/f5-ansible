@@ -1,0 +1,55 @@
+---
+
+- name: Issue 01391 - Collect BIG-IP facts
+  bigip_device_info:
+    include:
+      - system-info
+  register: info
+
+- block:
+    - name: Issue 01391 - Provision vCMP
+      bigip_provision:
+        module: vcmp
+        level: dedicated
+      tags:
+        - module-provisioning
+
+    - name: Issue 01391 - Upload initial image to be used
+      bigip_software_image:
+        image: "{{ initial_image }}"
+
+    - name: Issue 01391 - Create a deployed vCMP guest
+      bigip_vcmp_guest:
+        name: guest1
+        mgmt_network: bridged
+        mgmt_address: 10.10.10.10/24
+        vlans: 
+          - "{{ vlan_name }}"
+        initial_image: "{{ initial_image|basename }}"
+
+    - name: Issue 01391 - Select vcmp-guest facts
+      bigip_device_info:
+        include:
+          - vcmp-guests
+      register: result
+
+    - name: Issue 01391 - Assert VLAN in vcmp-guest facts
+      assert:
+        that:
+          - result is success
+          - result.vcmp_guests | selectattr('name', 'match', 'guest1') | map(attribute='vlans') | list | first | first | regex_search('({{ vlan_name }})')
+
+    - name: Issue 01391 - Remove deployed vCMP guest
+      bigip_vcmp_guest:
+        name: guest1
+        state: absent
+        delete_virtual_disk: yes
+
+    - name: Issue 01391 - Deprovision vCMP
+      bigip_provision:
+        module: vcmp
+        state: absent
+      tags:
+        - module-provisioning
+        - deprovision-module
+  when: "'Virtual Edition' not in info.system_info.marketing_name"
