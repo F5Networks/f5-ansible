@@ -28,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -47,7 +47,23 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Sets the provisioning level for the requested modules. Changing the level for one module may require modifying the level of another module. For example, changing one module to <code>dedicated</code> requires setting all others to <code>none</code>. Setting the level of a module to <code>none</code> means that the module is not activated.</div>
-                                                    <div>This parameter is not relevant to <code>cgnat</code> and will not be applied to the <code>cgnat</code> module.</div>
+                                                    <div>Use c(state) absent to set c(level) to none and de-provision module.</div>
+                                                    <div>This parameter is not relevant to <code>cgnat - pre tmos 15.0</code> or <code>mgmt</code> and will not be applied to the <code>cgnat - pre tmos 15.0</code> or <code>mgmt</code> module.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>memory</b>
+                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.9)</div>                </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Sets additional memory for management module. This is in addition to minimum allocated RAM of 1264MB.</div>
+                                                    <div>The accepted value range is <code>0 - 8192</code>. Maximum value is restricted by systems available RAM.</div>
+                                                    <div>Specifying <code>large</code> reserves an additional 500MB for mgmt module.</div>
+                                                    <div>Specifying <code>medium</code> reserves an additional 200MB for mgmt module.</div>
+                                                    <div>Specifying <code>small</code> reserves no additional RAM for mgmt module.</div>
+                                                    <div>Use Large for configurations containing more than 2000 objects, or more specifically, for any configuration that exceeds 1000 objects per 2 GB of installed memory. Changing the Management <code>mgmt</code> size after initial provisioning causes a reprovision operation</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -67,9 +83,12 @@ Parameters
                                                                                                                                                                                                 <li>ilx</li>
                                                                                                                                                                                                 <li>lc</li>
                                                                                                                                                                                                 <li>ltm</li>
+                                                                                                                                                                                                <li>mgmt</li>
                                                                                                                                                                                                 <li>pem</li>
                                                                                                                                                                                                 <li>sam</li>
+                                                                                                                                                                                                <li>sslo</li>
                                                                                                                                                                                                 <li>swg</li>
+                                                                                                                                                                                                <li>urldb</li>
                                                                                                                                                                                                 <li>vcmp</li>
                                                                                     </ul>
                                                                             </td>
@@ -205,7 +224,9 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, de-provision the module.</div>
+                                                                        <div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module.</div>
+                                                    <div>When <code>absent</code>, de-provision the module.</div>
+                                                    <div><code>absent</code>, is not a relevent option to <code>mgmt</code> module as module can not be de-provisioned.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -247,6 +268,16 @@ Examples
           user: admin
       delegate_to: localhost
 
+    - name: Provision mgmt with medium amount of memory.
+      bigip_provision:
+        module: mgmt
+        memory: medium
+        provider:
+          server: lb.mydomain.com
+          password: secret
+          user: admin
+      delegate_to: localhost
+
 
 
 
@@ -257,7 +288,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                        <tr>
+                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
@@ -273,6 +304,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">minimum</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>memory</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The new provisioned amount of memory for mgmt module.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">large</div>
                                     </td>
             </tr>
                         </table>
@@ -293,4 +337,5 @@ Author
 ~~~~~~
 
 - Tim Rupp (@caphrim007)
+- Greg Crosby (@crosbygw)
 
