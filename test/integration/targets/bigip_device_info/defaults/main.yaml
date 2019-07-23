@@ -10,6 +10,12 @@ pool_name: pool1
 # Used for vCMP tests
 initial_image: "{{ role_path }}/files/BIGIP-13.1.0.8-0.0.3.iso"
 
+# Used for User info testing
+username_credential: johnd
+password_credential: C0m-T19fx$s4v02mc10
+shell: bash
+
+
 valid_includes:
   - provision-info
 #  - "address_class"
