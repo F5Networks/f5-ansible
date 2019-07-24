@@ -156,6 +156,7 @@ extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
+  - Greg Crosby (@crosbygw)
 '''
 
 EXAMPLES = r'''
@@ -281,7 +282,10 @@ import re
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-from io import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
