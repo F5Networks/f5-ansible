@@ -1,0 +1,4 @@
+---
+monitor_name: issue_01377
+receive_string_1: "this is a string"
+receive_string_2: ""
