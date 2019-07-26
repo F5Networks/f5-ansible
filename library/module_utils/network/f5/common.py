@@ -251,6 +251,7 @@ def transform_name(partition='', name='', sub_path=''):
 
     if name:
         name = name.replace('/', '~')
+        name = name.replace('%', '%25')
 
     if partition:
         partition = partition.replace('/', '~')
