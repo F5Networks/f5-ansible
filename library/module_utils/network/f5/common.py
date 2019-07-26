@@ -24,7 +24,7 @@ from collections import defaultdict
 
 MANAGED_BY_ANNOTATION_VERSION = 'f5-ansible.version'
 MANAGED_BY_ANNOTATION_MODIFIED = 'f5-ansible.last_modified'
-
+_DEVICE_CONNECTION = None
 
 f5_provider_spec = {
     'server': dict(

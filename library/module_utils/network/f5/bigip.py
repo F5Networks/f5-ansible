@@ -6,16 +6,32 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+
 import time
 
 try:
     from library.module_utils.network.f5.common import F5BaseClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.icontrol import iControlRestSession
+    from library.module_utils.network.f5.connection import Connection
 except ImportError:
     from ansible.module_utils.network.f5.common import F5BaseClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.icontrol import iControlRestSession
+    from ansible.module_utils.connection import Connection
+
+
+class F5HttpApiClient(F5BaseClient):
+    def __init__(self, *args, **kwargs):
+        super(F5HttpApiClient, self).__init__(*args, **kwargs)
+
+    @property
+    def api(self):
+        if self._client:
+            return self._client
+        session = Connection(self.module._socket_path)
+        self._client = session
+        return session
 
 
 class F5RestClient(F5BaseClient):

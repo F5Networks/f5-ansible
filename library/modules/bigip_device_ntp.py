@@ -83,13 +83,13 @@ timezone:
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.module_utils.network.f5.bigip import F5RestClient
+    from library.module_utils.network.f5.bigip import F5HttpApiClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import is_empty_list
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
+    from ansible.module_utils.network.f5.bigip import F5HttpApiClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import f5_argument_spec
@@ -204,7 +204,7 @@ class Difference(object):
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.pop('module', None)
-        self.client = F5RestClient(**self.module.params)
+        self.client = F5HttpApiClient(module=self.module, **self.module.params)
         self.want = ModuleParameters(params=self.module.params)
         self.have = ApiParameters()
         self.changes = UsableChanges()
@@ -319,57 +319,24 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/tm/sys/ntp/".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.patch(uri, json=params)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        uri = "/mgmt/tm/sys/ntp/"
+        response = self.client.api.patch(uri, data=params)
+        if response['code'] == 400:
+            raise F5ModuleError(response['contents'])
 
     def read_current_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/sys/ntp/".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        uri = "/mgmt/tm/sys/ntp/"
+        response = self.client.api.get(uri)
+        if response['code'] == 400:
+            raise F5ModuleError(response['contents'])
+        return ApiParameters(params=response['contents'])
 
     def absent_on_device(self):
         params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/tm/sys/ntp/".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.patch(uri, json=params)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        uri = "/mgmt/tm/sys/ntp/"
+        response = self.client.api.patch(uri, data=params)
+        if response['code'] == 400:
+            raise F5ModuleError(response['contents'])
 
 
 class ArgumentSpec(object):
