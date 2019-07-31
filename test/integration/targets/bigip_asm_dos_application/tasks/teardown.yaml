@@ -1,0 +1,15 @@
+- name: Remove DoS profile container
+  bigip_firewall_dos_profile:
+    name: "{{ dos }}"
+    state: absent
+
+- name: De-provision AFM and ASM modules
+  bigip_provision:
+    module: "{{ item }}"
+    state: absent
+  loop:
+    - afm
+    - asm
+  tags:
+    - module-provisioning
+    - deprovision-module

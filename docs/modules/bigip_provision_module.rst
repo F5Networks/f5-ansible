@@ -28,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -47,7 +47,7 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Sets the provisioning level for the requested modules. Changing the level for one module may require modifying the level of another module. For example, changing one module to <code>dedicated</code> requires setting all others to <code>none</code>. Setting the level of a module to <code>none</code> means that the module is not activated.</div>
-                                                    <div>Use c(state) absent to set c(level) to none and de-provision module.</div>
+                                                    <div>Use <code>state</code> absent to set c(level) to none and de-provision module.</div>
                                                     <div>This parameter is not relevant to <code>cgnat - pre tmos 15.0</code> or <code>mgmt</code> and will not be applied to the <code>cgnat - pre tmos 15.0</code> or <code>mgmt</code> module.</div>
                                                                                 </td>
             </tr>
@@ -63,7 +63,7 @@ Parameters
                                                     <div>Specifying <code>large</code> reserves an additional 500MB for mgmt module.</div>
                                                     <div>Specifying <code>medium</code> reserves an additional 200MB for mgmt module.</div>
                                                     <div>Specifying <code>small</code> reserves no additional RAM for mgmt module.</div>
-                                                    <div>Use Large for configurations containing more than 2000 objects, or more specifically, for any configuration that exceeds 1000 objects per 2 GB of installed memory. Changing the Management <code>mgmt</code> size after initial provisioning causes a reprovision operation</div>
+                                                    <div>Use <code>large</code> for configurations containing more than 2000 objects, or more specifically, for any configuration that exceeds 1000 objects per 2 GB of installed memory. Changing the Management <code>mgmt</code> size after initial provisioning causes a reprovision operation</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -179,8 +179,7 @@ Parameters
                     <b>timeout</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
                                                                                 </td>
@@ -210,6 +209,18 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Configures the transport connection to use when connecting to the remote device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>auth_provider</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Configures the auth provider for to obtain authentication tokens from the remote device.</div>
+                                                    <div>This option is really used when working with BIG-IQ devices.</div>
                                                                                 </td>
             </tr>
                     

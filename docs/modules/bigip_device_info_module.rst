@@ -29,7 +29,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -100,6 +100,7 @@ Parameters
                                                                                                                                                                                                 <li>traffic-groups</li>
                                                                                                                                                                                                 <li>trunks</li>
                                                                                                                                                                                                 <li>udp-profiles</li>
+                                                                                                                                                                                                <li>users</li>
                                                                                                                                                                                                 <li>vcmp-guests</li>
                                                                                                                                                                                                 <li>virtual-addresses</li>
                                                                                                                                                                                                 <li>virtual-servers</li>
@@ -163,6 +164,7 @@ Parameters
                                                                                                                                                                                                 <li>!traffic-groups</li>
                                                                                                                                                                                                 <li>!trunks</li>
                                                                                                                                                                                                 <li>!udp-profiles</li>
+                                                                                                                                                                                                <li>!users</li>
                                                                                                                                                                                                 <li>!vcmp-guests</li>
                                                                                                                                                                                                 <li>!virtual-addresses</li>
                                                                                                                                                                                                 <li>!virtual-servers</li>
@@ -258,8 +260,7 @@ Parameters
                     <b>timeout</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
                                                                                 </td>
@@ -289,6 +290,18 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Configures the transport connection to use when connecting to the remote device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>auth_provider</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Configures the auth provider for to obtain authentication tokens from the remote device.</div>
+                                                    <div>This option is really used when working with BIG-IQ devices.</div>
                                                                                 </td>
             </tr>
                     
@@ -404,7 +417,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                            
+                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                                                                     
@@ -12752,6 +12767,117 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     
                                                 <tr>
                                 <td colspan="4">
+                    <b>users</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>users</code> is specified in <code>gather_subset</code>.</td>
+                <td>
+                                            <div>Details of the users on the system.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>description</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Description of the resource.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Admin user</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">admin</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">admin</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>partition_access</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Partition that user has access to, including user role.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Name of partition</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">all-partitions</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>role</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Role allowed to user on partition.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">auditor</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>shell</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>The shell assigned to the user account.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">tmsh</div>
+                                    </td>
+            </tr>
+                    
+                                                <tr>
+                                <td colspan="4">
                     <b>vcmp_guests</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -12929,6 +13055,20 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                 <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">bridged</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>vlans</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>List of VLANs on which the guest is either enabled or disabled.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;/Common/vlan1&#x27;, &#x27;/Common/vlan2&#x27;]</div>
                                     </td>
             </tr>
                                 <tr>
