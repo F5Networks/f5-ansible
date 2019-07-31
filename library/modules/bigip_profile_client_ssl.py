@@ -777,7 +777,7 @@ class Difference(object):
             if self.have.options.startswith('{'):
                 self.have.options = self.have.options[2:-2].split(' ')
             else:
-                self.have.options = [ self.have.options ]
+                self.have.options = [self.have.options]
         if not self.want.options:
             # we don't want options.  If we have any, indicate we should remove, else noop
             return [] if self.have.options else None
