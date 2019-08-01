@@ -57,6 +57,12 @@
   register: result
   ignore_errors: true
 
+- name: Issue 00846 - Assert failure for update client SSL profile with invalid options
+  assert:
+    that:
+      - result is not changed
+      - result is failed
+
 - name: Issue 00846 - Disable client SSL profile options
   bigip_profile_client_ssl:
     name: "{{ profile }}"
