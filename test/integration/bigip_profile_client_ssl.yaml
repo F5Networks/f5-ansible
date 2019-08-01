@@ -36,6 +36,7 @@
 - name: Test the bigip_profile_client_ssl module
   hosts: "f5-test[0]"
   connection: local
+  gather_facts: false
   any_errors_fatal: true
 
   vars:
