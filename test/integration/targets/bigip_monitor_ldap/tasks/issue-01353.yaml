@@ -1,0 +1,169 @@
+---
+
+- name: Issue 01353 - Create Monitor 
+  bigip_monitor_ldap:
+    name: "{{ monitor_name }}"
+    base: "CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+    chase_referrals: "yes"
+    debug: "no"
+    filter: "sAMAccountName=health-check"
+    interval: 10
+    timeout: 31
+    time_until_up: 0
+    mandatory_attributes: "no"
+    security: "ssl"
+  register: result
+
+- name: Issue 01353 - Assert Create Monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.base == "CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+      - result.chase_referrals == "yes"
+      - result.debug == "no"
+      - result.filter == "sAMAccountName=health-check"
+      - result.interval == 10
+      - result.timeout == 31
+      - result.time_until_up == 0
+      - result.mandatory_attributes == "no"
+      - result.security == "ssl"
+
+- name: Issue 01353 - Create Monitor - Idempotent check
+  bigip_monitor_ldap:
+    name: "{{ monitor_name }}"
+    base: "CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+    chase_referrals: "yes"
+    debug: "no"
+    filter: "sAMAccountName=health-check"
+    interval: 10
+    timeout: 31
+    time_until_up: 0
+    mandatory_attributes: "no"
+    security: "ssl"
+  register: result
+
+- name: Issue 01353 - Assert Create Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01353 - Get ldap monitor facts before
+  bigip_command:
+    commands:
+      - tmsh list ltm monitor ldap "{{ monitor_name }}"
+  register: before
+
+- name: Issue 01353 - Assert ldap monitor does not have username
+  assert:
+    that:
+      - "'username' not in before.stdout_lines[0][11]"
+
+- name: Issue 01353 - Create Monitor add username 
+  bigip_monitor_ldap:
+    name: "{{ monitor_name }}"
+    base: "CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+    target_username: "CN=health-check,CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+    chase_referrals: "yes"
+    debug: "no"
+    filter: "sAMAccountName=health-check"
+    interval: 10
+    timeout: 31
+    time_until_up: 0
+    mandatory_attributes: "no"
+  register: result
+
+- name: Issue 01353 - Assert Create Monitor with username
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.target_username == "CN=health-check,CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+
+- name: Issue 01353 - Get ldap monitor facts after change
+  bigip_command:
+    commands:
+      - tmsh list ltm monitor ldap "{{ monitor_name }}"
+  register: after
+
+- name: Issue 01353 - Assert Changes successfull
+  assert:
+    that:
+      - "'username' in after.stdout_lines[0][11]"
+
+- name: Issue 01353 - Create Monitor add username - Idempotent check
+  bigip_monitor_ldap:
+    name: "{{ monitor_name }}"
+    base: "CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+    target_username: "CN=health-check,CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+    chase_referrals: "yes"
+    debug: "no"
+    filter: "sAMAccountName=health-check"
+    interval: 10
+    timeout: 31
+    time_until_up: 0
+    mandatory_attributes: "no"
+  register: result
+
+- name: Issue 01353 - Assert Create Monitor add username - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01353 - Get ldap monitor facts before adding password
+  bigip_command:
+    commands:
+      - tmsh list ltm monitor ldap "{{ monitor_name }}"
+  register: before
+
+- name: Issue 01353 - Assert ldap monitor does not have password
+  assert:
+    that:
+      - "'password' not in before.stdout_lines[0][9]"
+
+- name: Issue 01353 - Create Monitor add password
+  bigip_monitor_ldap:
+    name: "{{ monitor_name }}"
+    base: "CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+    target_username: "CN=health-check,CN=Users,DC=ad,DC=qa,DC=cloud,DC=com"
+    target_password: "pass1234"
+    update_password: always
+    chase_referrals: "yes"
+    debug: "no"
+    filter: "sAMAccountName=health-check"
+    interval: 10
+    timeout: 31
+    time_until_up: 0
+    mandatory_attributes: "no"
+    security: "ssl"
+  register: result
+
+- name: Issue 01353 - Assert Create Monitor add password
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01353 - Get ldap monitor facts after adding password
+  bigip_command:
+    commands:
+      - tmsh list ltm monitor ldap "{{ monitor_name }}"
+  register: after
+
+- name: Issue 01353 - Assert Changes successfull
+  assert:
+    that:
+      - "'password' in after.stdout_lines[0][9]"
+
+- name: Issue 01353 - Remove monitor
+  bigip_monitor_ldap:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove Monitor
+  assert:
+    that:
+      - result is changed
