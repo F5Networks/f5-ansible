@@ -306,7 +306,7 @@ class ModuleParameters(Parameters):
     def issuer(self):
         if self._values['issuer'] is None:
             return None
-        filtered = {self.issuer_map[k]: v for k, v in self._values['issuer'].items() if v is not None}
+        filtered = dict((self.issuer_map[k], v) for k, v in self._values['issuer'].items() if v is not None)
         to_parse = ['{0}={1}'.format(k, v) for k, v in filtered.items()]
         result = '/' + '/'.join(to_parse) + '/'
         return result
@@ -352,7 +352,7 @@ class ReportableChanges(Changes):
         if self._values['issuer'] is None:
             return None
         to_dict = [tuple(item.split('=')) for item in self._values['issuer'].strip('/').split('/')]
-        result = {self.issuer_map[k]: v for k, v in to_dict}
+        result = dict((self.issuer_map[k], v) for k, v in to_dict)
         return result
 
 
@@ -502,8 +502,8 @@ class ModuleManager(object):
             raise F5ModuleError(err)
 
     def configure_new_cert(self):
-        cmd1 = 'tmsh modify /sys httpd { ssl-certkeyfile /config/httpd/conf/ssl.key/{1} ' \
-               'ssl-certfile /config/httpd/conf/ssl.crt/{0)'.format(self.want.cert_name, self.want.key_name)
+        cmd1 = 'tmsh modify sys httpd ssl-certkeyfile /config/httpd/conf/ssl.key/{1}' \
+               'ssl-certfile /config/httpd/conf/ssl.crt/{0}'.format(self.want.cert_name, self.want.key_name)
 
         cmd2 = 'tmsh save /sys config partitions all'
 
@@ -523,7 +523,7 @@ class ModuleManager(object):
 
     def copy_files_to_trusted(self):
         cmd1 = 'cat /config/httpd/conf/ssl.crt/{0} >> /config/big3d/client.crt'.format(self.want.cert_name)
-        cmd2 = 'cat /config/httpd/conf/ssl.crt/{0) >> /config/gtm/server.crt'.format(self.want.cert_name)
+        cmd2 = 'cat /config/httpd/conf/ssl.crt/{0} >> /config/gtm/server.crt'.format(self.want.cert_name)
         rc, out, err = exec_command(self.module, cmd1)
         if rc != 0:
             raise F5ModuleError(err)
