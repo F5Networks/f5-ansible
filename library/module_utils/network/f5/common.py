@@ -32,6 +32,7 @@ f5_provider_spec = {
     ),
     'server_port': dict(
         type='int',
+        default=443,
         fallback=(env_fallback, ['F5_SERVER_PORT'])
     ),
     'user': dict(
@@ -47,6 +48,7 @@ f5_provider_spec = {
     ),
     'validate_certs': dict(
         type='bool',
+        default='yes',
         fallback=(env_fallback, ['F5_VALIDATE_CERTS'])
     ),
     'transport': dict(
@@ -55,7 +57,6 @@ f5_provider_spec = {
     ),
     'timeout': dict(type='int'),
     'auth_provider': dict(),
-    'proxy_to': dict(),
 }
 
 f5_argument_spec = {
@@ -416,7 +417,6 @@ class F5BaseClient(object):
         self.merge_provider_auth_provider_param(result, provider)
         self.merge_provider_user_param(result, provider)
         self.merge_provider_password_param(result, provider)
-        self.merge_proxy_to_param(result, provider)
 
         return result
 
@@ -490,12 +490,6 @@ class F5BaseClient(object):
             result['password'] = os.environ.get('ANSIBLE_NET_PASSWORD')
         else:
             result['password'] = None
-
-    def merge_proxy_to_param(self, result, provider):
-        if self.validate_params('proxy_to', provider):
-            result['proxy_to'] = provider['proxy_to']
-        else:
-            result['proxy_to'] = None
 
 
 class AnsibleF5Parameters(object):

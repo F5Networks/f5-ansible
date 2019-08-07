@@ -125,6 +125,11 @@ options:
           - "Specifies the protocol: C(tcp), C(udp), C(icmp) or C(all) protocols,
             to which the access control entry applies."
         type: str
+        choices:
+          - tcp
+          - icmp
+          - udp
+          - all
       host_name:
         description:
           - This parameter applies to Layer 7 access control entries only.
@@ -253,7 +258,7 @@ EXAMPLES = r'''
         protocol: tcp
       - action: discard
         dst_port: '*'
-        dst_addr 192.168.1.1
+        dst_addr: 192.168.1.1
         src_port: '*'
         src_addr: '10.10.10.0'
         src_mask: '255.2155.255.128'

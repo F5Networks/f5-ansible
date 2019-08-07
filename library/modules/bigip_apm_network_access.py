@@ -105,7 +105,7 @@ options:
     description:
       - Specifies a list of domain names describing the target LAN DNS addresses.
     type: list
-  ipv4_addresses_space:
+  ipv4_address_space:
     description:
       - Specifies a list of IPv4 hosts or networks describing the target LAN.
       - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(yes).
@@ -286,7 +286,7 @@ ipv6_address_space:
       type: str
       sample: "2001:DB8:ABCD:0012::0"
   sample: hash/dictionary of values
-ipv4_addresses_space:
+ipv4_address_space:
   description: Specifies a list of IPv4 hosts or networks describing the target LAN.
   type: complex
   returned: changed
