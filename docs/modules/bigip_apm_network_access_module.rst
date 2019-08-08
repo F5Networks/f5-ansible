@@ -32,7 +32,7 @@ Parameters
                                                                                                                                 
                                                                                                                                                                 
                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -183,7 +183,7 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>ipv4_addresses_space</b>
+                    <b>ipv4_address_space</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
@@ -356,8 +356,7 @@ Parameters
                     <b>timeout</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
                                                                                 </td>
@@ -387,6 +386,18 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Configures the transport connection to use when connecting to the remote device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>auth_provider</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Configures the auth provider for to obtain authentication tokens from the remote device.</div>
+                                                    <div>This option is really used when working with BIG-IQ devices.</div>
                                                                                 </td>
             </tr>
                     
@@ -673,7 +684,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="2">
-                    <b>ipv4_addresses_space</b>
+                    <b>ipv4_address_space</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
                 <td>changed</td>

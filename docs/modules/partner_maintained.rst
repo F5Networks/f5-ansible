@@ -10,6 +10,7 @@ Modules Maintained by the Ansible Partners
   * :ref:`bigip_apm_policy_fetch_module`
   * :ref:`bigip_apm_policy_import_module`
   * :ref:`bigip_appsvcs_extension_module`
+  * :ref:`bigip_asm_dos_application_module`
   * :ref:`bigip_asm_policy_module` **(D)**
   * :ref:`bigip_asm_policy_fetch_module`
   * :ref:`bigip_asm_policy_import_module`

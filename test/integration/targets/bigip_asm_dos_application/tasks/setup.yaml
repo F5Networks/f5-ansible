@@ -1,0 +1,13 @@
+- name: Provision AFM and ASM modules
+  bigip_provision:
+    module: "{{ item }}"
+  loop:
+    - afm
+    - asm
+  tags:
+    - module-provisioning
+
+- name: Create a new DoS profile container
+  bigip_firewall_dos_profile:
+    name: "{{ dos }}"
+    state: present
