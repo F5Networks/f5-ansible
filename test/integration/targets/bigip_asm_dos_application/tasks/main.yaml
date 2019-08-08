@@ -1,0 +1,115 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create an ASM dos application profile
+  bigip_asm_dos_application:
+    profile: "{{ dos }}"
+    geolocations:
+      blacklist: "{{ list2 }}"
+      whitelist: "{{ list1 }}"
+    heavy_urls:
+      auto_detect: yes
+      latency_threshold: "{{ latency1 }}"
+    rtbh_duration: "{{ duration1 }}"
+    rtbh_enable: yes
+    single_page_application: yes
+  register: result
+
+- name: Assert Create an ASM dos application profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create an ASM dos application profile - Idempotent check
+  bigip_asm_dos_application:
+    profile: "{{ dos }}"
+    geolocations:
+      blacklist: "{{ list2 }}"
+      whitelist: "{{ list1 }}"
+    heavy_urls:
+      auto_detect: yes
+      latency_threshold: "{{ latency1 }}"
+    rtbh_duration: "{{ duration1 }}"
+    rtbh_enable: yes
+    single_page_application: yes
+  register: result
+
+- name: Assert Create an ASM dos application profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update an ASM dos application profile
+  bigip_asm_dos_application:
+    profile: "{{ dos }}"
+    geolocations:
+      blacklist: "{{ list3 }} "
+      whitelist: "{{ list2 }}"
+    heavy_urls:
+      latency_threshold: "{{ latency2 }}"
+      include: "{{ hw_incl }}"
+      exclude: "{{ hw_excl }}"
+    mobile_detection:
+        enabled: yes
+        ios_allowed_package_names: "{{ ios_app }}"
+        android_publishers: "{{ andr_pub }}"
+    rtbh_duration: "{{ duration2 }}"
+  register: result
+
+- name: Assert Update an ASM dos application profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update an ASM dos application profile - Idempotent check
+  bigip_asm_dos_application:
+    profile: "{{ dos }}"
+    geolocations:
+      blacklist: "{{ list3 }} "
+      whitelist: "{{ list2 }}"
+    heavy_urls:
+      latency_threshold: "{{ latency2 }}"
+      include: "{{ hw_incl }}"
+      exclude: "{{ hw_excl }}"
+    mobile_detection:
+        enabled: yes
+        ios_allowed_package_names: "{{ ios_app }}"
+        android_publishers: "{{ andr_pub }}"
+    rtbh_duration: "{{ duration2 }}"
+  register: result
+
+- name: Assert Update an ASM dos application profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove an ASM dos application profile
+  bigip_asm_dos_application:
+    profile: "{{ dos }}"
+    state: absent
+  register: result
+
+- name: Assert Update an ASM dos application profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove an ASM dos application profile
+  bigip_asm_dos_application:
+    profile: "{{ dos }}"
+    state: absent
+  register: result
+
+- name: Assert Update an ASM dos application profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
