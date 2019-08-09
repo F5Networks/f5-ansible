@@ -10,7 +10,7 @@
     sni_default: yes
   register: result
 
-- name: Issue 00846 - Assert Create a client SSL profile and set sni default
+- name: Issue 00905 - Assert Create a client SSL profile and set sni default
   assert:
     that:
       - result is changed

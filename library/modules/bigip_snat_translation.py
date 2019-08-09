@@ -40,7 +40,7 @@ options:
     type: int
   description:
     description:
-      - Description of snat-translation. c(none or '') will set to default description of null.
+      - Description of snat-translation. C(none or '') will set to default description of null.
     type: str
   ip_idle_timeout:
     description:
@@ -58,7 +58,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-      - Required with state c(absent) when partiition other than Common used.
+      - Required with state C(absent) when partition other than Common used.
     type: str
   state:
     description:
@@ -750,6 +750,7 @@ def main():
         module.exit_json(**results)
     except F5ModuleError as ex:
         module.fail_json(msg=str(ex))
+
 
 if __name__ == '__main__':
     main()

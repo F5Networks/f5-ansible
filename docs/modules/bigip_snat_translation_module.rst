@@ -28,7 +28,7 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -78,7 +78,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Description of snat-translation. c(none or &#x27;&#x27;) will set to default description of null.</div>
+                                                                        <div>Description of snat-translation. <code>none or &#x27;&#x27;</code> will set to default description of null.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -110,7 +110,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Device partition to manage resources on.</div>
-                                                    <div>Required with state c(absent) when partiition other than Common used.</div>
+                                                    <div>Required with state <code>absent</code> when partition other than Common used.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -195,8 +195,7 @@ Parameters
                     <b>timeout</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
                                                                                 </td>
@@ -226,6 +225,18 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Configures the transport connection to use when connecting to the remote device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>auth_provider</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Configures the auth provider for to obtain authentication tokens from the remote device.</div>
+                                                    <div>This option is really used when working with BIG-IQ devices.</div>
                                                                                 </td>
             </tr>
                     
