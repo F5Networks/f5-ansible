@@ -7,6 +7,7 @@
   loop:
     - cs1.pool
     - cs2.pool
+    - issue-01361.pool
   register: result
 
 - name: Assert Delete pool
