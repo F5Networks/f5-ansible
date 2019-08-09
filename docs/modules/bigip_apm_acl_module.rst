@@ -29,7 +29,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                                                                                                                     <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
@@ -209,7 +209,13 @@ Parameters
                     <b>protocol</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li>tcp</li>
+                                                                                                                                                                                                <li>icmp</li>
+                                                                                                                                                                                                <li>udp</li>
+                                                                                                                                                                                                <li>all</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
                                                                         <div>This parameter applies to Layer 4 access control entries only.</div>
                                                     <div>Specifies the protocol: <code>tcp</code>, <code>udp</code>, <code>icmp</code> or <code>all</code> protocols, to which the access control entry applies.</div>
@@ -374,8 +380,7 @@ Parameters
                     <b>timeout</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">10</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
                                                                                 </td>
@@ -405,6 +410,18 @@ Parameters
                                                                             </td>
                                                                 <td>
                                                                         <div>Configures the transport connection to use when connecting to the remote device.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                    <td class="elbow-placeholder"></td>
+                                                <td colspan="1">
+                    <b>auth_provider</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Configures the auth provider for to obtain authentication tokens from the remote device.</div>
+                                                    <div>This option is really used when working with BIG-IQ devices.</div>
                                                                                 </td>
             </tr>
                     
@@ -546,7 +563,7 @@ Examples
             protocol: tcp
           - action: discard
             dst_port: '*'
-            dst_addr 192.168.1.1
+            dst_addr: 192.168.1.1
             src_port: '*'
             src_addr: '10.10.10.0'
             src_mask: '255.2155.255.128'

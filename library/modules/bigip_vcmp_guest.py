@@ -334,7 +334,7 @@ class ModuleParameters(Parameters):
             return str(addr.with_prefixlen)
         except ValueError:
             raise F5ModuleError(
-                "The specified 'mgmt_address' is not a valid IP address"
+                "The specified 'mgmt_address' is not a valid IP address."
             )
 
     @property

@@ -1,0 +1,32 @@
+dos: test_asm_dos
+
+list1:
+  - Afghanistan
+  - Andora
+
+list2:
+  - Cuba
+
+list3:
+  - United States
+  - Poland
+
+latency1: 2000
+latency2: 3000
+
+duration1: 1800
+duration2: 3600
+
+hw_incl:
+    - {url: "/example.html", threshold: "2000"}
+    - {url: "/foobar.htm", threshold: "auto"}
+
+hw_excl:
+    - /badone.html
+
+ios_app:
+  - appdos_1
+  - appdos_2
+
+andr_pub:
+  - ca-bundle.crt
