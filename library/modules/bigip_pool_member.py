@@ -188,6 +188,11 @@ options:
   aggregate:
     description:
       - List of pool member definitions to be created, modified or removed.
+      - When using C(aggregates) the if one of the aggregate definitions is invalid, the aggregate run will fail,
+        indicating the error it last encountered.
+      - The module will C(NOT) rollback any changes it has made prior to encountering the error.
+      - The module also will not indicate what changes were made prior to failure, therefore it is strongly advised
+        to run the module in check mode to make basic validation, prior to module execution.
     type: list
     aliases:
       - members
@@ -548,7 +553,7 @@ class ModuleParameters(Parameters):
             return result
         if not is_valid_hostname(self._values['fqdn']):
             raise F5ModuleError(
-                "The specified 'fqdn' is not a valid hostname."
+                "The specified 'fqdn' value of: {0} is not a valid hostname.".format(self._values['fqdn'])
             )
         result['tmName'] = self._values['fqdn']
         return result
@@ -579,7 +584,7 @@ class ModuleParameters(Parameters):
         if is_valid_ip(address):
             return self._values['address']
         raise F5ModuleError(
-            "The specified 'address' value is not a valid IP address."
+            "The specified 'address' value of: {0} is not a valid IP address.".format(address)
         )
 
     @property
