@@ -40,7 +40,6 @@ class F5RestClient(F5BaseClient):
         return session
 
     def connect_via_token_auth(self):
-        q.q(self.retries)
         url = "https://{0}:{1}/mgmt/shared/authn/login".format(
             self.provider['server'], self.provider['server_port']
         )
