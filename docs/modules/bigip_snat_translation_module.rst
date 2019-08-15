@@ -552,4 +552,5 @@ Author
 ~~~~~~
 
 - Greg Crosby (@crosbygw)
+- Wojciech Wypior (@wojtek0806)
 
