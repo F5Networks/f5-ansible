@@ -24,6 +24,7 @@ options:
     description:
       - List of members to put in the SNAT pool. When a C(state) of present is
         provided, this parameter is required. Otherwise, it is optional.
+      - The members can be either IP addresses, or names of the SNAT translation objects.
     type: list
     aliases:
       - member
@@ -52,6 +53,10 @@ options:
     type: str
     default: Common
     version_added: 2.5
+notes:
+  - When C(bigip_snat_pool) object is removed it also removes any associated C(bigip_snat_translation) objects.
+  - This is a BIG-IP behavior not module behavior and it only occurs when the C(bigip_snat_translation) objects
+    are also not referenced by another C(bigip_snat_pool).
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -117,6 +122,7 @@ members:
   sample: "['10.10.10.10']"
 '''
 
+import re
 import os
 
 from ansible.module_utils.basic import AnsibleModule
@@ -182,8 +188,15 @@ class ModuleParameters(Parameters):
             if is_valid_ip(member):
                 address = '/{0}/{1}'.format(self.partition, member)
                 return address
+            else:
+                # names must start with alphabetic character, and can contain hyphens and underscores and numbers
+                # no special characters are allowed
+                pattern = re.compile(r'(?!-)[A-Z-].*(?<!-)$', re.IGNORECASE)
+                if pattern.match(member):
+                    address = '/{0}/{1}'.format(self.partition, member)
+                    return address
         raise F5ModuleError(
-            'The provided member address: {0} is not a valid IP address'.format(member)
+            'The provided member address: {0} is not a valid IP address or snat translation name'.format(member)
         )
 
     @property
