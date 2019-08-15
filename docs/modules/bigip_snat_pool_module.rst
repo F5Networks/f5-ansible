@@ -52,6 +52,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>List of members to put in the SNAT pool. When a <code>state</code> of present is provided, this parameter is required. Otherwise, it is optional.</div>
+                                                    <div>The members can be either IP addresses, or names of the SNAT translation objects.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: member</div>
                                     </td>
             </tr>
@@ -225,6 +226,8 @@ Notes
 -----
 
 .. note::
+    - When ``bigip_snat_pool`` object is removed it also removes any associated ``bigip_snat_translation`` objects.
+    - This is a BIG-IP behavior not module behavior and it only occurs when the ``bigip_snat_translation`` objects are also not referenced by another ``bigip_snat_pool``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.

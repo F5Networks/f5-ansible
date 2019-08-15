@@ -41,6 +41,9 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>List of pool definitions to be created, modified or removed.</div>
+                                                    <div>When using <code>aggregates</code> the if one of the aggregate definitions is invalid, the aggregate run will fail, indicating the error it last encountered.</div>
+                                                    <div>The module will <code>NOT</code> rollback any changes it has made prior to encountering the error.</div>
+                                                    <div>The module also will not indicate what changes were made prior to failure, therefore it is strongly advised to run the module in check mode to make basic validation, prior to module execution.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pools</div>
                                     </td>
             </tr>
