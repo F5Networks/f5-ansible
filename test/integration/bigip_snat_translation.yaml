@@ -34,7 +34,7 @@
         - NA
 
 - name: Test the bigip_snat_translation module
-  hosts: "f5-test"
+  hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
 
