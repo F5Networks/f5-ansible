@@ -1,0 +1,72 @@
+---
+
+- name: Issue 01428 - Include issue variables
+  include_vars:
+    file: issue-01428.yaml
+
+- name: Issue 01428 - Create route domain
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+
+- name: Issue 01428 - Create IPV4 SNAT translation with route domain
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+  register: result
+
+- name: Issue 01428 - Assert Create IPV4 SNAT translation with route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.address == st_address
+
+- name: Issue 01428 - Create IPV4 SNAT translation with route domain - Idempotent check
+  bigip_snat_translation:
+    name: "{{ snat_translation_name }}"
+    address: "{{ st_address }}"
+  register: result
+
+- name: Issue 01428 - Assert Create IPV4 SNAT translation with route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01428 - Create IPV6 SNAT translation with route domain
+  bigip_snat_translation:
+    name: "{{ snat_translation_name_2 }}"
+    address: "{{ st_address_2 }}"
+  register: result
+
+- name: Issue 01428 - Assert Create IPV6 SNAT translation with route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.address == st_address_2
+
+- name: Issue 01428 - Create IPV6 SNAT translation with route domain - Idempotent check
+  bigip_snat_translation:
+    name: "{{ snat_translation_name_2 }}"
+    address: "{{ st_address_2 }}"
+  register: result
+
+- name: Issue 01428 - Assert Create IPV6 SNAT translation with route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01428 - Remove SNAT translations
+  bigip_snat_translation:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ snat_translation_name }}"
+    - "{{ snat_translation_name_2 }}"
+
+- name: Issue 01428 - Remove route domain
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    state: absent

@@ -1,0 +1,6 @@
+---
+new_routedomain: 12
+snat_pool_name: issue_01428
+members_list:
+  - "10.10.10.10%12"
+  - "2001:db8:a0b:12f0::1%12"

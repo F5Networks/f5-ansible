@@ -56,5 +56,4 @@
   bigip_snat_pool:
     name: "{{ snat_pool_name }}"
     state: absent
-  register: result
 

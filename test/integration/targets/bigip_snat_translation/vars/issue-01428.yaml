@@ -1,0 +1,7 @@
+---
+new_routedomain: 12
+snat_translation_name: issue_01428
+snat_translation_name_2: issue_01428_2
+st_address: 10.10.10.10%12
+st_address_2: 2001:db8:a0b:12f0::1%12
+
