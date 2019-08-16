@@ -1,0 +1,12 @@
+---
+profile: ssl_profile_issue01422
+
+opt_1:
+  - dont-insert-empty-fragments
+  - no-ssl
+  - no-tlsv1
+  - no-tlsv1.1
+  - single-dh-use
+  - no-tlsv1.3
+
+ciphers: ecdhe:!3des:!tlsv1:!tlsv1_1
