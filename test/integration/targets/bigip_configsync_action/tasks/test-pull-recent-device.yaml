@@ -2,7 +2,8 @@
 
 - name: Create another pool - First device
   bigip_pool:
-    server: "{{ hostvars['bigip1']['ansible_host'] }}"
+    provider:
+      server: "{{ hostvars['bigip1']['ansible_host'] }}"
     lb_method: round-robin
     name: cs2.pool
     state: present

@@ -1,0 +1,29 @@
+---
+
+- name: Create third pool - second device
+  bigip_pool:
+    lb_method: round-robin
+    name: issue-01361.pool
+    state: present
+  register: result
+
+- name: Assert Create pool
+  assert:
+    that:
+      - result is changed
+
+- name: Sync configuration from device to group - first device, expect failure
+  bigip_configsync_action:
+    provider:
+      server: "{{ hostvars['bigip1']['ansible_host'] }}"    
+    device_group: "{{ device_group }}"
+    sync_device_to_group: yes
+  register: result
+  ignore_errors: yes
+  
+- name: Sync configuration from device to group - check for recommended sync message
+  assert:
+    that:
+      - result is failed
+      - result is not changed
+      - '"to group sdbt_sync_failover_dev_group" in result.msg'
