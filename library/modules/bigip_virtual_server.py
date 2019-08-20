@@ -1948,15 +1948,6 @@ class ModuleParameters(Parameters):
             return None
         elif any(x.lower() for x in self._values['enabled_vlans'] if x.lower() in ['all', '*']):
             result = [fq_name(self.partition, 'all')]
-            if result[0].endswith('/all'):
-                if self._values['__warnings'] is None:
-                    self._values['__warnings'] = []
-                self._values['__warnings'].append(
-                    dict(
-                        msg="Usage of the 'ALL' value for 'enabled_vlans' parameter is deprecated. Use '*' instead",
-                        version='2.9'
-                    )
-                )
             return result
         results = list(set([fq_name(self.partition, x) for x in self._values['enabled_vlans']]))
         results.sort()
@@ -2436,9 +2427,6 @@ class VirtualServerValidator(object):
         self.module = module
 
     def check_update(self):
-        # TODO(Remove in Ansible 2.9)
-        self._override_standard_type_from_profiles()
-
         # Regular checks
         self._override_port_by_type()
         self._override_protocol_by_type()
@@ -2455,9 +2443,6 @@ class VirtualServerValidator(object):
         self._verify_stateless_profile()
 
     def check_create(self):
-        # TODO(Remove in Ansible 2.9)
-        self._override_standard_type_from_profiles()
-
         # Regular checks
         self._set_default_ip_protocol()
         self._set_default_profiles()
@@ -2527,44 +2512,6 @@ class VirtualServerValidator(object):
     def _override_protocol_by_type(self):
         if self.want.type in ['stateless']:
             self.want.update({'ip_protocol': 17})
-
-    def _override_standard_type_from_profiles(self):
-        """Overrides a standard virtual server type given the specified profiles
-
-        For legacy purposes, this module will do some basic overriding of the default
-        ``type`` parameter to support cases where changing the ``type`` only requires
-        specifying a different set of profiles.
-
-        Ideally, ``type`` would always be specified, but in the past, this module only
-        supported an implicit "standard" type. Module users would specify some different
-        types of profiles and this would change the type...in some circumstances.
-
-        Now that this module supports a ``type`` param, the implicit ``type`` changing
-        that used to happen is technically deprecated (and will be warned on). Users
-        should always specify a ``type`` now, or, accept the default standard type.
-
-        Returns:
-            void
-        """
-        if self.want.type == 'standard':
-            if self.want.has_fastl4_profiles:
-                self.want.update({'type': 'performance-l4'})
-                self.module.deprecate(
-                    msg="Specifying 'performance-l4' profiles on a 'standard' type is deprecated and will be removed.",
-                    version='2.10'
-                )
-            if self.want.has_fasthttp_profiles:
-                self.want.update({'type': 'performance-http'})
-                self.module.deprecate(
-                    msg="Specifying 'performance-http' profiles on a 'standard' type is deprecated and will be removed.",
-                    version='2.10'
-                )
-            if self.want.has_message_routing_profiles:
-                self.want.update({'type': 'message-routing'})
-                self.module.deprecate(
-                    msg="Specifying 'message-routing' profiles on a 'standard' type is deprecated and will be removed.",
-                    version='2.10'
-                )
 
     def _check_source_and_destination_match(self):
         """Verify that destination and source are of the same IP version
