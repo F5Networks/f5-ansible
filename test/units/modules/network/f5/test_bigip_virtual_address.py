@@ -75,7 +75,6 @@ class TestParameters(unittest.TestCase):
             auto_delete='enabled',
             icmp_echo='enabled',
             availability_calculation='always',
-            use_route_advertisement='yes'
         )
         p = ModuleParameters(params=args)
         assert p.state == 'present'
@@ -86,7 +85,6 @@ class TestParameters(unittest.TestCase):
         assert p.auto_delete is True
         assert p.icmp_echo == 'enabled'
         assert p.availability_calculation == 'none'
-        assert p.route_advertisement_type == 'enabled'
 
     def test_api_parameters(self):
         args = load_fixture('load_ltm_virtual_address_default.json')
@@ -144,13 +142,6 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
         assert p.arp_state == 'disabled'
 
-    def test_module_parameters_use_route_advert_disabled(self):
-        args = dict(
-            use_route_advertisement='no'
-        )
-        p = ModuleParameters(params=args)
-        assert p.use_route_advertisement == 'disabled'
-
     def test_module_parameters_state_present(self):
         args = dict(
             state='present'
@@ -198,7 +189,6 @@ class TestManager(unittest.TestCase):
             auto_delete='enabled',
             icmp_echo='enabled',
             advertise_route='always',
-            use_route_advertisement='yes',
             provider=dict(
                 server='localhost',
                 password='password',
