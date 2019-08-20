@@ -1,0 +1,43 @@
+---
+
+- name: Issue 01428 - Include issue variables
+  include_vars:
+    file: issue-01428.yaml
+
+- name: Issue 01428 - Create route domain
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+
+- name: Issue 01428 - Create SNAT pool with member addresses in RD
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
+  register: result
+
+- name: Issue 01428 - Assert Create SNAT pool with member addresses in RD
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01428 - Create SNAT pool with member addresses in RD - Idempotent check
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
+  register: result
+
+- name: Issue 01428 - Assert Create SNAT pool with member addresses in RD - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01284 - Delete SNAT pool
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    state: absent
+
+- name: Issue 01428 - Remove route domain
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    state: absent
