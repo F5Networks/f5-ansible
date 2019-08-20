@@ -181,7 +181,7 @@
     name: 1.1.1.3%2
     route_domain: bar
     address: 1.1.1.3
-    use_route_advertisement: yes
+    route_advertisement: 'any'
     partition: part1
   register: result
 
@@ -195,7 +195,7 @@
     name: 1.1.1.3%2
     route_domain: bar
     address: 1.1.1.3
-    use_route_advertisement: yes
+    route_advertisement: 'any'
     partition: part1
   register: result
 
@@ -209,7 +209,7 @@
     name: 1.1.1.4%1
     route_domain: 1
     address: 1.1.1.4
-    use_route_advertisement: yes
+    route_advertisement: 'any'
     partition: part1
   register: result
 
@@ -223,7 +223,7 @@
     name: 1.1.1.4%1
     route_domain: 1
     address: 1.1.1.4
-    use_route_advertisement: yes
+    route_advertisement: 'any'
     partition: part1
   register: result
 
@@ -232,50 +232,50 @@
     that:
       - result is not changed
 
-- name: Issue 00725 - Change use_route_advertisement - no
+- name: Issue 00725 - Change route_advertisement - disabled
   bigip_virtual_address:
     name: 1.1.1.4%1
-    use_route_advertisement: no
+    route_advertisement: 'disabled'
     partition: part1
   register: result
 
-- name: Issue 00725 - Assert Change use_route_advertisement - no
+- name: Issue 00725 - Assert Change route_advertisement - disabled
   assert:
     that:
       - result is changed
 
-- name: Issue 00725 - Change use_route_advertisement - no - Idempotent check
+- name: Issue 00725 - Change route_advertisement - disabled - Idempotent check
   bigip_virtual_address:
     name: 1.1.1.4%1
-    use_route_advertisement: no
+    route_advertisement: 'disabled'
     partition: part1
   register: result
 
-- name: Issue 00725 - Assert Change use_route_advertisement - no - Idempotent check
+- name: Issue 00725 - Assert Change route_advertisement - disabled - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 00725 - Change use_route_advertisement - yes
+- name: Issue 00725 - Change route_advertisement - enabled
   bigip_virtual_address:
     name: 1.1.1.4%1
-    use_route_advertisement: yes
+    route_advertisement: 'enabled'
     partition: part1
   register: result
 
-- name: Issue 00725 - Assert Change use_route_advertisement - yes
+- name: Issue 00725 - Assert Change route_advertisement - enabled
   assert:
     that:
       - result is changed
 
-- name: Issue 00725 - Change use_route_advertisement - yes - Idempotent check
+- name: Issue 00725 - Change route_advertisement - enabled - Idempotent check
   bigip_virtual_address:
     name: 1.1.1.4%1
-    use_route_advertisement: yes
+    route_advertisement: 'enabled'
     partition: part1
   register: result
 
-- name: Issue 00725 - Assert Change use_route_advertisement - yes - Idempotent check
+- name: Issue 00725 - Assert Change route_advertisement - enabled - Idempotent check
   assert:
     that:
       - result is not changed
