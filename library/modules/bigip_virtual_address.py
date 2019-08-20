@@ -216,7 +216,7 @@ EXAMPLES = r'''
   bigip_virtual_address:
     state: present
     address: 10.10.10.10
-    use_route_advertisement: yes
+    route_advertisement: any
     provider:
       server: lb.mydomain.net
       user: admin
@@ -225,6 +225,11 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+availability_calculation:
+  description: Specifies what routes of the virtual address the system advertises.
+  returned: changed
+  type: str
+  sample: always
 auto_delete:
   description: New setting for auto deleting virtual address.
   returned: changed
@@ -330,6 +335,7 @@ class Parameters(AnsibleF5Parameters):
         'traffic_group',
         'route_domain',
         'spanning',
+        'availability_calculation',
     ]
 
     api_attributes = [
@@ -344,6 +350,7 @@ class Parameters(AnsibleF5Parameters):
         'serverScope',
         'trafficGroup',
         'spanning',
+        'serverScope',
     ]
 
     @property
@@ -669,8 +676,25 @@ class ModuleManager(object):
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
+
+        if self.module._diff and self.have:
+            result['diff'] = self.make_diff()
+
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+
+        return result
+
+    def _grab_attr(self, item):
+        result = dict()
+        updatables = Parameters.updatables
+        for k in updatables:
+            if getattr(item, k) is not None:
+                result[k] = getattr(item, k)
+        return result
+
+    def make_diff(self):
+        result = dict(before=self._grab_attr(self.have), after=self._grab_attr(self.want))
         return result
 
     def should_update(self):
