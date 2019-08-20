@@ -207,6 +207,9 @@ options:
     aliases:
       - purge
     version_added: 2.8
+notes:
+  - In previous versions of this module, which used the SDK, the C(name) parameter would act as C(fqdn) if C(address) or
+    C(fqdn) were not provided.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

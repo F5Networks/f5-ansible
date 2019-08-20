@@ -224,6 +224,7 @@ Parameters
                                                                                                                                                                                                 <li>no-session-resumption-on-renegotiation</li>
                                                                                                                                                                                                 <li>no-tlsv1.1</li>
                                                                                                                                                                                                 <li>no-tlsv1.2</li>
+                                                                                                                                                                                                <li>no-tlsv1.3</li>
                                                                                                                                                                                                 <li>single-dh-use</li>
                                                                                                                                                                                                 <li>ephemeral-rsa</li>
                                                                                                                                                                                                 <li>cipher-server-preference</li>
