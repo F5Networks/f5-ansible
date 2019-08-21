@@ -1,9 +1,4 @@
 ---
-
-- name: Issue 00419 - Include issue variables
-  include_vars:
-    file: issue-00419.yaml
-
 - name: Issue 00419 - Create VLANs
   bigip_vlan:
     name: "{{ item }}"
@@ -18,6 +13,7 @@
     description: My description
     destination: '::'
     port: 0
+    type: performance-l4
     all_profiles:
       - fastL4
     enabled_vlans:
@@ -38,6 +34,7 @@
     description: My description
     destination: '::'
     port: 0
+    type: performance-l4
     all_profiles:
       - fastL4
     enabled_vlans:

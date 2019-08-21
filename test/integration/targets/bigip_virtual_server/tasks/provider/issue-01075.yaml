@@ -3,6 +3,7 @@
 - name: Issue 01075 - Provision ASM
   bigip_provision:
     module: asm
+    provider: "{{ provider }}"
   tags:
     - module-provisioning
 
@@ -67,18 +68,12 @@
     name: virt1
     state: absent
     provider: "{{ provider }}"
-  register: result
-
-- name: Issue 01075 - Remove virtual
-  assert:
-    that:
-      - result is not changed
-      - result is success
 
 - name: Issue 01075 - De-provision ASM
   bigip_provision:
     module: asm
     state: absent
+    provider: "{{ provider }}"
   tags:
     - module-provisioning
     - deprovision-module
