@@ -7,6 +7,7 @@
 - name: Issue 00205 - Add FastL4 virtual server
   bigip_virtual_server:
     destination: 1.1.1.1
+    type: performance-l4
     name: issue-00205a
     port: 80
     profiles:
@@ -22,6 +23,7 @@
 - name: Issue 00205 - Add FastL4 virtual server - Idempotent check
   bigip_virtual_server:
     destination: 1.1.1.1
+    type: performance-l4
     name: issue-00205a
     port: 80
     profiles:

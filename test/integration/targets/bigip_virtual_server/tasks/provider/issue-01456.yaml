@@ -1,0 +1,89 @@
+---
+
+- name: Issue 01456 - Create RD - Provider
+  bigip_routedomain:
+    name: test-rd
+    id: 1456
+    state: present
+    provider: "{{ provider }}"
+
+- name: Issue 01456 - Create partition - Provider
+  bigip_partition:
+    name: "ansible"
+    provider: "{{ provider }}"
+
+- name: Issue 01456 - Add virtual server with RD - Provider
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    partition: "ansible"
+    state: "present"
+    name: "issue_01456_vs_test"
+    destination: "1.2.3.4%1456"
+    port: 80
+    profiles:
+      - http
+  register: result
+
+- name: Issue 01456 - Assert Add virtual server with RD - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01456 - Gather Facts on VS created - Provider
+  bigip_device_facts:
+    gather_subset:
+      - virtual-servers
+    provider: "{{ provider }}"
+  register: f
+
+- name: Issue 01456 - Verify VS has the correct address
+  assert:
+    that:
+      - f.virtual_servers[0].destination == "/ansible/1.2.3.4%1456:80"
+
+- name: Issue 01456 - Change profile in virtual server
+  bigip_virtual_server:
+    provider: "{{ provider }}"
+    partition: "ansible"
+    name: "issue_01456_vs_test"
+    profiles:
+      - tcp
+  register: result
+
+- name: Issue 01456 - Assert Change profile in virtual server - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01456 - Gather Facts on modified VS - Provider
+  bigip_device_facts:
+    gather_subset:
+      - virtual-servers
+    provider: "{{ provider }}"
+  register: f
+
+- name: Issue 01456 - Verify VS still has the same address
+  assert:
+    that:
+      - f.virtual_servers[0].destination == "/ansible/1.2.3.4%1456:80"
+
+- name: Issue 01456 - Remove virtual server - Provider
+  bigip_virtual_server:
+    name: "issue_01456_vs_test"
+    state: "absent"
+    provider: "{{ provider }}"
+    partition: "ansible"
+
+- name: Issue 01456 - Remove RD - Provider
+  bigip_routedomain:
+    name: test-rd
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01456 - Remove partition - Provider
+  bigip_partition:
+    name: "ansible"
+    provider: "{{ provider }}"
+    state: absent
