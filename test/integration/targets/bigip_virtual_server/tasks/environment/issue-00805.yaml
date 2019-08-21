@@ -1,5 +1,11 @@
 ---
 
+- name: Issue 00805 - Provision AFM
+  bigip_provision:
+    module: afm
+  tags:
+    - module-provisioning
+
 - name: Issue 00805 - Create a security NAT policy
   bigip_command:
     commands:
@@ -202,9 +208,16 @@
      state: absent
   register: result
 
-
 - name: Issue 00805 - Remove security NAT policy
   bigip_command:
     commands:
       - delete security nat policy foo
       - delete security nat policy bar
+
+- name: Issue 00805 - De-provision AFM
+  bigip_provision:
+    module: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

@@ -7,12 +7,5 @@
     port: 80
     fallback_persistence_profile: source-address
     provider: "{{ provider }}"
-  failed_when: result|success
   register: result
-
-- name: Issue 01078 - Assert Create virtual server - bad fallback profile
-  assert:
-    that:
-      - result is success
-      - result is not changed
-      - "'was not found' in result.msg"
+  failed_when: result is success
