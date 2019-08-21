@@ -1,0 +1,20 @@
+---
+
+- name: Issue 01381 - Create a node with route domain
+  bigip_node:
+    name: 2.3.4.5%0
+    address: 2.3.4.5
+    description: node with route domain
+  register: result
+
+- name: Issue 01381 - Assert Create a node with route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01381 - Remove node
+  bigip_node:
+    name: 2.3.4.5%0
+    state: absent
+  register: result
