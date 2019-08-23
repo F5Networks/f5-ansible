@@ -1826,7 +1826,7 @@ class ModuleParameters(Parameters):
     def destination(self):
         pattern = r'^[a-zA-Z0-9_.-]+'
         if len(self._values['destination'].split('/')) > 1:
-            addr, _ = self._values['destination'].split('/')
+            addr, dud = self._values['destination'].split('/')
             if '%' in addr:
                 addr = addr.split('%')[0]
         else:
@@ -1846,7 +1846,7 @@ class ModuleParameters(Parameters):
             return None
         result = None
         if len(self._values['destination'].split('/')) > 1:
-            addr, _ = self._values['destination'].split('/')
+            addr, dud = self._values['destination'].split('/')
             if '%' in addr:
                 result = addr.split('%')
         else:
