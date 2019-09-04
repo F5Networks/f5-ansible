@@ -16261,8 +16261,8 @@ def main():
         ansible_facts = dict()
 
         for key, value in iteritems(results):
-          key = 'ansible_net_%s' % key
-          ansible_facts[key] = value
+            key = 'ansible_net_%s' % key
+            ansible_facts[key] = value
 
         module.exit_json(ansible_facts=ansible_facts, **results)
     except F5ModuleError as ex:
