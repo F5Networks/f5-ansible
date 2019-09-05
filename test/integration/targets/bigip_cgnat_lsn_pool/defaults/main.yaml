@@ -1,0 +1,32 @@
+log_prof: lsn_log_profile
+log_pub: local-db-publisher
+
+name1: lsn_pool1
+name2: lsn_pool2
+
+members1:
+  - 10.10.10.0/25
+  - 10.10.10.128/25
+
+members2:
+  - 192.168.1.0/24
+  - 172.16.1.0/24
+
+backup1:
+  - 11.11.11.0/25
+  - 11.11.11.128/25
+
+backup2:
+  - 192.168.2.0/24
+  - 172.16.2.0/24
+
+egress: http-tunnel
+
+low1: 1025
+high1: 1050
+
+low2: 1080
+high2: 1090
+
+desc1: "my description"
+desc2: "this description"
