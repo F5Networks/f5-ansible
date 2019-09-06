@@ -43,9 +43,9 @@
 
   environment:
     F5_SERVER: "{{ ansible_host }}"
-    F5_USER: "{{ f5_username }}"
-    F5_PASSWORD: "{{ f5_password }}"
-    F5_SERVER_PORT: "{{ f5_port }}"
+    F5_USER: "{{ bigiq_username }}"
+    F5_PASSWORD: "{{ bigiq_password }}"
+    F5_SERVER_PORT: "{{ bigiq_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
     F5_AUTH_PROVIDER: "{{ f5_auth_provider|default(omit) }}"
 

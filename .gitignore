@@ -26,6 +26,7 @@ docs/_modules/*_module.rst
 
 devtools/docker-compose.site.yaml
 
+# intergration test files
 test/integration/inventory/hosts
 test/integration/inventory/group_vars/all.yaml
 ./ansible/
@@ -101,3 +102,10 @@ fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
+
+# ansible config
+ansible.cfg
+# Environments
+ansible_py3/
+# ansible galaxy-roles
+*f5devcentral*

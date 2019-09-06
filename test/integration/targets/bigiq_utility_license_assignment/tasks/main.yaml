@@ -2,14 +2,9 @@
 
 - import_tasks: setup.yaml
 
-- name: Get BIG-IP to assign a license to
-  set_fact:
-    remote_device: "{{ groups['f5-test'] | map('extract', hostvars, 'ansible_host') | list | first }}"
-    remote_hostname: "{{ groups['f5-test'] | map('extract', hostvars, 'inventory_hostname') | list | first }}"
-
 - name: Assign a license to a BIG-IP
   bigiq_utility_license_assignment:
-    device: "{{ remote_device }}"
+    device: "{{ hostvars[item].ansible_host }}"
     device_username: "{{ bigip_username }}"
     device_password: "{{ bigip_password }}"
     managed: no
@@ -17,15 +12,17 @@
     offering: "{{ offering_1 }}"
     unit_of_measure: "{{ unit_of_measure_1 }}"
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Assign a license to a BIG-IP
   assert:
     that:
-      - result is changed
+      - item is changed
+  with_items: "{{ result.results }}"
 
 - name: Assign a license to a BIG-IP - Idempotent check
   bigiq_utility_license_assignment:
-    device: "{{ remote_device }}"
+    device: "{{ hostvars[item].ansible_host }}"
     device_username: "{{ bigip_username }}"
     device_password: "{{ bigip_password }}"
     managed: no
@@ -33,15 +30,17 @@
     offering: "{{ offering_1 }}"
     unit_of_measure: "{{ unit_of_measure_1 }}"
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Assign a license to a BIG-IP - Idempotent check
   assert:
     that:
-      - result is not changed
+      - item is not changed
+  with_items: "{{ result.results }}"
 
 - name: Revoke a license on a BIG-IP
   bigiq_utility_license_assignment:
-    device: "{{ remote_device }}"
+    device: "{{ hostvars[item].ansible_host }}"
     device_username: "{{ bigip_username }}"
     device_password: "{{ bigip_password }}"
     managed: no
@@ -50,15 +49,17 @@
     unit_of_measure: "{{ unit_of_measure_1 }}"
     state: absent
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Revoke a license on a BIG-IP
   assert:
     that:
-      - result is changed
+      - item is changed
+  with_items: "{{ result.results }}"
 
 - name: Revoke a license on a BIG-IP - Idempotent check
   bigiq_utility_license_assignment:
-    device: "{{ remote_device }}"
+    device: "{{ hostvars[item].ansible_host }}"
     device_username: "{{ bigip_username }}"
     device_password: "{{ bigip_password }}"
     managed: no
@@ -67,41 +68,51 @@
     unit_of_measure: "{{ unit_of_measure_1 }}"
     state: absent
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Revoke a license on a BIG-IP - Idempotent check
   assert:
     that:
-      - result is not changed
+      - item is not changed
+  with_items: "{{ result.results }}"
+
+- name: Wait for licensing to settle
+  pause:
+    minutes: 8
 
 - import_tasks: setup-managed-device.yaml
 
 - name: Assign a license to a managed BIG-IP
   bigiq_utility_license_assignment:
-    device: "{{ remote_hostname }}"
+    device: "{{ hostvars[item].hostname }}"
     managed: yes
     key: "{{ license_1 }}"
     offering: "{{ offering_1 }}"
     unit_of_measure: "{{ unit_of_measure_1 }}"
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Assign a license to a managed BIG-IP
   assert:
     that:
-      - result is changed
+      - item is changed
+  with_items: "{{ result.results }}"
 
 - name: Assign a license to a managed BIG-IP - Idempotent check
   bigiq_utility_license_assignment:
-    device: "{{ remote_hostname }}"
+    device: "{{ hostvars[item].hostname }}"
     managed: yes
     key: "{{ license_1 }}"
     offering: "{{ offering_1 }}"
     unit_of_measure: "{{ unit_of_measure_1 }}"
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Assign a license to a managed BIG-IP - Idempotent check
   assert:
     that:
-      - result is not changed
+      - item is not changed
+  with_items: "{{ result.results }}"
 
 - name: Wait for licensing to settle
   pause:
@@ -109,33 +120,41 @@
 
 - name: Revoke a license on a managed BIG-IP
   bigiq_utility_license_assignment:
-    device: "{{ remote_hostname }}"
+    device: "{{ hostvars[item].hostname }}"
     managed: yes
     key: "{{ license_1 }}"
     offering: "{{ offering_1 }}"
     unit_of_measure: "{{ unit_of_measure_1 }}"
     state: absent
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Revoke a license on a managed BIG-IP
   assert:
     that:
-      - result is changed
+      - item is changed
+  with_items: "{{ result.results }}"
 
 - name: Revoke a license on a managed BIG-IP - Idempotent check
   bigiq_utility_license_assignment:
-    device: "{{ remote_hostname }}"
+    device: "{{ hostvars[item].hostname }}"
     managed: yes
     key: "{{ license_1 }}"
     offering: "{{ offering_1 }}"
     unit_of_measure: "{{ unit_of_measure_1 }}"
     state: absent
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Revoke a license on a managed BIG-IP - Idempotent check
   assert:
     that:
-      - result is not changed
+      - item is not changed
+  with_items: "{{ result.results }}"
+
+- name: Wait for licensing to settle
+  pause:
+    minutes: 8
 
 - import_tasks: teardown-managed-device.yaml
 

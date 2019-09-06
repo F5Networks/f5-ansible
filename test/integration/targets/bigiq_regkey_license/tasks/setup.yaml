@@ -4,6 +4,9 @@
   bigiq_regkey_pool:
     name: regkey-pool-1
 
+# file bigiq-regkey-licenses.txt needs to be present and have valid regkey licenses
+# available (one per line). Note hopper script will remove every license utilized.
+# cleanup.py can be used to cleanup email recieved from license server an populate bigiq-regkey-licenses.txt.
 - name: Get a license
   set_fact:
-    license_key: "{{ lookup('license_hopper', filename='/here/tmp/licenses/bigiq-regkey-licenses.txt', remove=True) }}"
+    license_key: "{{ lookup('license_hopper', filename='bigiq-regkey-licenses.txt', remove=True) }}"
