@@ -1,12 +1,15 @@
 ---
 
-- name: Remove a license to the license pool
+- name: Remove licenses from license pool - teardown
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license:
     regkey_pool: foo-pool
-    license_key: "{{ regkey_license_1 }}"
+    license_key: "{{ vars[reg_key] }}"
     state: absent
+  with_items: "{{ groups['bigips'] }}"
 
-- name: Remove regkey pool
+- name: Remove regkey pool - teardown
   bigiq_regkey_pool:
     name: foo-pool
     state: absent

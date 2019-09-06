@@ -1,168 +1,208 @@
 ---
 
 - import_tasks: setup.yaml
+  tags: setup
 
 - name: Discover a new device and import config, use default conflict policy
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules3 }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Discover a new device and import config, use default conflict policy
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
 
 - name: Discover a new device and import config, use default conflict policy - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules3 }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Discover a new device and import config, use default conflict policy - Idempotent check
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
 
 - name: Rediscover a known device and import new modules, use non-default conflict policy
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules2 }}"
     conflict_policy: "{{ conflict }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Rediscover a known device and import new modules, use non-default conflict policy
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
 
 - name: Rediscover a known device and import new modules, use non-default conflict policy - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules2 }}"
     conflict_policy: "{{ conflict }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Rediscover a known device and import new modules, use non-default conflict policy - Idempotent check
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
 
 - name: Remove a discovered device and its config
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
     state: absent
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Remove a discovered device and its config
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
 
 - name: Remove a discovered device and its config - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
     state: absent
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Remove a discovered device and its config - Idempotent check
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
 
 - name: Discover a new device and import config, use non-default conflict policy
   bigiq_device_discovery:
-    device_address: "{{ bigip13 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules1 }}"
     conflict_policy: "{{ conflict }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Discover a new device and import config, use non-default conflict policy
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
 
 - name: Discover a new device and import config, use non-default conflict policy - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip13 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules1 }}"
     conflict_policy: "{{ conflict }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Discover a new device and import config, use non-default conflict policy - Idempotent check
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
 
 - name: Rediscover a known device and import new modules, use non-default conflict policy
   bigiq_device_discovery:
-    device_address: "{{ bigip13 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
     modules: "{{ modules2 }}"
     conflict_policy: "{{ conflict }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Rediscover a known device and import new modules, use non-default conflict policy
+  with_items: "{{ discover.results }}"  
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
 
 - name: Rediscover a known device and import new modules, use non-default conflict policy - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip13 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
     modules: "{{ modules2 }}"
     conflict_policy: "{{ conflict }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Rediscover a known device and import new modules, use non-default conflict policy - Idempotent check
+  with_items: "{{ discover.results }}"  
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
 
 - name: Force full device rediscovery, use non-default conflict policy
   bigiq_device_discovery:
-    device_address: "{{ bigip13 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
     modules: "{{ modules4 }}"
     conflict_policy: "{{ conflict }}"
     force: yes
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Assert Force full device rediscovery, use non-default conflict policy
+  with_items: "{{ discover.results }}"  
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
 
-- name: Rediscover a known device and import module, non existent module- Expect Failure
+- name: Rediscover a known device and import module for non existent module - Expect Failure
   bigiq_device_discovery:
-    device_address: "{{ bigip13 }}"
-    modules: "{{ module5 }}"
-  register: result
-  failed_when: result is success
+    device_address: "{{ hostvars[item].ansible_host }}"
+    modules: "{{ modules5 }}"
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
+  failed_when: discover is success
 
-- name: Remove second discovered device and its config
+- name: Remove discovered device and its config
   bigiq_device_discovery:
-    device_address: "{{ bigip13 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
     state: absent
-
-- import_tasks: teardown.yaml
+  with_items:
+    - "{{ groups['bigips'] }}"
 
 - import_tasks: issue-01241.yaml
   tags: issue-01241
@@ -173,3 +213,5 @@
 - import_tasks: issue-01243.yaml
   tags: issue-01243
 
+- import_tasks: teardown.yaml
+  tags: teardown
