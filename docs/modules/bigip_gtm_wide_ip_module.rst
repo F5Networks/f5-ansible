@@ -100,14 +100,10 @@ Parameters
                                                                                                                                                                                                 <li>ratio</li>
                                                                                                                                                                                                 <li>topology</li>
                                                                                                                                                                                                 <li>global-availability</li>
-                                                                                                                                                                                                <li>global_availability</li>
-                                                                                                                                                                                                <li>round_robin</li>
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the load balancing method used to select a pool in this wide IP. This setting is relevant only when multiple pools are configured for a wide IP.</div>
-                                                    <div>The <code>round_robin</code> value is deprecated and will be removed in Ansible 2.9.</div>
-                                                    <div>The <code>global_availability</code> value is deprecated and will be removed in Ansible 2.9.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: lb_method</div>
                                     </td>
             </tr>

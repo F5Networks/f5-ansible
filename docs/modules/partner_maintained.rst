@@ -17,6 +17,7 @@ Modules Maintained by the Ansible Partners
   * :ref:`bigip_asm_policy_manage_module`
   * :ref:`bigip_asm_policy_server_technology_module`
   * :ref:`bigip_asm_policy_signature_set_module`
+  * :ref:`bigip_cgnat_lsn_pool_module`
   * :ref:`bigip_cli_alias_module`
   * :ref:`bigip_cli_script_module`
   * :ref:`bigip_command_module`
