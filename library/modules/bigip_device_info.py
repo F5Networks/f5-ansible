@@ -2235,6 +2235,92 @@ gtm_wide_ips:
       returned: queried
       type: complex
   sample: hash/dictionary of values
+gtm_topology_regions:
+  description: GTM regions related information.
+  returned: When C(gtm-topology-regions) is specified in C(gather_subset)
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: queried
+      type: str
+      sample: /Common/region1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: queried
+      type: str
+      sample: region1
+    region_members:
+      description:
+        - The list of region members.
+      type: complex
+      contains:
+        negate:
+          description:
+            - Indicates if region member is a C(IS-NOT) negative. In BIG-IP configuration the region members
+              can be C(IS) or C(IS-NOT).
+        returned: when configured for the region member.
+        type: bool
+        sample: yes
+        subnet:
+          description:
+            - An IP address and network mask in the CIDR format.
+          type: str
+          returned: when configured for the region member.
+          sample: 10.10.10.0/24
+        region:
+          description:
+            - The name of region already defined in the configuration.
+          type: str
+          returned: when configured for the region member.
+          sample: /Common/region1
+        continent:
+          description:
+            - The name of one of the seven continents in ISO format, along with the C(Unknown) setting.
+          type: str
+          returned: when configured for the region member.
+          sample: AF
+        country:
+          description:
+            - The country name returned as an ISO country code.
+            - Valid country codes can be found here https://countrycode.org/.
+          type: str
+          returned: when configured for the region member.
+          sample: US
+        state:
+          description:
+            - The state in a given country.
+          type: str
+          returned: when configured for the region member.
+          sample: "AD/Sant Julia de Loria"
+        pool:
+          description:
+            - The name of GTM pool already defined in the configuration.
+          type: str
+          returned: when configured for the region member.
+          sample: /Common/pool1
+        datacenter:
+          description:
+            - The name of GTM data center already defined in the configuration.
+          type: str
+          returned: when configured for the region member.
+          sample: /Common/dc1
+        isp:
+          description:
+            - Specifies an Internet service provider.
+          type: str
+          returned: when configured for the region member.
+          sample: /Common/AOL
+        geo_isp:
+          description:
+            - Specifies a geolocation ISP
+          type: str
+          returned: when configured for the region member.
+          sample: /Common/FOO_ISP
+      sample: hash/dictionary of values
+  sample: hash/dictionary of values
 http_monitors:
   description: HTTP monitor related information.
   returned: When C(http-monitors) is specified in C(gather_subset).
@@ -3671,72 +3757,72 @@ ltm_policies:
           returned: when conditions are defined in the rule.
           type: complex
           contains:
-          case_insensitive:
-            description:
-              - The value matched on is case insensitive.
-            returned: when defined in the condition.
-            type: bool
-            sample: no
-          case_sensitive:
-            description:
-              - The value matched on is case sensitive.
-            returned: when defined in the condition.
-            type: bool
-            sample: yes
-          contains_string:
-            description:
-              - The value matches if it contains a certain string.
-            returned: when defined in the condition.
-            type: bool
-            sample: yes
-          external:
-            description:
-              - The value matched on is from the external side of a connection.
-            returned: when defined in the condition.
-            type: bool
-            sample: yes
-          http_basic_auth:
-            description:
-              - This condition matches on basic HTTP authorization.
-            returned: when defined in the condition.
-            type: bool
-            sample: no
-          http_host:
-            description:
-              - This condition matches on an HTTP host.
-            returned: when defined in the condition.
-            type: bool
-            sample: yes
-          http_uri:
-            description:
-              - This condition matches on an HTTP URI.
-            returned: when defined in the condition.
-            type: bool
-            sample: no
-          request:
-            description:
-              - This policy will match on a request.
-            returned: when defined in the condition.
-            type: bool
-            sample: yes
-          username:
-            description:
-              - Matches on a username.
-            returned: when defined in the condition.
-            type: bool
-            sample: yes
-          all:
-            description:
-              - Matches all.
-            returned: when defined in the condition.
-            type: bool
-            sample: yes
-          values:
-            description:
-              - The specified values will be matched on.
-            returned: when defined in the condition.
-            type: list
-            sample: ['foo.bar.com', 'baz.cool.com']
+            case_insensitive:
+              description:
+                - The value matched on is case insensitive.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            case_sensitive:
+              description:
+                - The value matched on is case sensitive.
+              returned: when defined in the condition.
+              type: bool
+              sample: yes
+            contains_string:
+              description:
+                - The value matches if it contains a certain string.
+              returned: when defined in the condition.
+              type: bool
+              sample: yes
+            external:
+              description:
+                - The value matched on is from the external side of a connection.
+              returned: when defined in the condition.
+              type: bool
+              sample: yes
+            http_basic_auth:
+              description:
+                - This condition matches on basic HTTP authorization.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            http_host:
+              description:
+                - This condition matches on an HTTP host.
+              returned: when defined in the condition.
+              type: bool
+              sample: yes
+            http_uri:
+              description:
+                - This condition matches on an HTTP URI.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            request:
+              description:
+                - This policy will match on a request.
+              returned: when defined in the condition.
+              type: bool
+              sample: yes
+            username:
+              description:
+                - Matches on a username.
+              returned: when defined in the condition.
+              type: bool
+              sample: yes
+            all:
+              description:
+                - Matches all.
+              returned: when defined in the condition.
+              type: bool
+              sample: yes
+            values:
+              description:
+                - The specified values will be matched on.
+              returned: when defined in the condition.
+              type: list
+              sample: ['foo.bar.com', 'baz.cool.com']
           sample: hash/dictionary of values
       sample: hash/dictionary of values
   sample: hash/dictionary of values
@@ -10243,6 +10329,97 @@ class GtmSrvWideIpsFactManager(BaseManager):
         return result
 
 
+class GtmTopologyRegionParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'regionMembers': 'region_members',
+    }
+
+    returnables = [
+        'name',
+        'full_path',
+        'region_members',
+    ]
+
+    def _string_to_dict(self, member):
+        result = dict()
+        item = member['name'].split(' ', 2)
+        if len(item) > 2:
+            result['negate'] = 'yes'
+            if item[1] == 'geoip-isp':
+                result['geo_isp'] = item[2]
+            else:
+                result[item[1]] = item[2]
+            return result
+        else:
+            if item[0] == 'geoip-isp':
+                result['geo_isp'] = item[1]
+            else:
+                result[item[0]] = item[1]
+            return result
+
+    @property
+    def region_members(self):
+        result = []
+        if self._values['region_members'] is None:
+            return []
+        for member in self._values['region_members']:
+            result.append(self._string_to_dict(member))
+        return result
+
+
+class GtmTopologyRegionFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmTopologyRegionFactManager, self).__init__(**kwargs)
+        self.want = GtmTopologyRegionParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_topology_regions=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmTopologyRegionParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/region".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
 class HttpMonitorsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -15932,6 +16109,7 @@ class ModuleManager(object):
             'gtm-naptr-wide-ips': GtmNaptrWideIpsFactManager,
             'gtm-srv-pools': GtmSrvPoolsFactManager,
             'gtm-srv-wide-ips': GtmSrvWideIpsFactManager,
+            'gtm-topology-regions': GtmTopologyRegionFactManager,
             'http-monitors': HttpMonitorsFactManager,
             'https-monitors': HttpsMonitorsFactManager,
             'http-profiles': HttpProfilesFactManager,
@@ -16133,6 +16311,7 @@ class ArgumentSpec(object):
                     'gtm-naptr-wide-ips',
                     'gtm-srv-pools',
                     'gtm-srv-wide-ips',
+                    'gtm-topology-regions',
                     'http-profiles',
                     'http-monitors',
                     'https-monitors',
@@ -16201,6 +16380,7 @@ class ArgumentSpec(object):
                     '!gtm-naptr-wide-ips',
                     '!gtm-srv-pools',
                     '!gtm-srv-wide-ips',
+                    '!gtm-topology-regions',
                     '!http-profiles',
                     '!http-monitors',
                     '!https-monitors',
@@ -16257,7 +16437,16 @@ def main():
     try:
         mm = ModuleManager(module=module)
         results = mm.exec_module()
-        module.exit_json(**results)
+
+        # issue originally found and submitted in https://github.com/F5Networks/f5-ansible/pull/1477 by @traittinen
+
+        ansible_facts = dict()
+
+        for key, value in iteritems(results):
+            key = 'ansible_net_%s' % key
+            ansible_facts[key] = value
+
+        module.exit_json(ansible_facts=ansible_facts, **results)
     except F5ModuleError as ex:
         module.fail_json(msg=str(ex))
 
