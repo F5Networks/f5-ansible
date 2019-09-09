@@ -1,0 +1,56 @@
+---
+
+- name: Issue 01423 - Provision GTM
+  bigip_provision:
+    name: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 01423 - Create GTM topology region 1
+  bigip_gtm_topology_region:
+    name: region_foo_01423_1
+    region_members:
+      - state: "US/Ohio"
+        negate: yes
+      - geo_isp: foo_geo
+      - subnet: "192.168.1.0/24"
+
+- name: Issue 01423 - Create GTM topology region 2
+  bigip_gtm_topology_region:
+    name: foo_region_01423_2
+    region_members:
+      - country: PL
+      - isp: AOL
+      - subnet: "10.1.1.0/24"
+        negate: yes
+
+- name: Issue 01423 - Get Regions on Device
+  bigip_device_info:
+    include:
+      - gtm-topology-regions
+  register: result
+
+- name: Issue 01423 - Assert Get Regions on Device
+  assert:
+    that:
+      - result is success
+      - result.gtm_topology_regions | json_query("[?name=='region_foo_01423_1'].region_members[].subnet") | first == '192.168.1.0/24'
+      - result.gtm_topology_regions | json_query("[?name=='region_foo_01423_1'].region_members[].geo_isp") | first == 'foo_geo'
+      - result.gtm_topology_regions | json_query("[?name=='foo_region_01423_2'].region_members[].isp") | first == '/Common/AOL'
+      - result.gtm_topology_regions | json_query("[?name=='foo_region_01423_2'].region_members[].country") | first == 'PL'
+
+- name: Issue 01423 - Remove GTM topology regions
+  bigip_gtm_topology_region:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - foo_region_01423_1
+    - foo_region_01423_2
+
+- name: Issue 01423 - De-provision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
