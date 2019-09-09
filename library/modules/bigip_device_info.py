@@ -16257,7 +16257,16 @@ def main():
     try:
         mm = ModuleManager(module=module)
         results = mm.exec_module()
-        module.exit_json(**results)
+
+        # issue originally found and submitted in https://github.com/F5Networks/f5-ansible/pull/1477 by @traittinen
+
+        ansible_facts = dict()
+
+        for key, value in iteritems(results):
+            key = 'ansible_net_%s' % key
+            ansible_facts[key] = value
+
+        module.exit_json(ansible_facts=ansible_facts, **results)
     except F5ModuleError as ex:
         module.fail_json(msg=str(ex))
 
