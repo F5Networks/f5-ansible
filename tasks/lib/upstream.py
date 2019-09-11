@@ -74,6 +74,8 @@ def get_all_module_files():
 def should_upstream_module(module):
     # - read in the yaml playbook for the module
     yfile = '{0}/test/integration/{1}.yaml'.format(BASE_DIR, module)
+    if not os.path.exists(yfile):
+        return False
     with open(yfile, 'r') as fh:
         pb = yaml.load(fh)
         try:

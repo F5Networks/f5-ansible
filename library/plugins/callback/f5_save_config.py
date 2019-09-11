@@ -52,8 +52,7 @@ DOCUMENTATION = '''
           - section: callback_f5_save_config
             key: server_port
       validate_certs:
-        required: False
-        default: yes
+g        default: yes
         description: Used to validate SSL certificates offered by the BIG-IP.
         env:
           - name: F5_VALIDATE_CERTS

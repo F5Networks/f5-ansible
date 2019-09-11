@@ -17,7 +17,7 @@ from .lib.common import BASE_DIR
 
 @task(name='module')
 def module_(c):
-    """Create module RST documentation only
+    """Create module RST documentation only.
     """
     excludes = ['__init__.py']
     files = os.listdir('{0}/library/modules'.format(BASE_DIR))
@@ -39,7 +39,7 @@ def module_(c):
 
 @task
 def build(c):
-    """Create full HTML documentation
+    """Create full HTML documentation.
     """
     with c.cd("{0}/docs".format(BASE_DIR)):
         c.run("rm -rf _build")
@@ -48,17 +48,6 @@ def build(c):
 
 @task(module_, build)
 def make(c):
-    """Create the module RST docs and then build the full HTML documentation
+    """Create the module RST docs and then build the full HTML documentation.
     """
     print("done")
-
-
-# TODO Need to update container to have latexmk and texlive-formats-extra packages installed before this can be used in CI/CD
-
-@task
-def build_pdf(c):
-    """Create documentation in PDF format
-    """
-    with c.cd("{0}/docs".format(BASE_DIR)):
-        c.run("rm -rf _build")
-        c.run("make latexpdf")
