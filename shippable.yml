@@ -13,8 +13,9 @@ build:
     - shippable_retry pip install --upgrade pip
     - shippable_retry pip install -r requirements.shippable.txt
     - pytest -x -s $SHIPPABLE_BUILD_DIR/test/units/modules/network/f5/ --junitxml=$SHIPPABLE_BUILD_DIR/shippable/testresults/nosetests.xml
-    - inv docs.build
+    - inv test.sanity-all
     - inv test.style
+    - inv docs.build
 
 ## Disabled Emails for now, will tinker with that later when needed
 

@@ -10,6 +10,7 @@ __metaclass__ = type
 from invoke import Collection
 
 from . import container
+from . import collection
 from . import docs
 from . import ip
 from . import module
@@ -19,6 +20,7 @@ from . import test
 
 ns = Collection(
     container,
+    collection,
     docs,
     ip,
     module,

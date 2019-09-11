@@ -8,12 +8,12 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = """
-    lookup: Select a random license key from a pool of biqiq available licenses
+    lookup: Select a random license key from a pool of bigiq available licenses
     author: Wojciech Wypior <w.wypior@f5.com>
     version_added: "2.8"
     short_description: Return random license from list
     description:
-      - Select a random license key from a pool of biqiq available licenses
+      - Select a random license key from a pool of bigiq available licenses
       - Requires specifying BIGIQ license pool name and connection parameters
 """
 
@@ -40,7 +40,6 @@ RETURN = """
 import random
 
 from ansible.errors import AnsibleError
-from ansible.module_utils._text import to_native
 from ansible.module_utils.network.f5.bigiq import F5RestClient
 from ansible.plugins.lookup import LookupBase
 
