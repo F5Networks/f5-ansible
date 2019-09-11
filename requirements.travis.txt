@@ -18,3 +18,4 @@ flake8
 nose
 mock
 virtualenv
+semver
