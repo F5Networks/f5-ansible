@@ -109,6 +109,7 @@ options:
         remote device.
       - This module currently supports only connectivity to the device over cli (ssh).
     required: True
+    type: str
     choices:
         - cli
     default: cli
