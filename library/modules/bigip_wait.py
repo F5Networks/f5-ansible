@@ -176,6 +176,14 @@ class ModuleManager(object):
         return F5RestClient(**self.module.params)
 
     def execute(self):
+        if self.want.delay >= self.want.timeout:
+            raise F5ModuleError(
+                "The delay should not be greater than or equal to the timeout."
+            )
+        if self.want.delay + self.want.sleep >= self.want.timeout:
+            raise F5ModuleError(
+                "The combined delay and sleep should not be greater than or equal to the timeout."
+            )
         signal.signal(
             signal.SIGALRM,
             lambda sig, frame: hard_timeout(self.module, self.want, start)
