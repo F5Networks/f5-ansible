@@ -83,7 +83,8 @@ options:
       - Configures the transport connection to use when connecting to the
         remote device. The transport argument supports connectivity to the
         device over cli (ssh) or rest.
-    required: true
+    required: True
+    type: str
     choices:
         - rest
         - cli
