@@ -1,0 +1,224 @@
+---
+- name: Issue 01490 - Create partition
+  bigip_partition:
+    name: "{{ partition_2 }}"
+
+- name: Issue 01490 - Import ASM policy, binary
+  bigip_asm_policy_import:
+    name: "{{ policy_5 }}"
+    source: "{{ role_path }}/files/v2_policy_default_binary.plc"
+
+- name: Export ASM policy inline, compact format
+  bigip_asm_policy_fetch:
+    name: "{{ policy_5 }}"
+    inline: yes
+    compact: yes
+    base64: yes
+  register: p
+
+- name: Issue 01490 - Import ASM policy as parent on Common
+  bigip_asm_policy_import:
+    name: "{{ policy_1 }}"
+    partition: "{{ partition_1 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    policy_type: "parent"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as parent on Common
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as parent on Common - Idempotent check
+  bigip_asm_policy_import:
+    name: "{{ policy_1 }}"
+    partition: "{{ partition_1 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    policy_type: "parent"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as parent on Common - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as parent on non-default partition
+  bigip_asm_policy_import:
+    name: "{{ policy_2 }}"
+    partition: "{{ partition_2 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    policy_type: "parent"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as parent on non-default partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as parent on non-default partition - Idempotent check
+  bigip_asm_policy_import:
+    name: "{{ policy_2 }}"
+    partition: "{{ partition_2 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    policy_type: "parent"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as parent on non-default partition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as child on Common
+  bigip_asm_policy_import:
+    name: "{{ policy_3 }}"
+    partition: "{{ partition_1 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    retain_inheritance_settings: yes
+    parent_policy: "{{ policy_1 }}"
+    policy_type: "security"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as child on Common
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as child on Common - Idempotent check
+  bigip_asm_policy_import:
+    name: "{{ policy_3 }}"
+    partition: "{{ partition_1 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    retain_inheritance_settings: yes
+    parent_policy: "{{ policy_1 }}"
+    policy_type: "security"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as child on Common - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as child on non-default partition
+  bigip_asm_policy_import:
+    name: "{{ policy_4 }}"
+    partition: "{{ partition_2 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    retain_inheritance_settings: no
+    parent_policy: "{{ policy_2 }}"
+    policy_type: "security"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as child on non-default partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as child on non-default partition - Idempotent check
+  bigip_asm_policy_import:
+    name: "{{ policy_4 }}"
+    partition: "{{ partition_2 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    retain_inheritance_settings: no
+    parent_policy: "{{ policy_2 }}"
+    policy_type: "security"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as child on non-default partition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as child, parent policy on different partition
+  bigip_asm_policy_import:
+    name: "{{ policy_6 }}"
+    partition: "{{ partition_2 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    retain_inheritance_settings: yes
+    parent_policy: "/{{ partition_1 }}/{{ policy_1 }}"
+    policy_type: "security"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as child, parent policy on different partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01490 - Import ASM policy as child, parent policy on different partition - Idempotent check
+  bigip_asm_policy_import:
+    name: "{{ policy_6 }}"
+    partition: "{{ partition_2 }}"
+    inline: "{{ p.inline_policy }}"
+    base64: yes
+    retain_inheritance_settings: yes
+    parent_policy: "/{{ partition_1 }}/{{ policy_1 }}"
+    policy_type: "security"
+    encoding: "utf-8"
+  register: result
+
+- name: Issue 01490 - Assert Import ASM policy as child, parent policy on different partition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove child ASM policies on Common
+  bigip_asm_policy_manage:
+    name: "{{ policy_3 }}"
+    partition: "{{ partition_1 }}"
+    state: absent
+
+- name: Remove child ASM policies on non-default partition
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    partition: "{{ partition_2 }}"
+    state: absent
+  loop:
+    - "{{ policy_4 }}"
+    - "{{ policy_6 }}"
+
+- name: Remove parent ASM policies on non-default partition
+  bigip_asm_policy_manage:
+    name: "{{ policy_2 }}"
+    partition: "{{ partition_2 }}"
+    state: absent
+
+- name: Remove remaining ASM policies on Common
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    partition: "{{ partition_1 }}"
+    state: absent
+  loop:
+    - "{{ policy_1 }}"
+    - "{{ policy_5 }}"
+
+- name: Issue 01490 - Remove partition
+  bigip_partition:
+    name: "{{ partition_2 }}"
+    state: absent
