@@ -25,18 +25,92 @@ options:
       - The ASM policy to create or override.
     type: str
     required: True
+  policy_type:
+    description:
+      - The type of the policy to import.
+      - When C(policy_type) is C(security) the policy is imported as an application security policy that you can apply
+        to a virtual server.
+      - When C(policy_type) is C(parent) the policy becomes a parent to which other Security policies attach
+        inheriting its attributes. This policy type cannot be applied to Virtual Servers.
+      - This parameter is available on TMOS version 13.x and up and only takes effect when C(inline) import method
+        is used.
+    type: str
+    default: security
+    choices:
+      - security
+      - parent
+  retain_inheritance_settings:
+    description:
+      - Indicate if an imported security type policy should retain settings when attached to parent policy.
+      - This parameter is available on TMOS version 13.x and up and only takes effect when C(inline) import method
+        is used.
+    type: bool
+  parent_policy:
+    description:
+      - The parent policy to which the newly imported policy should be attached as child.
+      - When C(parent_policy) is specified the imported C(policy_type) must not be C(parent).
+      - This parameter is available on TMOS version 13.x and up and only takes effect when C(inline) import method
+        is used.
+    type: str
+  base64:
+    description:
+      - Indicates if imported policy string is encoded in base64.
+      - Parameter only takes effect when using C(inline) method of import.
+    type: bool
   inline:
     description:
       - When specified the ASM policy is created from a provided string.
       - Content needs to be provided in a valid XML format otherwise the operation will fail.
     type: str
+  encoding:
+    description:
+      - Specifies the desired application language of the imported policy.
+      - The imported policy cannot be a C(parent) type or attached to a C(parent) policy when C(auto-detect)
+        encoding is set.
+      - When importing policy to attach to a C(parent) policy, the C(encoding) of the imported policy if different
+        must be set to to be the same value as C(parent_policy), otherwise import will fail.
+      - This parameter is available on TMOS version 13.x and up and only takes effect when C(inline) import method
+        is used.
+    type: str
+    choices:
+      - windows-874
+      - utf-8
+      - koi8-r
+      - windows-1253
+      - iso-8859-10
+      - gbk
+      - windows-1256
+      - windows-1250
+      - iso-8859-13
+      - iso-8859-9
+      - windows-1251
+      - iso-8859-6
+      - big5
+      - gb2312
+      - iso-8859-1
+      - windows-1252
+      - iso-8859-4
+      - iso-8859-2
+      - iso-8859-3
+      - gb18030
+      - shift_jis
+      - iso-8859-8
+      - euc-kr
+      - iso-8859-5
+      - iso-8859-7
+      - windows-1255
+      - euc-jp
+      - iso-8859-15
+      - windows-1257
+      - iso-8859-16
+      - auto-detect
   source:
     description:
       - Full path to a policy file to be imported into the BIG-IP ASM.
       - Policy files exported from newer versions of BIG-IP cannot be imported into older
         versions of BIG-IP. The opposite, however, is true; you can import older into
         newer.
-      - The file format can be binary of XML.
+      - The file format can be binary or XML.
     type: path
   force:
     description:
@@ -47,6 +121,7 @@ options:
   partition:
     description:
       - Device partition to create policy on.
+      - This parameter is also applied to indicate the partition of the C(parent) policy.
     type: str
     default: Common
 extends_documentation_fragment: f5
@@ -78,7 +153,7 @@ EXAMPLES = r'''
 - name: Override existing ASM policy
   bigip_asm_policy:
     name: new_asm_policy
-    file: /root/asm_policy_new.xml
+    source: /root/asm_policy_new.xml
     force: yes
     provider:
       server: lb.mydomain.com
@@ -88,23 +163,48 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+policy_type:
+  description: The type of the policy to import.
+  returned: changed
+  type: str
+  sample: security
+retain_inheritance_settings:
+  description: Indicate if an imported security type policy should retain settings when attached to parent policy.
+  returned: changed
+  type: bool
+  sample: yes
+parent_policy:
+  description: The parent policy to which the newly imported policy should be attached as child.
+  returned: changed
+  type: str
+  sample: /Common/parent
+base64:
+  description: Indicates if imported policy string is encoded in base64.
+  returned: changed
+  type: bool
+  sample: yes
+encoding:
+  description: Thehe desired application language of the imported policy.
+  returned: changed
+  type: str
+  sample: utf-8
 source:
   description: Local path to an ASM policy file.
   returned: changed
-  type: str
+  type: path
   sample: /root/some_policy.xml
 inline:
-  description: Contents of policy as an inline string
+  description: Contents of policy as an inline string.
   returned: changed
   type: str
   sample: <xml>foobar contents</xml>
 name:
-  description: Name of the ASM policy to be created/overwritten
+  description: Name of the ASM policy to be created/overwritten.
   returned: changed
   type: str
   sample: Asm_APP1_Transparent
 force:
-  description: Set when overwriting an existing policy
+  description: Set when overwriting an existing policy.
   returned: changed
   type: bool
   sample: yes
@@ -121,6 +221,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.icontrol import upload_file
     from library.module_utils.network.f5.icontrol import module_provisioned
@@ -130,6 +231,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import transform_name
+    from ansible.module_utils.network.f5.common import flatten_boolean
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.icontrol import upload_file
     from ansible.module_utils.network.f5.icontrol import module_provisioned
@@ -142,17 +244,32 @@ class Parameters(AnsibleF5Parameters):
         'name',
         'inline',
         'source',
-        'force'
+        'force',
+        'policy_type',
+        'retain_inheritance_settings',
+        'parent_policy',
+        'base64',
+        'encoding',
     ]
 
     api_attributes = [
         'file',
         'name',
+        'policyType',
+        'retainInheritanceSettings',
+        'parentPolicy',
+        'isBase64',
+        'applicationLanguage',
     ]
 
     api_map = {
         'file': 'inline',
         'filename': 'source',
+        'policyType': 'policy_type',
+        'retainInheritanceSettings': 'retain_inheritance_settings',
+        'parentPolicy': 'parent_policy',
+        'isBase64': 'base64',
+        'applicationLanguage': 'encoding',
     }
 
 
@@ -161,7 +278,32 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def parent_policy(self):
+        if self._values['parent_policy'] is None:
+            return None
+        if self._values['policy_type'] == 'parent':
+            raise F5ModuleError(
+                "The 'policy_type' cannot be 'parent' if 'parent_policy' is defined."
+            )
+        result = dict(fullPath=fq_name(self.partition, self._values['parent_policy']))
+        return result
+
+    @property
+    def base64(self):
+        result = flatten_boolean(self._values['base64'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
+
+    @property
+    def retain_inheritance_settings(self):
+        result = flatten_boolean(self._values['retain_inheritance_settings'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
 
 class Changes(Parameters):
@@ -181,7 +323,22 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def parent_policy(self):
+        if self._values['parent_policy'] is None:
+            return None
+        result = self._values['parent_policy']['fullPath']
+        return result
+
+    @property
+    def retain_inheritance_settings(self):
+        result = flatten_boolean(self._values['retain_inheritance_settings'])
+        return result
+
+    @property
+    def base64(self):
+        result = flatten_boolean(self._values['base64'])
+        return result
 
 
 class Difference(object):
@@ -246,6 +403,21 @@ class ModuleManager(object):
         self._announce_deprecations(result)
         return result
 
+    def _clear_changes(self):
+        redundant = [
+            'policy_type',
+            'retain_inheritance_settings',
+            'parent_policy',
+            'base64',
+            'encoding',
+        ]
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None and key not in redundant:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = UsableChanges(params=changed)
+
     def policy_import(self):
         self._set_changed_options()
         if self.module.check_mode:
@@ -257,7 +429,7 @@ class ModuleManager(object):
             task = self.inline_import()
             self.wait_for_task(task)
             return True
-
+        self._clear_changes()
         self.import_file_to_device()
         self.remove_temp_policy_from_device()
         return True
@@ -314,11 +486,11 @@ class ModuleManager(object):
 
     def inline_import(self):
         params = self.changes.api_params()
+        params['name'] = fq_name(self.want.partition, self.want.name)
         uri = "https://{0}:{1}/mgmt/tm/asm/tasks/import-policy/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-
         if self.want.force:
             params.update(dict(policyReference={'link': self._get_policy_link()}))
             params.pop('name')
@@ -431,12 +603,53 @@ class ModuleManager(object):
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
+        self.choices = [
+            'windows-874',
+            'utf-8',
+            'koi8-r',
+            'windows-1253',
+            'iso-8859-10',
+            'gbk',
+            'windows-1256',
+            'windows-1250',
+            'iso-8859-13',
+            'iso-8859-9',
+            'windows-1251',
+            'iso-8859-6',
+            'big5',
+            'gb2312',
+            'iso-8859-1',
+            'windows-1252',
+            'iso-8859-4',
+            'iso-8859-2',
+            'iso-8859-3',
+            'gb18030',
+            'shift_jis',
+            'iso-8859-8',
+            'euc-kr',
+            'iso-8859-5',
+            'iso-8859-7',
+            'windows-1255',
+            'euc-jp',
+            'iso-8859-15',
+            'windows-1257',
+            'iso-8859-16',
+            'auto-detect'
+        ]
         argument_spec = dict(
             name=dict(
                 required=True,
             ),
             source=dict(type='path'),
             inline=dict(),
+            policy_type=dict(
+                default='security',
+                choices=['security', 'parent']
+            ),
+            retain_inheritance_settings=dict(type='bool'),
+            base64=dict(type='bool'),
+            parent_policy=dict(),
+            encoding=dict(choices=self.choices),
             force=dict(
                 type='bool',
                 default='no'
