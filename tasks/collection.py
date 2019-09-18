@@ -28,10 +28,10 @@ if HAS_JINJA:
 
 BUILD_DIR = '{0}/local/ansible_collections/_builds'.format(BASE_DIR)
 
-HELP1 = dict(
+HELP = dict(
     version="Version of the collection to build, the version must follow in SemVer format.",
     collection="The collection name to which the modules are upstreamed, DEFAULT: 'f5_modules'.",
-    skip_tests="Allows bypassing ansible sanity tests when building collection, DEFAULT: false",
+    skip_tests="Allows bypassing ansible sanity tests when building collection.",
 )
 
 
@@ -69,12 +69,16 @@ def validate_version(version):
         sys.exit(1)
 
 
-@task(optional=['collection', 'skip_tests'], help=HELP1)
-def build(c, version, collection='f5_modules', skip_tests=False):
+@task(optional=['collection', 'skiptest'], help=dict(
+    version="Version of the collection to build, the version must follow in SemVer format.",
+    collection="The collection name to which the modules are upstreamed, DEFAULT: 'f5_modules'.",
+    skiptest="Allows bypassing ansible sanity tests when building collection.",
+))
+def build(c, version, collection='f5_modules', skiptest=None):
     """Creates collection builds in the ansible_collections/_build directory."""
-    if not skip_tests:
-        ansible_test_collection(c, collection)
     validate_version(version)
+    if not skiptest:
+        ansible_test_collection(c, collection)
     update_galaxy_file(version, collection)
     if not os.path.exists(BUILD_DIR):
         os.makedirs(BUILD_DIR)
@@ -88,11 +92,16 @@ def test(c, collection):
     ansible_test_collection(c, collection)
 
 
-@task
-def publish(c, filename, api_key):
+@task(optional=['qa'], help=HELP)
+def publish(c, filename, api_key, qa=None):
     """Publish collection on Galaxy."""
     file = '{0}/{1}'.format(BUILD_DIR, filename)
     if not os.path.exists(file):
+        print("Requested file {0} not found.".format(file))
         sys.exit(1)
-    cmd = 'ansible-galaxy collection publish {0} --api-key={1}'.format(file, api_key)
+    if qa:
+        cmd = 'ansible-galaxy collection publish {0} --api-key={1} -s https://galaxy-qa.ansible.com/ '.format(file, api_key)
+    else:
+        cmd = 'ansible-galaxy collection publish {0} --api-key={1}'.format(file, api_key)
+
     c.run(cmd)
