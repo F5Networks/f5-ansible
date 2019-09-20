@@ -815,7 +815,7 @@ def main():
         add_file_common_args=spec.add_file_common_args,
     )
 
-    client = F5RestClient(**module.params)
+    F5RestClient(**module.params)
 
     try:
         mm = ModuleManager(module=module)

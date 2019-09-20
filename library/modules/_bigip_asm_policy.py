@@ -1047,7 +1047,7 @@ def main():
         ]
     )
 
-    client = F5RestClient(**module.params)
+    F5RestClient(**module.params)
 
     try:
         mm = ModuleManager(module=module)
