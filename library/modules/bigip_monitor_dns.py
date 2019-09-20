@@ -870,7 +870,8 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "Monitor has a IPv6 address. Only a 'query_type' of 'aaaa' is supported for IPv6."
             )
-        elif self.want.receive is not None and validate_ip_address(self.want.receive) and self.want.query_type == 'aaaa':
+        elif (self.want.receive is not None and validate_ip_address(self.want.receive) and
+              self.want.query_type == 'aaaa'):
             raise F5ModuleError(
                 "Monitor has a IPv4 address. Only a 'query_type' of 'a' is supported for IPv4."
             )

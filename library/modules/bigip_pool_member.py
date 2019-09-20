@@ -720,7 +720,8 @@ class ApiParameters(Parameters):
 
     @property
     def state(self):
-        if self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up'] and self._values['session'] in ['user-enabled']:
+        if (self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up']
+           and self._values['session'] in ['user-enabled']):
             return 'present'
         elif self._values['state'] in ['down', 'up', 'checking'] and self._values['session'] == 'monitor-enabled':
             # monitor-enabled + checking:
@@ -864,7 +865,8 @@ class ReportableChanges(Changes):
 
     @property
     def state(self):
-        if self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up'] and self._values['session'] in ['user-enabled']:
+        if (self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up'] and
+           self._values['session'] in ['user-enabled']):
             return 'present'
         elif self._values['state'] in ['down', 'up', 'checking'] and self._values['session'] == 'monitor-enabled':
             return 'present'
@@ -1122,7 +1124,9 @@ class ModuleManager(object):
 
             if diff:
                 fqdns = [
-                    member['selfLink'] for member in self.on_device if 'tmName' in member['fqdn'] and member['fqdn']['tmName'] in diff]
+                    member['selfLink'] for member in self.on_device
+                    if 'tmName' in member['fqdn'] and member['fqdn']['tmName'] in diff
+                ]
                 self.purge_links.extend(fqdns)
                 return True
             return False
@@ -1342,7 +1346,9 @@ class ModuleManager(object):
             have = self.read_current_node_from_device(self.want.node_name)
 
             if self.want.fqdn_auto_populate and self.want.reuse_nodes:
-                self.module.warn("'fqdn_auto_populate' is discarded in favor of the re-used node's auto-populate setting.")
+                self.module.warn(
+                    "'fqdn_auto_populate' is discarded in favor of the re-used node's auto-populate setting."
+                )
             self.want.update({
                 'fqdn_auto_populate': True if have.fqdn['autopopulate'] == 'enabled' else False
             })

@@ -446,7 +446,7 @@ class BaseManager(object):
                         raise F5ModuleError(output['message'])
                     else:
                         raise F5ModuleError(resp.content)
-            except Exception as ex:
+            except Exception:
                 # This can be caused by restjavad restarting.
                 continue
 

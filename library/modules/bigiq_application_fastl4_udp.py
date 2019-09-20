@@ -271,9 +271,7 @@ class ModuleParameters(Parameters):
             else:
                 raise F5ModuleError(resp._content)
 
-        result = dict(
-            link=response['items'][0]['selfLink']
-        )
+        result = dict(link=response['items'][0]['selfLink'])
         return result
 
     @property
@@ -285,11 +283,10 @@ class ModuleParameters(Parameters):
             # Assume a hostname was specified
             filter = "hostname+eq+'{0}'".format(self.service_environment)
 
-        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-adccore-allbigipDevices/devices/?$filter={2}&$top=1&$select=selfLink".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            filter
-        )
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-adccore-allbigipDevices/devices/" \
+              "?$filter={2}&$top=1&$select=selfLink".format(self.client.provider['server'],
+                                                            self.client.provider['server_port'],
+                                                            filter)
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
@@ -528,17 +525,16 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        uri = "https://{0}:{1}/mgmt/ap/query/v1/tenants/default/reports/AllApplicationsList?$filter=name+eq+'{2}'".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            self.want.name
-        )
+        uri = "https://{0}:{1}/mgmt/ap/query/v1/tenants/default/reports/AllApplicationsList" \
+              "?$filter=name+eq+'{2}'".format(self.client.provider['server'],
+                                              self.client.provider['server_port'], self.want.name)
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if resp.status == 200 and 'result' in response and 'totalItems' in response['result'] and response['result']['totalItems'] == 0:
+        if (resp.status == 200 and 'result' in response and
+           'totalItems' in response['result'] and response['result']['totalItems'] == 0):
             return False
         return True
 

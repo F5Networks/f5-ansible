@@ -504,7 +504,7 @@ class ModuleManager(object):
                     nops = 0
                 else:
                     nops += 1
-            except Exception as ex:
+            except Exception:
                 # This can be caused by restjavad restarting.
                 pass
             time.sleep(10)
@@ -852,7 +852,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 if not restarted_asm:
                     self._restart_asm()
                     restarted_asm = True
@@ -890,7 +890,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 pass
             time.sleep(5)
 
@@ -926,7 +926,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 pass
             time.sleep(5)
 
@@ -962,7 +962,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 pass
             time.sleep(5)
 
@@ -1041,7 +1041,7 @@ class ModuleManager(object):
                     nops = 0
                 else:
                     nops += 1
-            except Exception as ex:
+            except Exception:
                 # This can be caused by restjavad restarting.
                 pass
             time.sleep(10)

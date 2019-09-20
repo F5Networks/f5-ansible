@@ -316,8 +316,6 @@ try:
     from library.module_utils.network.f5.compare import compare_complex_list
     from library.module_utils.network.f5.icontrol import module_provisioned
     from library.module_utils.network.f5.ipaddress import ip_network
-    from library.module_utils.network.f5.ipaddress import is_valid_ip
-    from library.module_utils.network.f5.ipaddress import is_valid_ip_network
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
@@ -332,8 +330,6 @@ except ImportError:
     from ansible.module_utils.network.f5.compare import compare_complex_list
     from ansible.module_utils.network.f5.icontrol import module_provisioned
     from ansible.module_utils.network.f5.ipaddress import ip_network
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip_network
 
 
 class Parameters(AnsibleF5Parameters):

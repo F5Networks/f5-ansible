@@ -254,11 +254,9 @@ class ModuleParameters(Parameters):
                 "Unknown device format '{0}'".format(self.device)
             )
 
-        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/?$filter={2}&$top=1".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            filter
-        )
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/" \
+              "?$filter={2}&$top=1".format(self.client.provider['server'],
+                                           self.client.provider['server_port'], filter)
         resp = self.client.api.get(uri)
         try:
             response = resp.json()

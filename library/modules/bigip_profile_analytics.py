@@ -315,7 +315,8 @@ class ModuleParameters(Parameters):
     def notification_email_addresses(self):
         if self._values['notification_email_addresses'] is None:
             return None
-        elif len(self._values['notification_email_addresses']) == 1 and self._values['notification_email_addresses'][0] in ['', 'none']:
+        elif (len(self._values['notification_email_addresses']) == 1 and
+              self._values['notification_email_addresses'][0] in ['', 'none']):
             return []
         return self._values['notification_email_addresses']
 
