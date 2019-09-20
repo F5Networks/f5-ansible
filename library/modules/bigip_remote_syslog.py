@@ -342,7 +342,9 @@ class ModuleManager(object):
             dupes = [x for x in syslogs if x['host'] == self.want.remote_host]
             if len(dupes) > 1:
                 raise F5ModuleError(
-                    "Multiple occurrences of hostname: {0} detected, please specify 'name' parameter". format(self.want.remote_host)
+                    "Multiple occurrences of hostname: {0} detected, please specify 'name' parameter". format(
+                        self.want.remote_host
+                    )
                 )
 
         # A absent syslog does not appear in the list of existing syslogs

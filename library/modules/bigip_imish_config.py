@@ -204,7 +204,8 @@ options:
     version_added: "2.8"
 notes:
   - Abbreviated commands are NOT idempotent, see
-    L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-abbreviated-commands).
+    L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-
+    abbreviated-commands).
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -679,7 +680,8 @@ class ModuleManager(object):
             else:
                 raise F5ModuleError(resp.content)
 
-    def get_diff(self, candidate=None, running=None, diff_match='line', diff_ignore_lines=None, path=None, diff_replace='line'):
+    def get_diff(self, candidate=None, running=None, diff_match='line',
+                 diff_ignore_lines=None, path=None, diff_replace='line'):
         diff = {}
 
         # prepare candidate configuration
