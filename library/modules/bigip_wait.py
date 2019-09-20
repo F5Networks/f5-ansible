@@ -290,7 +290,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 # This can be caused by restjavad restarting.
                 pass
             time.sleep(10)
