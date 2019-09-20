@@ -475,7 +475,8 @@ class Difference(object):
         if self.have.oid is not None:
             if self.want.source == 'all' and self.want.oid != '':
                 raise F5ModuleError(
-                    "When specifying an 'all' source for a resource with an existing OID, you must specify a new, empty, OID."
+                    "When specifying an 'all' source for a resource with an existing OID, "
+                    "you must specify a new, empty, OID."
                 )
         if self.want.source == 'all' and self.want.oid != '':
             raise F5ModuleError(

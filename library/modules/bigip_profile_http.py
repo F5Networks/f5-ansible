@@ -888,7 +888,9 @@ class ModuleParameters(Parameters):
         if self._values['proxy_type'] == 'explicit':
             if self.dns_resolver is None or self.dns_resolver == '':
                 raise F5ModuleError(
-                    'A proxy type cannot be set to {0} without providing DNS resolver.'.format(self._values['proxy_type'])
+                    'A proxy type cannot be set to {0} without providing DNS resolver.'.format(
+                        self._values['proxy_type']
+                    )
                 )
         return self._values['proxy_type']
 
@@ -1394,7 +1396,9 @@ class Difference(object):
                 return None
             elif self.have.proxy_type == 'explicit' and self.want.proxy_type is None:
                 raise F5ModuleError(
-                    "DNS resolver cannot be empty or 'none' if an existing profile proxy type is set to {0}.".format(self.have.proxy_type)
+                    "DNS resolver cannot be empty or 'none' if an existing profile proxy type is set to {0}.".format(
+                        self.have.proxy_type
+                    )
                 )
             elif self.have.dns_resolver is not None:
                 return self.want.dns_resolver

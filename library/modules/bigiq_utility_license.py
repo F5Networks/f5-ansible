@@ -448,8 +448,6 @@ def main():
         required_if=spec.required_if
     )
 
-    client = F5RestClient(**module.params)
-
     try:
         mm = ModuleManager(module=module)
         results = mm.exec_module()

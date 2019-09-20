@@ -340,7 +340,6 @@ from ansible.module_utils.six import iteritems
 from ansible.module_utils.network.common.utils import remove_default_spec
 
 try:
-    from library.module_utils.compat.ipaddress import ip_address
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
@@ -351,7 +350,6 @@ try:
     from library.module_utils.network.f5.icontrol import module_provisioned
     from library.module_utils.network.f5.icontrol import TransactionContextManager
 except ImportError:
-    from ansible.module_utils.compat.ipaddress import ip_address
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
