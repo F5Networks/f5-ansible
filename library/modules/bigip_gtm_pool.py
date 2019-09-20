@@ -182,7 +182,8 @@ options:
           - Specifies the minimum number of probes that must succeed for this server to be declared up.
           - When creating a new virtual server, if this parameter is specified, then the C(number_of_probers)
             parameter must also be specified.
-          - The value of this parameter should always be B(lower) than, or B(equal to), the value of C(number_of_probers).
+          - The value of this parameter should always be B(lower) than, or B(equal to),
+            the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
@@ -191,7 +192,8 @@ options:
           - Specifies the number of probers that should be used when running probes.
           - When creating a new virtual server, if this parameter is specified, then the C(number_of_probes)
             parameter must also be specified.
-          - The value of this parameter should always be B(higher) than, or B(equal to), the value of C(number_of_probers).
+          - The value of this parameter should always be B(higher) than, or B(equal to),
+            the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
