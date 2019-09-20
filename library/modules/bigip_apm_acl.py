@@ -386,7 +386,6 @@ try:
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import flatten_boolean
@@ -394,14 +393,12 @@ try:
     from library.module_utils.network.f5.icontrol import module_provisioned
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.ipaddress import is_valid_ip_network
-    from library.module_utils.network.f5.ipaddress import is_valid_ip_interface
     from library.module_utils.compat.ipaddress import ip_network
     from library.module_utils.compat.ipaddress import ip_interface
 except ImportError:
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import flatten_boolean
@@ -409,7 +406,6 @@ except ImportError:
     from ansible.module_utils.network.f5.icontrol import module_provisioned
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip_network
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip_interface
     from ansible.module_utils.compat.ipaddress import ip_network
     from ansible.module_utils.compat.ipaddress import ip_interface
 
