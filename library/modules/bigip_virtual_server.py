@@ -1862,14 +1862,23 @@ class ModuleParameters(Parameters):
 
     @property
     def destination_tuple(self):
-        Destination = namedtuple('Destination', ['ip', 'port', 'route_domain', 'mask'])
+        pattern = r'^[a-zA-Z0-9_.-]+'
+        Destination = namedtuple('Destination', ['ip', 'port', 'route_domain', 'mask', 'not_ip'])
         if self._values['destination'] is None:
-            result = Destination(ip=None, port=None, route_domain=None, mask=None)
+            result = Destination(ip=None, port=None, route_domain=None, mask=None, not_ip=None)
             return result
         addr = self._values['destination'].split("%")[0].split('/')[0]
         if is_valid_ip(addr):
             addr = compress_address(u'{0}'.format(addr))
-        result = Destination(ip=addr, port=self.port, route_domain=self.route_domain, mask=self.mask)
+            result = Destination(ip=addr, port=self.port, route_domain=self.route_domain, mask=self.mask, not_ip=False)
+            return result
+        else:
+            matches = re.search(pattern, addr)
+            if matches:
+                result = Destination(ip=addr, port=self.port, route_domain=self.route_domain,
+                                     mask=self.mask, not_ip=True)
+                return result
+        result = Destination(ip=addr, port=self.port, route_domain=self.route_domain, mask=self.mask, not_ip=False)
         return result
 
     @property
@@ -2582,17 +2591,20 @@ class VirtualServerValidator(object):
         associated with a source IPv4 address.
 
         This method checks that you specified the same IP version for these
-        parameters
+        parameters.
+
+        This method will not do this check if the virtual address name is used.
 
         Raises:
             F5ModuleError: Raised when the IP versions of source and destination differ.
         """
-        if self.want.source and self.want.destination:
+        if self.want.source and self.want.destination and not self.want.destination_tuple.not_ip:
             want = ip_interface(u'{0}/{1}'.format(self.want.source_tuple.ip, self.want.source_tuple.cidr))
             have = ip_interface(u'{0}'.format(self.want.destination_tuple.ip))
             if want.version != have.version:
                 raise F5ModuleError(
-                    "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
+                    "The source and destination addresses for the virtual server "
+                    "must be be the same type (IPv4 or IPv6)."
                 )
 
     def _verify_type_has_correct_ip_protocol(self):
