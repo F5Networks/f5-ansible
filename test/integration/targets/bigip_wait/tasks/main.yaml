@@ -47,3 +47,6 @@
 
 - import_tasks: issue-01437.yaml
   tags: issue-01437
+
+- import_tasks: issue_vcmp_wait.yaml
+  tags: issue_vcmp_wait
