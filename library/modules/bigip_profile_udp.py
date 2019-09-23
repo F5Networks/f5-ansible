@@ -43,9 +43,9 @@ options:
         C(parent) profile.
       - When a number is specified, indicates the number of seconds that the UDP
         connection can remain idle before the system deletes it.
-      - When C(0), or C(indefinite), specifies that UDP connections can remain idle
+      - When C(indefinite), specifies that UDP connections can remain idle
         indefinitely.
-      - When C(immediate), specifies that you do not want the UDP connection to
+      - When C(0) or C(immediate), specifies that you do not want the UDP connection to
         remain idle, and that it is therefore immediately eligible for deletion.
     type: str
   datagram_load_balancing:
@@ -104,7 +104,7 @@ datagram_load_balancing:
   type: bool
   sample: True
 '''
-
+import q
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
@@ -153,8 +153,10 @@ class Parameters(AnsibleF5Parameters):
     def idle_timeout(self):
         if self._values['idle_timeout'] is None:
             return None
-        if self._values['idle_timeout'] in ['indefinite', 'immediate']:
+        if self._values['idle_timeout'] is 'indefinite':
             return self._values['idle_timeout']
+        if self._values['idle_timeout'] in ['0', 'immediate']:
+            return 'immediate'
         return int(self._values['idle_timeout'])
 
 
@@ -251,6 +253,8 @@ class ModuleManager(object):
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
+        q.q(self.want.idle_timeout)
+        q.q(self.have.idle_timeout)
         for k in updatables:
             change = diff.compare(k)
             if change is None:
@@ -260,6 +264,7 @@ class ModuleManager(object):
                     changed.update(change)
                 else:
                     changed[k] = change
+        q.q(changed)
         if changed:
             self.changes = UsableChanges(params=changed)
             return True
