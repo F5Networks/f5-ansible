@@ -1,0 +1,30 @@
+---
+
+- name: Issue 01476 - Create UDP profile with timeout 0
+  bigip_profile_udp:
+    name: test-0-timeout-01476
+    parent: /Common/udp
+    idle_timeout: '0'
+
+- name: Issue 01476 - Assert Create UDP profile with timeout 0
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01476 - Create UDP profile with timeout 0 - Idempotent check
+  bigip_profile_udp:
+    name: test-0-timeout-01476
+    parent: /Common/udp
+    idle_timeout: '0'
+
+- name: Issue 01476 - Assert Create UDP profile with timeout 0 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete profile
+  bigip_profile_udp:
+    name: test-0-timeout-01476
+    state: absent
