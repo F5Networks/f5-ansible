@@ -23,6 +23,18 @@ description:
     of rebooting due to a configuration change.
 version_added: 2.5
 options:
+  type:
+    description:
+      - The type of the BIG-IP.
+      - Defaults to C(standard), the other choice is C(vcmp).
+      - The choice made defines what module or service Ansible will look for to establish
+        that the device has recovered, so please ensure the correct choice is
+        specified, specially when running this against VCMP.
+    type: str
+    default: standard
+    choices:
+      - standard
+      - vcmp
   timeout:
     description:
       - Maximum number of seconds to wait for.
@@ -210,8 +222,11 @@ class ModuleManager(object):
                     # of the waiting.
                     continue
 
-                if self._is_mprov_running_on_device():
-                    self._wait_for_module_provisioning()
+                if self.want.type == "standard":
+                    if self._is_mprov_running_on_device():
+                        self._wait_for_module_provisioning()
+                elif self.want.type == "vcmp":
+                    self._is_vcmpd_running_on_device()
                 break
             except Exception as ex:
                 if 'Failed to validate the SSL' in str(ex):
@@ -319,11 +334,39 @@ class ModuleManager(object):
             return True
         return False
 
+    def _is_vcmpd_running_on_device(self):
+        params = {
+            "command": "run",
+            "utilCmdArgs": '-c "ps aux | grep \'[v]cmpd\'"'
+        }
+        uri = "https://{0}:{1}/mgmt/tm/util/bash".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] in [400, 403]:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        if 'commandResult' in response:
+            return True
+        return False
+
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
+            type=dict(
+                choices=['standard', 'vcmp'],
+                default='standard'
+            ),
             timeout=dict(default=7200, type='int'),
             delay=dict(default=0, type='int'),
             sleep=dict(default=1, type='int'),
