@@ -104,7 +104,7 @@ datagram_load_balancing:
   type: bool
   sample: True
 '''
-import q
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
@@ -253,8 +253,6 @@ class ModuleManager(object):
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
-        q.q(self.want.idle_timeout)
-        q.q(self.have.idle_timeout)
         for k in updatables:
             change = diff.compare(k)
             if change is None:
@@ -264,7 +262,6 @@ class ModuleManager(object):
                     changed.update(change)
                 else:
                     changed[k] = change
-        q.q(changed)
         if changed:
             self.changes = UsableChanges(params=changed)
             return True
