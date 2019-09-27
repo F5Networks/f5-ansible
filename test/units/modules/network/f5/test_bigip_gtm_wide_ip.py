@@ -33,12 +33,12 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import ApiParameters
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import ModuleParameters
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import ModuleManager
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import ArgumentSpec
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import UntypedManager
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import TypedManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import UntypedManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import TypedManager
 
     from ansible.module_utils.network.f5.common import F5ModuleError
 
@@ -132,7 +132,7 @@ class TestUntypedManager(unittest.TestCase):
             self.m1 = self.p1.start()
             self.m1.return_value = True
         except Exception:
-            self.p1 = patch('ansible.modules.network.f5.bigip_gtm_wide_ip.module_provisioned')
+            self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip.module_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = True
 
@@ -183,7 +183,7 @@ class TestTypedManager(unittest.TestCase):
             self.m1 = self.p1.start()
             self.m1.return_value = True
         except Exception:
-            self.p1 = patch('ansible.modules.network.f5.bigip_gtm_wide_ip.module_provisioned')
+            self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip.module_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = True
 

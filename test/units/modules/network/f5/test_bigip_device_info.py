@@ -30,10 +30,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_device_info import Parameters
-    from ansible.modules.network.f5.bigip_device_info import VirtualAddressesFactManager
-    from ansible.modules.network.f5.bigip_device_info import ArgumentSpec
-    from ansible.modules.network.f5.bigip_device_info import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info import Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info import VirtualAddressesFactManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info import ModuleManager
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -91,7 +91,7 @@ class TestManager(unittest.TestCase):
             self.m1 = self.p1.start()
             self.m1.return_value = ['ltm', 'gtm', 'asm']
         except Exception:
-            self.p1 = patch('ansible.modules.network.f5.bigip_device_info.modules_provisioned')
+            self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info.modules_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = ['ltm', 'gtm', 'asm']
 

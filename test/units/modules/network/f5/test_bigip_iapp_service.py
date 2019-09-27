@@ -29,11 +29,11 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_iapp_service import Parameters
-    from ansible.modules.network.f5.bigip_iapp_service import ApiParameters
-    from ansible.modules.network.f5.bigip_iapp_service import ModuleParameters
-    from ansible.modules.network.f5.bigip_iapp_service import ModuleManager
-    from ansible.modules.network.f5.bigip_iapp_service import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_iapp_service import Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_iapp_service import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_iapp_service import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_iapp_service import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_iapp_service import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest

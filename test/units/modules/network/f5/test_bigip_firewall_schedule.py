@@ -28,10 +28,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_firewall_schedule import ApiParameters
-    from ansible.modules.network.f5.bigip_firewall_schedule import ModuleParameters
-    from ansible.modules.network.f5.bigip_firewall_schedule import ModuleManager
-    from ansible.modules.network.f5.bigip_firewall_schedule import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_schedule import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_schedule import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_schedule import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_schedule import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest

@@ -899,25 +899,25 @@ try:
     from library.module_utils.network.f5.ipaddress import compress_address
     from library.module_utils.network.f5.icontrol import modules_provisioned
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import MANAGED_BY_ANNOTATION_VERSION
-    from ansible.module_utils.network.f5.common import MANAGED_BY_ANNOTATION_MODIFIED
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import mark_managed_by
-    from ansible.module_utils.network.f5.common import only_has_managed_metadata
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.compare import cmp_simple_list
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip_interface
-    from ansible.module_utils.network.f5.ipaddress import ip_interface
-    from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
-    from ansible.module_utils.network.f5.ipaddress import get_netmask
-    from ansible.module_utils.network.f5.ipaddress import compress_address
-    from ansible.module_utils.network.f5.icontrol import modules_provisioned
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import MANAGED_BY_ANNOTATION_VERSION
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import MANAGED_BY_ANNOTATION_MODIFIED
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import mark_managed_by
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import only_has_managed_metadata
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_simple_list
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip_interface
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import ip_interface
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import validate_ip_v6_address
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import get_netmask
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import compress_address
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import modules_provisioned
 
 
 class Parameters(AnsibleF5Parameters):

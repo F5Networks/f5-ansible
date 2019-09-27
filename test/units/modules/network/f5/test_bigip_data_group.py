@@ -31,11 +31,11 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_data_group import ModuleParameters
-    from ansible.modules.network.f5.bigip_data_group import ModuleManager
-    from ansible.modules.network.f5.bigip_data_group import ExternalManager
-    from ansible.modules.network.f5.bigip_data_group import InternalManager
-    from ansible.modules.network.f5.bigip_data_group import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import ExternalManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import InternalManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import ArgumentSpec
 
     from ansible.module_utils.network.f5.common import F5ModuleError
 
