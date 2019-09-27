@@ -60,6 +60,7 @@ options:
       - gtm-naptr-wide-ips
       - gtm-srv-pools
       - gtm-srv-wide-ips
+      - gtm-topology-regions
       - http-monitors
       - https-monitors
       - http-profiles
@@ -124,6 +125,7 @@ options:
       - "!gtm-naptr-wide-ips"
       - "!gtm-srv-pools"
       - "!gtm-srv-wide-ips"
+      - "!gtm-topology-regions"
       - "!http-monitors"
       - "!https-monitors"
       - "!http-profiles"
