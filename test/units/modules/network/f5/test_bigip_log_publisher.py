@@ -28,10 +28,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_log_publisher import ApiParameters
-    from ansible.modules.network.f5.bigip_log_publisher import ModuleParameters
-    from ansible.modules.network.f5.bigip_log_publisher import ModuleManager
-    from ansible.modules.network.f5.bigip_log_publisher import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_log_publisher import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_log_publisher import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_log_publisher import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_log_publisher import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest

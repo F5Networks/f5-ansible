@@ -32,12 +32,12 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_snmp_trap import V2Parameters
-    from ansible.modules.network.f5.bigip_snmp_trap import V1Parameters
-    from ansible.modules.network.f5.bigip_snmp_trap import ModuleManager
-    from ansible.modules.network.f5.bigip_snmp_trap import V2Manager
-    from ansible.modules.network.f5.bigip_snmp_trap import V1Manager
-    from ansible.modules.network.f5.bigip_snmp_trap import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_snmp_trap import V2Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_snmp_trap import V1Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_snmp_trap import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_snmp_trap import V2Manager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_snmp_trap import V1Manager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_snmp_trap import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest

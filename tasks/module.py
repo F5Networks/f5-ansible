@@ -80,12 +80,12 @@ HELP1 = dict(
 
 @task(iterable=['module'], optional=['collection'], help=HELP1)
 def upstream(c, module, collection='f5_modules'):
-    """Copy specified module and its dependencies to the local/ansible_collections/F5Networks/collection_name directory.
+    """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
     """
 
     root_dest = '{0}/local/ansible_collections/'.format(BASE_DIR)
-    coll_namespace = '{0}/local/ansible_collections/F5Networks/'.format(BASE_DIR)
-    coll_dest = '{0}/local/ansible_collections/F5Networks/{1}'.format(BASE_DIR, collection)
+    coll_namespace = '{0}/local/ansible_collections/f5networks/'.format(BASE_DIR)
+    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
 
     if not os.path.exists(root_dest):
         print("The specified upstream directory does not exist.")
@@ -115,7 +115,7 @@ def upstream(c, module, collection='f5_modules'):
             # - upstream unit test file
             cmd = [
                 'cp', '{0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module),
-                '{0}/local/ansible_collections/F5Networks/{1}/test/units/modules/network/f5/test_{2}.py'.format(BASE_DIR, collection, module)
+                '{0}/local/ansible_collections/f5networks/{1}/test/units/modules/network/f5/test_{2}.py'.format(BASE_DIR, collection, module)
             ]
             c.run(' '.join(cmd))
 
@@ -124,7 +124,7 @@ def upstream(c, module, collection='f5_modules'):
         for fixture in fixtures:
             cmd = [
                 'cp', '{0}/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture),
-                '{0}/local/ansible_collections/F5Networks/{1}/test/units/modules/network/f5/fixtures/{2}'.format(BASE_DIR, collection, fixture)
+                '{0}/local/ansible_collections/f5networks/{1}/test/units/modules/network/f5/fixtures/{2}'.format(BASE_DIR, collection, fixture)
             ]
             c.run(' '.join(cmd))
 
@@ -132,7 +132,7 @@ def upstream(c, module, collection='f5_modules'):
             # - upstream module file
             cmd = [
                 'cp', '{0}/library/modules/{1}.py'.format(BASE_DIR, module),
-                '{0}/local/ansible_collections/F5Networks/{1}/plugins/modules/{2}.py'.format(BASE_DIR, collection, module)
+                '{0}/local/ansible_collections/f5networks/{1}/plugins/modules/{2}.py'.format(BASE_DIR, collection, module)
             ]
             c.run(' '.join(cmd))
 

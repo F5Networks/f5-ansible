@@ -36,7 +36,7 @@ def upstream(c, collection='f5_modules'):
     # - upstream doc fragments
     cmd = [
         'cp', '{0}/library/plugins/doc_fragments/*'.format(BASE_DIR),
-        '{0}/local/ansible_collections/F5Networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
+        '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
     ]
     c.run(' '.join(cmd))
     print("Copy complete")

@@ -83,7 +83,8 @@ options:
       - Configures the transport connection to use when connecting to the
         remote device. The transport argument supports connectivity to the
         device over cli (ssh) or rest.
-    required: true
+    required: True
+    type: str
     choices:
         - rest
         - cli
@@ -222,14 +223,14 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import is_cli
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import is_cli
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_cli
 
 try:
-    from ansible.module_utils.network.f5.common import run_commands
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import run_commands
     HAS_CLI_TRANSPORT = True
 except ImportError:
     HAS_CLI_TRANSPORT = False

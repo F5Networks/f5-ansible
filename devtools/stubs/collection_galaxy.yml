@@ -7,9 +7,9 @@ description: F5 Modules for Ansible
 documentation: https://clouddocs.f5.com/products/orchestration/ansible/devel/modules/list_of_network_modules.html
 homepage: https://clouddocs.f5.com/products/orchestration/ansible/devel/
 issues: https://github.com/F5Networks/f5-ansible/issues
-license: GPLv3
+license: GPL-3.0-only
 name: {{ collection }}
-namespace: F5Networks
+namespace: f5networks
 readme: README.md
 repository: https://github.com/ansible/ansible_collections_f5
 tags:

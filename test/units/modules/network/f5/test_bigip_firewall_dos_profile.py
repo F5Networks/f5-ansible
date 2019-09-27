@@ -27,9 +27,9 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_firewall_dos_profile import ModuleParameters
-    from ansible.modules.network.f5.bigip_firewall_dos_profile import ModuleManager
-    from ansible.modules.network.f5.bigip_firewall_dos_profile import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_dos_profile import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_dos_profile import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_dos_profile import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
