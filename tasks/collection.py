@@ -29,9 +29,9 @@ if HAS_JINJA:
 BUILD_DIR = '{0}/local/ansible_collections/_builds'.format(BASE_DIR)
 
 HELP = dict(
-    version="Version of the collection to build, the version must follow in SemVer format.",
-    collection="The collection name to which the modules are upstreamed, DEFAULT: 'f5_modules'.",
-    skip_tests="Allows bypassing ansible sanity tests when building collection.",
+    filename="Name of the tarball file to be pubished found in _builds directory.",
+    api_key="The api key from Ansible Galaxy to be used to upload",
+    qa="Indicates if the target Galaxy environment is a Galaxy test site."
 )
 
 

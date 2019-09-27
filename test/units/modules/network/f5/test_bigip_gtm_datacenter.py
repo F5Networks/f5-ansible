@@ -29,10 +29,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_gtm_datacenter import ApiParameters
-    from ansible.modules.network.f5.bigip_gtm_datacenter import ModuleParameters
-    from ansible.modules.network.f5.bigip_gtm_datacenter import ModuleManager
-    from ansible.modules.network.f5.bigip_gtm_datacenter import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_datacenter import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_datacenter import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_datacenter import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_datacenter import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -125,7 +125,7 @@ class TestManager(unittest.TestCase):
             self.m1 = self.p1.start()
             self.m1.return_value = True
         except Exception:
-            self.p1 = patch('ansible.modules.network.f5.bigip_gtm_datacenter.module_provisioned')
+            self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_datacenter.module_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = True
 

@@ -29,9 +29,9 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigiq_application_fastl4_tcp import ModuleParameters
-    from ansible.modules.network.f5.bigiq_application_fastl4_tcp import ModuleManager
-    from ansible.modules.network.f5.bigiq_application_fastl4_tcp import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigiq_application_fastl4_tcp import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigiq_application_fastl4_tcp import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigiq_application_fastl4_tcp import ArgumentSpec
     from ansible.module_utils.network.f5.common import F5ModuleError
 
     # Ansible 2.8 imports
@@ -130,9 +130,9 @@ class TestManager(unittest.TestCase):
             self.m3.return_value = Mock(return_value='https://localhost/mgmt/foobar3')
 
         except Exception:
-            self.p1 = patch('ansible.modules.network.f5.bigiq_application_fastl4_tcp.bigiq_version')
-            self.p2 = patch('ansible.modules.network.f5.bigiq_application_fastl4_tcp.ModuleParameters.template_reference')
-            self.p3 = patch('ansible.modules.network.f5.bigiq_application_fastl4_tcp.ModuleParameters.default_device_reference')
+            self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigiq_application_fastl4_tcp.bigiq_version')
+            self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigiq_application_fastl4_tcp.ModuleParameters.template_reference')
+            self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigiq_application_fastl4_tcp.ModuleParameters.default_device_reference')
 
             self.m1 = self.p1.start()
             self.m2 = self.p2.start()
