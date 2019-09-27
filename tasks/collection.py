@@ -88,7 +88,8 @@ def build(c, version, collection='f5_modules', skiptest=None):
 
 
 @task
-def test(c, collection):
+def test(c, collection='f5_modules'):
+    """Runs sanity tests on ansible collection."""
     ansible_test_collection(c, collection)
 
 
