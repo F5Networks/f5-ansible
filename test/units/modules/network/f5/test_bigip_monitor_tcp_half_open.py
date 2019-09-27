@@ -29,9 +29,9 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_monitor_tcp_half_open import Parameters
-    from ansible.modules.network.f5.bigip_monitor_tcp_half_open import ModuleManager
-    from ansible.modules.network.f5.bigip_monitor_tcp_half_open import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_tcp_half_open import Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_tcp_half_open import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_tcp_half_open import ArgumentSpec
 
     from ansible.module_utils.network.f5.common import F5ModuleError
 
