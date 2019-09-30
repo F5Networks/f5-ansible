@@ -36,9 +36,13 @@ import uuid
 
 from functools import partial
 from ansible.module_utils._text import to_bytes, to_text
-from ansible.parsing.ajson import AnsibleJSONEncoder
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.six.moves import cPickle
+
+try:
+    from ansible.module_utils.common.json import AnsibleJSONEncoder
+except ImportError:
+    from ansible.parsing.ajson import AnsibleJSONEncoder
 
 
 def write_to_file_descriptor(fd, obj):

@@ -76,6 +76,7 @@ options:
       - When C(address-port) the translation attempts to reuse both the address and port mapping  for subsequent
         packets sent from the same internal IP address and port.
       - When C(none) the peristence is disabled.
+    type: str
     choices:
       - address
       - address-port

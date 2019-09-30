@@ -26,7 +26,7 @@ def upstream(c, collection='f5_modules'):
     """
     root_dest = '{0}/local/ansible_collections/'.format(BASE_DIR)
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-    if not os.path.exists(root_dest) or os.path.exists(coll_dest):
+    if not os.path.exists(root_dest) or not os.path.exists(coll_dest):
         print("The specified upstream directory and/or collection directory does not exist.")
         sys.exit(1)
 
