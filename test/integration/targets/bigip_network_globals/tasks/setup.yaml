@@ -1,0 +1,4 @@
+- name: Collect BIG-IP info
+  bigip_device_info:
+    include: system-info
+  register: f
