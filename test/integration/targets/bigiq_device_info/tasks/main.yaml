@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Select system-info facts
-  bigiq_device_facts:
+  bigiq_device_info:
     gather_subset:
       - system-info
   register: result
@@ -15,7 +15,7 @@
       - result.system_info.product_code == 'BIG-IQ'
 
 - name: Select vlans facts
-  bigiq_device_facts:
+  bigiq_device_info:
     gather_subset:
       - vlans
   register: result
