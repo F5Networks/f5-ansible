@@ -1,17 +1,28 @@
 ---
 
-- name: Get a license key to re-use for tests
-  set_fact:
-    regkey_license_1: "{{ lookup('license_hopper', filename='/here/tmp/licenses/bigiq-regkey-licenses.txt') }}"
+# Group 'bigips' required
+# Unique simple alias name required - ie bigipv12, bigipv13, bigipv14, etc
+# variable 'hostname' required for each alias in group and needs to match the actual hostname of bigip
 
-- name: Create regkey pool
+- name: setup - Get license keys to re-use for tests
+  set_fact:
+    regkey_license_{{ item }}: "{{ lookup('license_hopper', filename='bigiq-regkey-licenses.txt', remove=True) }}"
+  with_items: "{{ groups['bigips'] }}"
+
+- name: setup - Create regkey pool
   bigiq_regkey_pool:
     name: foo-pool
 
-- name: Add a license to the license pool
+- name: setup - Add licenses to the license pool
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license:
     regkey_pool: foo-pool
-    license_key: "{{ regkey_license_1 }}"
+    license_key: "{{ vars[reg_key] }}"
     accept_eula: yes
-    description: my license
-  register: result
+    description: my license {{ item }}
+  with_items: "{{ groups['bigips'] }}"
+
+- name: setup - Wait for licensing to settle
+  pause:
+    minutes: 3

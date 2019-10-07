@@ -1,0 +1,36 @@
+- name: cleanup failed tasks for each bigip version being tested
+  bigiq_device_discovery:
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
+    state: absent
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: cleanup
+
+- name: assert module discover and imports are removed from bigiq host
+  with_items:
+    - "{{ cleanup.results }}"
+  assert:
+    that:
+      - item is success
+
+- name: deprovision bigips modules used for big-iq discovery
+  bigip_provision:
+    provider:
+      server: "{{ hostvars[item[0]].ansible_host }}"
+      password: "{{ bigip_password }}"
+      user: "{{ bigip_username }}"
+    module: "{{ item[1] }}"
+    state: absent
+  with_nested:
+    - "{{ groups['bigips'] }}"
+    - [ asm, afm, gtm, apm ]
+  register: cleanup
+
+- name: assert deprovision
+  with_items:
+    - "{{ cleanup.results }}"
+  assert:
+    that:
+      - item is success
