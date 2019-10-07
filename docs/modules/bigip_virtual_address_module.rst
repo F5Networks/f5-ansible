@@ -29,7 +29,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -372,22 +372,6 @@ Parameters
                                                                         <div>The traffic group for the virtual address. When creating a new address, if this value is not specified, the default of <code>/Common/traffic-group-1</code> will be used.</div>
                                                                                 </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>use_route_advertisement</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                <li>no</li>
-                                                                                                                                                                                                <li>yes</li>
-                                                                                    </ul>
-                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies whether the system uses route advertisement for this virtual address.</div>
-                                                    <div>When disabled, the system does not advertise routes for this virtual address.</div>
-                                                    <div>Deprecated. Use the <code>route_advertisement</code> parameter instead.</div>
-                                                                                </td>
-            </tr>
                         </table>
     <br/>
 
@@ -422,7 +406,7 @@ Examples
       bigip_virtual_address:
         state: present
         address: 10.10.10.10
-        use_route_advertisement: yes
+        route_advertisement: any
         provider:
           server: lb.mydomain.net
           user: admin
@@ -481,6 +465,19 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">enabled</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>availability_calculation</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies what routes of the virtual address the system advertises.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">always</div>
                                     </td>
             </tr>
                                 <tr>
@@ -546,19 +543,6 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">disabled</div>
-                                    </td>
-            </tr>
-                                <tr>
-                                <td colspan="1">
-                    <b>use_route_advertisement</b>
-                    <br/><div style="font-size: small; color: red">bool</div>
-                </td>
-                <td>changed</td>
-                <td>
-                                            <div>The new setting for whether to use route advertising or not.</div>
-                                        <br/>
-                                            <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                         </table>

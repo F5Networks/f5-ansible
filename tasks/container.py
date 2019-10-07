@@ -19,7 +19,7 @@ from .lib.common import AVAILABLE_PYTHON
 
 @task
 def prune(c):
-    """Remove all containers, images and volumes to reclaim space
+    """Remove all containers, images and volumes to reclaim space.
     """
     print("Reclaiming container space")
     c.run("docker container prune -f")
@@ -36,14 +36,14 @@ def prune(c):
 
 @task
 def df(c):
-    """View the amount of space that images, containers, etc consume on the host machine
+    """View the amount of space that images, containers, etc consume on the host machine.
     """
     c.run("docker system df")
 
 
 @task
 def container_update(c):
-    """Pull containers from registry and update locally
+    """Pull containers from registry and update locally.
 
     This command will pull containers from the remote registry using the docker-compose
     files that exist 1. In this repository and 2. In your home directory (for site specific
@@ -62,7 +62,7 @@ def container_update(c):
 
 @task(help={'python': "Python version to use in container."})
 def run(c, python='3.6'):
-    """Start a container running a specific version of Python
+    """Start a container running a specific version of Python.
 
     Args:
         c:

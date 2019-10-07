@@ -18,10 +18,8 @@ from ansible.module_utils.basic import AnsibleModule
 
 try:
     from library.modules.bigip_asm_policy_manage import V1Parameters
-    from library.modules.bigip_asm_policy_manage import V2Parameters
     from library.modules.bigip_asm_policy_manage import ModuleManager
     from library.modules.bigip_asm_policy_manage import V1Manager
-    from library.modules.bigip_asm_policy_manage import V2Manager
     from library.modules.bigip_asm_policy_manage import ArgumentSpec
 
     from library.module_utils.network.f5.common import F5ModuleError
@@ -33,12 +31,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_asm_policy_manage import V1Parameters
-    from ansible.modules.network.f5.bigip_asm_policy_manage import V2Parameters
-    from ansible.modules.network.f5.bigip_asm_policy_manage import ModuleManager
-    from ansible.modules.network.f5.bigip_asm_policy_manage import V1Manager
-    from ansible.modules.network.f5.bigip_asm_policy_manage import V2Manager
-    from ansible.modules.network.f5.bigip_asm_policy_manage import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import V1Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import V1Manager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import ArgumentSpec
 
     from ansible.module_utils.network.f5.common import F5ModuleError
 
@@ -98,7 +94,7 @@ class TestManager(unittest.TestCase):
             self.m1 = self.p1.start()
             self.m1.return_value = True
         except Exception:
-            self.p1 = patch('ansible.modules.network.f5.bigip_asm_policy_manage.module_provisioned')
+            self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage.module_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = True
 

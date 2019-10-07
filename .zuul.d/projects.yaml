@@ -1,8 +1,0 @@
----
-
-- project:
-    name: F5Networks/f5-ansible
-    default-branch: devel
-    periodic:
-      jobs:
-        - plain-run

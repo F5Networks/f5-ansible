@@ -830,19 +830,15 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
-    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import flatten_boolean
-    from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.common import transform_name
 except ImportError:
-    from ansible.module_utils.network.f5.bigiq import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigiq import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
 
 
 def parseStats(entry):
@@ -2304,7 +2300,14 @@ def main():
     try:
         mm = ModuleManager(module=module)
         results = mm.exec_module()
-        module.exit_json(**results)
+
+        ansible_facts = dict()
+
+        for key, value in iteritems(results):
+            key = 'ansible_net_%s' % key
+            ansible_facts[key] = value
+
+        module.exit_json(ansible_facts=ansible_facts, **results)
     except F5ModuleError as ex:
         module.fail_json(msg=str(ex))
 

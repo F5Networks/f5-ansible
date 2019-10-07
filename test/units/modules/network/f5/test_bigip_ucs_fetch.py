@@ -20,7 +20,6 @@ try:
     from library.modules.bigip_ucs_fetch import Parameters
     from library.modules.bigip_ucs_fetch import ModuleManager
     from library.modules.bigip_ucs_fetch import V1Manager
-    from library.modules.bigip_ucs_fetch import V2Manager
     from library.modules.bigip_ucs_fetch import ArgumentSpec
 
     # In Ansible 2.8, Ansible changed import paths.
@@ -30,11 +29,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_ucs_fetch import Parameters
-    from ansible.modules.network.f5.bigip_ucs_fetch import ModuleManager
-    from ansible.modules.network.f5.bigip_ucs_fetch import V1Manager
-    from ansible.modules.network.f5.bigip_ucs_fetch import V2Manager
-    from ansible.modules.network.f5.bigip_ucs_fetch import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs_fetch import Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs_fetch import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs_fetch import V1Manager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs_fetch import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest

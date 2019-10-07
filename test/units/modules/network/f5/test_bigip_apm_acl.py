@@ -29,10 +29,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_apm_acl import ApiParameters
-    from ansible.modules.network.f5.bigip_apm_acl import ModuleParameters
-    from ansible.modules.network.f5.bigip_apm_acl import ModuleManager
-    from ansible.modules.network.f5.bigip_apm_acl import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_apm_acl import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_apm_acl import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_apm_acl import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_apm_acl import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -130,6 +130,17 @@ class TestParameters(unittest.TestCase):
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
+        try:
+            self.p1 = patch('library.modules.bigip_apm_acl.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+        except Exception:
+            self.p1 = patch('ansible.modules.network.f5.bigip_apm_acl.module_provisioned')
+            self.m1 = self.p1.start()
+            self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
 
     def test_create_L4_L7_ACL(self, *args):
         set_module_args(dict(

@@ -1,0 +1,37 @@
+---
+
+- name: Issue 01422 - Include issue variables
+  include_vars:
+    file: issue-01422.yaml
+
+- name: Issue 01422 - Create a client SSL profile with options
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    ciphers: "{{ ciphers }}"
+    options: "{{ opt_1 }}"
+  register: result
+
+- name: Issue 01422 - Assert Create a client SSL profile with options
+  assert:
+    that:
+      - result is changed
+      - result.options == opt_1
+
+- name: Issue 01422 - Create a client SSL profile with options  - Idempotent check
+  bigip_profile_client_ssl:
+    name: "{{ profile }}"
+    ciphers: "{{ ciphers }}"
+    options: "{{ opt_1 }}"
+  register: result
+
+- name: Issue 01422 - Assert Create a client SSL profile with options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01422 - Remove profiles
+  bigip_profile_client_ssl:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ profile }}"

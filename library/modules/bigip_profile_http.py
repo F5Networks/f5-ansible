@@ -613,15 +613,15 @@ try:
     from library.module_utils.network.f5.compare import cmp_simple_list
     from library.module_utils.network.f5.urls import check_header_validity
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.compare import cmp_simple_list
-    from ansible.module_utils.network.f5.urls import check_header_validity
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_simple_list
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.urls import check_header_validity
 
 
 class Parameters(AnsibleF5Parameters):
@@ -888,7 +888,9 @@ class ModuleParameters(Parameters):
         if self._values['proxy_type'] == 'explicit':
             if self.dns_resolver is None or self.dns_resolver == '':
                 raise F5ModuleError(
-                    'A proxy type cannot be set to {0} without providing DNS resolver.'.format(self._values['proxy_type'])
+                    'A proxy type cannot be set to {0} without providing DNS resolver.'.format(
+                        self._values['proxy_type']
+                    )
                 )
         return self._values['proxy_type']
 
@@ -1394,7 +1396,9 @@ class Difference(object):
                 return None
             elif self.have.proxy_type == 'explicit' and self.want.proxy_type is None:
                 raise F5ModuleError(
-                    "DNS resolver cannot be empty or 'none' if an existing profile proxy type is set to {0}.".format(self.have.proxy_type)
+                    "DNS resolver cannot be empty or 'none' if an existing profile proxy type is set to {0}.".format(
+                        self.have.proxy_type
+                    )
                 )
             elif self.have.dns_resolver is not None:
                 return self.want.dns_resolver

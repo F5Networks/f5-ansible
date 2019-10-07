@@ -32,11 +32,11 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_irule import Parameters
-    from ansible.modules.network.f5.bigip_irule import ModuleManager
-    from ansible.modules.network.f5.bigip_irule import ArgumentSpec
-    from ansible.modules.network.f5.bigip_irule import GtmManager
-    from ansible.modules.network.f5.bigip_irule import LtmManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_irule import Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_irule import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_irule import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_irule import GtmManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_irule import LtmManager
 
     # Ansible 2.8 imports
     from units.compat import unittest

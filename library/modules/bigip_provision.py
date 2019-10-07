@@ -155,12 +155,12 @@ try:
     from library.module_utils.network.f5.icontrol import TransactionContextManager
     from library.module_utils.network.f5.icontrol import tmos_version
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.icontrol import TransactionContextManager
-    from ansible.module_utils.network.f5.icontrol import tmos_version
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import TransactionContextManager
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
 
 
 class Parameters(AnsibleF5Parameters):
@@ -504,7 +504,7 @@ class ModuleManager(object):
                     nops = 0
                 else:
                     nops += 1
-            except Exception as ex:
+            except Exception:
                 # This can be caused by restjavad restarting.
                 pass
             time.sleep(10)
@@ -852,7 +852,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 if not restarted_asm:
                     self._restart_asm()
                     restarted_asm = True
@@ -890,7 +890,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 pass
             time.sleep(5)
 
@@ -926,7 +926,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 pass
             time.sleep(5)
 
@@ -962,7 +962,7 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception as ex:
+            except Exception:
                 pass
             time.sleep(5)
 
@@ -1041,7 +1041,7 @@ class ModuleManager(object):
                     nops = 0
                 else:
                     nops += 1
-            except Exception as ex:
+            except Exception:
                 # This can be caused by restjavad restarting.
                 pass
             time.sleep(10)
