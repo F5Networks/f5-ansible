@@ -65,6 +65,7 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
+            type='standard',
             delay=3,
             timeout=500,
             sleep=10,
@@ -79,6 +80,7 @@ class TestParameters(unittest.TestCase):
 
     def test_module_string_parameters(self):
         args = dict(
+            type='standard',
             delay='3',
             timeout='500',
             sleep='10',
