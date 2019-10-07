@@ -12,7 +12,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV64network virtual server, compressed mask specified - Provider
+- name: Issue 00650 - Assert Create IPV64network virtual server, compressed mask specified - Provider
   assert:
     that:
       - result is changed
@@ -30,7 +30,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV4 network virtual server, compressed mask specified - Provider - Idempotent check
+- name: Issue 00650 - Assert Create IPV4 network virtual server, compressed mask specified - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -44,7 +44,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider
+- name: Issue 00650 - Assert Change IPV4 network virtual server, destination in CIDR format - Provider
   assert:
     that:
       - result is changed
@@ -58,7 +58,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider - Idempotent check
+- name: Issue 00650 - Assert Change IPV4 network virtual server, destination in CIDR format - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -72,7 +72,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV4 network VS, mask missing, destination not in CIDR - Provider
+- name: Issue 00650 - Assert Change IPV4 network VS, mask missing, destination not in CIDR - Provider
   assert:
     that:
       - result is changed
@@ -86,7 +86,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV4 network virtual server, destination in CIDR format - Provider - Idempotent check
+- name: Issue 00650 - Assert Change IPV4 network virtual server, destination in CIDR format - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -111,7 +111,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV4 catch all network virtual server, mask specified - Provider
+- name: Issue 00650 - Assert Create IPV4 catch all network virtual server, mask specified - Provider
   assert:
     that:
       - result is changed
@@ -129,7 +129,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV4 catch all network virtual server, mask specified - Provider - Idempotent check
+- name: Issue 00650 - Assert Create IPV4 catch all network virtual server, mask specified - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -148,7 +148,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV4 catch all network virtual server, mask missing - Provider
+- name: Issue 00650 - Assert Change IPV4 catch all network virtual server, mask missing - Provider
   assert:
     that:
       - result is not changed
@@ -173,7 +173,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV4 catch all network virtual server any specified - Provider
+- name: Issue 00650 - Assert Create IPV4 catch all network virtual server any specified - Provider
   assert:
     that:
       - result is changed
@@ -191,7 +191,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV4 catch all network virtual server any specified - Provider - Idempotent check
+- name: Issue 00650 - Assert Create IPV4 catch all network virtual server any specified - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -216,7 +216,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV6 network virtual server, compressed mask specified - Provider
+- name: Issue 00650 - Assert Create IPV6 network virtual server, compressed mask specified - Provider
   assert:
     that:
       - result is changed
@@ -234,7 +234,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV6 network virtual server, compressed mask specified - Provider - Idempotent check
+- name: Issue 00650 - Assert Create IPV6 network virtual server, compressed mask specified - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -248,7 +248,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider
+- name: Issue 00650 - Assert Change IPV6 network virtual server, destination in CIDR format - Provider
   assert:
     that:
       - result is changed
@@ -262,7 +262,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider - Idempotent check
+- name: Issue 00650 - Assert Change IPV6 network virtual server, destination in CIDR format - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -276,7 +276,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV6 network VS, mask missing, destination not in CIDR - Provider
+- name: Issue 00650 - Assert Change IPV6 network VS, mask missing, destination not in CIDR - Provider
   assert:
     that:
       - result is changed
@@ -290,7 +290,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV6 network virtual server, destination in CIDR format - Provider - Idempotent check
+- name: Issue 00650 - Assert Change IPV6 network virtual server, destination in CIDR format - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -315,7 +315,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV6 catch all network virtual server, mask specified - Provider
+- name: Issue 00650 - Assert Create IPV6 catch all network virtual server, mask specified - Provider
   assert:
     that:
       - result is changed
@@ -333,7 +333,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV6 catch all network virtual server, mask specified - Provider - Idempotent check
+- name: Issue 00650 - Assert Create IPV6 catch all network virtual server, mask specified - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -352,7 +352,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Change IPV6 catch all network virtual server, mask missing - Provider
+- name: Issue 00650 - Assert Change IPV6 catch all network virtual server, mask missing - Provider
   assert:
     that:
       - result is not changed
@@ -376,7 +376,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV6 catch all network virtual server any specified - Provider
+- name: Issue 00650 - Assert Create IPV6 catch all network virtual server any specified - Provider
   assert:
     that:
       - result is changed
@@ -393,7 +393,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV6 catch all network virtual server any specified - Provider - Idempotent check
+- name: Issue 00650 - Assert Create IPV6 catch all network virtual server any specified - Provider - Idempotent check
   assert:
     that:
       - result is not changed
@@ -418,7 +418,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV6 network virtual server, uncompressed mask specified - Provider
+- name: Issue 00650 - Assert Create IPV6 network virtual server, uncompressed mask specified - Provider
   assert:
     that:
       - result is changed
@@ -436,7 +436,7 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 00650 - Create IPV6 network virtual server, uncompressed mask specified - Provider - Idempotent check
+- name: Issue 00650 - Assert Create IPV6 network virtual server, uncompressed mask specified - Provider - Idempotent check
   assert:
     that:
       - result is not changed

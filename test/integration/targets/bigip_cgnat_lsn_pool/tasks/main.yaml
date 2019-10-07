@@ -1,0 +1,252 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create an lsn pool
+  bigip_cgnat_lsn_pool:
+    name: "{{ name1 }}"
+    mode: deterministic
+    client_conn_limit: 100
+    log_profile: "{{ log_prof }}"
+    log_publisher: "{{ log_pub }}"
+    members: "{{ members1 }}"
+    backup_members: "{{ backup1 }}"
+    port_range_low: "{{ low1 }}"
+    port_range_high: "{{ high1 }}"
+  register: result
+
+- name: Assert Create an lsn pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create an lsn pool - Idempotent check
+  bigip_cgnat_lsn_pool:
+    name: "{{ name1 }}"
+    mode: deterministic
+    client_conn_limit: 100
+    log_profile: "{{ log_prof }}"
+    log_publisher: "{{ log_pub }}"
+    members: "{{ members1 }}"
+    backup_members: "{{ backup1 }}"
+    port_range_low: "{{ low1 }}"
+    port_range_high: "{{ high1 }}"
+  register: result
+
+- name: Assert Create an lsn pool - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update lsn pool
+  bigip_cgnat_lsn_pool:
+    name: "{{ name1 }}"
+    icmp_echo: yes
+    egress_intf_enabled: yes
+    egress_interfaces: "{{ egress }}"
+    members: "{{ members2 }}"
+    backup_members: "{{ backup2 }}"
+    port_range_low: "{{ low2 }}"
+    port_range_high: "{{ high2 }}"
+    route_advertisement: yes
+    persistence_mode: address
+    persistence_timeout: 300
+  register: result
+
+- name: Assert Update lsn pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update lsn pool - Idempotent check
+  bigip_cgnat_lsn_pool:
+    name: "{{ name1 }}"
+    icmp_echo: yes
+    egress_intf_enabled: yes
+    egress_interfaces: "{{ egress }}"
+    members: "{{ members2 }}"
+    backup_members: "{{ backup2 }}"
+    port_range_low: "{{ low2 }}"
+    port_range_high: "{{ high2 }}"
+    route_advertisement: yes
+    persistence_mode: address
+    persistence_timeout: 300
+  register: result
+
+- name: Assert Update lsn pool - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update lsn pool, remove members and egress interfaces
+  bigip_cgnat_lsn_pool:
+    name: "{{ name1 }}"
+    egress_interfaces: ''
+    members: ''
+    backup_members: ''
+  register: result
+
+- name: Assert Update lsn pool, remove members and egress interfaces
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update lsn pool, remove members and egress interfaces - Idempotent check
+  bigip_cgnat_lsn_pool:
+    name: "{{ name1 }}"
+    egress_interfaces: ''
+    members: ''
+    backup_members: ''
+  register: result
+
+- name: Assert Update lsn pool, remove members and egress interfaces - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create a second lsn pool
+  bigip_cgnat_lsn_pool:
+    name: "{{ name2 }}"
+    mode: pba
+    description: "{{ desc1 }}"
+    client_conn_limit: 3600
+    log_profile: "{{ log_prof }}"
+    log_publisher: "{{ log_pub }}"
+    members: "{{ members1 }}"
+    port_range_low: "{{ low1 }}"
+    port_range_high: "{{ high1 }}"
+    pba_block_size: 24
+    pba_block_lifetime: 7200
+    pba_block_idle_timeout: 1800
+    pba_zombie_timeout: 900
+  register: result
+
+- name: Assert Create a second lsn pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a second lsn pool - Idempotent check
+  bigip_cgnat_lsn_pool:
+    name: "{{ name2 }}"
+    mode: pba
+    description: "{{ desc1 }}"
+    client_conn_limit: 3600
+    log_profile: "{{ log_prof }}"
+    log_publisher: "{{ log_pub }}"
+    members: "{{ members1 }}"
+    port_range_low: "{{ low1 }}"
+    port_range_high: "{{ high1 }}"
+    pba_block_size: 24
+    pba_block_lifetime: 7200
+    pba_block_idle_timeout: 1800
+    pba_zombie_timeout: 900
+  register: result
+
+- name: Assert Create a second lsn pool - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update a second lsn pool
+  bigip_cgnat_lsn_pool:
+    name: "{{ name2 }}"
+    description: "{{ desc2 }}"
+    client_conn_limit: 1800
+    members: "{{ members2 }}"
+    port_range_low: "{{ low1 }}"
+    port_range_high: "{{ high2 }}"
+    pba_block_size: 60
+    pba_block_lifetime: 3600
+    pba_block_idle_timeout: 900
+    pba_zombie_timeout: 450
+  register: result
+
+- name: Assert Update a second lsn pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update a second lsn pool - Idempotent check
+  bigip_cgnat_lsn_pool:
+    name: "{{ name2 }}"
+    description: "{{ desc2 }}"
+    client_conn_limit: 1800
+    members: "{{ members2 }}"
+    port_range_low: "{{ low1 }}"
+    port_range_high: "{{ high2 }}"
+    pba_block_size: 60
+    pba_block_lifetime: 3600
+    pba_block_idle_timeout: 900
+    pba_zombie_timeout: 450
+  register: result
+
+- name: Assert Update a second lsn pool - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update a second lsn pool remove description
+  bigip_cgnat_lsn_pool:
+    name: "{{ name2 }}"
+    description: ''
+  register: result
+
+- name: Assert Update a second lsn pool remove description
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update a second lsn pool remove description - Idempotent check
+  bigip_cgnat_lsn_pool:
+    name: "{{ name2 }}"
+    description: ''
+  register: result
+
+- name: Assert Update a second lsn pool remove description - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove lsn pool
+  bigip_cgnat_lsn_pool:
+    name: "{{ name2 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove lsn pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove lsn pool - Idempotent check
+  bigip_cgnat_lsn_pool:
+    name: "{{ name2 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove lsn pool - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove last lsn pool
+  bigip_cgnat_lsn_pool:
+    name: "{{ name1 }}"
+    state: absent
+
+- import_tasks: teardown.yaml

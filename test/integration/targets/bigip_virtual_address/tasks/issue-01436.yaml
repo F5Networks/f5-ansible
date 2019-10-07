@@ -1,0 +1,74 @@
+---
+
+- name: Issue 01436 - Create a partition
+  bigip_partition:
+    name: ABC
+
+- name: Issue 01436 - Create a route domain
+  bigip_routedomain:
+    name: rd_23
+    id: 23
+
+- name: Issue 01436 - Create a traffic group
+  bigip_device_traffic_group:
+    name: abc-mel
+
+- name: Issue 01436 - Add virtual address with server scope none
+  bigip_virtual_address:
+    name: /ABC/abc-rd23-172.16.10.100
+    address: 172.16.10.100
+    route_domain: 23
+    traffic_group: /Common/abc-mel
+    partition: ABC
+    route_advertisement: enabled
+    availability_calculation: always
+    auto_delete: no
+  register: result
+
+- name: Issue 01436 - Assert Add virtual address with server scope none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01436 - Add virtual address with server scope none - Idempotent check
+  bigip_virtual_address:
+    name: /ABC/abc-rd23-172.16.10.100
+    address: 172.16.10.100
+    route_domain: 23
+    traffic_group: /Common/abc-mel
+    partition: ABC
+    route_advertisement: enabled
+    availability_calculation: always
+    auto_delete: no
+  register: result
+
+- name: Issue 01436 - Assert Add virtual address with server scope none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01436 - Remove a virtual address
+  bigip_virtual_address:
+    name: abc-rd23-172.16.10.100
+    partition: ABC
+    state: absent
+
+- name: Issue 01436 - Remove a traffic group
+  bigip_device_traffic_group:
+    name: abc-mel
+    state: absent
+
+- name: Issue 01436 - Remove a partition
+  bigip_partition:
+    name: ABC
+    state: absent
+
+- name: Issue 01436 - Remove a route domain
+  bigip_routedomain:
+    name: rd_23
+    state: absent
+
+
+

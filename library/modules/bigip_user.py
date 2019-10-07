@@ -227,12 +227,12 @@ try:
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import upload_file
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.icontrol import tmos_version
-    from ansible.module_utils.network.f5.icontrol import upload_file
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import upload_file
 
 
 try:
@@ -258,7 +258,6 @@ try:
     from cryptography.hazmat.backends import default_backend
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.primitives.asymmetric import padding
-    from cryptography.hazmat.primitives import hashes
     HAS_CRYPTO = True
 except ImportError:
     HAS_CRYPTO = False
@@ -638,7 +637,7 @@ class UnpartitionedManager(BaseManager):
         uri = "https://{0}:{1}/mgmt/tm/auth/user/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            self.want.username_credential
         )
         resp = self.client.api.get(uri)
         try:
@@ -651,7 +650,7 @@ class UnpartitionedManager(BaseManager):
 
     def create_on_device(self):
         params = self.changes.api_params()
-        params['name'] = self.want.name
+        params['name'] = self.want.username_credential
         uri = "https://{0}:{1}/mgmt/tm/auth/user/".format(
             self.client.provider['server'],
             self.client.provider['server_port']
@@ -674,7 +673,7 @@ class UnpartitionedManager(BaseManager):
         uri = "https://{0}:{1}/mgmt/tm/auth/user/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            self.want.username_credential
         )
         resp = self.client.api.patch(uri, json=params)
         try:
@@ -692,7 +691,7 @@ class UnpartitionedManager(BaseManager):
         uri = "https://{0}:{1}/mgmt/tm/auth/user/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            self.want.username_credential
         )
         response = self.client.api.delete(uri)
         if response.status == 200:
@@ -703,7 +702,7 @@ class UnpartitionedManager(BaseManager):
         uri = "https://{0}:{1}/mgmt/tm/auth/user/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            self.want.username_credential
         )
         resp = self.client.api.get(uri)
         try:
@@ -723,7 +722,7 @@ class PartitionedManager(BaseManager):
     def exists(self):
         response = self.list_users_on_device()
         if 'items' in response:
-            collection = [x for x in response['items'] if x['name'] == self.want.name]
+            collection = [x for x in response['items'] if x['name'] == self.want.username_credential]
             if len(collection) == 1:
                 return True
             elif len(collection) == 0:
@@ -736,7 +735,7 @@ class PartitionedManager(BaseManager):
 
     def create_on_device(self):
         params = self.changes.api_params()
-        params['name'] = self.want.name
+        params['name'] = self.want.username_credential
         params['partition'] = self.want.partition
         uri = "https://{0}:{1}/mgmt/tm/auth/user/".format(
             self.client.provider['server'],
@@ -747,17 +746,16 @@ class PartitionedManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] in [400, 404, 409]:
+        if 'code' in response and response['code'] in [400, 404, 409, 403]:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-        return response['selfLink']
+        return True
 
     def read_current_from_device(self):
         response = self.list_users_on_device()
-        collection = [x for x in response['items'] if x['name'] == self.want.name]
+        collection = [x for x in response['items'] if x['name'] == self.want.username_credential]
         if len(collection) == 1:
             user = collection.pop()
             return ApiParameters(params=user)
@@ -775,7 +773,7 @@ class PartitionedManager(BaseManager):
         uri = "https://{0}:{1}/mgmt/tm/auth/user/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            self.want.username_credential
         )
         resp = self.client.api.patch(uri, json=params)
         try:
@@ -783,7 +781,7 @@ class PartitionedManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 404, 409]:
+        if 'code' in response and response['code'] in [400, 404, 409, 403]:
             if 'message' in response:
                 if 'updated successfully' not in response['message']:
                     raise F5ModuleError(response['message'])
@@ -794,7 +792,7 @@ class PartitionedManager(BaseManager):
         uri = "https://{0}:{1}/mgmt/tm/auth/user/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            self.want.username_credential
         )
         response = self.client.api.delete(uri)
         if response.status == 200:

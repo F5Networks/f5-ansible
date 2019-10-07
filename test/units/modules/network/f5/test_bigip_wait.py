@@ -28,9 +28,9 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_wait import Parameters
-    from ansible.modules.network.f5.bigip_wait import ModuleManager
-    from ansible.modules.network.f5.bigip_wait import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_wait import Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_wait import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_wait import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -65,6 +65,7 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
+            type='standard',
             delay=3,
             timeout=500,
             sleep=10,
@@ -79,6 +80,7 @@ class TestParameters(unittest.TestCase):
 
     def test_module_string_parameters(self):
         args = dict(
+            type='standard',
             delay='3',
             timeout='500',
             sleep='10',

@@ -17,7 +17,6 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_device_license import ApiParameters
     from library.modules.bigip_device_license import ModuleParameters
     from library.modules.bigip_device_license import ModuleManager
     from library.modules.bigip_device_license import ArgumentSpec
@@ -29,10 +28,9 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_device_license import ApiParameters
-    from ansible.modules.network.f5.bigip_device_license import ModuleParameters
-    from ansible.modules.network.f5.bigip_device_license import ModuleManager
-    from ansible.modules.network.f5.bigip_device_license import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_license import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_license import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_license import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest

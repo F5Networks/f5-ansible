@@ -268,13 +268,13 @@ try:
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.icontrol import bigiq_version
 except ImportError:
-    from ansible.module_utils.network.f5.bigiq import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.icontrol import bigiq_version
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigiq import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import bigiq_version
 
 
 class Parameters(AnsibleF5Parameters):
@@ -358,11 +358,10 @@ class ModuleParameters(Parameters):
             # Assume a hostname was specified
             filter = "hostname+eq+'{0}'".format(self.service_environment)
 
-        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-adccore-allbigipDevices/devices/?$filter={2}&$top=1&$select=selfLink".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            filter
-        )
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-adccore-allbigipDevices/devices/" \
+              "?$filter={2}&$top=1&$select=selfLink".format(self.client.provider['server'],
+                                                            self.client.provider['server_port'], filter
+                                                            )
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
@@ -801,17 +800,16 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        uri = "https://{0}:{1}/mgmt/ap/query/v1/tenants/default/reports/AllApplicationsList?$filter=name+eq+'{2}'".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            self.want.name
-        )
+        uri = "https://{0}:{1}/mgmt/ap/query/v1/tenants/default/reports/" \
+              "AllApplicationsList?$filter=name+eq+'{2}'".format(self.client.provider['server'],
+                                                                 self.client.provider['server_port'], self.want.name)
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if resp.status == 200 and 'result' in response and 'totalItems' in response['result'] and response['result']['totalItems'] == 0:
+        if (resp.status == 200 and 'result' in response and
+           'totalItems' in response['result'] and response['result']['totalItems'] == 0):
             return False
         return True
 

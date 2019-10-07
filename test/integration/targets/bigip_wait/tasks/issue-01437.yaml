@@ -1,0 +1,42 @@
+---
+
+- name: Wait for BIG-IP to be ready, expected failure
+  bigip_wait:
+    timeout: 10
+    delay: 10
+    sleep: 5
+  register: result
+  ignore_errors: true
+
+- name: assert failure
+  assert:
+    that:
+      - result is not changed
+      - "'greater than' in result.msg"
+
+- name: Wait for BIG-IP to be ready, expected failure
+  bigip_wait:
+    timeout: 15
+    delay: 10
+    sleep: 5
+  register: result
+  ignore_errors: true
+
+- name: assert failure
+  assert:
+    that:
+      - result is not changed
+      - "'greater than' in result.msg"
+
+- name: Wait for BIG-IP to be ready, expected pass
+  bigip_wait:
+    timeout: 25
+    delay: 10
+    sleep: 5
+  register: result
+  ignore_errors: true
+
+- name: assert pass
+  assert:
+    that:
+      - result is not changed

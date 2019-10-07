@@ -11,3 +11,7 @@
 
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01490.yaml
+  tags: issue-01490
+  when: f.system_info.product_version >= "13.0.0"

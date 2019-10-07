@@ -1,0 +1,153 @@
+---
+
+- name: Issue 01445 - Include issue variables
+  include_vars:
+    file: issue-01445.yaml
+
+- name: Issue 01445 - Create partition
+  bigip_partition:
+    name: "{{ issue_partition }}"
+    provider: "{{ provider }}"
+
+- name: Issue 01445 - Create RD
+  bigip_routedomain:
+    name: test-rd
+    id: 101
+    provider: "{{ provider }}"
+
+- name: Issue 01445 - Create Virtual with source RD
+  bigip_virtual_server:
+     name: issue_01445-vs
+     description: Route Domain Bug VS
+     profiles:
+       - http
+     partition: "{{ issue_partition }}"
+     source: 0.0.0.0%101/0
+     destination: 1.1.1.10%101
+     port: 80
+     provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01445 - Assert Create Virtual with source RD
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01445 - Create Virtual with source RD - Idempotent check
+  bigip_virtual_server:
+     name: issue_01445-vs
+     description: Route Domain Bug VS
+     profiles:
+       - http
+     partition: "{{ issue_partition }}"
+     source: 0.0.0.0%101/0
+     destination: 1.1.1.10%101
+     port: 80
+     provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01445 - Assert Create Virtual with source RD - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01445 - Create Second Virtual with source RD
+  bigip_virtual_server:
+     name: issue_01445-vs_2
+     description: Route Domain Bug VS
+     profiles:
+       - http
+     partition: "{{ issue_partition }}"
+     source: 192.168.1.1%101/32
+     destination: 1.1.1.10%101
+     port: 80
+     provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01445 - Assert Create Virtual
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01445 - Create Second Virtual with source RD - Idempotent check
+  bigip_virtual_server:
+     name: issue_01445-vs_2
+     description: Route Domain Bug VS
+     profiles:
+       - http
+     partition: "{{ issue_partition }}"
+     source: 192.168.1.1%101/32
+     destination: 1.1.1.10%101
+     port: 80
+     provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01445 - Assert Create Second Virtual with source RD  - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01445 - Create Third Virtual with source RD IPV6
+  bigip_virtual_server:
+     name: issue_01445-vs_3
+     description: Route Domain Bug VS
+     profiles:
+       - http
+     partition: "{{ issue_partition }}"
+     source: 2001:db8:a0b:12f0::1%101/128
+     destination: 2002:db8:a0b:12f0::1%101
+     port: 80
+     provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01445 - Assert Create Third Virtual with source RD IPV6
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01445 - Create Third Virtual with source RD IPV6 - Idempotent check
+  bigip_virtual_server:
+     name: issue_01445-vs_3
+     description: Route Domain Bug VS
+     profiles:
+       - http
+     partition: "{{ issue_partition }}"
+     source: 2001:db8:a0b:12f0::1%101/128
+     destination: 2002:db8:a0b:12f0::1%101
+     port: 80
+     provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01445 - Assert Create Third Virtual with source RD IPV6  - Idempotent check
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01445 - Delete Virtuals
+  bigip_virtual_server:
+     name: "{{ item }}"
+     state: absent
+     partition: "{{ issue_partition }}"
+     provider: "{{ provider }}"
+  with_items:
+    - issue_01445-vs
+    - issue_01445-vs_2
+    - issue_01445-vs_3
+
+- name: Issue 01445 - Delete partition
+  bigip_partition:
+    name: "{{ issue_partition }}"
+    provider: "{{ provider }}"
+    state: absent
+
+- name: Issue 01445 - Delete RD
+  bigip_routedomain:
+    name: test-rd
+    provider: "{{ provider }}"
+    state: absent

@@ -54,7 +54,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>List of pool member definitions to be created, modified or removed.</div>
-                                                    <div>When using <code>aggregates</code> the if one of the aggregate definitions is invalid, the aggregate run will fail, indicating the error it last encountered.</div>
+                                                    <div>When using <code>aggregates</code> if one of the aggregate definitions is invalid, the aggregate run will fail, indicating the error it last encountered.</div>
                                                     <div>The module will <code>NOT</code> rollback any changes it has made prior to encountering the error.</div>
                                                     <div>The module also will not indicate what changes were made prior to failure, therefore it is strongly advised to run the module in check mode to make basic validation, prior to module execution.</div>
                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: members</div>
@@ -453,6 +453,7 @@ Notes
 -----
 
 .. note::
+    - In previous versions of this module, which used the SDK, the ``name`` parameter would act as ``fqdn`` if ``address`` or ``fqdn`` were not provided.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires BIG-IP software version >= 12.
     - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP specific configuration persists to disk, be sure to include at least one task that uses the :ref:`bigip_config <bigip_config_module>` module to save the running configuration. Refer to the module's documentation for the correct usage of the module to save your running configuration.

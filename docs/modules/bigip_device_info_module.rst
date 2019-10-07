@@ -382,6 +382,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
@@ -391,7 +393,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                    
                                     
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                                                                     
@@ -4545,6 +4548,248 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     
                                                 <tr>
                                 <td colspan="4">
+                    <b>gtm_topology_regions</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td>When <code>gtm-topology-regions</code> is specified in <code>gather_subset</code></td>
+                <td>
+                                            <div>GTM regions related information.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>full_path</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Full name of the resource as known to BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/region1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>name</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>queried</td>
+                <td>
+                                                                        <div>Relative name of the resource in BIG-IP.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">region1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="3">
+                    <b>region_members</b>
+                    <br/><div style="font-size: small; color: red">complex</div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>The list of region members.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                    </td>
+            </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>negate</b>
+                    <br/><div style="font-size: small; color: red"></div>
+                </td>
+                <td></td>
+                <td>
+                                                                        <div>Indicates if region member is a <code>IS-NOT</code> negative. In BIG-IP configuration the region members can be <code>IS</code> or <code>IS-NOT</code>.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>returned</b>
+                    <br/><div style="font-size: small; color: red"></div>
+                </td>
+                <td></td>
+                <td>
+                                                                                    <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>type</b>
+                    <br/><div style="font-size: small; color: red"></div>
+                </td>
+                <td></td>
+                <td>
+                                                                                    <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>sample</b>
+                    <br/><div style="font-size: small; color: red"></div>
+                </td>
+                <td></td>
+                <td>
+                                                                                    <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>subnet</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>An IP address and network mask in the CIDR format.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.10.10.0/24</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>region</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>The name of region already defined in the configuration.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/region1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>continent</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>The name of one of the seven continents in ISO format, along with the <code>Unknown</code> setting.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">AF</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>country</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>The country name returned as an ISO country code.</div>
+                                                    <div>Valid country codes can be found here https://countrycode.org/.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">US</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>state</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>The state in a given country.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">AD/Sant Julia de Loria</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>pool</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>The name of GTM pool already defined in the configuration.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/pool1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>datacenter</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>The name of GTM data center already defined in the configuration.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/dc1</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>isp</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>Specifies an Internet service provider.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/AOL</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="2">
+                    <b>geo_isp</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>when configured for the region member.</td>
+                <td>
+                                                                        <div>Specifies a geolocation ISP</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/FOO_ISP</div>
+                                    </td>
+            </tr>
+                    
+                                    
+                                                <tr>
+                                <td colspan="4">
                     <b>gtm_wide_ips</b>
                     <br/><div style="font-size: small; color: red">complex</div>
                 </td>
@@ -6833,7 +7078,178 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
                                     </td>
             </tr>
+                                                            <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>case_insensitive</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>The value matched on is case insensitive.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>case_sensitive</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>The value matched on is case sensitive.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>contains_string</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>The value matches if it contains a certain string.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>external</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>The value matched on is from the external side of a connection.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>http_basic_auth</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>This condition matches on basic HTTP authorization.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>http_host</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>This condition matches on an HTTP host.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>http_uri</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>This condition matches on an HTTP URI.</div>
+                                                                <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>request</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>This policy will match on a request.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>username</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>Matches on a username.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>all</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>Matches all.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                    <td class="elbow-placeholder">&nbsp;</td>
+                                <td colspan="1">
+                    <b>values</b>
+                    <br/><div style="font-size: small; color: red">list</div>
+                </td>
+                <td>when defined in the condition.</td>
+                <td>
+                                                                        <div>The specified values will be matched on.</div>
+                                                                <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;foo.bar.com&#x27;, &#x27;baz.cool.com&#x27;]</div>
+                                    </td>
+            </tr>
                     
+                                    
                                     
                                                 <tr>
                                 <td colspan="4">

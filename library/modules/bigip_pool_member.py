@@ -188,7 +188,7 @@ options:
   aggregate:
     description:
       - List of pool member definitions to be created, modified or removed.
-      - When using C(aggregates) the if one of the aggregate definitions is invalid, the aggregate run will fail,
+      - When using C(aggregates) if one of the aggregate definitions is invalid, the aggregate run will fail,
         indicating the error it last encountered.
       - The module will C(NOT) rollback any changes it has made prior to encountering the error.
       - The module also will not indicate what changes were made prior to failure, therefore it is strongly advised
@@ -207,6 +207,9 @@ options:
     aliases:
       - purge
     version_added: 2.8
+notes:
+  - In previous versions of this module, which used the SDK, the C(name) parameter would act as C(fqdn) if C(address) or
+    C(fqdn) were not provided.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -439,18 +442,18 @@ try:
     from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
     from library.module_utils.network.f5.icontrol import TransactionContextManager
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import is_valid_hostname
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.compare import cmp_str_with_none
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
-    from ansible.module_utils.network.f5.icontrol import TransactionContextManager
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_valid_hostname
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import validate_ip_v6_address
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import TransactionContextManager
 
 
 class Parameters(AnsibleF5Parameters):
@@ -717,7 +720,8 @@ class ApiParameters(Parameters):
 
     @property
     def state(self):
-        if self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up'] and self._values['session'] in ['user-enabled']:
+        if (self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up']
+           and self._values['session'] in ['user-enabled']):
             return 'present'
         elif self._values['state'] in ['down', 'up', 'checking'] and self._values['session'] == 'monitor-enabled':
             # monitor-enabled + checking:
@@ -861,7 +865,8 @@ class ReportableChanges(Changes):
 
     @property
     def state(self):
-        if self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up'] and self._values['session'] in ['user-enabled']:
+        if (self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up'] and
+           self._values['session'] in ['user-enabled']):
             return 'present'
         elif self._values['state'] in ['down', 'up', 'checking'] and self._values['session'] == 'monitor-enabled':
             return 'present'
@@ -1119,7 +1124,9 @@ class ModuleManager(object):
 
             if diff:
                 fqdns = [
-                    member['selfLink'] for member in self.on_device if 'tmName' in member['fqdn'] and member['fqdn']['tmName'] in diff]
+                    member['selfLink'] for member in self.on_device
+                    if 'tmName' in member['fqdn'] and member['fqdn']['tmName'] in diff
+                ]
                 self.purge_links.extend(fqdns)
                 return True
             return False
@@ -1339,7 +1346,9 @@ class ModuleManager(object):
             have = self.read_current_node_from_device(self.want.node_name)
 
             if self.want.fqdn_auto_populate and self.want.reuse_nodes:
-                self.module.warn("'fqdn_auto_populate' is discarded in favor of the re-used node's auto-populate setting.")
+                self.module.warn(
+                    "'fqdn_auto_populate' is discarded in favor of the re-used node's auto-populate setting."
+                )
             self.want.update({
                 'fqdn_auto_populate': True if have.fqdn['autopopulate'] == 'enabled' else False
             })

@@ -1,1 +1,9 @@
 ---
+partition_1: Common
+partition_2: issue_01430
+policy_1: issue_01430_parent_common
+policy_2: issue_01430_parent_foo
+policy_3: issue_01430_child_common
+policy_4: issue_01430_child_foo
+policy_5: issue_01430_standalone
+policy_6: issue_01430_diff_part

@@ -116,6 +116,22 @@ def stub_unit_test_file(module, extension):
     fh.close()
 
 
+def unstub_roles_yaml_files(module):
+    for dir in ['defaults', 'tasks']:
+        defaults_file = '{0}/test/integration/targets/{1}/{2}/main.yaml'.format(
+            BASE_DIR, module, dir
+        )
+    if os.path.exists(defaults_file):
+        os.remove(defaults_file)
+    for f in ['setup.yaml', 'teardown.yaml']:
+        set_teardown_file = '{0}/test/integration/targets/{1}/tasks/{2}'.format(BASE_DIR, module, f)
+    if os.path.exists(set_teardown_file):
+        os.remove(set_teardown_file)
+    main_tests = '{0}/test/integration/targets/{1}/tasks/main.yaml'.format(BASE_DIR, module)
+    if os.path.exists(main_tests):
+        os.remove(main_tests)
+
+
 def unstub_roles_dirs(module):
     for dir in ['defaults', 'tasks']:
         directory = '{0}/test/integration/targets/{1}/{2}'.format(BASE_DIR, module, dir)

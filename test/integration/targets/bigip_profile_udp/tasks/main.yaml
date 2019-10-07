@@ -133,3 +133,7 @@
       - result is not changed
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01476.yaml
+  tags: issue-01476
+
