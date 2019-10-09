@@ -53,7 +53,6 @@ F5
   * :ref:`bigip_dns_nameserver_module`
   * :ref:`bigip_dns_resolver_module`
   * :ref:`bigip_dns_zone_module`
-  * :ref:`bigip_facts_module` **(D)**
   * :ref:`bigip_file_copy_module`
   * :ref:`bigip_firewall_address_list_module`
   * :ref:`bigip_firewall_dos_profile_module`
@@ -67,7 +66,6 @@ F5
   * :ref:`bigip_firewall_rule_list_module`
   * :ref:`bigip_firewall_schedule_module`
   * :ref:`bigip_gtm_datacenter_module`
-  * :ref:`bigip_gtm_facts_module` **(D)**
   * :ref:`bigip_gtm_global_module`
   * :ref:`bigip_gtm_monitor_bigip_module`
   * :ref:`bigip_gtm_monitor_external_module`
@@ -88,6 +86,7 @@ F5
   * :ref:`bigip_iapp_template_module`
   * :ref:`bigip_ike_peer_module`
   * :ref:`bigip_imish_config_module`
+  * :ref:`bigip_interface_module`
   * :ref:`bigip_ipsec_policy_module`
   * :ref:`bigip_irule_module`
   * :ref:`bigip_log_destination_module`
@@ -110,6 +109,7 @@ F5
   * :ref:`bigip_monitor_tcp_echo_module`
   * :ref:`bigip_monitor_tcp_half_open_module`
   * :ref:`bigip_monitor_udp_module`
+  * :ref:`bigip_network_globals_module`
   * :ref:`bigip_node_module`
   * :ref:`bigip_partition_module`
   * :ref:`bigip_password_policy_module`
