@@ -58,8 +58,8 @@ Parameters
                                                                         <div>Specifies the length of time that a connection is idle (has no traffic) before the connection is eligible for deletion.</div>
                                                     <div>When creating a new profile, if this parameter is not specified, the remote device will choose a default value appropriate for the profile, based on its <code>parent</code> profile.</div>
                                                     <div>When a number is specified, indicates the number of seconds that the UDP connection can remain idle before the system deletes it.</div>
-                                                    <div>When <code>0</code>, or <code>indefinite</code>, specifies that UDP connections can remain idle indefinitely.</div>
-                                                    <div>When <code>immediate</code>, specifies that you do not want the UDP connection to remain idle, and that it is therefore immediately eligible for deletion.</div>
+                                                    <div>When <code>indefinite</code>, specifies that UDP connections can remain idle indefinitely.</div>
+                                                    <div>When <code>0</code> or <code>immediate</code>, specifies that you do not want the UDP connection to remain idle, and that it is therefore immediately eligible for deletion.</div>
                                                                                 </td>
             </tr>
                                 <tr>
