@@ -70,6 +70,7 @@ Parameters
                                                                                                                                                                                                 <li>gtm-naptr-wide-ips</li>
                                                                                                                                                                                                 <li>gtm-srv-pools</li>
                                                                                                                                                                                                 <li>gtm-srv-wide-ips</li>
+                                                                                                                                                                                                <li>gtm-topology-regions</li>
                                                                                                                                                                                                 <li>http-monitors</li>
                                                                                                                                                                                                 <li>https-monitors</li>
                                                                                                                                                                                                 <li>http-profiles</li>
@@ -134,6 +135,7 @@ Parameters
                                                                                                                                                                                                 <li>!gtm-naptr-wide-ips</li>
                                                                                                                                                                                                 <li>!gtm-srv-pools</li>
                                                                                                                                                                                                 <li>!gtm-srv-wide-ips</li>
+                                                                                                                                                                                                <li>!gtm-topology-regions</li>
                                                                                                                                                                                                 <li>!http-monitors</li>
                                                                                                                                                                                                 <li>!https-monitors</li>
                                                                                                                                                                                                 <li>!http-profiles</li>

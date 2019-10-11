@@ -30,7 +30,7 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-                                                                                                                    <tr>
+                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
@@ -205,6 +205,22 @@ Parameters
                                                                         <div>Maximum number of seconds to wait for.</div>
                                                     <div>When used without other conditions it is equivalent of just sleeping.</div>
                                                     <div>The default timeout is deliberately set to 2 hours because no individual REST API.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>type</b>
+                                                        </td>
+                                <td>
+                                                                                                                            <ul><b>Choices:</b>
+                                                                                                                                                                <li><div style="color: blue"><b>standard</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                <li>vcmp</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>The type of the BIG-IP.</div>
+                                                    <div>Defaults to <code>standard</code>, the other choice is <code>vcmp</code>.</div>
+                                                    <div>The choice made defines what module or service Ansible will look for to establish that the device has recovered, so please ensure the correct choice is specified, specially when running this against VCMP.</div>
                                                                                 </td>
             </tr>
                         </table>

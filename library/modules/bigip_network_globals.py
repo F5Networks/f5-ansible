@@ -151,6 +151,8 @@ options:
       enabled:
         description:
           - Specifies the current status of LLDP.
+          - When C(yes) the LLDP is enabled globally on device.
+          - When C(no) the LLDP is disabled globally on device.
         type: bool
       max_neighbors_per_port:
         description:
