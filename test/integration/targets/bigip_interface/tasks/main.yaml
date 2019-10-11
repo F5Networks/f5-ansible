@@ -1,0 +1,122 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Update Interface Settings
+  bigip_interface:
+    name: "1.1"
+    stp: no
+    stp_auto_edge_port: no
+    stp_edge_port: no
+    stp_link_type: shared
+    description: "my description"
+    flow_control: tx
+    lldp_admin: txrx
+    lldp_tlvmap: 8
+    force_gigabit_fiber: no
+    sflow:
+      poll_interval: 10
+      poll_interval_global: no
+  register: result
+
+- name: Assert Update Interface Settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update Interface Settings - Idempotent check
+  bigip_interface:
+    name: "1.1"
+    stp: no
+    stp_auto_edge_port: no
+    stp_edge_port: no
+    stp_link_type: shared
+    description: "my description"
+    flow_control: tx
+    lldp_admin: txrx
+    lldp_tlvmap: 8
+    force_gigabit_fiber: no
+    sflow:
+      poll_interval: 10
+      poll_interval_global: no
+  register: result
+
+- name: Assert Update Interface Settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Disable Interface
+  bigip_interface:
+    name: 1.1
+    enabled: no
+  register: result
+
+- name: Assert Disable Interface
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+
+- name: Disable Interface - Idempotent check
+  bigip_interface:
+    name: 1.1
+    enabled: no
+  register: result
+
+- name: Assert Disable Interface - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Revert interface settings
+  bigip_interface:
+    name: 1.1
+    stp: yes
+    stp_auto_edge_port: yes
+    stp_edge_port: yes
+    stp_link_type: auto
+    description: ""
+    flow_control: tx-rx
+    lldp_admin: txonly
+    lldp_tlvmap: 114552
+    force_gigabit_fiber: no
+    sflow:
+      poll_interval: 0
+      poll_interval_global: yes
+  register: result
+
+- name: Assert Revert interface settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Revert interface settings - Idempotent check
+  bigip_interface:
+    name: 1.1
+    stp: yes
+    stp_auto_edge_port: yes
+    stp_edge_port: yes
+    stp_link_type: auto
+    description: ""
+    flow_control: tx-rx
+    lldp_admin: txonly
+    lldp_tlvmap: 114552
+    force_gigabit_fiber: no
+    sflow:
+      poll_interval: 0
+      poll_interval_global: yes
+  register: result
+
+- name: Assert Revert interface settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml

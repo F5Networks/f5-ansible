@@ -82,7 +82,7 @@ HELP1 = dict(
 def upstream(c, module, collection='f5_modules'):
     """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
     """
-
+    deprecated = False
     root_dest = '{0}/local/ansible_collections/'.format(BASE_DIR)
     coll_namespace = '{0}/local/ansible_collections/f5networks/'.format(BASE_DIR)
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
