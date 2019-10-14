@@ -91,7 +91,7 @@ def stub_library_file(module, extension):
 
 def stub_module_documentation(module):
     # Create the documentation link for your module
-    documentation_file = '{0}/docs/modules/{1}.rst'.format(BASE_DIR, module)
+    documentation_file = '{0}/docs/modules/{1}_module.rst'.format(BASE_DIR, module)
     touch(documentation_file)
 
 
@@ -152,7 +152,7 @@ def unstub_library_file(module, extension):
 
 
 def unstub_module_documentation(module):
-    documentation_file = '{0}/docs/modules/{1}.rst'.format(BASE_DIR, module)
+    documentation_file = '{0}/docs/modules/{1}_module.rst'.format(BASE_DIR, module)
     if os.path.exists(documentation_file):
         os.remove(documentation_file)
 
