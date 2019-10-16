@@ -423,8 +423,7 @@ Parameters
                     <b>parent</b>
                                                         </td>
                                 <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">/Common/http</div>
-                                    </td>
+                                                                                                                                                            </td>
                                                                 <td>
                                                                         <div>Specifies the profile from which this profile inherits settings.</div>
                                                     <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>http</code> profile.</div>
