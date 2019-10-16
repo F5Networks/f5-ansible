@@ -1,14 +1,14 @@
-:source: bigip_profile_http2.py
+:source: bigip_profile_sip.py
 
 :orphan:
 
-.. _bigip_profile_http2_module:
+.. _bigip_profile_sip_module:
 
 
-bigip_profile_http2 - Manage HTTP2 profiles on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_sip - Manage SIP profiles on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.8
+.. versionadded:: 2.1
 
 .. contents::
    :local:
@@ -17,7 +17,7 @@ bigip_profile_http2 - Manage HTTP2 profiles on a BIG-IP
 
 Synopsis
 --------
-- Manage HTTP2 profiles on a BIG-IP.
+- Manage SIP profiles on a BIG-IP.
 
 
 
@@ -28,26 +28,20 @@ Parameters
 .. raw:: html
 
     <table  border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
                         <th width="100%">Comments</th>
         </tr>
                     <tr>
                                                                 <td colspan="2">
-                    <b>activation_modes</b>
+                    <b>community</b>
                                                         </td>
                                 <td>
-                                                                                                                            <ul><b>Choices:</b>
-                                                                                                                                                                <li>alpn</li>
-                                                                                                                                                                                                <li>always</li>
-                                                                                    </ul>
-                                                                            </td>
+                                                                                                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies what will cause an incoming connection to be handled as a HTTP/2 connection.</div>
-                                                    <div>The <code>alpn</code> and <code>always</code> are mutually exclusive.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                        <div>When the <code>dialog_aware</code> is <code>yes</code> and the configuration requires multiple SIP virtual server-profile pairings, this string value indicates whether the pair belongs to the same SIP proxy functional group.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -58,11 +52,12 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Description of the profile.</div>
+                                                    <div>To remove the entry completely a value of <code>&#x27;&#x27;</code> should be set.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>enforce_tls_requirements</b>
+                    <b>dialog_aware</b>
                                                         </td>
                                 <td>
                                                                                                                                                                         <ul><b>Choices:</b>
@@ -71,48 +66,12 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies whether the system requires TLS for communications between specified senders and recipients.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                        <div>When <code>yes</code> the system gathers SIP dialog information, and automatically forwards SIP messages belonging to the known SIP dialog.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>frame_size</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the size of data frames, in bytes, that HTTP/2 sends to the client.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
-                                                    <div>The valid value range in bytes is <code>1024 - 16384</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>header_table_size</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the size of the header table, in bytes.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
-                                                    <div>The valid value range in bytes is <code>0 - 65535</code>.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>idle_timeout</b>
-                                                        </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                                                        <div>Specifies the number of seconds that an HTTP/2 connection is idly left open before being shut down.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
-                                                                                </td>
-            </tr>
-                                <tr>
-                                                                <td colspan="2">
-                    <b>insert_header</b>
+                    <b>enable_sip_firewall</b>
                                                         </td>
                                 <td>
                                                                                                                                                                         <ul><b>Choices:</b>
@@ -121,19 +80,72 @@ Parameters
                                                                                     </ul>
                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies whether an HTTP header indicating the use of HTTP/2 should be inserted into the request that goes to the server.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                        <div>Specifies whether the Advanced Firewall Manager policy is enabled.</div>
+                                                    <div>When <code>yes</code> the SIP Security settings configured in the DoS Profile in AFM apply to the virtual servers that use this profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>insert_header_name</b>
+                    <b>insert_record_route_header</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code> inserts a Record-Route SIP header, which indicates the next hop for the following SIP request messages.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>insert_via_header</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code> inserts a Via header in the forwarded SIP request.</div>
+                                                    <div>Via headers indicate the path taken through proxy devices and transports used. The response message uses this routing information.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>log_profile</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the HTTP header controlled by <code>insert_header</code> parameter.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
+                                                                        <div>Specifies the logging settings the publisher uses to send log messages.</div>
+                                                    <div>Format of the name can be either be prepended by partition (<code>/Common/foo</code>), or specified just as an object name (<code>foo</code>).</div>
+                                                    <div>To remove the entry a value of <code>&#x27;&#x27;</code> can be set, however the profile <code>log_publisher</code> must also be set as <code>&#x27;&#x27;</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>log_publisher</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the publisher defined to log messages.</div>
+                                                    <div>Format of the name can be either be prepended by partition (<code>/Common/foo</code>), or specified just as an object name (<code>foo</code>).</div>
+                                                    <div>To remove the entry a value of <code>&#x27;&#x27;</code> can be set, however the profile <code>log_profile</code> must also be set as <code>&#x27;&#x27;</code>.</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>max_size</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                            </td>
+                                                                <td>
+                                                                        <div>Specifies the maximum SIP message size that the BIG-IP system accepts..</div>
+                                                    <div>The accepted value range is <code>0 - 4294967295</code> bytes.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -143,7 +155,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the name of the profile.</div>
+                                                                        <div>Specifies the name of the SIP profile to manage.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -154,7 +166,7 @@ Parameters
                                                                                                                                                             </td>
                                                                 <td>
                                                                         <div>Specifies the profile from which this profile inherits settings.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>http2</code> profile.</div>
+                                                    <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>sip</code> profile.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -297,14 +309,32 @@ Parameters
                     
                                                 <tr>
                                                                 <td colspan="2">
-                    <b>receive_window</b>
+                    <b>secure_via_header</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the way that the HTTP/2 profile performs flow control.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
-                                                    <div>The valid value range in kilobytes is <code>16 - 128</code>.</div>
+                                                                        <div>When checked (enabled) inserts a secure Via header in the forwarded SIP request.</div>
+                                                    <div>A secure Via header indicates where the message originated.</div>
+                                                    <div>This parameter causes the inserted Via header to specify Transport Layer Security. For this option to take effect, <code>insert_via_header</code> must be set to (yes).</div>
+                                                                                </td>
+            </tr>
+                                <tr>
+                                                                <td colspan="2">
+                    <b>security</b>
+                                                        </td>
+                                <td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
+                                                                <td>
+                                                                        <div>When <code>yes</code> enables the use of enhanced Horizontal Security Layer (HSL) security checking.</div>
                                                                                 </td>
             </tr>
                                 <tr>
@@ -324,26 +354,29 @@ Parameters
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>streams</b>
+                    <b>terminate_on_bye</b>
                                                         </td>
                                 <td>
-                                                                                                                                                            </td>
+                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                <li>no</li>
+                                                                                                                                                                                                <li>yes</li>
+                                                                                    </ul>
+                                                                            </td>
                                                                 <td>
-                                                                        <div>Specifies the number of outstanding concurrent requests that are allowed on a single HTTP/2 connection.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
-                                                    <div>The valid value range is <code>1 - 256</code>.</div>
+                                                                        <div>When <code>yes</code> closes a connection when a BYE transaction finishes.</div>
+                                                    <div>A BYE transaction is a message that an application sends to another application when it is ready to close the connection between the two.</div>
                                                                                 </td>
             </tr>
                                 <tr>
                                                                 <td colspan="2">
-                    <b>write_size</b>
+                    <b>user_via_header</b>
                                                         </td>
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
-                                                                        <div>Specifies the total size of combined data frames, in bytes, that HTTP/2 sends in a single write.</div>
-                                                    <div>When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.</div>
-                                                    <div>The valid value range in bytes is <code>2048 - 32768</code>.</div>
+                                                                        <div>When <code>insert_via_header</code> is <code>yes</code>, specifies the Via value the system inserts as the top Via header in a SIP REQUEST message.</div>
+                                                    <div>The valid value must include SIP protocol and sent_by settings, for example: <code>SIP/2.0/UDP 10.10.10.10:5060</code>.</div>
+                                                    <div>To remove the entry completely a value of <code>&#x27;&#x27;</code> should be set.</div>
                                                                                 </td>
             </tr>
                         </table>
@@ -365,33 +398,37 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create HTTP2 profile
-      bigip_profile_http2:
-        name: my_profile
-        insert_header: yes
-        insert_header_name: FOO
-        state: present
+    - name: Create a SIP profile
+      bigip_profile_sip:
+        name: foo
+        parent: sip
+        log_profile: alg_log
+        log_publisher: foo-publisher
+        description: this is a new profile
+        security: yes
         provider:
-          user: admin
           password: secret
           server: lb.mydomain.com
+          user: admin
       delegate_to: localhost
 
-    - name: Remove HTTP profile
-      bigip_profile_http2:
-        name: my_profile
+    - name: Update SIP profile
+      bigip_profile_sip:
+        name: foo
+        insert_record_route_header: yes
+        enable_sip_firewall: yes
+        insert_via_header: yes
+        user_via_header: "SIP/2.0/UDP 10.10.10.10:5060"
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+      delegate_to: localhost
+
+    - name: Delete a SIP profile
+      bigip_profile_sip:
+        name: foo
         state: absent
-        provider:
-          server: lb.mydomain.com
-          user: admin
-          password: secret
-      delegate_to: localhost
-
-    - name: Add HTTP profile set activation modes
-      bigip_profile_http:
-        name: my_profile
-        activation_modes:
-          - always
         provider:
           password: secret
           server: lb.mydomain.com
@@ -408,22 +445,22 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 .. raw:: html
 
     <table border=0 cellpadding=0 class="documentation-table">
-                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr>
             <th colspan="1">Key</th>
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
                     <tr>
                                 <td colspan="1">
-                    <b>activation_modes</b>
-                    <br/><div style="font-size: small; color: red">list</div>
+                    <b>community</b>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Specifies HTTP/2 connection handling modes</div>
+                                            <div>Indicates whether the pair belongs to the same SIP proxy functional group.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;always&#x27;]</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">foo_community</div>
                                     </td>
             </tr>
                                 <tr>
@@ -436,17 +473,28 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                                             <div>Description of the profile.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My profile</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">custom description</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>enforce_tls_requirements</b>
+                    <b>dialog_aware</b>
                     <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>pecifies whether the system requires TLS for communications.</div>
+                                            <div>Specifies if system gathers SIP dialog information.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>enable_sip_firewall</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies whether the Advanced Firewall Manager policy is enabled.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
@@ -454,41 +502,126 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>frame_size</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>insert_record_route_header</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The size of the data frames</div>
+                                            <div>Specifies is system will insert a Record-Route SIP header.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">30</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>insert_header_name</b>
+                    <b>insert_via_header</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies is system will insert a Via header in the forwarded SIP request.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>log_profile</b>
                     <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>Specifies the name of the HTTP2 header</div>
+                                            <div>The logging settings the publisher uses to send log messages.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">X-HTTP2</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/alg_profile</div>
                                     </td>
             </tr>
                                 <tr>
                                 <td colspan="1">
-                    <b>streams</b>
-                    <br/><div style="font-size: small; color: red">int</div>
+                    <b>log_publisher</b>
+                    <br/><div style="font-size: small; color: red">str</div>
                 </td>
                 <td>changed</td>
                 <td>
-                                            <div>The number of outstanding concurrent requests allowed on a single HTTP/2 connection</div>
+                                            <div>The publisher defined to log messages.</div>
                                         <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
-                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">30</div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/foo_publisher</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>max_size</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies if the system will close a connection when a BYE transaction finishes.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>parent</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies the profile from which this profile inherits settings.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">/Common/sip</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>secure_via_header</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies is system will insert a secure Via header in the forwarded SIP request.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>security</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Enables the use of enhanced Horizontal Security Layer security checking.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>terminate_on_bye</b>
+                    <br/><div style="font-size: small; color: red">bool</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>Specifies if the system will close a connection when a BYE transaction finishes.</div>
+                                        <br/>
+                                    </td>
+            </tr>
+                                <tr>
+                                <td colspan="1">
+                    <b>user_via_header</b>
+                    <br/><div style="font-size: small; color: red">str</div>
+                </td>
+                <td>changed</td>
+                <td>
+                                            <div>The value the system inserts as the top Via header in a SIP REQUEST message.</div>
+                                        <br/>
+                                            <div style="font-size: smaller"><b>Sample:</b></div>
+                                                <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">SIP/2.0/UDP 10.10.10.10:5060</div>
                                     </td>
             </tr>
                         </table>

@@ -120,6 +120,7 @@ Modules Maintained by the Ansible Partners
   * :ref:`bigip_profile_persistence_cookie_module`
   * :ref:`bigip_profile_persistence_src_addr_module`
   * :ref:`bigip_profile_server_ssl_module`
+  * :ref:`bigip_profile_sip_module`
   * :ref:`bigip_profile_tcp_module`
   * :ref:`bigip_profile_udp_module`
   * :ref:`bigip_provision_module`
