@@ -23,6 +23,7 @@ options:
   name:
     description:
       - Specifies the name of the ... .
+    type: str
     required: True
 extends_documentation_fragment: f5
 author:
@@ -49,7 +50,7 @@ param1:
 param2:
   description: The new param2 value of the resource.
   returned: changed
-  type: string
+  type: str
   sample: Foo is bar
 '''
 

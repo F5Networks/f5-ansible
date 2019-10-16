@@ -31,7 +31,6 @@ options:
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(http) profile.
     type: str
-    default: /Common/http
   description:
     description:
       - Description of the profile.
@@ -1382,9 +1381,11 @@ class Difference(object):
 
     @property
     def parent(self):
+        if self.want.parent is None:
+            return None
         if self.want.parent != self.have.parent:
             raise F5ModuleError(
-                "The parent http profile cannot be changed"
+                "The parent http profile cannot be changed."
             )
 
     @property
@@ -1663,7 +1664,7 @@ class ArgumentSpec(object):
         self.select = ['allow', 'pass-through', 'reject']
         argument_spec = dict(
             name=dict(required=True),
-            parent=dict(default='/Common/http'),
+            parent=dict(),
             description=dict(),
             accept_xff=dict(type='bool'),
             xff_alternative_names=dict(type='list'),

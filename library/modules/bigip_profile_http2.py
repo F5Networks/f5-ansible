@@ -31,7 +31,6 @@ options:
       - When creating a new profile, if this parameter is not specified, the default
         is the system-supplied C(http2) profile.
     type: str
-    default: /Common/http2
   description:
     description:
       - Description of the profile.
@@ -421,9 +420,11 @@ class Difference(object):
 
     @property
     def parent(self):
+        if self.want.parent is None:
+            return None
         if self.want.parent != self.have.parent:
             raise F5ModuleError(
-                "The parent profile cannot be changed"
+                "The parent profile cannot be changed."
             )
 
     @property
@@ -627,7 +628,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            parent=dict(default='/Common/http2'),
+            parent=dict(),
             activation_modes=dict(
                 type='list',
                 choices=[

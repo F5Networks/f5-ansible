@@ -1,0 +1,121 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a SIP profile
+  bigip_profile_sip:
+    name: foo
+    parent: sip
+    log_profile: "alg_log_profile"
+    log_publisher: "local-db-publisher"
+    description: "this is a new profile"
+    security: yes
+  register: result
+
+- name: Assert Create a SIP profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a SIP profile - Idempotent check
+  bigip_profile_sip:
+    name: foo
+    parent: sip
+    log_profile: "alg_log_profile"
+    log_publisher: "local-db-publisher"
+    description: "this is a new profile"
+    security: yes
+  register: result
+
+- name: Assert Create a SIP profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update SIP profile
+  bigip_profile_sip:
+    name: foo
+    insert_record_route_header: yes
+    enable_sip_firewall: yes
+    insert_via_header: yes
+    user_via_header: "SIP/2.0/UDP 10.10.10.10:5060"
+  register: result
+
+- name: Assert Update SIP profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update SIP profile - Idempotent check
+  bigip_profile_sip:
+    name: foo
+    insert_record_route_header: yes
+    enable_sip_firewall: yes
+    insert_via_header: yes
+    user_via_header: "SIP/2.0/UDP 10.10.10.10:5060"
+  register: result
+
+- name: Assert Update SIP profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update SIP profile - use empty string values
+  bigip_profile_sip:
+    name: foo
+    log_profile: ""
+    log_publisher: ""
+    insert_via_header: no
+    user_via_header: ""
+  register: result
+
+- name: Assert Update SIP profile - use empty string values
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update SIP profile - use empty string values - Idempotent check
+  bigip_profile_sip:
+    name: foo
+    log_profile: ""
+    log_publisher: ""
+    insert_via_header: no
+    user_via_header: ""
+  register: result
+
+- name: Assert Update SIP profile - use empty string values - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete SIP profile
+  bigip_profile_sip:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Delete SIP profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete SIP profile - Idempotent check
+  bigip_profile_sip:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Delete SIP profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml

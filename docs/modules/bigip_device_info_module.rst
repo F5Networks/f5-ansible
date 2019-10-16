@@ -7458,7 +7458,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>queried</td>
                 <td>
-                                                                                    <br/>
+                                                                        <div>Current sessions.</div>
+                                                                <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
                                     </td>
@@ -12170,7 +12171,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>queried</td>
                 <td>
-                                                                                    <br/>
+                                                                        <div>Specifies the number of RTOs (retransmission timeouts) before declaring the subflow dead.</div>
+                                                                <br/>
                                             <div style="font-size: smaller"><b>Sample:</b></div>
                                                 <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">5</div>
                                     </td>
