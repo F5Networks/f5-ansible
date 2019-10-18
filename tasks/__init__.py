@@ -16,6 +16,7 @@ from . import ip
 from . import module
 from . import module_doc_fragments
 from . import module_utils
+from . import plugins
 from . import test
 
 ns = Collection(
@@ -26,5 +27,6 @@ ns = Collection(
     module,
     module_doc_fragments,
     module_utils,
+    plugins,
     test,
 )
