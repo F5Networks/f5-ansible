@@ -28,7 +28,7 @@ def upstream(c, collection='f5_modules'):
     are available to all modules (such as connection params).
 
     """
-    root_dest = '{0}/local/ansible/'.format(BASE_DIR)
+    root_dest = '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
     if not os.path.exists(root_dest):
         print("The specified upstream directory does not exist")
         sys.exit(1)
