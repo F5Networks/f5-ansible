@@ -24,11 +24,16 @@ import copy
 
 from ansible import constants as C
 from ansible.module_utils._text import to_text
-from ansible_collections.f5networks.f5_modules.plugins.module_utils.connection import Connection
 from ansible.module_utils.network.common.utils import load_provider
 from ansible.plugins.action.normal import ActionModule as _ActionModule
 from ansible.utils.display import Display
 display = Display()
+
+try:
+    from ansible.module_utils.connection import Connection
+except ImportError:
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.connection import Connection
+
 
 try:
     from library.module_utils.network.f5.common import f5_provider_spec

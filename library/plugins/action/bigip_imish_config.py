@@ -22,7 +22,7 @@ __metaclass__ = type
 import os
 import re
 
-from ansible.plugins.action.bigip import ActionModule as _ActionModule
+from ansible.plugins.action.normal import ActionModule as _ActionModule
 from ansible.module_utils._text import to_text
 from ansible.module_utils.network.common.backup import write_backup
 from ansible.module_utils.six.moves.urllib.parse import urlsplit
@@ -30,7 +30,7 @@ from ansible.module_utils.six.moves.urllib.parse import urlsplit
 try:
     from library.module_utils.network.f5.common import f5_provider_spec
 except Exception:
-    from ansible.module_utils.network.f5.common import f5_provider_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_provider_spec
 
 from ansible.utils.display import Display
 display = Display()
