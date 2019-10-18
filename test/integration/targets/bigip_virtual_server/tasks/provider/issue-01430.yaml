@@ -1,0 +1,189 @@
+---
+- name: Issue 01430 - Create pool
+  bigip_pool:
+    lb_method: round-robin
+    name: web-pool
+    state: present
+    provider: "{{ provider }}"
+
+- name: Issue 01430 - Create iRules
+  bigip_irule:
+    content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}"
+    module: ltm
+    name: "{{ item }}"
+    provider: "{{ provider }}"
+  loop:
+    - irule1
+    - irule2
+    - irule3
+    - irule4
+
+- name: Issue 01430 - Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    provider: "{{ provider }}"
+  loop:
+    - External
+    - Internal
+
+- name: Issue 01430 - Add VS on BIG-IP
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    disabled_vlans: Internal
+    pool: web-pool
+    snat: automap
+    profiles: http
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01430 - Assert Add VS on BIG-IP
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01430 - Add VS on BIG-IP - Idempotent check
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    disabled_vlans: Internal
+    pool: web-pool
+    snat: automap
+    profiles: http
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01430 - Assert Add VS on BIG-IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01430 - Reorder iRules on VS
+  bigip_virtual_server:
+    name: httpvs2
+    irules:
+      - irule2
+      - irule1
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01430 - Assert Reorder iRules on VS
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01430 - Reorder iRules on VS - Idempotent check
+  bigip_virtual_server:
+    name: httpvs2
+    irules:
+      - irule2
+      - irule1
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01430 - Assert Reorder iRules on VS - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01430 - Change iRules on VS
+  bigip_virtual_server:
+    name: httpvs2
+    irules:
+      - irule4
+      - irule3
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01430 - Assert Change iRules on VS
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01430 - Change iRules on VS - Idempotent check
+  bigip_virtual_server:
+    name: httpvs2
+    irules:
+      - irule4
+      - irule3
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01430 - Assert Change iRules on VS - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01430 - Remove iRules from VS
+  bigip_virtual_server:
+    name: httpvs2
+    irules: ""
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01430 - Assert Remove iRules from VS
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01430 - Remove iRules from VS - Idempotent check
+  bigip_virtual_server:
+    name: httpvs2
+    irules: ""
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01430 - Assert Remove iRules from VS - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01430 - Remove VS
+  bigip_virtual_server:
+    name: httpvs2
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01430 - Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+    provider: "{{ provider }}"
+  loop:
+    - External
+    - Internal
+
+- name: Issue 01430 - Remove iRules
+  bigip_irule:
+    name: "{{ item }}"
+    module: ltm
+    state: absent
+    provider: "{{ provider }}"
+  loop:
+    - irule1
+    - irule2
+    - irule3
+    - irule4
+
+- name: Issue 01430 - Remove pool
+  bigip_pool:
+    lb_method: round-robin
+    name: web-pool
+    state: absent
+    provider: "{{ provider }}"

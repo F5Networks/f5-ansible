@@ -191,6 +191,8 @@ options:
       - List of rules to be applied in priority order.
       - If you want to remove existing iRules, specify a single empty value; C("").
         See the documentation for an example.
+      - The order in which iRules are specified matter, so a list that contains same list elements but in different
+        order in the playbook will make changes on device.
       - When C(type) is C(dhcp), this parameter will be ignored.
       - When C(type) is C(stateless), this parameter will be ignored.
       - When C(type) is C(reject), this parameter will be ignored.
@@ -890,6 +892,7 @@ try:
     from library.module_utils.network.f5.common import mark_managed_by
     from library.module_utils.network.f5.common import only_has_managed_metadata
     from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.common import is_empty_list
     from library.module_utils.network.f5.compare import cmp_simple_list
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.ipaddress import is_valid_ip_interface
@@ -910,6 +913,7 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import mark_managed_by
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import only_has_managed_metadata
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_empty_list
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_simple_list
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip_interface
@@ -1921,7 +1925,7 @@ class ModuleParameters(Parameters):
         results = []
         if self._values['irules'] is None:
             return None
-        if len(self._values['irules']) == 1 and self._values['irules'][0] == '':
+        if is_empty_list(self._values['irules']):
             return ''
         for irule in self._values['irules']:
             result = fq_name(self.partition, irule)
@@ -3254,7 +3258,7 @@ class Difference(object):
             return []
         if self.want.irules in [[], ''] and len(self.have.irules) == 0:
             return None
-        if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
+        if self.want.irules != self.have.irules:
             return self.want.irules
 
     @property
