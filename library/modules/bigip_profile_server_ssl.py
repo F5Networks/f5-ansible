@@ -196,7 +196,6 @@ class Parameters(AnsibleF5Parameters):
         'sniRequire': 'sni_require',
         'serverName': 'server_name',
         'peerCertMode': 'server_certificate',
-        'renegotiation': 'renegotiation',
     }
 
     api_attributes = [
