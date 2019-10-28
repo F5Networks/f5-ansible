@@ -1,0 +1,54 @@
+---
+
+- name: Issue 01433 - Create a server SSL profile, enable renegotiation
+  bigip_profile_server_ssl:
+    name: issue-01433
+    renegotiation: yes
+  register: result
+
+- name: Issue 01433 - Assert Create a server SSL profile, enable renegotiation
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01433 - Create a server SSL profile, enable renegotiation - Idempotent check
+  bigip_profile_server_ssl:
+    name: issue-01433
+    renegotiation: yes
+  register: result
+
+- name: Issue 01433 - Assert Create a server SSL profile, enable renegotiation - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01433 - Modify server SSL profile, disable renegotiation
+  bigip_profile_server_ssl:
+    name: issue-01433
+    renegotiation: no
+  register: result
+
+- name: Issue 01433 - Assert Modify server SSL profile, disable renegotiation
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01433 - Modify server SSL profile, disable renegotiation - Idempotent check
+  bigip_profile_server_ssl:
+    name: issue-01433
+    renegotiation: no
+  register: result
+
+- name: Issue 01433 - Assert Modify server SSL profile, disable renegotiation - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01433 - Cleanup
+  bigip_profile_server_ssl:
+    name: issue-01433
+    state: absent
