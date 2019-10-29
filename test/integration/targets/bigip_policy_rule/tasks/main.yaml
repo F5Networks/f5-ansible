@@ -1,6 +1,7 @@
 ---
 
 - import_tasks: setup.yaml
+  tags: setup
 
 - name: Create rule for published policy, no actions, no conditions
   bigip_policy_rule:
@@ -221,7 +222,7 @@
     that:
       - result is not changed
       - result is not success
-      - "'condition is required when using' in result.msg"
+      - "'must have a default rule' in result.msg"
 
 - name: Blank all conditions and actions
   bigip_policy_rule:
@@ -369,8 +370,6 @@
     that:
       - result is not changed
 
-- import_tasks: teardown.yaml
-
 - import_tasks: issue-00727.yaml
   tags: issue-00727
 
@@ -379,3 +378,8 @@
 
 - import_tasks: issue-00899.yaml
   tags: issue-00899
+
+- import_tasks: issue-01413.yaml
+  tags: issue-01413
+
+- import_tasks: teardown.yaml
