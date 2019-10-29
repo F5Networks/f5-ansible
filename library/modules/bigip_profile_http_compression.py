@@ -202,6 +202,7 @@ class Parameters(AnsibleF5Parameters):
         'gzip_memory_level',
         'gzip_level',
         'gzip_window_size',
+        'parent',
     ]
 
 
@@ -294,13 +295,6 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
-
-    @property
-    def parent(self):
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent profile cannot be changed"
-            )
 
 
 class ModuleManager(object):

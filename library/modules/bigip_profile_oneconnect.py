@@ -253,6 +253,7 @@ class Parameters(AnsibleF5Parameters):
         'limit_type',
         'idle_timeout_override',
         'share_pools',
+        'parent',
     ]
 
 
@@ -372,13 +373,6 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
-
-    @property
-    def parent(self):
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent profile cannot be changed"
-            )
 
 
 class ModuleManager(object):

@@ -189,6 +189,7 @@ class Parameters(AnsibleF5Parameters):
         'match_across_virtuals',
         'override_connection_limit',
         'entry_timeout',
+        'parent',
     ]
 
     @property
@@ -316,13 +317,6 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
-
-    @property
-    def parent(self):
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent profile cannot be changed"
-            )
 
 
 class ModuleManager(object):

@@ -1,0 +1,60 @@
+---
+- name: Issue 01529 - Create parent server ssl profile
+  bigip_profile_server_ssl:
+    name: foo_parent
+
+- name: Issue 01529 - Create child server ssl profile with default parent
+  bigip_profile_server_ssl:
+    name: foo_child
+  register: result
+
+- name: Issue 01529 - Assert Create child server ssl profile with default parent
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01529 - Create child server ssl profile with default parent - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo_child
+  register: result
+
+- name: Issue 01529 - Assert Create child server ssl profile with default parent - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01529 - Change parent profile
+  bigip_profile_server_ssl:
+    name: foo_child
+    parent: foo_parent
+  register: result
+
+- name: Issue 01529 - Assert Change parent profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01529 - Change parent profile - Idempotent check
+  bigip_profile_server_ssl:
+    name: foo_child
+    parent: foo_parent
+  register: result
+
+- name: Issue 01529 - Assert Change parent profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01529 - Remove child
+  bigip_profile_server_ssl:
+    name: foo_child
+    state: absent
+
+- name: Issue 01529 - Remove parent
+  bigip_profile_server_ssl:
+    name: foo_parent
+    state: absent
