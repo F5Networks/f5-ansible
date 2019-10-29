@@ -240,6 +240,7 @@ class Parameters(AnsibleF5Parameters):
         'server_name',
         'server_certificate',
         'renegotiation',
+        'parent',
     ]
 
     @property
@@ -390,13 +391,6 @@ class Difference(object):
             return result
         except AttributeError:
             return self.__default(param)
-
-    @property
-    def parent(self):
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent profile cannot be changed"
-            )
 
     @property
     def sni_require(self):

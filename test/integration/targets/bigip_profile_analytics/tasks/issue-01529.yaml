@@ -1,0 +1,61 @@
+---
+
+- name: Issue 01529 - Create parent analytics profile
+  bigip_profile_analytics:
+    name: foo_parent
+
+- name: Issue 01529 - Create child analytics profile with default parent
+  bigip_profile_analytics:
+    name: foo_child
+  register: result
+
+- name: Issue 01529 - Assert Create child analytics profile with default parent
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01529 - Create child analytics profile with default parent - Idempotent check
+  bigip_profile_analytics:
+    name: foo_child
+  register: result
+
+- name: Issue 01529 - Assert Create child analytics profile with default parent - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01529 - Change parent profile
+  bigip_profile_analytics:
+    name: foo_child
+    parent: foo_parent
+  register: result
+
+- name: Issue 01529 - Assert Change parent profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01529 - Change parent profile - Idempotent check
+  bigip_profile_analytics:
+    name: foo_child
+    parent: foo_parent
+  register: result
+
+- name: Issue 01529 - Assert Change parent profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01529 - Remove child
+  bigip_profile_analytics:
+    name: foo_child
+    state: absent
+
+- name: Issue 01529 - Remove parent
+  bigip_profile_analytics:
+    name: foo_parent
+    state: absent

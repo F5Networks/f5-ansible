@@ -509,15 +509,6 @@ class Difference(object):
             return attr1
 
     @property
-    def parent(self):
-        if self.want.parent is None:
-            return None
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent SIP profile cannot be changed."
-            )
-
-    @property
     def description(self):
         if self.want.description is None:
             return None

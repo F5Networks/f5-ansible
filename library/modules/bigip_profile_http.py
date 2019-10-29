@@ -746,6 +746,7 @@ class Parameters(AnsibleF5Parameters):
         'poll_interval_global',
         'sampling_rate',
         'sampling_rate_global',
+        'parent',
     ]
 
 
@@ -1378,15 +1379,6 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
-
-    @property
-    def parent(self):
-        if self.want.parent is None:
-            return None
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent http profile cannot be changed."
-            )
 
     @property
     def dns_resolver(self):
