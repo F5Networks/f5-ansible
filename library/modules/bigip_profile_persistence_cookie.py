@@ -686,13 +686,6 @@ class Difference(object):
             return attr1
 
     @property
-    def parent(self):
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent profile cannot be changed"
-            )
-
-    @property
     def description(self):
         return cmp_str_with_none(self.want.description, self.have.description)
 

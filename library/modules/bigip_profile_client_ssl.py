@@ -31,7 +31,6 @@ options:
         been set, it cannot be changed. By default, this value is the C(clientssl)
         parent on the C(Common) partition.
     type: str
-    default: /Common/clientssl
   ciphers:
     description:
       - Specifies the list of ciphers that the system supports. When creating a new
@@ -432,6 +431,7 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     updatables = [
+        'parent',
         'ciphers',
         'cert_key_chain',
         'allow_non_ssl',
@@ -756,13 +756,6 @@ class Difference(object):
             return want
 
     @property
-    def parent(self):
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent profile cannot be changed"
-            )
-
-    @property
     def cert_key_chain(self):
         result = self._diff_complex_items(self.want.cert_key_chain, self.have.cert_key_chain)
         return result
@@ -1020,7 +1013,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            parent=dict(default='/Common/clientssl'),
+            parent=dict(),
             ciphers=dict(),
             allow_non_ssl=dict(type='bool'),
             secure_renegotiation=dict(
