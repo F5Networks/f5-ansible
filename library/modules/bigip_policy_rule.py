@@ -142,6 +142,7 @@ requirements:
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
+  - Greg Crosby (@crosbygw)
 '''
 
 EXAMPLES = r'''
@@ -683,7 +684,7 @@ class Difference(object):
         result = self._diff_complex_items(self.want.actions, self.have.actions)
         if self._conditions_missing_default_rule_for_asm(result):
             raise F5ModuleError(
-                "The 'all_traffic' condition is required when using an ASM policy in a rule's 'enable' action."
+                "Valid options when using an ASM policy in a rule's 'enable' action include all_traffic, http_uri, or http_host."
             )
         return result
 
@@ -703,7 +704,7 @@ class Difference(object):
             conditions = self._diff_complex_items(self.want.conditions, self.have.conditions)
             if conditions is None:
                 return False
-            if any(y for y in conditions if y['type'] != 'all_traffic'):
+            if any(y for y in conditions if y['type'] not in ['all_traffic', 'http_uri', 'http_host']):
                 return True
         return False
 
