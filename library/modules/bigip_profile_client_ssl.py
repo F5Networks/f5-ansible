@@ -226,6 +226,22 @@ options:
       - Instructs the system to use the specified CRL file even if it has expired.
     type: bool
     version_added: 2.8
+  cache_size:
+    description:
+      - Specifies the number of sessions in the SSL session cache.
+      - The valid value range is between 0 and 4194304 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided
+        by the parent profile.
+    type: int
+    version_added: 2.10
+  cache_timeout:
+    description:
+      - Specifies the timeout value in seconds of the SSL session cache entries.
+      - Acceptable values are between 0 and 86400 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided
+        by the parent profile.
+    type: int
+    version_added: 2.10
   state:
     description:
       - When C(present), ensures that the profile exists.
@@ -383,7 +399,8 @@ class Parameters(AnsibleF5Parameters):
         'crlFile': 'client_auth_crl',
         'allowExpiredCrl': 'allow_expired_crl',
         'strictResume': 'strict_resume',
-        'renegotiation': 'renegotiation',
+        'cacheSize': 'cache_size',
+        'cacheTimeout': 'cache_timeout',
     }
 
     api_attributes = [
@@ -406,6 +423,8 @@ class Parameters(AnsibleF5Parameters):
         'allowExpiredCrl',
         'strictResume',
         'renegotiation',
+        'cacheSize',
+        'cacheTimeout',
     ]
 
     returnables = [
@@ -428,6 +447,8 @@ class Parameters(AnsibleF5Parameters):
         'allow_expired_crl',
         'strict_resume',
         'renegotiation',
+        'cache_size',
+        'cache_timeout',
     ]
 
     updatables = [
@@ -450,6 +471,8 @@ class Parameters(AnsibleF5Parameters):
         'allow_expired_crl',
         'strict_resume',
         'renegotiation',
+        'cache_size',
+        'cache_timeout',
     ]
 
     @property
@@ -656,6 +679,26 @@ class ApiParameters(Parameters):
         if self._values['client_auth_crl'] in [None, 'none']:
             return None
         return self._values['client_auth_crl']
+
+    @property
+    def cache_size(self):
+        if self._values['cache_size'] is None:
+            return None
+        if 0 <= self._values['cache_size'] <= 4194304:
+            return self._values['cache_size']
+        raise F5ModuleError(
+            "Valid 'cache_size' must be in range 0 - 4194304 sessions."
+        )
+
+    @property
+    def cache_timeout(self):
+        if self._values['cache_timeout'] is None:
+            return None
+        if 0 <= self._values['cache_timeout'] <= 4194304:
+            return self._values['cache_timeout']
+        raise F5ModuleError(
+            "Valid 'cache_timeout' must be in range 0 - 86400 seconds."
+        )
 
 
 class Changes(Parameters):
@@ -1080,6 +1123,8 @@ class ArgumentSpec(object):
             allow_expired_crl=dict(type='bool'),
             strict_resume=dict(type='bool'),
             renegotiation=dict(type='bool'),
+            cache_size=dict(type='int'),
+            cache_timeout=dict(type='int'),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
