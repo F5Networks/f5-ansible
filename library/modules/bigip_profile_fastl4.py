@@ -280,6 +280,11 @@ options:
     choices:
       - disconnect
       - fallback
+  hardware_syn_cookie:
+    description:
+      - Enables or disables hardware SYN cookie support when PVA10 is present on the system.
+    type: bool
+  version_added: 2.10
   partition:
     description:
       - Device partition to manage resources on.
@@ -297,6 +302,7 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -476,6 +482,11 @@ timeout_recovery:
   returned: changed
   type: str
   sample: fallback
+hardware_syn_cookie:
+  description: Enables or disables hardware SYN cookie support when PVA10 is present on the system.
+  returned: changed
+  type: bool
+  sample: no
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -534,6 +545,7 @@ class Parameters(AnsibleF5Parameters):
         'tcpTimestampMode': 'tcp_timestamp_mode',
         'tcpWscaleMode': 'tcp_wscale_mode',
         'timeoutRecovery': 'timeout_recovery',
+        'hardwareSynCookie': 'hardware_syn_cookie',
     }
 
     api_attributes = [
@@ -571,6 +583,7 @@ class Parameters(AnsibleF5Parameters):
         'tcpTimestampMode',
         'tcpWscaleMode',
         'timeoutRecovery',
+        'hardwareSynCookie',
     ]
 
     returnables = [
@@ -608,6 +621,7 @@ class Parameters(AnsibleF5Parameters):
         'tcp_timestamp_mode',
         'tcp_wscale_mode',
         'timeout_recovery',
+        'hardware_syn_cookie',
     ]
 
     updatables = [
@@ -645,6 +659,7 @@ class Parameters(AnsibleF5Parameters):
         'tcp_timestamp_mode',
         'tcp_wscale_mode',
         'timeout_recovery',
+        'hardware_syn_cookie',
     ]
 
     @property
@@ -892,6 +907,14 @@ class ModuleParameters(Parameters):
             if self._values[key] == 'mimic':
                 return 65534
             return self._values[key]
+
+    @property
+    def hardware_syn_cookie(self):
+        result = flatten_boolean(self._values['hardware_syn_cookie'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
 
 
 class Changes(Parameters):
@@ -1358,6 +1381,7 @@ class ArgumentSpec(object):
             timeout_recovery=dict(
                 choices=['fallback', 'disconnect']
             ),
+            hardware_syn_cookie=dict(type='bool'),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
