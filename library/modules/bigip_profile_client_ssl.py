@@ -352,6 +352,16 @@ renegotiation:
   returned: changed
   type: bool
   sample: yes
+cache_size:
+  description: Specifies the number of sessions in the SSL session cache.
+  returned: changed
+  type: int
+  sample: 2000
+cache_timeout:
+  description: Specifies the timeout value in seconds of the SSL session cache entries.
+  returned: changed
+  type: int
+  sample: 1800
 '''
 
 import os

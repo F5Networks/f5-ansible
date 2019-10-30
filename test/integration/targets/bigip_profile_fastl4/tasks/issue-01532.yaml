@@ -1,0 +1,53 @@
+---
+- name: Issue 01532 - Create fastl4 profile with hardware syn cookie on
+  bigip_profile_fastl4:
+    name: issue_01532
+    hardware_syn_cookie: yes
+  register: result
+
+- name: Issue 01532 - Assert Create fastl4 profile with hardware syn cookie on
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01532 - Create fastl4 profile with hardware syn cookie on - Idempotent check
+  bigip_profile_fastl4:
+    name: issue_01532
+    hardware_syn_cookie: yes
+  register: result
+
+- name: Issue 01532 - Assert Create fastl4 profile with hardware syn cookie on - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01532 - Change fastl4 profile hardware syn cookie
+  bigip_profile_fastl4:
+    name: issue_01532
+    hardware_syn_cookie: no
+  register: result
+
+- name: Issue 01532 - Assert Change fastl4 profile hardware syn cookie
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01532 - Change fastl4 profile hardware syn cookie - Idempotent check
+  bigip_profile_fastl4:
+    name: issue_01532
+    hardware_syn_cookie: no
+  register: result
+
+- name: Issue 01532 - Assert Change fastl4 profile hardware syn cookie - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01532 - Remove fastl4 profile
+  bigip_profile_fastl4:
+    name: issue_01532
+    state: absent
