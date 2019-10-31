@@ -108,6 +108,23 @@ options:
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: int
     version_added: 2.9
+  delayed_acks:
+    description:
+      - When C(yes) the system sends fewer than one ACK segment per data segment received.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: bool
+    version_added: 2.10
+  ip_tos_to_client:
+    description:
+      - Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
+      - When C(pass-through) the IP ToS setting remains unchanged.
+      - When C(mimic) the system sets the ToS level of outgoing packets to the same ToS level of the most-recently
+        received incoming packet.
+      - When set as a number, the number indicates the IP ToS setting that the system inserts in the IP packet header.
+        Valid number range is 0 - 255 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: bool
+    version_added: 2.10
   partition:
     description:
       - Device partition to manage resources on.
@@ -189,6 +206,16 @@ syn_rto_base:
   returned: changed
   type: int
   sample: 2000
+delayed_acks:
+  description: Specifies if the system sends fewer than one ACK segment per data segment received.
+  returned: changed
+  type: bool
+  sample: yes
+ip_tos_to_client:
+  description: Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
+  returned: changed
+  type: str
+  sample: mimic
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -221,7 +248,9 @@ class Parameters(AnsibleF5Parameters):
         'proxyOptions': 'proxy_options',
         'initCwnd': 'initial_congestion_window_size',
         'initRwnd': 'initial_receive_window_size',
-        'synRtoBase': 'syn_rto_base'
+        'synRtoBase': 'syn_rto_base',
+        'delayedAcks': 'delayed_acks',
+        'ipTosToClient': 'ip_tos_to_client',
     }
 
     api_attributes = [
@@ -234,6 +263,8 @@ class Parameters(AnsibleF5Parameters):
         'initCwnd',
         'initRwnd',
         'synRtoBase',
+        'delayedAcks',
+        'ipTosToClient',
     ]
 
     returnables = [
@@ -246,6 +277,8 @@ class Parameters(AnsibleF5Parameters):
         'initial_congestion_window_size',
         'initial_receive_window_size',
         'syn_rto_base',
+        'delayed_acks',
+        'ip_tos_to_client',
     ]
 
     updatables = [
@@ -258,11 +291,19 @@ class Parameters(AnsibleF5Parameters):
         'initial_congestion_window_size',
         'initial_receive_window_size',
         'syn_rto_base',
+        'delayed_acks',
+        'ip_tos_to_client',
     ]
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def ip_tos_to_client(self):
+        if self._values['ip_tos_to_client'] is None:
+            return None
+        if self._values['ip_tos_to_client'] in ['pass-through', 'mimic']:
+            return self._values['ip_tos_to_client']
+        return int(self._values['ip_tos_to_client'])
 
 
 class ModuleParameters(Parameters):
@@ -338,6 +379,26 @@ class ModuleParameters(Parameters):
             "Valid 'syn_rto_base' must be in range 0 - 5000 miliseconds."
         )
 
+    @property
+    def delayed_acks(self):
+        result = flatten_boolean(self._values['delayed_acks'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
+    @property
+    def ip_tos_to_client(self):
+        if self._values['ip_tos_to_client'] is None:
+            return None
+        if self._values['ip_tos_to_client'] in ['pass-through', 'mimic']:
+            return self._values['ip_tos_to_client']
+        if 0 <= int(self._values['ip_tos_to_client']) <= 255:
+            return int(self._values['ip_tos_to_client'])
+        raise F5ModuleError(
+            "Valid 'ip_tos_to_client' must be in range 0 - 255 or 'pass-through', 'mimic'."
+        )
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -411,6 +472,19 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def ip_tos_to_client(self):
+        if self.want.ip_tos_to_client is None:
+            return None
+        if self.want.ip_tos_to_client in ['pass-through', 'mimic']:
+            if isinstance(self.have.ip_tos_to_client, int):
+                return self.want.ip_tos_to_client
+        if self.have.ip_tos_to_client in ['pass-through', 'mimic']:
+            if isinstance(self.want.ip_tos_to_client, int):
+                return self.want.ip_tos_to_client
+        if self.want.ip_tos_to_client != self.have.ip_tos_to_client:
+            return self.want.ip_tos_to_client
 
 
 class ModuleManager(object):
@@ -621,6 +695,8 @@ class ArgumentSpec(object):
             initial_congestion_window_size=dict(type='int'),
             initial_receive_window_size=dict(type='int'),
             syn_rto_base=dict(type='int'),
+            delayed_acks=dict(type='bool'),
+            ip_tos_to_client=dict(),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
