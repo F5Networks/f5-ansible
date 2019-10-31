@@ -262,7 +262,7 @@ options:
           - When C(yes) the C(poll_interval) setting does not take effect.
         type: bool
     type: dict
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
 '''

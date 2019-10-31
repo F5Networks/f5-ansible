@@ -46,7 +46,7 @@ options:
       - This may be an absolute or relative location on the Ansible controller.
       - Image names, whether they are base ISOs or hotfix ISOs, B(must) be unique.
     type: str
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
 '''

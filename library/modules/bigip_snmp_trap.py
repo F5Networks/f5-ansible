@@ -80,7 +80,7 @@ notes:
   - The C(network) option is not supported on versions of BIG-IP < 12.1.0 because
     the platform did not support that option until 12.1.0. If used on versions
     < 12.1.0, it will simply be ignored.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

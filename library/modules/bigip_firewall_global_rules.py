@@ -52,7 +52,7 @@ options:
     description:
       - Description for the global list of firewall rules.
     type: str
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
 '''

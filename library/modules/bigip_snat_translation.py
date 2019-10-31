@@ -95,7 +95,7 @@ options:
       - The accepted value range is C(0 - 4294967295) seconds, specifying C(indefinite) will
         set it to the maximum value.
     type: str
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Greg Crosby (@crosbygw)
   - Wojciech Wypior (@wojtek0806)

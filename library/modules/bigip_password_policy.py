@@ -75,7 +75,7 @@ options:
         remember a password on a specific computer and how many passwords
         to remember.
     type: int
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
 '''

@@ -98,7 +98,7 @@ notes:
    - This module does not support re-licensing a BIG-IP restored from a UCS
    - This module does not support restoring encrypted archives on replacement
      RMA units.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

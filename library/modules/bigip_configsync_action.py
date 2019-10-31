@@ -50,7 +50,7 @@ options:
 notes:
   - Requires the objectpath Python package on the host. This is as easy as
     C(pip install objectpath).
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

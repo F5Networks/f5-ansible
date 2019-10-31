@@ -152,7 +152,7 @@ options:
     default: present
 notes:
   - This module does NOT support atomic updates of data group members in a type C(internal) data group.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

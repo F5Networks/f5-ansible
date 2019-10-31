@@ -172,7 +172,7 @@ notes:
     means that it is not unusual for a vCMP host with many guests to take a
     long time (60+ minutes) to reboot and bring all the guests online. The
     BIG-IP chassis will be available before all vCMP guests are online.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
