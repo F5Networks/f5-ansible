@@ -160,7 +160,7 @@ options:
       - absent
       - present
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - BIG-IQ >= 6.1.0.
   - This module does not support atomic removal of discovered modules on the device.

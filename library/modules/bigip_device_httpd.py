@@ -110,7 +110,7 @@ notes:
     C(pip install requests).
 requirements:
   - requests
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Joe Reifel (@JoeReifel)
   - Tim Rupp (@caphrim007)

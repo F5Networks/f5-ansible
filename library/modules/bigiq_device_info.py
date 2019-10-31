@@ -44,7 +44,7 @@ options:
       - "!regkey-pools"
       - "!system-info"
       - "!vlans"
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - This module will not work on BIGIQ version 7.0.x or greater.
 author:

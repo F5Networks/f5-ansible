@@ -143,7 +143,7 @@ notes:
     is broken in the REST API and does not function correctly in C(tmsh); for
     example you cannot remove user-defined params. Therefore, there is no way
     to automatically configure it.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

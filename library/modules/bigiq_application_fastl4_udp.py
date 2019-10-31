@@ -107,7 +107,7 @@ options:
       - If the module should wait for the application to be created, deleted or updated.
     type: bool
     default: yes
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - This module does not support updating of your application (whether deployed or not).
     If you need to update the application, the recommended practice is to remove and

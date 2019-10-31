@@ -181,7 +181,7 @@ options:
           - The valid value range is 0 - 65535.
         type: int
     type: dict
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
 '''

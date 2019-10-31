@@ -206,7 +206,7 @@ notes:
   - Abbreviated commands are NOT idempotent, see
     L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-
     abbreviated-commands).
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
 '''

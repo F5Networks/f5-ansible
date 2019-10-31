@@ -210,7 +210,7 @@ options:
 notes:
   - In previous versions of this module, which used the SDK, the C(name) parameter would act as C(fqdn) if C(address) or
     C(fqdn) were not provided.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

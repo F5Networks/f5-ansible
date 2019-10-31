@@ -185,7 +185,7 @@ notes:
   - To add members to a pool, use the C(bigip_pool_member) module. Previously, the
     C(bigip_pool) module allowed the management of members, but this has been removed
     in version 2.5 of Ansible.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

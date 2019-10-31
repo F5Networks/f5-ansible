@@ -101,7 +101,7 @@ notes:
   - This module is primarily used as a component of configuring HA pairs of
     BIG-IP devices.
   - Requires BIG-IP >= 12.1.x.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
