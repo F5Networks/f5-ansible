@@ -610,7 +610,6 @@ try:
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.compare import cmp_simple_list
-    from library.module_utils.network.f5.urls import check_header_validity
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
@@ -620,7 +619,6 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_simple_list
-    from ansible_collections.f5networks.f5_modules.plugins.module_utils.urls import check_header_validity
 
 
 class Parameters(AnsibleF5Parameters):
@@ -983,7 +981,6 @@ class ModuleParameters(Parameters):
             return None
         if header_erase in ['none', '']:
             return self._values['header_erase']
-        check_header_validity(header_erase)
         return header_erase
 
     @property
@@ -993,7 +990,6 @@ class ModuleParameters(Parameters):
             return None
         if header_insert in ['none', '']:
             return self._values['header_insert']
-        check_header_validity(header_insert)
         return header_insert
 
     @property

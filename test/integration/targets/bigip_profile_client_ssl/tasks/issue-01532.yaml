@@ -1,0 +1,57 @@
+---
+- name: Issue 01532 - Create clientssl profile with cache settings
+  bigip_profile_client_ssl:
+    name: issue_01532
+    cache_size: 3000
+    cache_timeout: 7200
+  register: result
+
+- name: Issue 01532 - Assert Create clientssl profile with cache settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01532 - Create clientssl profile with cache settings - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue_01532
+    cache_size: 3000
+    cache_timeout: 7200
+  register: result
+
+- name: Issue 01532 - Assert Create clientssl profile with cache settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01532 - Change clientssl profile cache settings
+  bigip_profile_client_ssl:
+    name: issue_01532
+    cache_size: 6584
+    cache_timeout: 1800
+  register: result
+
+- name: Issue 01532 - Assert Create clientssl profile cache settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01532 - Change clientssl profile cache settings - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue_01532
+    cache_size: 6584
+    cache_timeout: 1800
+  register: result
+
+- name: Issue 01532 - Assert Create clientssl profile cache settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01532 - Remove clientssl profile
+  bigip_profile_client_ssl:
+    name: issue_01532
+    state: absent

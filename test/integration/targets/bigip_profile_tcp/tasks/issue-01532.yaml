@@ -1,0 +1,81 @@
+---
+- name: Issue 01532 - Create a TCP profile with delayed_acks and ip_tos_to_client
+  bigip_profile_tcp:
+    name: issue_01532
+    delayed_acks: no
+    ip_tos_to_client: mimic
+  register: result
+
+- name: Issue 01532 - Assert Create a TCP profile with delayed_acks and ip_tos_to_client
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01532 - Create a TCP profile with delayed_acks and ip_tos_to_client - Idempotent check
+  bigip_profile_tcp:
+    name: issue_01532
+    delayed_acks: no
+    ip_tos_to_client: mimic
+  register: result
+
+- name: Issue 01532 - Assert Create a TCP profile with delayed_acks and ip_tos_to_client - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01532 - Modify TCP profile's delayed_acks and ip_tos_to_client
+  bigip_profile_tcp:
+    name: issue_01532
+    delayed_acks: yes
+    ip_tos_to_client: 10
+  register: result
+
+- name: Issue 01532 - Assert Modify TCP profile's delayed_acks and ip_tos_to_client
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01532 - Modify TCP profile's delayed_acks and ip_tos_to_client - Idempotent check
+  bigip_profile_tcp:
+    name: issue_01532
+    delayed_acks: yes
+    ip_tos_to_client: 10
+  register: result
+
+- name: Issue 01532 - Assert Modify TCP profile's delayed_acks and ip_tos_to_client - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01532 - Modify TCP profile's ip_tos_to_client
+  bigip_profile_tcp:
+    name: issue_01532
+    ip_tos_to_client: pass-through
+  register: result
+
+- name: Issue 01532 - Assert Modify TCP profile's ip_tos_to_client
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01532 - Modify TCP profile's ip_tos_to_client - Idempotent check
+  bigip_profile_tcp:
+    name: issue_01532
+    ip_tos_to_client: pass-through
+  register: result
+
+- name: Issue 01532 - Assert Modify TCP profile's ip_tos_to_client - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01532 - Remove TCP profile
+  bigip_profile_tcp:
+    name: issue_01532
+    state: absent
