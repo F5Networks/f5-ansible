@@ -60,7 +60,7 @@ options:
     type: str
     default: Common
     version_added: 2.5
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

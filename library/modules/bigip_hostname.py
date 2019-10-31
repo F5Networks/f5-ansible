@@ -25,7 +25,7 @@ options:
       - Hostname of the BIG-IP host.
     type: str
     required: True
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Matthew Lam (@mryanlam)

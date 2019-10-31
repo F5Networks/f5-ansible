@@ -182,7 +182,7 @@ options:
       - If the module should wait for the application to be created, deleted or updated.
     type: bool
     default: yes
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - This module will not work on BIGIQ version 6.1.x or greater.
 author:

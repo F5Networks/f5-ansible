@@ -143,7 +143,7 @@ options:
         marks the Secure Access Manager system down.
       - When creating a new monitor, if this parameter is not specified, the default is C(95).
     type: int
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

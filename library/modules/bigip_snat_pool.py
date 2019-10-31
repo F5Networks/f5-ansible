@@ -57,7 +57,7 @@ notes:
   - When C(bigip_snat_pool) object is removed it also removes any associated C(bigip_snat_translation) objects.
   - This is a BIG-IP behavior not module behavior and it only occurs when the C(bigip_snat_translation) objects
     are also not referenced by another C(bigip_snat_pool).
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

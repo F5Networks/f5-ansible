@@ -30,13 +30,3 @@ jobs:
         - inv test.style
         - inv test.sanity-all
       python: "3.6"
-    - name: Docs Tests
-      script: inv docs.build
-      python: "3.6"
-    - stage: Deploy_Docs
-      script:
-        - travis_retry pip install -r requirements.readthedocs.txt
-        - inv docs.module
-        - make docker-test && make docker-deploy
-        - aws cloudfront create-invalidation --distribution-id $AWS_DIST_ID --paths /products/orchestration/ansible/devel
-      python: "3.6"

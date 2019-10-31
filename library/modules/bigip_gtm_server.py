@@ -294,7 +294,7 @@ options:
         type: int
     type: dict
     version_added: 2.8
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Robert Teller (@r-teller)
   - Tim Rupp (@caphrim007)

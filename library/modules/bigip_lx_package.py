@@ -49,7 +49,7 @@ notes:
 requirements:
   - Requires BIG-IP >= 12.1.0
   - The 'rpm' tool installed on the Ansible controller
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

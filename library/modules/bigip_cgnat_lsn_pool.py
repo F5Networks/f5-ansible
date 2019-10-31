@@ -184,7 +184,7 @@ options:
     default: present
 notes:
   - Requires CGNAT licensed and enabled on BIG-IP.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
