@@ -278,7 +278,7 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 requirements:
   - BIG-IP >= v13.0.0
 author:

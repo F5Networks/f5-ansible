@@ -55,7 +55,7 @@ notes:
   - Due to ID685681 it is not possible to execute ng_* tools via REST api on v12.x and 13.x, once this is fixed
     this restriction will be removed.
   - Requires BIG-IP >= 14.0.0
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
 '''

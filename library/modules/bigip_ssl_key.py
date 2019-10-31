@@ -60,7 +60,7 @@ notes:
     files or templates directory. To have it behave that way, use the Ansible
     file or template lookup (see Examples). The lookups behave as expected in
     a role context.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 requirements:
   - BIG-IP >= v12
 author:

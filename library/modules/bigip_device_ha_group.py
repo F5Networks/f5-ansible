@@ -122,7 +122,7 @@ options:
     default: present
 notes:
   - This module does not support atomic removal of HA group objects.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
