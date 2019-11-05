@@ -60,7 +60,7 @@ options:
           - Specifies the number of seconds for which spanning tree information received from other bridges is
             considered valid.
           - The valid range is 6 to 40 seconds.
-        type: str
+        type: int
       max_hops:
         description:
           - Specifies the maximum number of hops an MSTP packet may travel before it is discarded.

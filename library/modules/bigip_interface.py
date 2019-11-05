@@ -850,7 +850,7 @@ class ArgumentSpec(object):
         self.choices = [
             '100000-FD', '100000LR4-FD', '10000LR-FD', '10000T-FD', '1000SX-FD', '100TX-FD', '10T-HD', '20000-FD',
             '40000LR4-FD', '100000AR4-FD', '100000SR4-FD', '10000SFPCU-FD', '1000CX-FD', '1000T-FD', '100TX-HD',
-            '12000-FD', '21000-FD', '40000SR4-FD', '100000CR4-FD', '10000ER-FD', '10000SR-FD', '1000LX-FD', '1000T-HD'
+            '12000-FD', '21000-FD', '40000SR4-FD', '100000CR4-FD', '10000ER-FD', '10000SR-FD', '1000LX-FD', '1000T-HD',
             '10T-FD', '16000-FD', '40000-FD', '42000-FD', 'auto', 'no-phy'
         ]
         self.bundle = ['disabled', 'enabled', 'not-supported']
