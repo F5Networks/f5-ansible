@@ -284,7 +284,6 @@ options:
     description:
       - Enables or disables hardware SYN cookie support when PVA10 is present on the system.
     type: bool
-  version_added: 2.10
   partition:
     description:
       - Device partition to manage resources on.

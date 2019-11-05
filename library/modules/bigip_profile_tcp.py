@@ -123,7 +123,7 @@ options:
       - When set as a number, the number indicates the IP ToS setting that the system inserts in the IP packet header.
         Valid number range is 0 - 255 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
-    type: bool
+    type: str
     version_added: 2.10
   partition:
     description:
