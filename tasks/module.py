@@ -83,21 +83,30 @@ def upstream(c, module, collection='f5_modules'):
     """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
     """
     deprecated = False
-    root_dest = '{0}/local/ansible_collections/'.format(BASE_DIR)
-    coll_namespace = '{0}/local/ansible_collections/f5networks/'.format(BASE_DIR)
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-
-    if not os.path.exists(root_dest):
-        print("The specified upstream directory does not exist.")
-        sys.exit(1)
-
-    if not os.path.exists(coll_namespace):
-        print("The F5 namespace directory does not exist.")
-        sys.exit(1)
+    test_dir = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/'.format(BASE_DIR, collection)
+    fixtures_dir = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/fixtures/'.format(BASE_DIR, collection)
+    modules_dir = '{0}/local/ansible_collections/f5networks/{1}/plugins/modules/'.format(BASE_DIR, collection)
 
     if not os.path.exists(coll_dest):
-        print("The specified collection directory does not exist.")
-        sys.exit(1)
+        print("The required collection directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(coll_dest))
+        print("Collection directory created.")
+
+    if not os.path.exists(modules_dir):
+        print("The required module directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(modules_dir))
+        print("Module directory created.")
+
+    if not os.path.exists(fixtures_dir):
+        print("The required test fixtures directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(fixtures_dir))
+        print("Test fixtures directory created.")
+
+    if not os.path.exists(test_dir):
+        print("The required test directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(test_dir))
+        print("Test directory created.")
 
     if len(module) == 1 and module[0] == 'all':
         modules = get_all_module_names()
@@ -115,7 +124,7 @@ def upstream(c, module, collection='f5_modules'):
             # - upstream unit test file
             cmd = [
                 'cp', '{0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module),
-                '{0}/local/ansible_collections/f5networks/{1}/test/units/modules/network/f5/test_{2}.py'.format(BASE_DIR, collection, module)
+                '{0}/test_{1}.py'.format(test_dir, module)
             ]
             c.run(' '.join(cmd))
 
@@ -124,7 +133,7 @@ def upstream(c, module, collection='f5_modules'):
         for fixture in fixtures:
             cmd = [
                 'cp', '{0}/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture),
-                '{0}/local/ansible_collections/f5networks/{1}/test/units/modules/network/f5/fixtures/{2}'.format(BASE_DIR, collection, fixture)
+                '{0}/{1}'.format(fixtures_dir, fixture)
             ]
             c.run(' '.join(cmd))
 
@@ -132,7 +141,7 @@ def upstream(c, module, collection='f5_modules'):
             # - upstream module file
             cmd = [
                 'cp', '{0}/library/modules/{1}.py'.format(BASE_DIR, module),
-                '{0}/local/ansible_collections/f5networks/{1}/plugins/modules/{2}.py'.format(BASE_DIR, collection, module)
+                '{0}/{1}.py'.format(modules_dir, module)
             ]
             c.run(' '.join(cmd))
 
