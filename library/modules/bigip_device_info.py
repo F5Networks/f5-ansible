@@ -504,7 +504,9 @@ asm_server_technologies:
         link:
           description:
             - A self link to an associated server technology.
-      sample: https://localhost/mgmt/tm/asm/server-technologies/NQG7CT02OBC2cQWbnP7T-A?ver=13.1.0
+          returned: queried
+          type: str
+          sample: https://localhost/mgmt/tm/asm/server-technologies/NQG7CT02OBC2cQWbnP7T-A?ver=13.1.0
   sample: hash/dictionary of values
 asm_signature_sets:
   description: Detailed information for ASM signature sets present on device.
@@ -1136,7 +1138,7 @@ external_monitors:
     variables:
       description:
         - Specifies any variables that the script requires.
-      type: complex
+      type: dict
       sample: { "key1": "val", "key_2": "val 2" }
     interval:
       description:
@@ -1430,7 +1432,7 @@ fastl4_profiles:
         - This option specifies the ToS level that the traffic management
           system assigns to IP packets when sending them to clients.
       returned: queried
-      type: str or int
+      type: str
       sample: 200
     ip_tos_to_server:
       description:
@@ -1438,7 +1440,7 @@ fastl4_profiles:
         - This option specifies the ToS level that the traffic management system assigns
           to IP packets when sending them to servers.
       returned: queried
-      type: str or int
+      type: str
       sample: pass-through
     ttl_mode:
       description:
@@ -1490,7 +1492,7 @@ fastl4_profiles:
         - This option specifies the QoS level that the system assigns to packets
           when sending them to clients.
       returned: queried
-      type: int or string
+      type: int
       sample: 7
     link_qos_to_server:
       description:
@@ -1498,7 +1500,7 @@ fastl4_profiles:
         - This option specifies the QoS level that the system assigns to
           packets when sending them to servers.
       returned: queried
-      type: int or string
+      type: int
       sample: 5
     loose_close:
       description:
@@ -1532,7 +1534,7 @@ fastl4_profiles:
         - This option specifies the internal packet priority that the system
           assigns to packets when sending them to clients.
       returned: queried
-      type: int or string
+      type: int
       sample: 300
     priority_to_server:
       description:
@@ -1540,7 +1542,7 @@ fastl4_profiles:
         - This option specifies the internal packet priority that the system
           assigns to packets when sending them to servers.
       returned: queried
-      type: int or string
+      type: int
       sample: 200
     pva_acceleration:
       description:
@@ -1909,11 +1911,12 @@ gtm_pools:
       description:
         - Lists of members (and their configurations) in the pool.
       returned: queried
-      type: complex
+      type: dict
     partition:
       description:
         - Partition the pool exists on.
       returned: queried
+      type: str
     qos_hit_ratio:
       description:
         - Weight of the Hit Ratio performance factor for the QoS dynamic load
@@ -2133,17 +2136,17 @@ gtm_servers:
       description:
         - Specifies the server IP addresses for the server.
       returned: queried
-      type: complex
+      type: dict
     devices:
       description:
         - Specifies the names of the devices that represent this server.
       returned: queried
-      type: complex
+      type: dict
     virtual_servers:
       description:
         - Virtual servers that are resources for this server.
       returned: queried
-      type: complex
+      type: dict
   sample: hash/dictionary of values
 gtm_wide_ips:
   description:
@@ -2235,7 +2238,7 @@ gtm_wide_ips:
       description:
         - Specifies the pools that this wide IP uses for load balancing.
       returned: queried
-      type: complex
+      type: dict
   sample: hash/dictionary of values
 gtm_topology_regions:
   description: GTM regions related information.
@@ -2263,9 +2266,9 @@ gtm_topology_regions:
           description:
             - Indicates if region member is a C(IS-NOT) negative. In BIG-IP configuration the region members
               can be C(IS) or C(IS-NOT).
-        returned: when configured for the region member.
-        type: bool
-        sample: yes
+          returned: when configured for the region member.
+          type: bool
+          sample: yes
         subnet:
           description:
             - An IP address and network mask in the CIDR format.
@@ -2915,25 +2918,25 @@ iapp_services:
       description:
         - List of the tabular data used to create the service.
       returned: queried
-      type: complex
+      type: list
       sample: [{"name": "basic__snatpool_members"},...]
     variables:
       description:
         - List of the variable data used to create the service.
       returned: queried
-      type: complex
+      type: list
       sample: [{"name": "afm__policy"},{"encrypted": "no"},{"value": "/#no_not_use#"},...]
     metadata:
       description:
         - List of the metadata data used to create the service..
       returned: queried
-      type: complex
+      type: list
       sample: [{"name": "var1"},{"persist": "true"},...]
     lists:
       description:
         - List of the lists data used to create the service.
       returned: queried
-      type: complex
+      type: list
       sample: [{"name": "irules__irules"},{"value": []},...]
     description:
       description:
@@ -3358,7 +3361,7 @@ ltm_pools:
       description:
         - Dictionary of arbitrary key/value pairs set on the pool.
       returned: queried
-      type: complex
+      type: dict
       sample: hash/dictionary of values
     minimum_active_members:
       description:
