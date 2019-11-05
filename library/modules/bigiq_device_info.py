@@ -276,7 +276,7 @@ managed_devices:
       description:
         - Volumes on the device and versions of software installed in those volumes.
       returned: changed
-      type: complex
+      type: dict
       sample: {"volume": "HD1.1", "product": "BIG-IP", "version": "13.1.1", "build": "0.0.4", "isActive": "yes"}
     state:
       description:
@@ -288,7 +288,7 @@ managed_devices:
       description:
         - Misc tags that are assigned to the device.
       returned: changed
-      type: complex
+      type: dict
       sample: {'BIGIQ_tier_2_device': '2018-08-22T13:30:47.693-07:00', 'BIGIQ_SSG_name': 'tim-ssg'}
     trust_domain_guid:
       description:
