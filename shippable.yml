@@ -3,7 +3,7 @@
 language: python
 
 python:
-  - 2.7
+  - 3.7
 
 build:
   ci:
@@ -12,8 +12,13 @@ build:
     - shippable_retry pip install --upgrade pip
     - shippable_retry pip install -r requirements.shippable.txt
     - pytest -x -s $SHIPPABLE_BUILD_DIR/test/units/modules/network/f5/ --junitxml=$SHIPPABLE_BUILD_DIR/shippable/testresults/nosetests.xml
-    - inv test.sanity-all
+    - inv test.f5-sanity
     - inv test.style
+    - inv module.upstream -m all
+    - inv module-utils.upstream
+    - inv module-doc-fragments.upstream
+    - inv plugins.upstream
+    - inv test.ansible-sanity -r -p 3.8
 
 ## Disabled Emails for now, will tinker with that later when needed
 

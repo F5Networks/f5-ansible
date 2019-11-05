@@ -8,7 +8,6 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import os
-import sys
 
 from .lib.common import BASE_DIR
 
@@ -30,13 +29,14 @@ def upstream(c, collection='f5_modules'):
     """
     root_dest = '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
     if not os.path.exists(root_dest):
-        print("The specified upstream directory does not exist")
-        sys.exit(1)
+        print("The required upstream directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(root_dest))
+        print("Doc fragments directory created.")
 
     # - upstream doc fragments
     cmd = [
-        'cp', '{0}/library/plugins/doc_fragments/*'.format(BASE_DIR),
-        '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
+        'cp', '{0}/library/plugins/doc_fragments/*.py'.format(BASE_DIR),
+        '{0}'.format(root_dest)
     ]
     c.run(' '.join(cmd))
     print("Copy complete")

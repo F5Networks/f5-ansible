@@ -11,7 +11,6 @@ from invoke import Collection
 
 from . import container
 from . import collection
-from . import docs
 from . import ip
 from . import module
 from . import module_doc_fragments
@@ -22,7 +21,6 @@ from . import test
 ns = Collection(
     container,
     collection,
-    docs,
     ip,
     module,
     module_doc_fragments,

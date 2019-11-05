@@ -7,7 +7,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-import sys
 import os
 import glob
 
@@ -27,7 +26,7 @@ def upstream_plugin(c, plugin, collection='f5_modules'):
     if not os.path.exists(plugin_dir):
         print("No plugin type {0} directory found ...skipping.".format(plugin))
         return
-    if len(list(glob.glob('{0}/*.py'.format(target_dir)))) == 0:
+    if len(list(glob.glob('{0}/*.py'.format(plugin_dir)))) == 0:
         print("No plugin type {0} files found ...skipping.".format(plugin))
         return
     if not os.path.exists(target_dir):
@@ -44,11 +43,11 @@ def upstream_plugin(c, plugin, collection='f5_modules'):
 def upstream(c, collection='f5_modules'):
     """Copy all plugins, to the local/ansible_collections/f5networks/collection_name directory.
     """
-    root_dest = '{0}/local/ansible_collections/'.format(BASE_DIR)
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}/'.format(BASE_DIR, collection)
-    if not os.path.exists(root_dest) or not os.path.exists(coll_dest):
-        print("The specified upstream directory and/or collection directory does not exist.")
-        sys.exit(1)
+    if not os.path.exists(coll_dest):
+        print("The required collection directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(coll_dest))
+        print("Collection directory created.")
 
     upstream_plugin(c, 'action')
     upstream_plugin(c, 'connection')
