@@ -119,6 +119,31 @@ options:
         module.
     type: str
     version_added: 2.8
+  persistence:
+    description:
+      - When C(yes), ensures that when a local DNS makes repetitive requests on
+        behalf of a client, the system reconnects the client to the same resource
+        as previous requests.
+      - When C(no), ensures repetitive requests do not reconnect the client
+        to the same resource.
+    type: bool
+  persistence_ttl:
+    description:
+      - Specifies the time to maintain a connection between an local DNS and
+        a particular virtual server.
+    type: int
+  persist_cidr_ipv4:
+    description:
+      - Specifies a mask used to group IPv4 LDNS addresses. This feature
+        allows one persistence record to be shared by LDNS addresses
+        that match within this mask.
+    type: int
+  persist_cidr_ipv6:
+    description:
+      - Specifies a mask used to group IPv6 LDNS addresses. This feature
+        allows one persistence record to be shared by LDNS addresses
+        that match within this mask.
+    type: int
 notes:
   - Support for TMOS versions below v12.x has been deprecated for this module, and will be removed in Ansible 2.12.
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -186,6 +211,22 @@ EXAMPLES = r'''
       password: secret
       server: lb.mydomain.com
   delegate_to: localhost
+
+- name: Assign a pool with persistence to the Wide IP
+  bigip_gtm_wide_ip:
+    pool_lb_method: round-robin
+    name: my-wide-ip.example.com
+    pools:
+      - name: pool1
+        persistence: yes
+        persist_cidr_ipv4: 24
+        persist_cidr_ipv6: 120
+        persistence_ttl: 3500
+    provider:
+      user: admin
+      password: secret
+      server: lb.mydomain.com
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -209,6 +250,26 @@ aliases:
   returned: changed
   type: list
   sample: ['alias1.foo.com', '*.wildcard.domain']
+persistence:
+  description: Whether the pool connections will be persisted.
+  returned: changed
+  type: bool
+  sample: False
+persist_cidr_ipv4:
+  description: Specifies a mask used to group IPv4 LDNS addresses.
+  returned: changed
+  type: int
+  sample: 32
+persist_cidr_ipv6:
+  description: Specifies a mask used to group IPv6 LDNS addresses.
+  returned: changed
+  type: int
+  sample: 128
+persistence_ttl:
+  description: Specifies the persistence TTL between an local DNS and a particular virtual server.
+  returned: changed
+  type: int
+  sample: 3600
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -222,6 +283,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import is_valid_fqdn
     from library.module_utils.network.f5.icontrol import tmos_version
@@ -232,6 +294,7 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_valid_fqdn
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
@@ -243,6 +306,9 @@ class Parameters(AnsibleF5Parameters):
         'poolLbMode': 'pool_lb_method',
         'rules': 'irules',
         'lastResortPool': 'last_resort_pool',
+        'persistCidrIpv4': 'persist_cidr_ipv4',
+        'persistCidrIpv6': 'persist_cidr_ipv6',
+        'ttlPersistence': 'persistence_ttl',
     }
 
     updatables = [
@@ -254,6 +320,9 @@ class Parameters(AnsibleF5Parameters):
         'disabled',
         'aliases',
         'last_resort_pool',
+        'persist_cidr_ipv4',
+        'persist_cidr_ipv6',
+        'persistence_ttl',
     ]
 
     returnables = [
@@ -264,6 +333,10 @@ class Parameters(AnsibleF5Parameters):
         'irules',
         'aliases',
         'last_resort_pool',
+        'persistence',
+        'persist_cidr_ipv4',
+        'persist_cidr_ipv6',
+        'persistence_ttl',
     ]
 
     api_attributes = [
@@ -274,6 +347,10 @@ class Parameters(AnsibleF5Parameters):
         'rules',
         'aliases',
         'lastResortPool',
+        'persistence',
+        'ttlPersistence',
+        'persistCidrIpv4',
+        'persistCidrIpv6',
     ]
 
 
@@ -408,6 +485,47 @@ class ModuleParameters(Parameters):
             return ''
         self._values['aliases'].sort()
         return self._values['aliases']
+
+    @property
+    def persistence(self):
+        if self._values['persistence'] is None:
+            return None
+        result = flatten_boolean(self._values['persistence'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def persistence_ttl(self):
+        if self._values['persistence_ttl'] is None:
+            return None
+        if 0 <= self._values['persistence_ttl'] <= 4294967295:
+            return self._values['persistence_ttl']
+        raise F5ModuleError(
+            "Valid 'persistence_ttl' must be in range 0 - 4294967295."
+        )
+
+    @property
+    def persist_cidr_ipv4(self):
+        if self._values['persist_cidr_ipv4'] is None:
+            return None
+        if 0 <= self._values['persist_cidr_ipv4'] <= 4294967295:
+            return self._values['persist_cidr_ipv4']
+        raise F5ModuleError(
+            "Valid 'persist_cidr_ipv4' must be in range 0 - 4294967295."
+        )
+
+    @property
+    def persist_cidr_ipv6(self):
+        if self._values['persist_cidr_ipv6'] is None:
+            return None
+        if 0 <= self._values['persist_cidr_ipv6'] <= 4294967295:
+            return self._values['persist_cidr_ipv6']
+        raise F5ModuleError(
+            "Valid 'persist_cidr_ipv6' must be in range 0 - 4294967295."
+        )
 
 
 class Changes(Parameters):
@@ -922,6 +1040,10 @@ class ArgumentSpec(object):
                 type='list'
             ),
             last_resort_pool=dict(),
+            persistence=dict(type='bool'),
+            persistence_ttl=dict(type='int'),
+            persist_cidr_ipv4=dict(type='int'),
+            persist_cidr_ipv6=dict(type='int'),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
