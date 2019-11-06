@@ -18,7 +18,7 @@ build:
     - inv module-utils.upstream
     - inv module-doc-fragments.upstream
     - inv plugins.upstream
-    - inv test.ansible-sanity -r -p 3.8
+    - inv test.ansible-sanity -r -p 3.7
 
 ## Disabled Emails for now, will tinker with that later when needed
 
