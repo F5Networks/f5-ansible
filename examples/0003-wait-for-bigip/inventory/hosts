@@ -1,2 +1,0 @@
-[f5-test]
-big-ip01.internal ansible_host=localhost

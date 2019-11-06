@@ -14,19 +14,25 @@ install:
 stages:
   - name: Tests
     if: branch = devel AND type = pull_request
-  - name: Deploy_Docs
-    if: branch = devel AND type != pull_request
 
 jobs:
   include:
     - stage: Tests
-      name: Unit Tests
+      name: F5 Unit Tests
       script:
         - travis_retry pip install pytest --upgrade
         - pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
       python: "3.6"
-    - name: Style and Sanity Tests
+    - name: F5 Style and F5 Sanity Tests
       script:
         - inv test.style
-        - inv test.sanity-all
+        - inv test.f5-sanity
+      python: "3.6"
+    - name: Ansible Sanity Tests
+      script:
+        - inv module.upstream -m all
+        - inv module-utils.upstream
+        - inv module-doc-fragments.upstream
+        - inv plugins.upstream
+        - inv test.ansible-sanity -r -p 3.6
       python: "3.6"
