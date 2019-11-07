@@ -75,7 +75,7 @@ def build(c, version, collection='f5_modules', update=True):
 @task(optional=['qa'], help=HELP)
 def publish(c, filename, api_key, qa=None):
     """Publish collection on Galaxy."""
-    file = '{0}/{1}'.format(BUILD_DIR, filename)
+    file = '{0}/{1}'.format(BUILD_DIR, os.path.basename(filename))
     if not os.path.exists(file):
         print("Requested file {0} not found.".format(file))
         sys.exit(1)
