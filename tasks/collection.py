@@ -47,20 +47,6 @@ def update_galaxy_file(version, collection):
     fh.close()
 
 
-def ansible_test_collection(c, collection):
-    ansible_test = '{0}/local/ansible/bin'.format(BASE_DIR)
-    collection_dir = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-    if not os.path.exists(ansible_test):
-        print("The ansible directory does not exist - skipping tests.")
-        return
-    with c.cd(collection_dir):
-        execute = '{0}/ansible-test sanity plugins/modules/*.*'.format(ansible_test)
-        result = c.run(execute, warn=True)
-        if result.failed:
-            sys.exit(1)
-        c.run('rm -rf {0}/tests/output'.format(collection_dir))
-
-
 def validate_version(version):
     try:
         semver.parse_version_info(version)
@@ -72,25 +58,18 @@ def validate_version(version):
 @task(optional=['collection', 'skiptest'], help=dict(
     version="Version of the collection to build, the version must follow in SemVer format.",
     collection="The collection name to which the modules are upstreamed, DEFAULT: 'f5_modules'.",
-    skiptest="Allows bypassing ansible sanity tests when building collection.",
+    update="Allows updating galaxy file when requested."
 ))
-def build(c, version, collection='f5_modules', skiptest=None):
+def build(c, version, collection='f5_modules', update=True):
     """Creates collection builds in the ansible_collections/_build directory."""
     validate_version(version)
-    if not skiptest:
-        ansible_test_collection(c, collection)
-    update_galaxy_file(version, collection)
+    if update:
+        update_galaxy_file(version, collection)
     if not os.path.exists(BUILD_DIR):
         os.makedirs(BUILD_DIR)
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
     cmd = 'ansible-galaxy collection build {0} -f --output-path {1}'.format(coll_dest, BUILD_DIR)
     c.run(cmd)
-
-
-@task
-def test(c, collection='f5_modules'):
-    """Runs sanity tests on ansible collection."""
-    ansible_test_collection(c, collection)
 
 
 @task(optional=['qa'], help=HELP)
@@ -106,3 +85,11 @@ def publish(c, filename, api_key, qa=None):
         cmd = 'ansible-galaxy collection publish {0} --api-key={1}'.format(file, api_key)
 
     c.run(cmd)
+
+
+@task
+def update_galaxy(c, version, collection='f5_modules'):
+    """Updates galaxy.yml file"""
+    validate_version(version)
+    update_galaxy_file(version, collection)
+    print("File galaxy.yml updated.")
