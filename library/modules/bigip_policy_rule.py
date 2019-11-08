@@ -115,6 +115,11 @@ options:
           - A list of strings of characters that the HTTP Host should match.
           - This parameter is only valid with the C(http_host) type.
         type: str
+      host_is_not_any:
+        description:
+          - A list of strings of characters that the HTTP Host should not match.
+          - This parameter is only valid with the C(http_host) type.
+        type: str
       host_begins_with_any:
         description:
           - A list of strings of characters that the HTTP Host should start with.
@@ -444,6 +449,17 @@ class ModuleParameters(Parameters):
                 host=True,
                 values=values
             ))
+        elif 'host_is_not_any' in item:
+            if isinstance(item['host_is_not_any'], list):
+                values = item['host_is_not_any']
+            else:
+                values = [item['host_is_not_any']]
+            action.update({
+                'equals': True,
+                'host': True,
+                'not': True,
+                'values': values
+            })
 
     def _handle_http_uri_condition(self, action, item):
         """Handle the nuances of the forwarding type
@@ -1030,7 +1046,8 @@ class ArgumentSpec(object):
                     ),
                     path_begins_with_any=dict(),
                     host_begins_with_any=dict(),
-                    host_is_any=dict()
+                    host_is_any=dict(),
+                    host_is_not_any=dict()
                 ),
             ),
             name=dict(required=True),
