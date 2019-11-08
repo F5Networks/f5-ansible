@@ -44,6 +44,10 @@ options:
     description:
       - The receive string for the monitor call.
     type: str
+  receive_disable:
+    description:
+      - The receive disable string for the monitor call.
+    type: str
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
@@ -154,6 +158,11 @@ receive:
   returned: changed
   type: str
   sample: tcp string to receive
+receive_disable:
+  description: The new receive disable string for this monitor.
+  returned: changed
+  type: str
+  sample: tcp string to receive
 ip:
   description: The new IP of IP/port definition.
   returned: changed
@@ -210,6 +219,7 @@ class Parameters(AnsibleF5Parameters):
         'timeUntilUp': 'time_until_up',
         'defaultsFrom': 'parent',
         'recv': 'receive',
+        'recvDisable': 'receive_disable'
     }
 
     api_attributes = [
@@ -218,6 +228,7 @@ class Parameters(AnsibleF5Parameters):
         'interval',
         'timeout',
         'recv',
+        'recvDisable',
         'send',
         'destination',
         'description',
@@ -227,6 +238,7 @@ class Parameters(AnsibleF5Parameters):
         'parent',
         'send',
         'receive',
+        'receive_disable',
         'ip',
         'port',
         'interval',
@@ -239,6 +251,7 @@ class Parameters(AnsibleF5Parameters):
         'destination',
         'send',
         'receive',
+        'receive_disable',
         'interval',
         'timeout',
         'time_until_up',
@@ -628,6 +641,7 @@ class ArgumentSpec(object):
             description=dict(),
             send=dict(),
             receive=dict(),
+            receive_disable=dict(),
             ip=dict(),
             port=dict(),
             interval=dict(type='int'),
