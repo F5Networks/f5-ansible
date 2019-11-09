@@ -42,6 +42,7 @@ options:
           - When C(type) is C(ignore), will remove all existing actions from this
             rule.
           - When C(type) is C(redirect), will redirect an HTTP request to a different URL.
+          - When C(type) is C(reset), will reset the connection upon C(event).
         type: str
         required: true
         choices:
@@ -49,6 +50,7 @@ options:
           - enable
           - ignore
           - redirect
+          - reset
       pool:
         description:
           - Pool that you want to forward traffic to.
@@ -68,6 +70,10 @@ options:
         description:
           - The new URL for which a redirect response will be sent.
           - A Tcl command substitution can be used for this field.
+        type: str
+      event:
+        description:
+          - Events on which actions such as reset can be triggered,
         type: str
     type: list
   policy:
@@ -346,6 +352,10 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'redirect'
                 del action['redirect']
+            elif 'shutdown' in item:
+                action.update(item)
+                action['type'] = 'reset'
+                del action['shutdown']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -402,6 +412,9 @@ class ModuleParameters(Parameters):
                 return [dict(type='ignore')]
             elif item['type'] == 'redirect':
                 self._handle_redirect_action(action, item)
+            elif item['type'] == 'reset':
+                self._handle_reset_action(action, item)
+                del action['shutdown']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -542,6 +555,25 @@ class ModuleParameters(Parameters):
             httpReply=True,
         )
 
+    def _handle_reset_action(self, action, item):
+        """Handle the nuances of the reset type
+
+        :param action:
+        :param item:
+        :return:
+        """
+        action['type'] = 'reset'
+        if 'event' not in item:
+            raise F5ModuleError(
+                "An 'event' must be specified when the 'reset' type is used."
+            )
+        elif 'ssl_client_hello' in item['event']:
+            action.update(dict(
+                sslClientHello=True,
+                connection=True,
+                shutdown=True
+            ))
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -580,6 +612,11 @@ class ReportableChanges(Changes):
                 action['type'] = 'redirect'
                 del action['redirect']
                 del action['httpReply']
+            elif 'reset' in item:
+                action.update(item)
+                action['type'] = 'reset'
+                del action['connection']
+                del action['shutdown']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -626,6 +663,10 @@ class UsableChanges(Changes):
             elif action['type'] == 'redirect':
                 action['httpReply'] = True
                 action['redirect'] = True
+                del action['type']
+            elif action['type'] == 'reset':
+                action['shutdown'] = True
+                action['connection'] = True
                 del action['type']
             result.append(action)
         return result
@@ -1021,6 +1062,7 @@ class ArgumentSpec(object):
                             'enable',
                             'ignore',
                             'redirect',
+                            'reset',
                         ],
                         required=True
                     ),
@@ -1028,6 +1070,7 @@ class ArgumentSpec(object):
                     asm_policy=dict(),
                     virtual=dict(),
                     location=dict(),
+                    event=dict(),
                 ),
                 mutually_exclusive=[
                     ['pool', 'asm_policy', 'virtual', 'location']
