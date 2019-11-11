@@ -73,7 +73,7 @@ options:
         type: str
       event:
         description:
-          - Events on which actions such as reset can be triggered,
+          - Events on which actions such as reset can be triggered.
         type: str
     type: list
   policy:
@@ -111,6 +111,7 @@ options:
           - http_uri
           - all_traffic
           - http_host
+          - ssl_extension
       path_begins_with_any:
         description:
           - A list of strings of characters that the HTTP URI should start with.
@@ -130,6 +131,15 @@ options:
         description:
           - A list of strings of characters that the HTTP Host should start with.
           - This parameter is only valid with the C(http_host) type.
+        type: str
+      server_name_is_any:
+        description:
+          - A list of strings of characters that the SSL Extension should match.
+          - This parameter is only valid with the C(ssl_extension) type.
+        type: str
+      event:
+        description:
+          - Events on which conditions such as SSL Extension can be triggered.
         type: str
     type: list
   state:
@@ -386,6 +396,11 @@ class ApiParameters(Parameters):
                 action['type'] = 'http_host'
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
+            elif 'sslExtension' in item:
+                action.update(item)
+                action['type'] = 'ssl_extension'
+                if 'values' in action:
+                    action['values'] = [str(x) for x in action['values']]
             result.append(action)
         # Names contains the index in which the rule is at.
         result = sorted(result, key=lambda x: x['name'])
@@ -434,6 +449,8 @@ class ModuleParameters(Parameters):
                 self._handle_http_uri_condition(action, item)
             elif item['type'] == 'http_host':
                 self._handle_http_host_condition(action, item)
+            elif item['type'] == 'ssl_extension':
+                self._handle_ssl_extension_condition(action, item)
             elif item['type'] == 'all_traffic':
                 return [dict(type='all_traffic')]
             result.append(action)
@@ -499,6 +516,31 @@ class ModuleParameters(Parameters):
             startsWith=True,
             values=values
         ))
+
+    def _handle_ssl_extension_condition(self, action, item):
+        action['type'] = 'ssl_extension'
+        if 'server_name_is_any' in item:
+            if isinstance(item['server_name_is_any'], list):
+                values = item['server_name_is_any']
+            else:
+                values = [item['server_name_is_any']]
+            action.update(dict(
+                equals=True,
+                serverName=True,
+                values=values
+            ))
+        if 'event' not in item:
+            raise F5ModuleError(
+                "An 'event' must be specified when the 'ssl_extension' condition is used."
+            )
+        elif 'ssl_client_hello' in item['event']:
+            action.update(dict(
+                sslClientHello=True
+            ))
+        elif 'ssl_server_hello' in item['event']:
+            action.update(dict(
+                sslServerHello=True
+            ))
 
     def _handle_forward_action(self, action, item):
         """Handle the nuances of the forwarding type
@@ -636,6 +678,10 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'http_host'
                 del action['httpHost']
+            elif 'sslExtension' in item:
+                action.update(item)
+                action['type'] = 'ssl_extension'
+                del action['sslExtension']
             result.append(action)
         # Names contains the index in which the rule is at.
         result = sorted(result, key=lambda x: x['name'])
@@ -684,6 +730,9 @@ class UsableChanges(Changes):
                 del condition['type']
             elif condition['type'] == 'http_host':
                 condition['httpHost'] = True
+                del condition['type']
+            elif condition['type'] == 'ssl_extension':
+                condition['sslExtension'] = True
                 del condition['type']
             elif condition['type'] == 'all_traffic':
                 result = []
@@ -1083,6 +1132,7 @@ class ArgumentSpec(object):
                         choices=[
                             'http_uri',
                             'http_host',
+                            'ssl_extension',
                             'all_traffic'
                         ],
                         required=True
@@ -1090,7 +1140,9 @@ class ArgumentSpec(object):
                     path_begins_with_any=dict(),
                     host_begins_with_any=dict(),
                     host_is_any=dict(),
-                    host_is_not_any=dict()
+                    host_is_not_any=dict(),
+                    server_name_is_any=dict(),
+                    event=dict(),
                 ),
             ),
             name=dict(required=True),
