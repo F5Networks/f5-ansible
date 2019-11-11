@@ -1,0 +1,51 @@
+---
+
+- name: Create a VIP, pool and pool members
+  hosts: all
+  connection: local
+
+  vars:
+    provider:
+      password: admin
+      server: localhost
+      user: admin
+      validate_certs: no
+      server_port: 10443
+
+  tasks:
+    - name: Create a pool
+      bigip_pool:
+        provider: "{{ provider }}"
+        lb_method: ratio-member
+        name: web
+        slow_ramp_time: 120
+      delegate_to: localhost
+
+    - name: Add members to pool
+      bigip_pool_member:
+        provider: "{{ provider }}"
+        description: "webserver {{ item.name }}"
+        host: "{{ item.host }}"
+        name: "{{ item.name }}"
+        pool: web
+        port: 80
+      with_items:
+        - host: 10.10.10.10
+          name: web01
+        - host: 10.10.10.20
+          name: web02
+      delegate_to: localhost
+
+    - name: Create a VIP
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        description: foo-vip
+        destination: 172.16.10.108
+        name: vip-1
+        pool: web
+        port: 80
+        snat: Automap
+        profiles:
+          - http
+          - clientssl
+      delegate_to: localhost
