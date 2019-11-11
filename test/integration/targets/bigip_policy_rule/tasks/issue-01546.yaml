@@ -1,0 +1,41 @@
+---
+
+- name: Issue 01546 - Create published policy
+  bigip_policy:
+    name: issue-01546
+
+- name: Issue 01546 - Create published rule with actions
+  bigip_policy_rule:
+    policy: issue-01546
+    name: rule1
+    actions:
+      - type: reset
+        event: ssl_client_hello
+  register: result
+
+- name: Issue 01546 - Assert Create published rule with actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01546 - Create published rule with actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01546
+    name: rule1
+    actions:
+      - type: reset
+        event: ssl_client_hello
+  register: result
+
+- name: Issue 01546 - Assert Create published rule with actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01546 - Remove policy
+  bigip_policy:
+    name: issue-01546
+    state: absent
+  register: result
