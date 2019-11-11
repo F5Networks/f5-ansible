@@ -1,0 +1,152 @@
+---
+
+- name: Issue 01545 - Create published policy
+  bigip_policy:
+    name: issue-01545
+
+- name: Issue 01545 - Change condition is_any
+  bigip_policy_rule:
+    policy: issue-01545
+    name: rule1
+    conditions:
+      - type: ssl_extension
+        server_name_is_any:
+          - foo.bar.com
+          - cat.dog.com
+        event: ssl_client_hello
+  register: result
+
+- name: Issue 01545 - Assert Change condition is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01545 - Change condition is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01545
+    name: rule1
+    conditions:
+      - type: ssl_extension
+        server_name_is_any:
+          - foo.bar.com
+          - cat.dog.com
+        event: ssl_client_hello
+  register: result
+
+- name: Issue 01545 - Assert Change condition is_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01545 - Add value condition is_any
+  bigip_policy_rule:
+    policy: issue-01545
+    name: rule1
+    conditions:
+      - type: ssl_extension
+        server_name_is_any:
+          - foo.bar.com
+          - baz.bar.com
+          - cat.dog.com
+        event: ssl_client_hello
+  register: result
+
+- name: Issue 01545 - Assert Add value condition is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01545 - Add value condition is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01545
+    name: rule1
+    conditions:
+      - type: ssl_extension
+        server_name_is_any:
+          - foo.bar.com
+          - baz.bar.com
+          - cat.dog.com
+        event: ssl_client_hello
+  register: result
+
+- name: Issue 01545 - Assert Add value condition is_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01545 - Remove value condition is_any
+  bigip_policy_rule:
+    policy: issue-01545
+    name: rule1
+    conditions:
+      - type: ssl_extension
+        server_name_is_any:
+          - foo.bar.com
+          - baz.bar.com
+        event: ssl_client_hello
+  register: result
+
+- name: Issue 01545 - Assert Remove value condition is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01545 - Remove value condition is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01545
+    name: rule1
+    conditions:
+      - type: ssl_extension
+        server_name_is_any:
+          - foo.bar.com
+          - baz.bar.com
+        event: ssl_client_hello
+  register: result
+
+- name: Issue 01545 - Assert Remove value condition is_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01545 - Change Event to ssl_server_hello
+  bigip_policy_rule:
+    policy: issue-01545
+    name: rule1
+    conditions:
+      - type: ssl_extension
+        server_name_is_any: foo.bar.com
+        event: ssl_server_hello
+  register: result
+
+- name: Issue 01545 - Assert Change Event to ssl_server_hello
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01545 - Change Event to ssl_server_hello - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01545
+    name: rule1
+    conditions:
+      - type: ssl_extension
+        server_name_is_any: foo.bar.com
+        event: ssl_server_hello
+  register: result
+
+- name: Issue 01545 - Change Event to ssl_server_hello - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01545 - Remove published policy
+  bigip_policy:
+    name: issue-01545
+    state: absent
