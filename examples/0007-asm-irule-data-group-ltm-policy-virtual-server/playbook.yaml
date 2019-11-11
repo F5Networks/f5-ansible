@@ -1,0 +1,76 @@
+---
+
+- name: A demo playbook
+  hosts: f5
+  connection: local
+
+  environment:
+    F5_SERVER: "{{ ansible_host }}"
+    F5_USER: "{{ username }}"
+    F5_PASSWORD: "{{ password }}"
+    F5_SERVER_PORT: "{{ server_port }}"
+    F5_VALIDATE_CERTS: "{{ validate_certs }}"
+
+  tasks:
+    - name: Provision ASM
+      bigip_provision:
+        module: asm
+
+    - name: Create a data group with data from bad-actiors-1
+      bigip_data_group:
+        name: external-dg1
+        records_src: files/bad-actors-1
+
+    - name: Create an iRule which uses data from data group file
+      bigip_irule:
+        content: "{{ lookup('file', 'bad-actors.tcl') }}"
+        module: ltm
+        name: bad-actors
+
+    - name: Create an LTM policy
+      bigip_policy:
+        name: my-policy1
+
+    - name: Create ASM policy, compact XML file
+      bigip_asm_policy:
+        name: my-asm-policy
+        file: files/actors.xml
+
+    - name: Replace a forward action with an ASM action - Idempotent check
+      bigip_policy_rule:
+        policy: my-policy1
+        name: rule1
+        actions:
+          - type: enable
+            asm_policy: my-asm-policy
+
+    - name: Create pool
+      bigip_pool:
+        lb_method: round-robin
+        name: my-pool
+
+    - name: Create some pool members
+      bigip_pool_member:
+        host: "{{ item.host }}"
+        pool: my-pool
+        port: "{{ item.port }}"
+        rate_limit: 100
+      loop:
+        - host: 1.1.1.1
+          port: 8443
+        - host: 2.2.2.2
+          port: 8080
+
+    - name: Create a standard virtual server
+      bigip_virtual_server:
+        profiles:
+          - http
+          - websecurity
+        destination: 3.3.3.3
+        name: my-virtual
+        port: 443
+        pool: my-pool
+        policies:
+          - my-policy1
+        irules:
+          - bad-actors

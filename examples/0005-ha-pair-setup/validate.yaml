@@ -1,0 +1,31 @@
+---
+
+- name: Check Internal IP address
+  fail:
+    msg: "You must fill-in the 'Internal' Self-IP"
+  when: nets[0]['address'] in ['IP_A1', 'IP_B1']
+
+- name: Check External IP address
+  fail:
+    msg: "You must fill-in the 'External' Self-IP"
+  when: nets[0]['address'] in ['IP_A2', 'IP_B2']
+
+- name: Check HA IP address
+  fail:
+    msg: "You must fill-in the 'HA' Self-IP"
+  when: nets[0]['address'] in ['IP_A3', 'IP_B3']
+
+- name: Check config-sync IP
+  fail:
+    msg: "You must fill-in the 'config_sync_ip' variable"
+  when: config_sync_ip in ['IP_A3', 'IP_B3']
+
+- name: Check mirror_primary_address IP
+  fail:
+    msg: "You must fill-in the 'mirror_primary_address' variable"
+  when: mirror_primary_address in ['IP_A3', 'IP_B3']
+
+- name: Check unicast_failover IP
+  fail:
+    msg: "You must fill-in the 'unicast_failover' variable"
+  when: unicast_failover[0]['address'] in ['IP_A3', 'IP_B3']
