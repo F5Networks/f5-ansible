@@ -1,0 +1,34 @@
+---
+
+- name: Wait for BIG-IP REST services and MCDP to be ready
+  hosts: f5-test
+  connection: local
+
+  tasks:
+      - name: Poll BIG-IP failover.linksup
+        uri:
+            url: "https://{{ ansible_host }}//mgmt/tm/sys/db/failover.linksup"
+            status_code: 200
+            timeout: 300
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            return_content: yes
+        until: bigip_failover_linksup.status == 200 and bigip_failover_linksup.json.value == 'true'
+        retries: 20
+        delay: 10
+        register: bigip_failover_linksup
+        tags: bigip_ready
+
+
+      # TODO: add a timeout.
+      # Raw command to support older BIG-IP without json
+      - name: Wait for MCPD ready
+        raw: |
+            bigstart_wait mcpd ready
+            while ! tmsh show sys mcp-state field-fmt | grep -qE 'phase.+running' || pidof -x mprov.pl >/dev/null 2>&1; do sleep 1; done
+            if [[ ! $(getdb Provision.CPU.asm) == 0 ]]; then perl -MF5::ASMReady -e '$|++; do {print "waiting for asm...\n"; sleep(1)} while !F5::ASMReady::is_asm_ready()'; fi
+        args:
+            executable: /bin/bash
+        register: mcpd_ready_result
+        tags: bigip_ready

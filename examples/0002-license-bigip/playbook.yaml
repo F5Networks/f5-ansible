@@ -1,0 +1,20 @@
+---
+
+- name: Create a VIP, pool, pool members and nodes
+  hosts: f5-test
+  connection: local
+
+  vars:
+    provider:
+      password: "{{ f5_password }}"
+      server: "{{ ansible_host }}"
+      user: "{{ f5_username }}"
+      validate_certs: "{{ validate_certs }}"
+      server_port: "{{ f5_server_port }}"
+
+  tasks:
+    - name: License a BIG-IP
+      bigip_device_license:
+        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+        accept_eula: yes
+        provider: "{{ provider }}"

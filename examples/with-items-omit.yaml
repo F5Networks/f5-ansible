@@ -1,0 +1,148 @@
+---
+
+# Example of using the `omit` filter so that a single playbook can
+# be used by multiple sets of variables
+#
+# This example puts the variables at the top of the play.
+#
+# It should be noted that these variables themselves do not need to
+# exist in the playbook. In fact, it is recommended that you put these
+# and other variables in either the host's inventory file or in the
+# group's inventory file; whichever is more proper for your use case.
+#
+# Requirements:
+#
+#   * Ansible >= 2.3
+#
+
+- name: Setup items that are needed for out VIPs
+  hosts: f5-test
+  connection: local
+
+  environment:
+      F5_SERVER: "{{ inventory_hostname }}"
+      F5_USER: "admin"
+      F5_PASSWORD: "admin"
+      F5_VALIDATE_CERTS: "false"
+      F5_SERVER_PORT: 10443
+
+  tasks:
+      - name: Create pools
+        bigip_pool:
+            name: "{{ item }}"
+        with_items:
+            - test.abc.com_443_pool
+            - test.def.org_8080_pool
+        delegate_to: localhost
+
+      - name: Create VLANs
+        bigip_vlan:
+            name: "{{ item }}"
+        delegate_to: localhost
+        with_items:
+            - v2495-zone4
+            - v2495-zone5
+
+      - name: Create an iRule
+        bigip_irule:
+            name: foo-rule
+            module: ltm
+            content: "when HTTP_REQUEST { set site_name [HTTP::host] }"
+        delegate_to: localhost
+
+- name: Create VIP from inventory that has all vars
+  hosts: f5-test
+  connection: local
+
+  environment:
+      F5_SERVER: "{{ inventory_hostname }}"
+      F5_USER: "admin"
+      F5_PASSWORD: "admin"
+      F5_VALIDATE_CERTS: "false"
+      F5_SERVER_PORT: 10443
+
+  vars:
+      virtuals:
+          - destination: 10.10.10.10
+            pool: test.abc.com_443_pool
+            route_advertisement_state: enabled
+            partition: Common
+            port: 8443
+            snat: Automap
+            enabled_vlans:
+                - /Common/v2495-zone4
+            all_rules:
+                - foo-rule
+            default_persistence_profile: /Common/cookie
+            name: test.abc.com_443
+            profiles:
+                - http
+
+  tasks:
+      - name: Add virtual server
+        bigip_virtual_server:
+            state: "present"
+            partition: "{{ item.partition }}"
+            name: "{{ item.name }}"
+            destination: "{{ item.destination }}"
+            port: "{{ item.port }}"
+            pool: "{{ item.pool }}"
+            snat: "{{ item.snat }}"
+            all_profiles: "{{ item.profiles }}"
+            all_rules: "{{ item.all_rules|default(omit) }}"
+            default_persistence_profile: "{{ item.default_persistence_profile|default(omit) }}"
+            route_advertisement_state: "{{ item.route_advertisement_state }}"
+            enabled_vlans: "{{ item.enabled_vlans }}"
+        register: result
+        with_items: "{{ virtuals }}"
+
+      - name: Print some debug information
+        debug:
+            var: result
+
+- name: Create VIP from inventory - 'all_rules' and 'persistence_profile' missing
+  hosts: f5-test
+  connection: local
+
+  environment:
+      F5_SERVER: "{{ inventory_hostname }}"
+      F5_USER: "admin"
+      F5_PASSWORD: "admin"
+      F5_VALIDATE_CERTS: "false"
+      F5_SERVER_PORT: 10443
+
+  vars:
+      virtuals:
+          - destination: 11.11.11.11
+            pool: test.def.org_8080_pool
+            route_advertisement_state: enabled
+            partition: Common
+            port: 8080
+            snat: Automap
+            enabled_vlans:
+                - /Common/v2495-zone5
+            name: test.def.org_8080
+            profiles:
+                - http
+
+  tasks:
+      - name: Add virtual server
+        bigip_virtual_server:
+            state: "present"
+            partition: "{{ item.partition }}"
+            name: "{{ item.name }}"
+            destination: "{{ item.destination }}"
+            port: "{{ item.port }}"
+            pool: "{{ item.pool }}"
+            snat: "{{ item.snat }}"
+            all_profiles: "{{ item.profiles }}"
+            all_rules: "{{ item.all_rules|default(omit) }}"
+            default_persistence_profile: "{{ item.default_persistence_profile|default(omit) }}"
+            route_advertisement_state: "{{ item.route_advertisement_state }}"
+            enabled_vlans: "{{ item.enabled_vlans }}"
+        register: result
+        with_items: "{{ virtuals }}"
+
+      - name: Print some debug information
+        debug:
+            var: result
