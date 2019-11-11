@@ -1,0 +1,27 @@
+---
+
+- name: Create an HTTP "per-app" application on BIG-IQ
+  hosts: f5-test
+  connection: local
+
+  vars:
+    provider:
+      password: "{{ f5_password }}"
+      server: "{{ ansible_host }}"
+      user: "{{ f5_username }}"
+      validate_certs: "{{ validate_certs }}"
+      server_port: "{{ f5_server_port }}"
+
+  tasks:
+    - name: Create an HTTP application
+      bigiq_application_http:
+        provider: "{{ provider }}"
+        name: my-app1
+        inbound_virtual:
+          address: 10.10.10.10
+          netmask: 255.255.255.255
+        service_environment: ssg1
+        servers:
+          - address: 1.1.1.1
+            port: 8080
+          - address: 2.2.2.2

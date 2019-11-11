@@ -1,0 +1,28 @@
+---
+
+- name: Fake idempotency with bigip_command
+  hosts: f5-test
+  connection: local
+
+  tasks:
+      - name: Check to see if my virtual exists
+        bigip_command:
+          commands:
+            - tmsh show ltm virtual foo
+          password: "{{ bigip_password }}"
+          server: "{{ ansible_host }}"
+          server_port: "{{ bigip_port }}"
+          user: "{{ bigip_username }}"
+          validate_certs: "{{ validate_certs }}"
+        register: result
+
+      - name: Create virtual if it's not there
+        bigip_command:
+          commands:
+            - tmsh create ltm virtual foo destination 2.2.2.2:443
+          password: "{{ bigip_password }}"
+          server: "{{ ansible_host }}"
+          server_port: "{{ bigip_port }}"
+          user: "{{ bigip_username }}"
+          validate_certs: "{{ validate_certs }}"
+        when: '"was not found" in result.stdout|first'

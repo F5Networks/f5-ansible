@@ -1,0 +1,119 @@
+#
+# This playbook will remove the LTM objects that were created by "playbook.yaml".
+#
+# It is not necessary to explicitly delete a pool member when deleting a pool (it is
+# done implicitly).
+#
+# It is necessary to explicitly delete a node that was implicitly created when
+# creating a pool member.
+#
+# The objects deleted:  virtual, (pool member), pool, and node
+#
+# This playbook has been tested on version 13.1.0 of BIG-IP. It may work on other
+# versions, but it has not been tested on other versions.
+#
+---
+
+- name: Use the REST API directly
+  hosts: f5-test
+  connection: local
+
+  tasks:
+    - name: Get an API token
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/shared/authn/login"
+        method: POST
+        body: |
+          {
+            "username": "{{ bigip_username }}",
+            "password": "{{ bigip_password }}",
+            "loginProviderName": "tmos"
+          }
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      register: auth
+
+    - name: Check for a virtual server
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/virtual/~Common~foo"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200, 404
+        validate_certs: "{{ validate_certs }}"
+      register: virtual
+
+    - name: Delete a virtual server
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/virtual/~Common~foo"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: virtual.status == 200
+
+    - name: Check for a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: [200,404]
+        validate_certs: "{{ validate_certs }}"
+      register: pool
+
+    - name: Delete a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: pool.status == 200
+
+    - name: Check for a node
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/node/~Common~1.1.1.1"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: [200,404]
+        validate_certs: "{{ validate_certs }}"
+      register: node
+
+    - name: Delete a node
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/node/~Common~1.1.1.1"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: node.status == 200
+
+    - name: Save config to disk
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/sys/config"
+        method: POST
+        body: |
+          {
+            "command":"save"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+
+    - name: Destroy an API token
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/shared/authz/tokens/{{ auth['json']['token']['name'] }}"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      register: auth
