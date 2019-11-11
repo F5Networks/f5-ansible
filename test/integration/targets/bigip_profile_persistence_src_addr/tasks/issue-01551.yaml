@@ -1,0 +1,70 @@
+---
+
+- name: Issue 01551 - Create profile with mirror and mask
+  bigip_profile_persistence_src_addr:
+    name: issue-01551
+    mirror: yes
+    mask: 255.255.0.0
+  register: result
+
+- name: Issue 01551 - Assert Create profile with mirror and mask
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01551 - Create profile with mirror and mask - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: issue-01551
+    mirror: yes
+    mask: 255.255.0.0
+  register: result
+
+- name: Issue 01551 - Assert Create profile with mirror and mask - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01551 - Update profile, disable mirroring
+  bigip_profile_persistence_src_addr:
+    name: issue-01551
+    mirror: no
+  register: result
+
+- name: Issue 01551 - Asset Update profile, disable mirroring
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01551 - Update profile, change mask to IPv6
+  bigip_profile_persistence_src_addr:
+    name: issue-01551
+    mirror: yes
+    mask: ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
+  register: result
+
+- name: Issue 01551 - Assert Update profile, change mask to IPv6
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01551 - Update profile - Idempotent check
+  bigip_profile_persistence_src_addr:
+    name: issue-01551
+    mirror: yes
+    mask: ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
+  register: result
+
+- name: Issue 01551 - Assert Update profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01551 - Remove profiles
+  bigip_profile_persistence_src_addr:
+    name: issue-01551
+    state: absent
