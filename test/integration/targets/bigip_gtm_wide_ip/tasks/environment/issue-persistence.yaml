@@ -1,0 +1,108 @@
+---
+
+- name: Issue Persistence - Include issue variables
+  include_vars:
+    file: issue-persistence.yaml
+
+- name: Issue Persistence - Provision GTM
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue Persistence - Create pool, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    state: present
+    type: a
+  register: result
+
+- name: Issue Persistence - Create wide IP with persistence
+  bigip_gtm_wide_ip:
+    lb_method: "{{ pool_lb_method }}"
+    state: present
+    type: a
+    name: "{{ wide_ip1 }}"
+    persistence: yes
+    persist_cidr_ipv4: 24
+    persist_cidr_ipv6: 120
+    pools:
+      - name: "{{ pool_name }}"
+  register: result
+
+- name: Issue Persistence - Assert Create wide IP with persistence
+  assert:
+    that:
+      - result is changed
+
+- name: Issue Persistence - Create wide IP with persistence - Idempotent check
+  bigip_gtm_wide_ip:
+    lb_method: "{{ pool_lb_method }}"
+    state: present
+    type: a
+    name: "{{ wide_ip1 }}"
+    persistence: yes
+    persist_cidr_ipv4: 24
+    persist_cidr_ipv6: 120
+    pools:
+      - name: "{{ pool_name }}"
+  register: result
+
+- name: Issue Persistence - Assert Create wide IP with persistence - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+- name: Issue Persistence - Create wide IP without persistence
+  bigip_gtm_wide_ip:
+    lb_method: "{{ pool_lb_method }}"
+    state: present
+    type: a
+    name: "{{ wide_ip2 }}"
+    pools:
+      - name: "{{ pool_name }}"
+  register: result
+
+- name: Issue Persistence - Assert Create wide IP without persistence
+  assert:
+    that:
+      - result is changed
+
+- name: Issue Persistence - Create wide IP without persistence - Idempotent check
+  bigip_gtm_wide_ip:
+    lb_method: "{{ pool_lb_method }}"
+    state: present
+    type: a
+    name: "{{ wide_ip2 }}"
+    pools:
+      - name: "{{ pool_name }}"
+  register: result
+
+- name: Issue Persistence - Assert Create wide IP without persistence - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue Persistence - Remove wide IP with persistence
+  bigip_gtm_wide_ip:
+    state: absent
+    type: a
+    wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Issue Persistence - Remove wide IP without persistence
+  bigip_gtm_wide_ip:
+    state: absent
+    type: a
+    wide_ip: "{{ wide_ip2 }}"
+  register: result
+
+- name: Issue Persistence - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
