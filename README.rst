@@ -36,7 +36,7 @@ The F5 Modules for Ansible are freely provided to the open source community for 
 
 
 Collections Daily Build
-------------
+-----------------------
 We offer a daily build of our most recent collection at |dailycollectionbuild|.
 
 Please use this Collection to test the most recent Ansible module updates between releases.
@@ -44,11 +44,13 @@ Please use this Collection to test the most recent Ansible module updates betwee
 Installing the Daily Build
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code:: shell
+
     ansible-galaxy collection install <collection name> -p ./collections
     e.g.
     ansible-galaxy collection install f5networks-f5_modules-1.0.0-devel.tar.gz -p ./collections
 
 .. note::
+
    "-p" is the location in which the collection will be installed. This location should be defined in the path for
    ansible to search for collections. An example of this would be adding ``collections_paths = ./collections``
    to your **ansible.cfg**
