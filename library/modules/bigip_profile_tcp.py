@@ -113,7 +113,7 @@ options:
       - When C(yes) the system sends fewer than one ACK segment per data segment received.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
-    version_added: 2.10
+    version_added: "2.10"
   ip_tos_to_client:
     description:
       - Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
@@ -124,7 +124,7 @@ options:
         Valid number range is 0 - 255 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
-    version_added: 2.10
+    version_added: "2.10"
   partition:
     description:
       - Device partition to manage resources on.

@@ -18,7 +18,7 @@ module: bigip_profile_sip
 short_description: Manage SIP profiles on a BIG-IP
 description:
   - Manage SIP profiles on a BIG-IP.
-version_added: 2.10
+version_added: "2.10"
 options:
   name:
     description:
