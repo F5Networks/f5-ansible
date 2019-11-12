@@ -18,7 +18,7 @@ module: bigip_cgnat_lsn_pool
 short_description: Manage CGNAT LSN Pools
 description:
   - Manage CGNAT LSN Pools.
-version_added: 2.10
+version_added: "2.10"
 options:
   name:
     description:

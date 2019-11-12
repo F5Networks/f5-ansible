@@ -18,7 +18,7 @@ module: bigip_network_globals
 short_description: Manage network global settings on BIG-IP
 description:
   - Module to manage STP, Multicast, DAG and LLDP global settings on BIG-IP.
-version_added: 2.10
+version_added: "2.10"
 options:
   stp:
     description:
