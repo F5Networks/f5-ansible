@@ -11,7 +11,7 @@ license: GPL-3.0-only
 name: {{ collection }}
 namespace: f5networks
 readme: README.md
-repository: https://github.com/ansible/ansible_collections_f5
+repository: https://github.com/F5Networks/f5-ansible
 tags:
   - f5
   - networking

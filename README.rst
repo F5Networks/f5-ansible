@@ -1,7 +1,7 @@
 .. raw:: html
 
    <!--
-   Copyright 2015-2016 F5 Networks Inc.
+   Copyright 2015-2019 F5 Networks Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -25,17 +25,33 @@ Introduction
 ------------
 
 This repository provides the foundation for working with the F5 Modules for Ansible.
-The architecture of the modules makes inherent use of the BIG-IP SOAP and REST
-APIs as well as the tmsh API where required.
+The architecture of the modules makes inherent use of the BIG-IP REST APIs as well as the tmsh API where required.
 
 This repository is an **incubator** for Ansible modules. The modules in this repository **may be
 broken due to experimentation or refactoring**.
 
-If you want to download the stable modules, they are shipped with Ansible
-automatically. In-between major releases of Ansible, new |ansible_stablemodules|.
+If you want to download the stable modules, please install latest collection release found at |f5_collection|
 
-The F5 Modules for Ansible are freely provided to the open source community for automating
-BIG-IP device configurations. 
+The F5 Modules for Ansible are freely provided to the open source community for automating BIG-IP device configurations.
+
+
+Collections Daily Build
+------------
+We offer a daily build of our most recent collection at |dailycollectionbuild|.
+
+Please use this Collection to test the most recent Ansible module updates between releases.
+
+Installing the Daily Build
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code:: shell
+    ansible-galaxy collection install <collection name> -p ./collections
+    e.g.
+    ansible-galaxy collection install f5networks-f5_modules-1.0.0-devel.tar.gz -p ./collections
+
+.. note::
+   "-p" is the location in which the collection will be installed. This location should be defined in the path for
+   ansible to search for collections. An example of this would be adding ``collections_paths = ./collections``
+   to your **ansible.cfg**
 
 Support
 -------
@@ -51,8 +67,6 @@ Documentation
 
 All documentation is available on |ansiblehelp|.
 
-When |writingmodules|, please refer to the |ansibleguidelines| document.
-
 Your ideas
 ----------
 
@@ -65,7 +79,7 @@ If you've got the time, consider sending an email that introduces yourself and w
 Copyright
 ---------
 
-Copyright 2017-2018 F5 Networks Inc.
+Copyright 2017-2019 F5 Networks Inc.
 
 
 License
@@ -98,21 +112,19 @@ Individuals or business entities who contribute to this project must complete an
 .. _License: https://github.com/F5Networks/f5-ansible/blob/devel/COPYING
 
 
+.. |dailycollectionbuild| raw:: html
+   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-1.0.0-devel.tar.gz" target="_blank">Daily Build</a>
+
+.. |f5_collection| raw:: html
+   <a href="https://galaxy.ansible.com/f5networks/f5_modules" target="_blank"F5 Ansible Modules Collection</a>
 
 .. |ansible_distro| raw:: html
 
    <a href="https://pypi.org/project/ansible/" target="_blank">Red Hat Ansible distributions</a>
 
-
 .. |support_policy| raw:: html
 
    <a href="https://f5.com/support/support-policies" target="_blank">F5 Ansible Support Policy</a>
-
-
-
-.. |ansible_stablemodules| raw:: html
-
-   <a href="https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/network/f5" target="_blank">stable modules can be found here</a>
 
 .. |ansible_issues| raw:: html
 
@@ -121,10 +133,6 @@ Individuals or business entities who contribute to this project must complete an
 .. |ansiblehelp| raw:: html
 
    <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/" target="_blank">clouddocs.f5.com</a>
-
-.. |writingmodules| raw:: html
-
-   <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/development/writing-a-module.html" target="_blank">writing new modules</a>
 
 .. |ansibleguidelines| raw:: html
 
