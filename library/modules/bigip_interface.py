@@ -18,7 +18,7 @@ module: bigip_interface
 short_description: Module to manage BIG-IP physical interfaces.
 description:
   - Module to manage BIG-IP physical interfaces.
-version_added: "2.10"
+version_added: "f5_modules 1.0.0"
 options:
   name:
     description:
