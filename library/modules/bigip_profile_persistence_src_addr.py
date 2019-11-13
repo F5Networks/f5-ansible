@@ -52,6 +52,19 @@ options:
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: bool
+  mirror:
+    description:
+      - When C(yes), specifies that if the active unit goes into the standby mode, the system
+        mirrors any persistence records to its peer.
+      - When creating a new profile, if this parameter is not specified, the
+        default is provided by the parent profile.
+    type: bool
+  mask:
+    description:
+      - Specifies a value that the system applies as the prefix length.
+      - When creating a new profile, if this parameter is not specified, the
+        default is provided by the parent profile.
+    type: str
   hash_algorithm:
     description:
       - Specifies the algorithm the system uses for hash persistence load balancing. The hash
@@ -107,6 +120,8 @@ EXAMPLES = r'''
     hash_algorithm: carp
     match_across_services: yes
     match_across_virtuals: yes
+    mirror: yes
+    mask: 255.255.255.255
     provider:
       password: secret
       server: lb.mydomain.com
@@ -115,16 +130,51 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+parent:
+  description: The parent profile.
   returned: changed
   type: str
-  sample: Foo is bar
+  sample: /Common/cookie
+hash_algorithm:
+  description: The algorithm used for hash persistence.
+  returned: changed
+  type: str
+  sample: default
+match_across_pools:
+  description: The new Match Across Pools value.
+  returned: changed
+  type: bool
+  sample: yes
+match_across_services:
+  description: The new Match Across Services value.
+  returned: changed
+  type: bool
+  sample: no
+match_across_virtuals:
+  description: The new Match Across Virtuals value.
+  returned: changed
+  type: bool
+  sample: yes
+override_connection_limit:
+  description: The new Override Connection Limit value.
+  returned: changed
+  type: bool
+  sample: no
+entry_timeout:
+  description: The duration of the persistence entries.
+  returned: changed
+  type: str
+  sample: 180
+mirror:
+  description: The new Mirror value.
+  returned: changed
+  type: bool
+  sample: yes
+mask:
+  description: The persist mask value.
+  returned: changed
+  type: str
+  sample: 255.255.255.255
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -138,6 +188,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.ipaddress import is_valid_ip
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
@@ -146,6 +197,7 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
@@ -170,6 +222,8 @@ class Parameters(AnsibleF5Parameters):
         'matchAcrossVirtuals',
         'overrideConnectionLimit',
         'timeout',
+        'mirror',
+        'mask',
     ]
 
     returnables = [
@@ -180,6 +234,8 @@ class Parameters(AnsibleF5Parameters):
         'match_across_virtuals',
         'override_connection_limit',
         'entry_timeout',
+        'mirror',
+        'mask',
     ]
 
     updatables = [
@@ -190,6 +246,8 @@ class Parameters(AnsibleF5Parameters):
         'override_connection_limit',
         'entry_timeout',
         'parent',
+        'mirror',
+        'mask',
     ]
 
     @property
@@ -231,6 +289,28 @@ class ModuleParameters(Parameters):
             return None
         result = fq_name(self.partition, self._values['parent'])
         return result
+
+    @property
+    def mirror(self):
+        if self._values['mirror'] is None:
+            return None
+        result = flatten_boolean(self._values['mirror'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def mask(self):
+        if self._values['mask'] is None:
+            return None
+        if is_valid_ip(self._values['mask']):
+            return self._values['mask']
+        else:
+            raise F5ModuleError(
+                "The provided 'mask' is not a valid IP address"
+            )
 
 
 class Changes(Parameters):
@@ -513,6 +593,8 @@ class ArgumentSpec(object):
             match_across_services=dict(type='bool'),
             match_across_virtuals=dict(type='bool'),
             match_across_pools=dict(type='bool'),
+            mirror=dict(type='bool'),
+            mask=dict(),
             hash_algorithm=dict(choices=['default', 'carp']),
             entry_timeout=dict(),
             override_connection_limit=dict(type='bool'),
