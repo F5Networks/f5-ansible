@@ -4,7 +4,7 @@ authors:
   - Nitin Khanna (@nitinthewiz)
 dependencies: {}
 description: F5 Modules for Ansible
-documentation: https://clouddocs.f5.com/products/orchestration/ansible/devel/modules/list_of_network_modules.html
+documentation: https://clouddocs.f5.com/products/orchestration/ansible/devel/modules/module_index.html
 homepage: https://clouddocs.f5.com/products/orchestration/ansible/devel/
 issues: https://github.com/F5Networks/f5-ansible/issues
 license: GPL-3.0-only
