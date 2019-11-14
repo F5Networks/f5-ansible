@@ -22,14 +22,12 @@ from .lib.stubber import stub_roles_dirs
 from .lib.stubber import stub_roles_yaml_files
 from .lib.stubber import stub_playbook_file
 from .lib.stubber import stub_library_file
-from .lib.stubber import stub_module_documentation
 from .lib.stubber import stub_unit_test_file
 
 from .lib.stubber import unstub_roles_dirs
 from .lib.stubber import unstub_roles_yaml_files
 from .lib.stubber import unstub_playbook_file
 from .lib.stubber import unstub_library_file
-from .lib.stubber import unstub_module_documentation
 from .lib.stubber import unstub_unit_test_file
 
 from invoke import task
@@ -51,7 +49,6 @@ def stub(c, module=None):
     stub_roles_yaml_files(module)
     stub_playbook_file(module)
     stub_library_file(module, extension)
-    stub_module_documentation(module)
     stub_unit_test_file(module, extension)
 
 
@@ -67,7 +64,6 @@ def unstub(c, module=None):
     unstub_roles_dirs(module)
     unstub_playbook_file(module)
     unstub_library_file(module, extension)
-    unstub_module_documentation(module)
     unstub_unit_test_file(module, extension)
 
 

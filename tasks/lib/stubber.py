@@ -89,12 +89,6 @@ def stub_library_file(module, extension):
     fh.close()
 
 
-def stub_module_documentation(module):
-    # Create the documentation link for your module
-    documentation_file = '{0}/docs/modules/{1}_module.rst'.format(BASE_DIR, module)
-    touch(documentation_file)
-
-
 def touch(name, times=None):
     with open(name, 'a'):
         os.utime(name, times)
@@ -149,12 +143,6 @@ def unstub_library_file(module, extension):
     library_file = '{0}/library/modules/{1}{2}'.format(BASE_DIR, module, extension)
     if os.path.exists(library_file):
         os.remove(library_file)
-
-
-def unstub_module_documentation(module):
-    documentation_file = '{0}/docs/modules/{1}_module.rst'.format(BASE_DIR, module)
-    if os.path.exists(documentation_file):
-        os.remove(documentation_file)
 
 
 def unstub_unit_test_file(module, extension):

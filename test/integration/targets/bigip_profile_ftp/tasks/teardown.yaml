@@ -1,0 +1,24 @@
+- name: Remove log publisher
+  bigip_log_publisher:
+    name: "{{ pub1 }}"
+    state: absent
+
+- name: Delete ALG log profile
+  bigip_command:
+    commands:
+      - "tmsh delete ltm alg-log-profile {{ log1 }}"
+
+- name: De-provision CGNAT
+  bigip_provision:
+    name: cgnat
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
+
+- name: De-Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+    - deprovision-module
