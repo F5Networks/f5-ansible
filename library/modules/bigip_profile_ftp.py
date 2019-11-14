@@ -57,7 +57,7 @@ options:
       - Translates RFC 2428 extended requests C(EPSV) and C(EPRT) to C(PASV) and C(PORT)
         when communicating with IPv4 servers.
       - This option can only be used if the system is licensed for the BIG-IP Application Security Manager.
-      type: bool
+    type: bool
   port:
     description:
       - Specifies a service for the data channel port used for this FTP profile.
@@ -67,7 +67,7 @@ options:
     description:
       - Enables secure FTP traffic for the BIG-IP Application Security Manager.
       - This option can only be used if the system is licensed for the BIG-IP Application Security Manager.
-      type: bool
+    type: bool
   state:
     description:
       - When C(state) is C(present), ensures that the ftp profile exists.
