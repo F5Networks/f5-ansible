@@ -1,0 +1,232 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create an ftp profile
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_profile: "{{ log_prof }}"
+    log_publisher: "{{ log_pub }}"
+    port: "{{ port1 }}"
+    allow_ftps: yes
+    security: yes
+    description: "{{ desc1 }}"
+  register: result
+
+- name: Assert Create an ftp profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create an ftp profile - Idempotent check
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_profile: "{{ log_prof }}"
+    log_publisher: "{{ log_pub }}"
+    port: "{{ port1 }}"
+    allow_ftps: yes
+    security: yes
+    description: "{{ desc1 }}"
+  register: result
+
+- name: Assert Create an ftp profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update an ftp profile log profile is none - Expect failure
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_profile: ''
+  register: result
+  failed_when: "'The log_profile cannot be removed if log_publisher is defined on device' not in result['msg']"
+
+- name: Update an ftp profile log publisher is none - Expect failure
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_publisher: ''
+  register: result
+  failed_when: "'The log_publisher cannot be removed if log_profile is defined on device' not in result['msg']"
+
+- name: Update an ftp profile - log profile
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_profile: "{{ log1 }}"
+  register: result
+
+- name: Assert Update an ftp profile - log profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update an ftp profile - log profile - Idempotent check
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_profile: "{{ log1 }}"
+  register: result
+
+- name: Assert Update an ftp profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update an ftp profile - log publisher
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_publisher: "{{ pub1 }}"
+  register: result
+
+- name: Assert Update an ftp profile - log publisher
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update an ftp profile - log publisher - Idempotent check
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_publisher: "{{ pub1 }}"
+  register: result
+
+- name: Assert Update an ftp profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update an ftp profile
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_profile: ''
+    log_publisher: ''
+    port: "{{ port2 }}"
+    allow_ftps: no
+    security: no
+    description: "{{ desc2 }}"
+    inherit_parent_profile: yes
+    translate_extended: yes
+  register: result
+
+- name: Assert Update an ftp profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update an ftp profile - Idempotent check
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    log_profile: ''
+    log_publisher: ''
+    port: "{{ port2 }}"
+    allow_ftps: no
+    security: no
+    description: "{{ desc2 }}"
+    inherit_parent_profile: yes
+    translate_extended: yes
+  register: result
+
+- name: Assert Update an ftp profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create a second ftp profile
+  bigip_profile_ftp:
+    name: "{{ name2 }}"
+    log_profile: "{{ log_prof }}"
+    log_publisher: "{{ log_pub }}"
+    port: "{{ port2 }}"
+    allow_ftps: no
+    security: yes
+    description: "{{ desc2 }}"
+    translate_extended: no
+    inherit_parent_profile: yes
+  register: result
+
+- name: Assert Create a second ftp profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a second ftp profile - Idempotent check
+  bigip_profile_ftp:
+    name: "{{ name2 }}"
+    log_profile: "{{ log_prof }}"
+    log_publisher: "{{ log_pub }}"
+    port: "{{ port2 }}"
+    allow_ftps: no
+    security: yes
+    description: "{{ desc2 }}"
+    translate_extended: no
+    inherit_parent_profile: yes
+  register: result
+
+- name: Assert Create a second ftp profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update a second ftp profile
+  bigip_profile_ftp:
+    name: "{{ name2 }}"
+    allow_ftps: yes
+    description: ''
+  register: result
+
+- name: Assert Update a second ftp profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update a second ftp profile - Idempotent check
+  bigip_profile_ftp:
+    name: "{{ name2 }}"
+    allow_ftps: yes
+    description: ''
+  register: result
+
+- name: Assert Update a second ftp profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove first ftp profile
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove first ftp profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove first ftp profile - Idempotent check
+  bigip_profile_ftp:
+    name: "{{ name1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove first ftp profile - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove second ftp profile - Cleanup
+  bigip_profile_ftp:
+    name: "{{ name2 }}"
+    state: absent
+
+- import_tasks: teardown.yaml
