@@ -1,0 +1,23 @@
+- name: Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
+- name: Provision CGNAT
+  bigip_provision:
+    name: cgnat
+  tags:
+    - module-provisioning
+
+- name: Create a log publisher
+  bigip_log_publisher:
+    name: "{{ pub1 }}"
+    destinations:
+      - alertd
+      - local-syslog
+
+- name: Create ALG log profile
+  bigip_command:
+    commands:
+      - "tmsh create ltm alg-log-profile {{ log1 }}"
