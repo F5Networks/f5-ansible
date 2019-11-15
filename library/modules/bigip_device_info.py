@@ -7090,6 +7090,8 @@ try:
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.compat.ipaddress import ip_address
+    from library.module_utils.compat.ipaddress import ip_interface
     from library.module_utils.network.f5.icontrol import modules_provisioned
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.urls import parseStats
@@ -7102,6 +7104,8 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible.module_utils.compat.ipaddress import ip_address
+    from ansible.module_utils.compat.ipaddress import ip_interface
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import modules_provisioned
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.urls import parseStats
@@ -12534,7 +12538,11 @@ class SelfIpsParameters(BaseParameters):
     @property
     def netmask(self):
         parts = self._values['address'].split('/')
-        return to_netmask(parts[1])
+        if is_valid_ip(parts[0]):
+            addr = ip_address(u'{0}'.format(parts[0]))
+            ip = ip_interface(u'{0}'.format(self._values['address']))
+            result = ip.netmask
+        return str(result)
 
     @property
     def netmask_cidr(self):
