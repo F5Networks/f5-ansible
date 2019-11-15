@@ -1,0 +1,28 @@
+---
+
+- name: Delete iRule in LTM
+  bigip_irule:
+    module: ltm
+    name: "{{ irule_name_ltm }}"
+    state: absent
+  register: result
+
+- name: Delete iRule 2 in LTM
+  bigip_irule:
+    module: gtm
+    name: "{{ irule_name_ltm_2 }}"
+    state: absent
+  register: result
+
+- name: Delete iApp service from iApp template
+  bigip_iapp_service:
+    name: "{{ service_name }}"
+    template: "{{ template_name }}"
+    state: absent
+  register: result
+
+- name: Delete iApp template
+  bigip_iapp_template:
+    name: "{{ template_name }}"
+    state: absent
+  register: result

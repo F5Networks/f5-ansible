@@ -1,0 +1,27 @@
+---
+
+- name: Create iApp template
+  bigip_iapp_template:
+    content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
+  register: result
+
+- name: Create HTTP iApp service from iApp template
+  bigip_iapp_service:
+    name: "{{ service_name }}"
+    template: "{{ template_name }}"
+    strict_updates: no
+  register: result
+
+- name: Create iRule 1 in LTM
+  bigip_irule:
+    content: "{{ lookup('template', 'irule-01.tcl') }}"
+    module: ltm
+    name: "{{ irule_name_ltm }}"
+  register: result
+
+- name: Create iRule 2 in LTM
+  bigip_irule:
+    content: "{{ lookup('template', 'irule-02.tcl') }}"
+    module: ltm
+    name: "{{ irule_name_ltm_2 }}"
+  register: result
