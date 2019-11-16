@@ -1,11 +1,16 @@
 sudo: required
 dist: xenial
-language: python
-python:
-  - "2.7"
-  - "3.6"
-  - "3.7"
-  - "3.8"
+
+matrix:
+  include:
+  - python: "2.7"
+    env: PYTHON_VERSION=2.7
+  - python: "3.6"
+    env: PYTHON_VERSION=3.6
+  - python: "3.7"
+    env: PYTHON_VERSION=3.7
+  - python: "3.8"
+    env: PYTHON_VERSION=3.8
 
 before_install:
   - git config --global user.email "Ansible_TravisCI@f5.com"
@@ -37,4 +42,4 @@ jobs:
         - inv module-utils.upstream
         - inv module-doc-fragments.upstream
         - inv plugins.upstream
-        - inv test.ansible-sanity -r -p 3.6
+        - inv test.ansible-sanity -r -p $PYTHON_VERSION
