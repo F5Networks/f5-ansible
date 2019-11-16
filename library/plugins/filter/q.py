@@ -1,4 +1,6 @@
-#!/usr/bin/python
+
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
 
 import q
 import os
@@ -11,5 +13,5 @@ def q_debug(value):
 class FilterModule(object):
     def filters(self):
         return {
-            'q': d_debug
+            'q': q_debug
         }
