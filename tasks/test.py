@@ -68,9 +68,9 @@ def ansible_sanity(c, collection='f5_modules', python_version='3.7', requirement
             c.run('mv {0} .'.format(root_dir))
     with c.cd(workaround_dir):
         if requirements:
-            execute = 'ansible-test sanity plugins/modules/ --requirements --python {0}'.format(python_version)
+            execute = 'ansible-test sanity plugins/ --requirements --python {0}'.format(python_version)
         else:
-            execute = 'ansible-test sanity plugins/modules/ --python {0}'.format(python_version)
+            execute = 'ansible-test sanity plugins/ --python {0}'.format(python_version)
         result = c.run(execute, warn=True)
         if result.failed:
             sys.exit(1)
