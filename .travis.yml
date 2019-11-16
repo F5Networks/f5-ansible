@@ -1,6 +1,11 @@
 sudo: required
 dist: xenial
 language: python
+python:
+  - "2.7"
+  - "3.6"
+  - "3.7"
+  - "3.8"
 
 before_install:
   - git config --global user.email "Ansible_TravisCI@f5.com"
@@ -22,12 +27,10 @@ jobs:
       script:
         - travis_retry pip install pytest --upgrade
         - pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
-      python: "3.6"
     - name: F5 Style and F5 Sanity Tests
       script:
         - inv test.style
         - inv test.f5-sanity
-      python: "3.6"
     - name: Ansible Sanity Tests
       script:
         - inv module.upstream -m all
@@ -35,4 +38,3 @@ jobs:
         - inv module-doc-fragments.upstream
         - inv plugins.upstream
         - inv test.ansible-sanity -r -p 3.6
-      python: "3.6"
