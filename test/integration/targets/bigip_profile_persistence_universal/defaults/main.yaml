@@ -1,0 +1,13 @@
+---
+
+# https://devcentral.f5.com/codeshare/apm-sharepoint-authentication?tag=irules
+irule_name_ltm: apm-sharepoint-authentication
+
+# https://devcentral.f5.com/wiki/iRules.GTM-iRule-with-NAT-translation.ashx
+irule_name_ltm_2: ltm-irule-with-nat
+
+template_name: good_templ
+
+service_name: good_service
+
+service_path: /Common/good_service.app/good_service
