@@ -31,7 +31,7 @@
     match_across_services: yes
     match_across_virtuals: yes
     match_across_pools: yes
-    entry_timeout: 200
+    timeout: 200
     override_connection_limit: yes
     mirror: yes
     rule: /Common/apm-sharepoint-authentication
@@ -49,7 +49,7 @@
     match_across_services: yes
     match_across_virtuals: yes
     match_across_pools: yes
-    entry_timeout: 200
+    timeout: 200
     override_connection_limit: yes
     rule: /Common/apm-sharepoint-authentication
   register: result
@@ -252,49 +252,49 @@
       - result is success
       - result is not changed
 
-- name: Change entry_timeout - numeric
+- name: Change timeout - numeric
   bigip_profile_persistence_universal:
     name: profile1
-    entry_timeout: 100
+    timeout: 100
   register: result
 
-- name: Assert Change entry_timeout - numeric
+- name: Assert Change timeout - numeric
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Change entry_timeout - numeric - Idempotent check
+- name: Change timeout - numeric - Idempotent check
   bigip_profile_persistence_universal:
     name: profile1
-    entry_timeout: 100
+    timeout: 100
   register: result
 
-- name: Assert Change entry_timeout - numeric - Idempotent check
+- name: Assert Change timeout - numeric - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Change entry_timeout - indefinite
+- name: Change timeout - indefinite
   bigip_profile_persistence_universal:
     name: profile1
-    entry_timeout: indefinite
+    timeout: indefinite
   register: result
 
-- name: Assert Change entry_timeout - indefinite
+- name: Assert Change timeout - indefinite
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Change entry_timeout - indefinite - Idempotent check
+- name: Change timeout - indefinite - Idempotent check
   bigip_profile_persistence_universal:
     name: profile1
-    entry_timeout: indefinite
+    timeout: indefinite
   register: result
 
-- name: Assert Change entry_timeout - indefinite - Idempotent check
+- name: Assert Change timeout - indefinite - Idempotent check
   assert:
     that:
       - result is success
