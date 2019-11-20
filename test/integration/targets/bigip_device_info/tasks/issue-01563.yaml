@@ -1,0 +1,79 @@
+---
+
+- name: Issue 01563 - Include issue variables
+  include_vars:
+    file: issue-01563.yaml
+
+- name: Create VLAN
+  bigip_vlan:
+    name: "{{ selfip_vlan }}"
+  
+- name: Create Self IP 1
+  bigip_selfip:
+    address: "{{ selfip1 }}"
+    name: "{{ selfip1_name }}"
+    netmask: "{{ selfip1_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+  register: result
+
+- name: Create Self IP 2
+  bigip_selfip:
+    address: "{{ selfip2 }}"
+    name: "{{ selfip2_name }}"
+    netmask: "{{ selfip2_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+  register: result
+
+- name: Create Self IP 3
+  bigip_selfip:
+    address: "{{ selfip3 }}"
+    name: "{{ selfip3_name }}"
+    netmask: "{{ selfip3_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+  register: result
+
+- name: Create Self IP 4
+  bigip_selfip:
+    address: "{{ selfip4 }}"
+    name: "{{ selfip4_name }}"
+    netmask: "{{ selfip4_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+  register: result
+
+- name: Select selfip info
+  bigip_device_info:
+    include:
+      - self-ips
+  register: result
+
+- name: Assert Select selfip info
+  assert:
+    that:
+      - result is success
+      - result.self_ips | json_query("[?name=='self_ip1'].address") | first == "1.1.1.1"
+      - result.self_ips | json_query("[?name=='self_ip1'].netmask") | first == "255.255.255.0"
+      - result.self_ips | json_query("[?name=='self_ip1'].netmask_cidr") | first == 24
+      - result.self_ips | json_query("[?name=='self_ip2'].address") | first == "2001:db8:85a3::8a2e:370:7334"
+      - result.self_ips | json_query("[?name=='self_ip2'].netmask") | first == "ffff:ffff:ffff:ffff:ffff::"
+      - result.self_ips | json_query("[?name=='self_ip2'].netmask_cidr") | first == 80
+      - result.self_ips | json_query("[?name=='self_ip3'].address") | first == "2001:db8:85a3::8a2e:370:3456"
+      - result.self_ips | json_query("[?name=='self_ip3'].netmask") | first == "ffff:ffff::"
+      - result.self_ips | json_query("[?name=='self_ip3'].netmask_cidr") | first == 32
+      - result.self_ips | json_query("[?name=='self_ip4'].address") | first == "2001:db8:85a3::8a2e:370:2314"
+      - result.self_ips | json_query("[?name=='self_ip4'].netmask") | first == "ffff::"
+      - result.self_ips | json_query("[?name=='self_ip4'].netmask_cidr") | first == 16
+
+- name: Remove Self IP 1
+  bigip_selfip:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ selfip1_name }}"
+    - "{{ selfip2_name }}"
+    - "{{ selfip3_name }}"
+    - "{{ selfip4_name }}"
+
+- name: Remove VLAN
+  bigip_vlan:
+    name: "{{ selfip_vlan }}"
+    state: absent

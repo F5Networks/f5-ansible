@@ -1,0 +1,19 @@
+---
+
+selfip1: 1.1.1.1
+selfip1_netmask: 255.255.255.0
+selfip1_name: self_ip1
+
+selfip2: 2001:db8:85a3:0:0:8a2e:370:7334
+selfip2_netmask: ffff:ffff:ffff:ffff:ffff:0:0:0
+selfip2_name: self_ip2
+
+selfip3: 2001:db8:85a3:0:0:8a2e:370:3456
+selfip3_netmask: ffff:ffff:0:0:0:0:0:0
+selfip3_name: self_ip3
+
+selfip4: 2001:db8:85a3:0:0:8a2e:370:2314
+selfip4_netmask: ffff:0:0:0:0:0:0:0
+selfip4_name: self_ip4
+
+selfip_vlan: net_self10
