@@ -7,6 +7,7 @@
     "selfLink": "https://localhost/mgmt/tm/auth/tacacs/~Common~system-auth?ver=13.1.0.1",
     "accounting": "send-to-first-server",
     "authentication": "use-first-server",
+    "accounting": "send-to-first-server",
     "debug": "disabled",
     "encryption": "enabled",
     "protocol": "ftp",
