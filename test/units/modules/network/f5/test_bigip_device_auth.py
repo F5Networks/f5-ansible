@@ -69,6 +69,7 @@ class TestParameters(unittest.TestCase):
         args = dict(
             type="tacacs",
             authentication="use-all-servers",
+            accounting="send-to-all-servers",
             protocol_name="ip",
             secret="$XXXXXXXXXXXXXXXXXXXX==",
             servers=['10.10.10.10', '10.10.10.11'],
@@ -79,11 +80,13 @@ class TestParameters(unittest.TestCase):
         p = TacacsModuleParameters(params=args)
         assert p.type == 'tacacs'
         assert p.authentication == 'use-all-servers'
+        assert p.accounting == 'send-to-all-servers'
 
     def test_api_parameters(self):
         args = load_fixture('load_tm_auth_tacacs_1.json')
         p = TacacsApiParameters(params=args)
         assert p.authentication == 'use-first-server'
+        assert p.accounting == 'send-to-first-server'
         assert p.protocol_name == 'ftp'
         assert p.secret == 'secret'
         assert p.servers == ['11.11.11.11']
@@ -99,6 +102,7 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             type="tacacs",
             authentication="use-all-servers",
+            accounting="send-to-all-servers",
             protocol_name="ip",
             secret="secret",
             servers=['10.10.10.10', '10.10.10.11'],

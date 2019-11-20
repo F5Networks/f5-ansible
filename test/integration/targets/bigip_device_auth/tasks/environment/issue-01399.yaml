@@ -1,0 +1,138 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Set sys auth to TACACS+
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-all-servers
+    accounting: send-to-all-servers
+    protocol_name: ip
+    secret: $XXXXXXXXXXXXXXXXXXXX==
+    servers:
+      - 10.10.10.10
+      - address: 10.10.10.11
+        port: 1234
+      - 10.10.10.12:1245
+    service_name: ppp
+    use_for_auth: yes
+    update_secret: on_create
+  register: result
+
+- name: Assert Set sys auth to TACACS+
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.accounting == "send-to-all-servers"
+
+- name: Set sys auth to TACACS+ - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    authentication: use-all-servers
+    accounting: send-to-all-servers
+    protocol_name: ip
+    secret: $XXXXXXXXXXXXXXXXXXXX==
+    servers:
+      - 10.10.10.10
+      - address: 10.10.10.11
+        port: 1234
+      - 10.10.10.12:1245
+    service_name: ppp
+    use_for_auth: yes
+    update_secret: on_create
+  register: result
+
+- name: Assert Set sys auth to TACACS+ - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change accounting, send-to-first-server
+  bigip_device_auth:
+    type: tacacs
+    accounting: send-to-first-server
+  register: result
+
+- name: Assert Change accounting, send-to-first-server
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.accounting == "send-to-first-server"
+
+- name: Change accounting, send-to-first-server - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    accounting: send-to-first-server
+  register: result
+
+- name: Assert Change accounting, send-to-first-server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change accounting, send-to-all-servers
+  bigip_device_auth:
+    type: tacacs
+    accounting: send-to-all-servers
+  register: result
+
+- name: Assert Change accounting, send-to-all-servers
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.accounting == "send-to-all-servers"
+
+- name: Change accounting, send-to-all-servers - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    accounting: send-to-all-servers
+  register: result
+
+- name: Assert Change accounting, send-to-all-servers - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove auth, resetting to local
+  bigip_device_auth:
+    type: tacacs
+    state: absent
+  register: result
+
+- name: Assert Remove auth, resetting to local
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove auth, resetting to local - Idempotent check
+  bigip_device_auth:
+    type: tacacs
+    state: absent
+  register: result
+
+- name: Assert Remove auth, resetting to local - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Check if local is set
+  bigip_device_auth:
+    type: local
+    use_for_auth: yes
+  register: result
+
+- name: Assert Check if local is set
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
