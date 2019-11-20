@@ -70,7 +70,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the
         default is None, that disables this setting.
     type: str
-  entry_timeout:
+  timeout:
     description:
       - Specifies the duration of the persistence entries.
       - When creating a new profile, if this parameter is not specified, the
@@ -149,7 +149,7 @@ override_connection_limit:
   returned: changed
   type: bool
   sample: no
-entry_timeout:
+timeout:
   description: The duration of the persistence entries.
   returned: changed
   type: str
@@ -197,10 +197,6 @@ class Parameters(AnsibleF5Parameters):
         'matchAcrossServices': 'match_across_services',
         'matchAcrossVirtuals': 'match_across_virtuals',
         'overrideConnectionLimit': 'override_connection_limit',
-
-        # This timeout name needs to be overridden because 'timeout' is a connection
-        # parameter and we don't want that to be the value that is always set here.
-        'timeout': 'entry_timeout'
     }
 
     api_attributes = [
@@ -222,7 +218,7 @@ class Parameters(AnsibleF5Parameters):
         'match_across_services',
         'match_across_virtuals',
         'override_connection_limit',
-        'entry_timeout',
+        'timeout',
         'mirror',
         'rule',
     ]
@@ -233,17 +229,17 @@ class Parameters(AnsibleF5Parameters):
         'match_across_services',
         'match_across_virtuals',
         'override_connection_limit',
-        'entry_timeout',
+        'timeout',
         'parent',
         'mirror',
         'rule',
     ]
 
     @property
-    def entry_timeout(self):
-        if self._values['entry_timeout'] in [None, 'indefinite']:
-            return self._values['entry_timeout']
-        timeout = int(self._values['entry_timeout'])
+    def timeout(self):
+        if self._values['timeout'] in [None, 'indefinite']:
+            return self._values['timeout']
+        timeout = int(self._values['timeout'])
         if 1 > timeout > 4294967295:
             raise F5ModuleError(
                 "'timeout' value must be between 1 and 4294967295, or the value 'indefinite'."
@@ -281,14 +277,11 @@ class ModuleParameters(Parameters):
 
     @property
     def mirror(self):
-        if self._values['mirror'] is None:
-            return None
         result = flatten_boolean(self._values['mirror'])
-        if result is None:
-            return None
         if result == 'yes':
             return 'enabled'
-        return 'disabled'
+        if result == 'no':
+            return 'disabled'
 
 
 class Changes(Parameters):
@@ -574,7 +567,7 @@ class ArgumentSpec(object):
             match_across_pools=dict(type='bool'),
             mirror=dict(type='bool'),
             rule=dict(),
-            entry_timeout=dict(),
+            timeout=dict(),
             override_connection_limit=dict(type='bool'),
             state=dict(
                 default='present',
