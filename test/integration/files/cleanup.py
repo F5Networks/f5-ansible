@@ -14,18 +14,18 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
     except getopt.GetoptError:
-        print 'test.py -i <inputfile> -o <outputfile>'
+        print('test.py -i <inputfile> -o <outputfile>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print 'test.py -i <inputfile> -o <outputfile>'
+            print('test.py -i <inputfile> -o <outputfile>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = str(arg)
         elif opt in ("-o", "--ofile"):
             outputfile = str(arg)
-    print 'Input file is ', inputfile
-    print 'Output file is ', outputfile
+    print('Input file is {0}'.format(inputfile))
+    print('Output file is {0}'.format(outputfile))
     pattern = re.compile(r'<(\d{4,5})>')
     bigipLicenseRegex = re.compile(r'\w{5}-\w{5}-\w{5}-\w{5}-\w{7}')
     bigipLicense = ""
@@ -37,6 +37,7 @@ def main(argv):
     f_output.write(bigipLicense)
     f_input = open(inputfile, "w")
     f_input.write('')
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
