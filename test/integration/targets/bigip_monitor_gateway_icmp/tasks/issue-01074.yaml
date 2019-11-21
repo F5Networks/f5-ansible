@@ -1,33 +1,33 @@
 ---
 
-- name: Issue 01074 - Create Monitor
-  bigip_monitor_external:
+- name: Issue 01074 - Create GW ICMP monitor
+  bigip_monitor_icmp:
     name: "{{ monitor_name }}"
     ip: '*'
     port: '*'
   register: result
 
-- name: Issue 01074 - Assert Create Monitor
+- name: Issue 01074 - Assert Create GW ICMP monitor
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 01074 - Create Monitor - Idempotent check
-  bigip_monitor_external:
+- name: Issue 01074 - Create GW ICMP monitor - Idempotent check
+  bigip_monitor_icmp:
     name: "{{ monitor_name }}"
     ip: '*'
     port: '*'
   register: result
 
-- name: Issue 01074 - Assert Create Monitor - Idempotent check
+- name: Issue 01074 - Assert Create GW ICMP monitor - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 01074 - Remove monitor
-  bigip_monitor_external:
+- name: Issue 01074 - Remove GW ICMP monitor
+  bigip_monitor_icmp:
     name: "{{ monitor_name }}"
     state: absent
   register: result
