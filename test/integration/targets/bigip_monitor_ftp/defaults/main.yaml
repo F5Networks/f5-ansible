@@ -1,0 +1,27 @@
+monitor_name1: ftp_mon_test_1
+monitor_name2: ftp_mon_test_2
+parent1: ftp_parent_test
+
+user: baz
+pass: foobar
+
+file1: /var/tmp/health.txt
+file2: /tmp/health.txt
+
+desc1: "this is a test"
+desc2: ""
+
+timeout1: 3432
+timeout2: 321
+
+interval1: 100
+interval2: 200
+
+ip1: 10.1.1.1
+port1: 81
+
+ip2: 11.1.1.1
+port2: 8080
+
+ip3: '*'
+port3: '*'
