@@ -115,7 +115,7 @@ Individuals or business entities who contribute to this project must complete an
 
 
 .. |dailycollectionbuild| raw:: html
-   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-1.0.0-devel.tar.gz" target="_blank">Daily Build</a>
+   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-1.1.0-devel.tar.gz" target="_blank">Daily Build</a>
 
 .. |f5_collection| raw:: html
    <a href="https://galaxy.ansible.com/f5networks/f5_modules" target="_blank"F5 Ansible Modules Collection</a>
