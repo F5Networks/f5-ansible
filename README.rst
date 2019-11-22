@@ -30,16 +30,16 @@ The architecture of the modules makes inherent use of the BIG-IP REST APIs as we
 This repository is an **incubator** for Ansible modules. The modules in this repository **may be
 broken due to experimentation or refactoring**.
 
-If you want to download the stable modules, please install latest collection release found at |f5_collection|
-
 The F5 Modules for Ansible are freely provided to the open source community for automating BIG-IP device configurations.
+
+If you want to download the stable modules, please install latest collection release found on galaxy: |f5_collection|.
 
 
 Collections Daily Build
 -----------------------
-We offer a daily build of our most recent collection at |dailycollectionbuild|.
 
-Please use this Collection to test the most recent Ansible module updates between releases.
+We offer a daily build of our most recent collection |dailybuild|. Please use this Collection to test the most
+recent Ansible module updates between releases.
 
 Installing the Daily Build
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,10 +94,6 @@ This License does not grant permission to use the trade names, trademarks, servi
 
 See `License`_.
 
-Contributor License Agreement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Individuals or business entities who contribute to this project must complete and submit the `F5 Contributor License Agreement <http://clouddocs.f5.com/products/orchestration/ansible/devel/development/cla-landing.html>`_ to Ansible_CLA@f5.com prior to their code submission being included in this project.
-
 
 .. |travis badge| image:: https://travis-ci.com/F5Networks/f5-ansible.svg?branch=devel
     :target: https://travis-ci.com/F5Networks/f5-ansible
@@ -114,11 +110,13 @@ Individuals or business entities who contribute to this project must complete an
 .. _License: https://github.com/F5Networks/f5-ansible/blob/devel/COPYING
 
 
-.. |dailycollectionbuild| raw:: html
-   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-1.1.0-devel.tar.gz" target="_blank">Daily Build</a>
+.. |dailybuild| raw:: html
+
+   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-1.1.0-devel.tar.gz" target="_blank">here</a>
 
 .. |f5_collection| raw:: html
-   <a href="https://galaxy.ansible.com/f5networks/f5_modules" target="_blank"F5 Ansible Modules Collection</a>
+
+   <a href="https://galaxy.ansible.com/f5networks/f5_modules" target="_blank">F5 Ansible Modules Collection</a>
 
 .. |ansible_distro| raw:: html
 
