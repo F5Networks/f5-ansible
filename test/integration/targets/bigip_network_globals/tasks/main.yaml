@@ -289,3 +289,6 @@
   when: f.system_info.product_version < "13.0.0"
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01581.yaml
+  tags: issue-01581
