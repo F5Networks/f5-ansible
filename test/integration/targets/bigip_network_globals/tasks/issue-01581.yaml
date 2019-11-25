@@ -1,0 +1,101 @@
+---
+
+- name: Issue 01581 - Include issue variables
+  include_vars:
+    file: issue-01581.yaml
+
+- name: Issue 01581 - Update Self Allow settings 'all'
+  bigip_network_globals:
+    self_allow:
+      all: yes
+  register: result
+
+- name: Issue 01581 - Assert Update Self Allow settings 'all'
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01581 - Update Self Allow settings 'all' - Idempotent check
+  bigip_network_globals:
+    self_allow:
+      all: yes
+  register: result
+
+- name: Issue 01581 - Assert Update Self Allow settings 'all' - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01581 - Update Self Allow settings custom
+  bigip_network_globals:
+    self_allow:
+      defaults: "{{ change_1 }}"
+  register: result
+
+- name: Issue 01581 - Assert Update Self Allow settings custom
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01581 - Update Self Allow settings custom - Idempotent check
+  bigip_network_globals:
+    self_allow:
+      defaults: "{{ change_1 }}"
+  register: result
+
+- name: Issue 01581 - Assert Update Self Allow settings custom - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01581 - Update Self Allow settings 'none'
+  bigip_network_globals:
+    self_allow:
+      all: no
+  register: result
+
+- name: Issue 01581 - Assert Update Self Allow settings 'none'
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01581 - Update Self Allow settings 'none' - Idempotent check
+  bigip_network_globals:
+    self_allow:
+      all: no
+  register: result
+
+- name: Issue 01581 - Assert Update Self Allow settings 'none' - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01581 - Update Self Allow settings restore default
+  bigip_network_globals:
+    self_allow:
+      defaults: "{{ default }}"
+  register: result
+
+- name: Issue 01581 - Assert Update Self Allow settings restore default
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01581 - Update Self Allow settings restore default - Idempotent check
+  bigip_network_globals:
+    self_allow:
+      defaults: "{{ default }}"
+  register: result
+
+- name: Issue 01581 - Assert Update Self Allow settings restore default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
