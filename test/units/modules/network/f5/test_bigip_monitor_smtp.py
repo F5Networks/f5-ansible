@@ -17,10 +17,10 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_monitor_ftp import ApiParameters
-    from library.modules.bigip_monitor_ftp import ModuleParameters
-    from library.modules.bigip_monitor_ftp import ModuleManager
-    from library.modules.bigip_monitor_ftp import ArgumentSpec
+    from library.modules.bigip_monitor_smtp import ApiParameters
+    from library.modules.bigip_monitor_smtp import ModuleParameters
+    from library.modules.bigip_monitor_smtp import ModuleManager
+    from library.modules.bigip_monitor_smtp import ArgumentSpec
 
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
@@ -29,10 +29,10 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_ftp import ApiParameters
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_ftp import ModuleParameters
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_ftp import ModuleManager
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_ftp import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_smtp import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_smtp import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_smtp import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_monitor_smtp import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
@@ -72,10 +72,7 @@ class TestParameters(unittest.TestCase):
             parent='parent',
             description='my descr',
             debug=True,
-            mode='port',
-            filename='/ftp/var/health.txt',
-            target_username='admin',
-            target_password='sekrit',
+            domain='baz.com',
             ip='10.10.10.10',
             port=80,
             interval=20,
@@ -92,9 +89,8 @@ class TestParameters(unittest.TestCase):
         assert p.app_service == 'my.app.foo'
         assert p.description == 'my descr'
         assert p.debug == 'enabled'
+        assert p.domain == 'baz.com'
         assert p.ip == '10.10.10.10'
-        assert p.target_username == 'admin'
-        assert p.target_password == 'sekrit'
         assert p.port == 80
         assert p.destination == '10.10.10.10:80'
         assert p.interval == 20
@@ -104,29 +100,26 @@ class TestParameters(unittest.TestCase):
         assert p.manual_resume == 'enabled'
 
     def test_api_parameters(self):
-        args = load_fixture('load_ltm_monitor_ftp.json')
+        args = load_fixture('load_ltm_monitor_smtp.json')
         p = ApiParameters(params=args)
-        assert p.name == 'foo_ftp'
-        assert p.destination == '*:*'
-        assert p.ip == '*'
-        assert p.port == '*'
+        assert p.name == 'foo_smtp'
+        assert p.destination == '11.2.2.1:554'
+        assert p.ip == '11.2.2.1'
+        assert p.port == 554
 
 
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_ftp_monitor(self, *args):
+    def test_create_smtp_monitor(self, *args):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
-            name='foo_ftp',
-            parent='ftp_parent',
+            name='foo_smtp',
+            parent='smtp_parent',
             description='description one',
             debug='yes',
-            mode='port',
-            filename='/ftp/var/health.txt',
-            target_username='admin',
-            target_password='sekrit',
+            domain='baz.com',
             ip='10.10.10.10',
             port=80,
             manual_resume='no',
@@ -152,15 +145,14 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['description'] == 'description one'
         assert results['debug'] == 'yes'
-        assert results['parent'] == '/Common/ftp_parent'
-        assert results['mode'] == 'port'
+        assert results['parent'] == '/Common/smtp_parent'
+        assert results['domain'] == 'baz.com'
         assert results['manual_resume'] == 'no'
 
-    def test_update_ftp_monitor(self, *args):
+    def test_update_smtp_monitor(self, *args):
         set_module_args(dict(
             name='foo_ftp',
-            debug='no',
-            mode='passive',
+            domain='baz.com',
             ip='15.15.15.1',
             port=8080,
             provider=dict(
@@ -185,7 +177,6 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
         assert results['changed'] is True
-        assert results['debug'] == 'no'
-        assert results['mode'] == 'passive'
+        assert results['domain'] == 'baz.com'
         assert results['ip'] == '15.15.15.1'
         assert results['port'] == 8080
