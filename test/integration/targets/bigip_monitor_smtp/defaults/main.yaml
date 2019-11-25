@@ -1,11 +1,10 @@
-monitor_name1: ftp_mon_test_1
-monitor_name2: ftp_mon_test_2
+monitor_name1: smtp_mon_test_1
+monitor_name2: smtp_mon_test_2
 
-user: baz
-pass: foobar
 
-file1: /var/tmp/health.txt
-file2: /tmp/health.txt
+domain1: "foobar.com"
+domain2: "bazbar.com"
+domain3: ""
 
 desc1: "this is a test"
 desc2: ""

@@ -2,65 +2,56 @@
 
 - import_tasks: setup.yaml
 
-- name: Create FTP Monitor
-  bigip_monitor_ftp:
+- name: Create SMTP Monitor
+  bigip_monitor_smtp:
     name: "{{ monitor_name1 }}"
-    mode: port
-    target_username: "{{ user }}"
-    target_password: "{{ pass }}"
-    filename: "{{ file1 }}"
+    domain: "{{ domain1 }}"
     timeout: "{{ timeout1 }}"
     interval: "{{ interval1 }}"
-    update_password: on_create
     state: present
   register: result
 
-- name: Assert Create FTP Monitor
+- name: Assert Create SMTP Monitor
   assert:
     that:
       - result is changed
-      - result.mode == 'port'
-      - result.filename == file1
+      - result.domain == 'foobar.com'
       - result.timeout == timeout1
       - result.interval == interval1
 
-- name: Create FTP Monitor - Idempotent check
-  bigip_monitor_ftp:
+- name: Create SMTP Monitor - Idempotent check
+  bigip_monitor_smtp:
     name: "{{ monitor_name1 }}"
-    mode: port
-    target_username: "{{ user }}"
-    target_password: "{{ pass }}"
-    filename: "{{ file1 }}"
+    domain: "{{ domain1 }}"
     timeout: "{{ timeout1 }}"
     interval: "{{ interval1 }}"
-    update_password: on_create
     state: present
   register: result
 
-- name: Assert Create FTP Monitor - Idempotent check
+- name: Assert Create SMTP Monitor - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Update FTP Monitor
-  bigip_monitor_ftp:
+- name: Update SMTP Monitor
+  bigip_monitor_smtp:
     name: "{{ monitor_name1 }}"
-    filename: "{{ file2 }}"
     timeout: "{{ timeout2 }}"
     interval: "{{ interval2 }}"
     description: "{{ desc1 }}"
+    domain: "{{ domain2 }}"
     ip: "{{ ip1 }}"
     port: "{{ port1 }}"
     manual_resume: yes
     state: present
   register: result
 
-- name: Assert Update FTP Monitor
+- name: Assert Update SMTP Monitor
   assert:
     that:
       - result is changed
-      - result.filename == file2
+      - result.domain == 'bazbar.com'
       - result.timeout == timeout2
       - result.interval == interval2
       - result.description == desc1
@@ -68,28 +59,29 @@
       - result.port == port1
       - result.manual_resume == 'yes'
 
-- name: Update FTP Monitor - Idempotent check
-  bigip_monitor_ftp:
+- name: Update SMTP Monitor - Idempotent check
+  bigip_monitor_smtp:
     name: "{{ monitor_name1 }}"
-    filename: "{{ file2 }}"
     timeout: "{{ timeout2 }}"
     interval: "{{ interval2 }}"
     description: "{{ desc1 }}"
+    domain: "{{ domain2 }}"
     ip: "{{ ip1 }}"
     port: "{{ port1 }}"
     manual_resume: yes
     state: present
   register: result
 
-- name: Assert Update FTP Monitor - Idempotent check
+- name: Assert Update SMTP Monitor - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Create second FTP Monitor
-  bigip_monitor_ftp:
+- name: Create second SMTP Monitor
+  bigip_monitor_smtp:
     name: "{{ monitor_name2 }}"
+    domain: "{{ domain2 }}"
     description: "{{ desc1 }}"
     timeout: "{{ timeout1 }}"
     interval: "{{ interval1 }}"
@@ -98,19 +90,21 @@
     state: present
   register: result
 
-- name: Assert Create second FTP Monitor
+- name: Assert Create second SMTP Monitor
   assert:
     that:
       - result is changed
       - result.ip == ip2
       - result.port == port2
+      - result.domain == 'bazbar.com'
       - result.timeout == timeout1
       - result.interval == interval1
       - result.description == desc1
 
-- name: Create second FTP Monitor - Idempotent check
-  bigip_monitor_ftp:
+- name: Create second SMTP Monitor - Idempotent check
+  bigip_monitor_smtp:
     name: "{{ monitor_name2 }}"
+    domain: "{{ domain2 }}"
     description: "{{ desc1 }}"
     timeout: "{{ timeout1 }}"
     interval: "{{ interval1 }}"
@@ -119,70 +113,73 @@
     state: present
   register: result
 
-- name: Assert Create second FTP Monitor - Idempotent check
+- name: Assert Create second SMTP Monitor - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Update second FTP Monitor
-  bigip_monitor_ftp:
+- name: Update second SMTP Monitor
+  bigip_monitor_smtp:
     name: "{{ monitor_name2 }}"
+    domain: "{{ domain3 }}"
     description: "{{ desc2 }}"
     ip: "{{ ip3 }}"
     port: "{{ port3 }}"
     state: present
   register: result
 
-- name: Assert Update second FTP Monitor
+- name: Assert Update second SMTP Monitor
   assert:
     that:
       - result is changed
+      - result.domain == ''
       - result.ip == ip3
       - result.port == port3
       - result.description == desc2
 
-- name: Update second FTP Monitor - Idempotent check
-  bigip_monitor_ftp:
+- name: Update second SMTP Monitor - Idempotent check
+  bigip_monitor_smtp:
     name: "{{ monitor_name2 }}"
+    domain: "{{ domain3 }}"
     description: "{{ desc2 }}"
     ip: "{{ ip3 }}"
     port: "{{ port3 }}"
     state: present
   register: result
 
-- name: Assert Update second FTP Monitor - Idempotent check
+- name: Assert Update second SMTP Monitor - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Remove FTP Monitor
-  bigip_monitor_ftp:
+- name: Remove SMTP Monitor
+  bigip_monitor_smtp:
     name: "{{ monitor_name1 }}"
     state: absent
   register: result
 
-- name: Assert Remove FTP Monitor
+- name: Assert Remove SMTP Monitor
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove FTP Monitor - Idempotent check
-  bigip_monitor_ftp:
+- name: Remove SMTP Monitor - Idempotent check
+  bigip_monitor_smtp:
     name: "{{ monitor_name1 }}"
     state: absent
   register: result
 
-- name: Assert Remove FTP Monitor - Idempotent check
+- name: Assert Remove SMTP Monitor - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Remove FTP Monitor - Cleanup
-  bigip_monitor_ftp:
+- name: Remove SMTP Monitor - Cleanup
+  bigip_monitor_smtp:
     name: "{{ monitor_name2 }}"
     state: absent
 
