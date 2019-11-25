@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_network_globals
 short_description: Manage network global settings on BIG-IP
 description:
-  - Module to manage STP, Multicast, DAG and LLDP global settings on BIG-IP.
+  - Module to manage STP, Multicast, DAG, LLDP and Self Allow global settings on BIG-IP.
 version_added: "f5_modules 1.0.0"
 options:
   stp:
@@ -181,6 +181,35 @@ options:
           - The valid value range is 0 - 65535.
         type: int
     type: dict
+  self_allow:
+    description:
+      - Manage Self Allow global configuration options.
+    suboptions:
+      defaults:
+        description:
+          - The default set of protocols and ports allowed by a self IP if the self IP allow-service setting is
+            B(default).
+        suboptions:
+          protocol:
+            description:
+              - The protocol name to be set.
+            type: str
+          port:
+            description:
+              - The port number to be set.
+              - The valid value range is 0 - 65535.
+            type: int
+        type: list
+      all:
+        description:
+          - Sets B(all) or B(none) ports and protocols as a system wide C(self_allow) setting.
+          - When C(yes) the self_allow allows all protocols and ports, this is the equivalent of setting B(all) option
+            in C(TMSH).
+          - When C(no) the self_allow allows no protocols and ports, this is the equivalent of setting B(none) option
+            in C(TMSH).
+        type: bool
+    type: dict
+    version_added: "f5_modules 1.1.0"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
@@ -365,9 +394,37 @@ lldp:
       type: int
       sample: 240
   sample: hash/dictionary of values
+self_allow:
+  description: Manages self_allow system wide settings.
+  type: complex
+  returned: changed
+  contains:
+    defaults:
+      description: The default set of protocols and ports allowed by a self IP.
+      type: complex
+      returned: changed
+      contains:
+        protocol:
+          description: The protocol name to be set.
+          returned: changed
+          type: str
+          sample: tcp
+        port:
+          description: The port number to be set.
+          returned: changed
+          type: int
+          sample: 443
+      sample: hash/dictionary of values
+    all:
+      description: Allows all or none ports and protocols as a system wide self_allow setting.
+      returned: changed
+      type: bool
+      sample: yes
+  sample: hash/dictionary of values
 '''
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.six import string_types
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -376,6 +433,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.compare import cmp_str_with_none
+    from library.module_utils.network.f5.compare import cmp_simple_list
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
@@ -383,6 +441,7 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_simple_list
 
 
 class Parameters(AnsibleF5Parameters):
@@ -394,7 +453,8 @@ class Parameters(AnsibleF5Parameters):
         'stp',
         'dag',
         'multicast',
-        'lldp'
+        'lldp',
+        'self_allow',
     ]
 
     updatables = [
@@ -421,6 +481,8 @@ class Parameters(AnsibleF5Parameters):
         'lldp_tx_delay',
         'lldp_tx_hold',
         'lldp_tx_interval',
+        'self_allow_all',
+        'self_allow_defaults',
     ]
 
 
@@ -572,6 +634,19 @@ class ApiParameters(Parameters):
         if self._values['lldp'] is None:
             return None
         return self._values['lldp']['txInterval']
+
+    @property
+    def self_allow_all(self):
+        if self.self_allow_defaults is None:
+            return 'no'
+        if self.self_allow_defaults == 'all':
+            return 'yes'
+
+    @property
+    def self_allow_defaults(self):
+        if self._values['self_allow'] is None:
+            return None
+        return self._values['self_allow'].get('defaults', None)
 
 
 class ModuleParameters(Parameters):
@@ -827,6 +902,31 @@ class ModuleParameters(Parameters):
             "Valid 'tx_interval' must be in range 0 - 65535 seconds."
         )
 
+    @property
+    def self_allow_defaults(self):
+        if self._values['self_allow'] is None:
+            return None
+        if self.self_allow_all == 'yes':
+            return 'all'
+        if self.self_allow_all == 'no':
+            return 'none'
+        result = list()
+        for item in self._values['self_allow']['defaults']:
+            if not 0 <= item['port'] or not item['port'] <= 65535:
+                raise F5ModuleError(
+                    "Valid self_allow_defaults port must be in range 0 - 65535."
+                )
+            to_append = "{0}:{1}".format(item['protocol'], item['port'])
+            result.append(to_append)
+        return result
+
+    @property
+    def self_allow_all(self):
+        if self._values['self_allow'] is None:
+            return None
+        result = flatten_boolean(self._values['self_allow']['all'])
+        return result
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -891,6 +991,15 @@ class UsableChanges(Changes):
             txDelay=self._values['lldp_tx_delay'],
             txHold=self._values['lldp_tx_hold'],
             txInterval=self._values['lldp_tx_interval'],
+        )
+        result = self._filter_params(to_filter)
+        if result:
+            return result
+
+    @property
+    def self_allow(self):
+        to_filter = dict(
+            defaults=self._values['self_allow_defaults'],
         )
         result = self._filter_params(to_filter)
         if result:
@@ -969,6 +1078,35 @@ class ReportableChanges(Changes):
         if disabled:
             return 'no'
 
+    @property
+    def self_allow(self):
+        if self._values['self_allow'] is None:
+            return None
+        to_filter = dict(
+            defaults=self._parse_self_defaults(),
+            all=self._get_all_value(),
+        )
+        result = self._filter_params(to_filter)
+        if result:
+            return result
+
+    def _parse_self_defaults(self):
+        items = self._values['self_allow'].get('defaults')
+        if isinstance(items, list):
+            result = dict()
+            for item in items:
+                result['protocol'] = item.split(':')[0]
+                result['port'] = item.split(':')[1]
+            return result
+
+    def _get_all_value(self):
+        items = self._values['self_allow'].get('defaults')
+        if isinstance(items, string_types):
+            if items == 'none':
+                return 'no'
+            if items == 'all':
+                return 'yes'
+
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -999,6 +1137,23 @@ class Difference(object):
     @property
     def stp_description(self):
         result = cmp_str_with_none(self.want.stp_description, self.have.stp_description)
+        return result
+
+    @property
+    def self_allow_defaults(self):
+        if self.want.self_allow_defaults is None:
+            return None
+        if self.want.self_allow_defaults == 'none' and self.have.self_allow_defaults is None:
+            return None
+        if self.want.self_allow_defaults in ['all', 'none']:
+            if isinstance(self.have.self_allow_defaults, string_types):
+                if self.want.self_allow_defaults != self.have.self_allow_defaults:
+                    return self.want.self_allow_defaults
+                else:
+                    return None
+            if isinstance(self.have.self_allow_defaults, list):
+                return self.want.self_allow_defaults
+        result = cmp_simple_list(self.want.self_allow_defaults, self.have.self_allow_defaults)
         return result
 
 
@@ -1076,6 +1231,8 @@ class ModuleManager(object):
             self.update_on_device_dag(params['dag'])
         if self.changes.lldp:
             self.update_on_device_lldp(params['lldp'])
+        if self.changes.self_allow:
+            self.update_on_device_self(params['self_allow'])
 
     def update_on_device_stp(self, params):
         uri = "https://{0}:{1}/mgmt/tm/net/stp-globals/".format(
@@ -1149,12 +1306,31 @@ class ModuleManager(object):
             else:
                 raise F5ModuleError(resp.content)
 
+    def update_on_device_self(self, params):
+        uri = "https://{0}:{1}/mgmt/tm/net/self-allow/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+
+        )
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
     def read_current_from_device(self):
         response = dict(
             stp=None,
             multicast=None,
             dag=None,
             lldp=None,
+            self_allow=None,
         )
         if self.want.stp:
             response['stp'] = self.read_current_from_device_stp()
@@ -1164,6 +1340,8 @@ class ModuleManager(object):
             response['dag'] = self.read_current_from_device_dag()
         if self.want.lldp:
             response['lldp'] = self.read_current_from_device_lldp()
+        if self.want.self_allow:
+            response['self_allow'] = self.read_current_from_device_self()
         return ApiParameters(params=response)
 
     def read_current_from_device_stp(self):
@@ -1238,6 +1416,24 @@ class ModuleManager(object):
                 raise F5ModuleError(resp.content)
         return response
 
+    def read_current_from_device_self(self):
+        uri = "https://{0}:{1}/mgmt/tm/net/self-allow/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        return response
+
 
 class ArgumentSpec(object):
     def __init__(self):
@@ -1290,13 +1486,36 @@ class ArgumentSpec(object):
                     tx_hold=dict(type='int'),
                     tx_interval=dict(type='int')
                 )
+            ),
+            self_allow=dict(
+                type='dict',
+                options=dict(
+                    defaults=dict(
+                        type='list',
+                        elements='dict',
+                        options=dict(
+                            protocol=dict(),
+                            port=dict(type='int'),
+                        ),
+                        required_together=[
+                            ['protocol', 'port']
+                        ]
+                    ),
+                    all=dict(type='bool'),
+                ),
+                mutually_exclusive=[
+                    ['defaults', 'all']
+                ],
+                required_one_of=[
+                    ['defaults', 'all']
+                ],
             )
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.required_one_of = [
-            ['stp', 'multicast', 'dag', 'lldp']
+            ['stp', 'multicast', 'dag', 'lldp', 'self_allow']
         ]
 
 
