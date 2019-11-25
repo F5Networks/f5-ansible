@@ -1,0 +1,36 @@
+---
+default:
+  - protocol: igmp
+    port: 0
+  - protocol: ospf
+    port: 0
+  - protocol: pim
+    port: 0
+  - protocol: tcp
+    port: 161
+  - protocol: tcp
+    port: 22
+  - protocol: tcp
+    port: 4353
+  - protocol: tcp
+    port: 443
+  - protocol: tcp
+    port: 53
+  - protocol: udp
+    port: 1026
+  - protocol: udp
+    port: 161
+  - protocol: udp
+    port: 4353
+  - protocol: udp
+    port: 520
+  - protocol: udp
+    port: 53
+
+change_1:
+  - protocol: tcp
+    port: 8433
+  - protocol: udp
+    port: 1586
+  - protocol: icmp
+    port: 0
