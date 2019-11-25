@@ -747,10 +747,6 @@ class ArgumentSpec(object):
             timeout=dict(type='int'),
             manual_resume=dict(type='bool'),
             time_until_up=dict(type='int'),
-            update_password=dict(
-                default='always',
-                choices=['always', 'on_create']
-            ),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
