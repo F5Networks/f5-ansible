@@ -43,6 +43,7 @@ options:
             rule.
           - When C(type) is C(redirect), will redirect an HTTP request to a different URL.
           - When C(type) is C(reset), will reset the connection upon C(event).
+          - When C(type) is C(persist), will associate C(cookie_insert) and C(cookie_expiry) with this rule.
         type: str
         required: true
         choices:
@@ -51,6 +52,7 @@ options:
           - ignore
           - redirect
           - reset
+          - persist
       pool:
         description:
           - Pool that you want to forward traffic to.
@@ -75,6 +77,16 @@ options:
         description:
           - Events on which actions such as reset can be triggered.
         type: str
+      cookie_insert:
+        description:
+          - Cookie name to persist on.
+          - This parameter is only valid with the C(persist) type.
+        type: str
+      cookie_expiry:
+        description:
+          - Optional argument, specifying the time for which the session will be persisted.
+          - This parameter is only valid with the C(persist) type.
+        type: int
     type: list
   policy:
     description:
@@ -366,6 +378,10 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'reset'
                 del action['shutdown']
+            if 'persist' in item:
+                action.update(item)
+                action['type'] = 'persist'
+                del action['persist']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -430,6 +446,8 @@ class ModuleParameters(Parameters):
             elif item['type'] == 'reset':
                 self._handle_reset_action(action, item)
                 del action['shutdown']
+            elif item['type'] == 'persist':
+                self._handle_persist_action(action, item)
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -616,6 +634,30 @@ class ModuleParameters(Parameters):
                 shutdown=True
             ))
 
+    def _handle_persist_action(self, action, item):
+        """Handle the nuances of the persist type
+
+        :param action:
+        :param item:
+        :return:
+        """
+        action['type'] = 'persist'
+        if 'cookie_insert' not in item:
+            raise F5ModuleError(
+                "A 'cookie_insert' must be specified when the 'persist' type is used."
+            )
+        elif 'cookie_expiry' in item:
+            action.update(
+                cookieInsert=True,
+                tmName=item['cookie_insert'],
+                expiry=str(item['cookie_expiry'])
+            )
+        else:
+            action.update(
+                cookieInsert=True,
+                tmName=item['cookie_insert']
+            )
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -659,6 +701,16 @@ class ReportableChanges(Changes):
                 action['type'] = 'reset'
                 del action['connection']
                 del action['shutdown']
+            elif 'persist' in item:
+                action.update(item)
+                action['type'] = 'persist'
+                action['cookie_insert'] = action['tmName']
+                if 'expiry' in item:
+                    action['cookie_expiry'] = int(action['expiry'])
+                    del action['expiry']
+                del action['tmName']
+                del action['persist']
+                del action['cookieInsert']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -713,6 +765,9 @@ class UsableChanges(Changes):
             elif action['type'] == 'reset':
                 action['shutdown'] = True
                 action['connection'] = True
+                del action['type']
+            elif action['type'] == 'persist':
+                action['persist'] = True
                 del action['type']
             result.append(action)
         return result
@@ -1132,6 +1187,7 @@ class ArgumentSpec(object):
                             'ignore',
                             'redirect',
                             'reset',
+                            'persist'
                         ],
                         required=True
                     ),
@@ -1140,9 +1196,11 @@ class ArgumentSpec(object):
                     virtual=dict(),
                     location=dict(),
                     event=dict(),
+                    cookie_insert=dict(),
+                    cookie_expiry=dict(type='int')
                 ),
                 mutually_exclusive=[
-                    ['pool', 'asm_policy', 'virtual', 'location']
+                    ['pool', 'asm_policy', 'virtual', 'location', 'cookie_insert']
                 ]
             ),
             conditions=dict(
