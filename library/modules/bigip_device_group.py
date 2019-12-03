@@ -461,6 +461,7 @@ class ModuleManager(object):
         return False
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -469,11 +470,19 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def remove_members_in_group_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/{2}/devices/".format(
