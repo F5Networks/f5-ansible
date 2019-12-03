@@ -334,8 +334,16 @@ class ModuleManager(object):
 
         try:
             collection = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if collection.status in errors or 'code' in collection and collection['code'] in errors:
+            if 'message' in collection:
+                raise F5ModuleError(collection['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
         for item in collection['items']:
             if item['name'].startswith(self.want.volume):
@@ -349,8 +357,16 @@ class ModuleManager(object):
 
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
@@ -374,11 +390,21 @@ class ModuleManager(object):
 
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         if self.module.check_mode:

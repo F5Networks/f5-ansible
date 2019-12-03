@@ -1028,9 +1028,23 @@ class ModuleManager(object):
                 name.replace('/', '_')
             )
         resp = self.client.api.get(uri)
-        if resp.ok:
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return True
-        return False
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         self.have = self.read_current_from_device()
