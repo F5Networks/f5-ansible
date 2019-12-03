@@ -272,6 +272,7 @@ class ModuleManager(object):
         return True
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         if self.want.type == 'access_policy':
             uri = "https://{0}:{1}/mgmt/tm/apm/policy/access-policy/{2}".format(
                 self.client.provider['server'],
@@ -285,13 +286,22 @@ class ModuleManager(object):
                 transform_name(self.want.partition, self.want.name)
             )
         resp = self.client.api.get(uri)
+
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def upload_file_to_device(self, content, name):
         url = 'https://{0}:{1}/mgmt/shared/file-transfer/uploads'.format(

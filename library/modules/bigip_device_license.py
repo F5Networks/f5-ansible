@@ -579,6 +579,7 @@ class ModuleManager(object):
         return False
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/shared/licensing/registration".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -589,7 +590,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if resp.status in errors or 'code' in response and response['code'] in errors:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -648,6 +649,7 @@ class ModuleManager(object):
         return False
 
     def any_license_exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/shared/licensing/registration".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -658,7 +660,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if resp.status in errors or 'code' in response and response['code'] in errors:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:

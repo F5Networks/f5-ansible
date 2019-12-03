@@ -270,6 +270,7 @@ class ModuleManager(object):
         return True
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/cm/device".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -279,11 +280,13 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+
         for device in response['items']:
             try:
                 if device['managementIp'] == self.want.peer_server:
