@@ -918,6 +918,7 @@ class InternalManager(BaseManager):
         return True
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/internal/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -926,11 +927,19 @@ class InternalManager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -1050,6 +1059,7 @@ class ExternalManager(BaseManager):
         return True
 
     def external_file_exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/sys/file/data-group/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1058,11 +1068,19 @@ class ExternalManager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def upload_file_to_device(self, content, name):
         url = 'https://{0}:{1}/mgmt/shared/file-transfer/uploads'.format(

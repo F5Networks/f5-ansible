@@ -1115,6 +1115,7 @@ class ModuleManager(object):
         return True
 
     def profile_exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1123,13 +1124,22 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         if not self.profile_exists():
             raise F5ModuleError(
                 'Specified DOS profile: {0} on partition: {1} does not exist.'.format(
@@ -1144,11 +1154,19 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
