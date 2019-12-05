@@ -1,0 +1,65 @@
+---
+
+- name: Issue 01405 - Create pool
+  bigip_pool:
+    name: test-issue-01405
+
+- name: Issue 01405 - Create published policy
+  bigip_policy:
+    name: issue-01405
+
+- name: Issue 01405 - Create rule with persist action and conditions
+  bigip_policy_rule:
+    policy: issue-01405
+    name: rule1
+    actions:
+      - type: forward
+        pool: test-issue-01405
+      - type: persist
+        cookie_insert : "cookiecrumb"
+        cookie_expiry: 100
+    conditions:
+      - type: http_uri
+        path_begins_with_any:
+          - /blogs
+          - /admin
+  register: result
+
+- name: Issue 01405 - Create rule with persist action and conditions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01405 - Create rule with persist action and conditions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01405
+    name: rule1
+    actions:
+      - type: forward
+        pool: test-issue-01405
+      - type: persist
+        cookie_insert : "cookiecrumb"
+        cookie_expiry: 100
+    conditions:
+      - type: http_uri
+        path_begins_with_any:
+          - /blogs
+          - /admin
+  register: result
+
+- name: Issue 01405 - Create rule with persist action and conditions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01405 - Remove policy
+  bigip_policy:
+    name: issue-01405
+    state: absent
+
+- name: Issue 01405 - Remove pool
+  bigip_pool:
+    name: test-issue-01405
+    state: absent
