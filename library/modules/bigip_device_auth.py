@@ -127,7 +127,7 @@ options:
       - When C(send-to-all-servers), specifies that the system transmits accounting
         information back to all TACACS+ servers in the list.
       - This parameter is supported by the C(tacacs) type.
-    version_added: "f5_modules 1.1.0"
+    version_added: "f5_modules 1.1"
     type: str
     choices:
       - send-to-first-server
