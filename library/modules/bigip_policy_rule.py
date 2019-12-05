@@ -82,11 +82,13 @@ options:
           - Cookie name to persist on.
           - This parameter is only valid with the C(persist) type.
         type: str
+        version_added: "f5_modules 1.1"
       cookie_expiry:
         description:
           - Optional argument, specifying the time for which the session will be persisted.
           - This parameter is only valid with the C(persist) type.
         type: int
+        version_added: "f5_modules 1.1"
     type: list
   policy:
     description:
@@ -223,14 +225,14 @@ EXAMPLES = r'''
           pool: pool-svrs
       conditions:
         - type: http_uri
-          path_starts_with: /euro
+          path_begins_with_any: /euro
     - name: rule2
       actions:
         - type: forward
           pool: pool-svrs
       conditions:
         - type: http_uri
-          path_starts_with: /HomePage/
+          path_begins_with_any: /HomePage/
 
 - name: Remove all rules and confitions from the rule
   bigip_policy_rule:

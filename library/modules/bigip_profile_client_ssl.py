@@ -233,7 +233,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the default is provided
         by the parent profile.
     type: int
-    version_added: "f5_modules 1.0.0"
+    version_added: "f5_modules 1.0"
   cache_timeout:
     description:
       - Specifies the timeout value in seconds of the SSL session cache entries.
@@ -241,7 +241,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the default is provided
         by the parent profile.
     type: int
-    version_added: "f5_modules 1.0.0"
+    version_added: "f5_modules 1.0"
   state:
     description:
       - When C(present), ensures that the profile exists.
