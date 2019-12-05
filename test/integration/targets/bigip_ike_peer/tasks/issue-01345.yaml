@@ -1,0 +1,59 @@
+---
+- name: Issue 01345 - Create new IKE peer with custom timeout
+  bigip_ike_peer:
+    name: ike1-01345
+    remote_address: 1.2.3.4
+    phase1_lifetime: 60
+    version:
+      - v1
+  register: result
+
+- name: Issue 01345 - Assert Create new IKE peer with custom timeout
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01345 - Create new IKE peer with custom timeout - Idempotent check
+  bigip_ike_peer:
+    name: ike1-01345
+    remote_address: 1.2.3.4
+    phase1_lifetime: 60
+    version:
+      - v1
+  register: result
+
+- name: Issue 01345 - Assert Create new IKE peer with custom timeout - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01345 - Update IKE peer phase 1 timeout
+  bigip_ike_peer:
+    name: ike1-01345
+    phase1_lifetime: 180
+  register: result
+
+- name: Issue 01345 - Assert Update IKE peer phase 1 timeout
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01345 - Update IKE peer phase 1 timeout - Idempotent check
+  bigip_ike_peer:
+    name: ike1-01345
+    phase1_lifetime: 180
+  register: result
+
+- name: Issue 01345 - Assert Update IKE peer phase 1 timeout - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01345 - Remove IKE peer
+  bigip_ike_peer:
+    name: ike1-01345
+    state: absent
