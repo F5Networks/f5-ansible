@@ -69,6 +69,13 @@ options:
             to compare them when updating a client SSL profile. Due to this, if you specify a
             passphrase, this module will always register a C(changed) event.
         type: str
+      true_names:
+        description:
+          - When C(yes) the module will not append C(.crt) and C(.key) extension to the given certificate and key names.
+          - When C(no) the module will append C(.crt) and C(.key) extension to the given certificate and key names.
+        type: bool
+        default: no
+        version_added: "f5_modules 1.1"
     type: list
   partition:
     description:
@@ -496,12 +503,16 @@ class Parameters(AnsibleF5Parameters):
 
 class ModuleParameters(Parameters):
     def _key_filename(self, name):
+        if self.true_names:
+            return name
         if name.endswith('.key'):
             return name
         else:
             return name + '.key'
 
     def _cert_filename(self, name):
+        if self.true_names:
+            return name
         if name.endswith('.crt'):
             return name
         else:
@@ -513,6 +524,14 @@ class ModuleParameters(Parameters):
         else:
             result = self._cert_filename(fq_name(self.partition, item['chain']))
         return result
+
+    @property
+    def true_names(self):
+        result = flatten_boolean(self._values['true_names'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
     @property
     def parent(self):
@@ -1119,7 +1138,11 @@ class ArgumentSpec(object):
                     cert=dict(required=True),
                     key=dict(required=True),
                     chain=dict(),
-                    passphrase=dict()
+                    passphrase=dict(),
+                    true_names=dict(
+                        type='bool',
+                        default='no'
+                    ),
                 )
             ),
             state=dict(
