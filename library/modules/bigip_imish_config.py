@@ -660,7 +660,7 @@ class ModuleManager(object):
         return response['commandResult']
 
     def save_on_device(self):
-        command = 'imish -e write'
+        command = 'imish -r {0} -e write'.format(self.want.route_domain)
         params = {
             "command": "run",
             "utilCmdArgs": '-c "{0}"'.format(command)
