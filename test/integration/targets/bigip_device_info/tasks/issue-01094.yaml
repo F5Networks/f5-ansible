@@ -6,7 +6,7 @@
     - module-provisioning
 
 - name: Issue 01094 - Select ASM server technology facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - asm-server-technologies
   register: result

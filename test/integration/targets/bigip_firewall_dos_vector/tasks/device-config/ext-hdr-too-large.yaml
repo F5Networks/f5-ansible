@@ -267,6 +267,12 @@
       - result is not changed
       - result is success
 
+- name: Change threshold_mode - manual - Network Security IPv6 Extension Header Too Large
+  bigip_firewall_dos_vector:
+    name: ext-hdr-too-large
+    profile: device-config
+    threshold_mode: manual
+
 - name: Change simulate_auto_threshold - yes - Network Security IPv6 Extension Header Too Large
   bigip_firewall_dos_vector:
     name: ext-hdr-too-large
@@ -765,4 +771,11 @@
   bigip_firewall_dos_vector:
     name: ext-hdr-too-large
     profile: device-config
+    blacklist_detection_seconds: 60
+    blacklist_duration: 14400
+    attack_floor: 5000
+    attack_ceiling: infinite
+    detection_threshold_eps: 10
+    detection_threshold_percent: 500
+    threshold_mode: stress-based-mitigation
     state: disabled

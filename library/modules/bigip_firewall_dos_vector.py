@@ -28,6 +28,94 @@ options:
       - Vectors that ship with the device are "hard-coded" so-to-speak in that the list
         of vectors is known to the system and users cannot add new vectors. Users only
         manipulate the existing vectors; all of which are disabled by default.
+      - When C(bad-icmp-chksum), configures the "Bad ICMP Checksum"
+        Network Security vector.
+      - When C(bad-icmp-frame), configures the "Bad ICMP Frame"
+        Network Security vector.
+      - When C(bad-igmp-frame), configures the "Bad IGMP Frame"
+        Network Security vector.
+      - When C(bad-ip-opt), configures the "IP Option Illegal Length"
+        Network Security vector.
+      - When C(bad-ipv6-hop-cnt), configures the "Bad IPv6 Hop Count"
+        Network Security vector.
+      - When C(bad-ipv6-ver), configures the "Bad IPv6 Version"
+        Network Security vector.
+      - When C(bad-sctp-chksum), configures the "Bad SCTP Checksum"
+        Network Security vector.
+      - When C(bad-tcp-chksum), configures the "Bad TCP Checksum"
+        Network Security vector.
+      - When C(bad-tcp-flags-all-clr), configures the "Bad TCP Flags (All Cleared)"
+        Network Security vector.
+      - When C(bad-tcp-flags-all-set), configures the "Bad TCP Flags (All Flags Set)"
+        Network Security vector.
+      - When C(bad-ttl-val), configures the "Bad IP TTL Value" Network Security vector.
+      - When C(bad-udp-chksum), configures the "Bad UDP Checksum" Network Security vector.
+      - When C(bad-udp-hdr), configures the "Bad UDP Header (UDP Length > IP
+        Length or L2 Length)" Network Security vector.
+      - When C(bad-ver), configures the "Bad IP Version" Network Security vector.
+      - When C(arp-flood), configures the "ARP Flood" Network Security vector.
+      - When C(flood), configures the "Single Endpoint Flood" Network Security vector.
+      - When C(igmp-flood), configures the "IGMP Flood" Network Security vector.
+      - When C(igmp-frag-flood), configures the "IGMP Fragment Flood"
+        Network Security vector.
+      - When C(ip-bad-src), configures the "Bad Source" Network Security vector.
+      - When C(ip-err-chksum), configures the "IP Error Checksum"
+        Network Security vector.
+      - When C(ip-len-gt-l2-len), configures the "IP Length > L2 Length"
+        Network Security vector.
+      - When C(ip-other-frag), configures the "IP Fragment Error"
+        Network Security vector.
+      - When C(ip-overlap-frag), configures the "IP Fragment Overlap"
+        Network Security vector.
+      - When C(ip-short-frag), configures the "IP Fragment Too Small"
+        Network Security vector.
+      - When C(ip-uncommon-proto), configures the "IP Uncommon Proto"
+        Network Security vector.
+      - When C(ip-unk-prot), configures the "IP Unknown Protocol"
+        Network Security vector.
+      - When C(ipv4-mapped-ipv6), configures the "IPv4 Mapped IPv6"
+        Network Security vector.
+      - When C(ipv6-atomic-frag), configures the "IPv6 Atomic Fragment"
+        Network Security vector.
+      - When C(ipv6-bad-src), configures the "Bad IPv6 Addr"
+        Network Security vector.
+      - When C(ipv6-len-gt-l2-len), configures the "IPv6 Length > L2 Length"
+        Network Security vector.
+      - When C(ipv6-other-frag), configures the "IPv6 Fragment Error"
+        Network Security vector.
+      - When C(ipv6-overlap-frag), configures the "IPv6 Fragment Overlap"
+        Network Security vector.
+      - When C(ipv6-short-frag), configures the "IPv6 Fragment Too Small"
+        Network Security vector.
+      - When C(l2-len-ggt-ip-len), configures the "L2 Length >> IP Length"
+        Network Security vector.
+      - When C(l4-ext-hdrs-go-end), configures the "No L4 (Extension
+        Headers Go To Or Past The End of Frame)" Network Security vector.
+      - When C(land-attack), configures the "LAND Attack"
+        Network Security vector.
+      - When C(no-l4), configures the "No L4" Network Security vector.
+      - When C(no-listener-match), configures the "No Listener Match"
+        Network Security vector.
+      - When C(non-tcp-connection), configures the "Non TCP Connection"
+        Network Security vector.
+      - When C(payload-len-ls-l2-len), configures the "Payload Length <
+        L2 Length" Network Security vector.
+      - When C(routing-header-type-0), configures the "Routing Header Type
+        0" Network Security vector.
+      - When C(syn-and-fin-set), configures the "SYN && FIN Set"
+        Network Security vector.
+      - When C(tcp-ack-flood), configures the "TCP BADACK Flood"
+        Network Security vector.
+      - When C(tcp-hdr-len-gt-l2-len), configures the "TCP Header Length >
+        L2 Length" Network Security vector.
+      - When C(tcp-hdr-len-too-short), configures the "TCP Header Length
+        Too Short (Length < 5)" Network Security vector.
+      - When C(hdr-len-gt-l2-len), configures the "Header Length > L2 Length"
+        Network Security vector.
+      - When C(hdr-len-too-short), configures the "Header Length Too Short"
+        Network Security vector.
+      - When C(bad-ext-hdr-order), configures the "IPv6 Extended Headers Wrong order"
+        Network Security vector.
       - When C(ext-hdr-too-large), configures the "IPv6 extension header too large"
         Network Security vector.
       - When C(hop-cnt-low), configures the "IPv6 hop count <= <tunable>" Network
@@ -35,6 +123,8 @@ options:
       - When C(host-unreachable), configures the "Host Unreachable" Network Security
         vector.
       - When C(icmp-frag), configures the "ICMP Fragment" Network Security vector.
+      - When C(icmp-frame-too-large), configures the "ICMP Frame Too Large"
+        Network Security vector.
       - When C(icmpv4-flood), configures the "ICMPv4 flood" Network Security vector.
       - When C(icmpv6-flood), configures the "ICMPv6 flood" Network Security vector.
       - When C(ip-frag-flood), configures the "IP Fragment Flood" Network Security vector.
@@ -63,7 +153,19 @@ options:
       - When C(tidcmp), configures the "TIDCMP" Network Security vector.
       - When C(too-many-ext-hdrs), configures the "Too Many Extension Headers" Network
         Security vector.
+      - When C(dup-ext-hdr), configures the "IPv6 Duplicate Extension Headers" Network
+        Security vector.
+      - When C(fin-only-set), configures the "FIN Only Set" Network Security vector.
+      - When C(ether-brdcst-pkt), configures the "Ethernet Broadcast Packet" Network
+        Security vector.
+      - When C(ether-multicst-pkt), configures the "Ethernet Multicast Packet" Network
+        Security vector.
+      - When C(ether-mac-sa-eq-da), configures the "Ethernet MAC Source Address ==
+        Destination Address" Network
+        Security vector.
       - When C(udp-flood), configures the "UDP Flood" Network Security vector.
+      - When C(unk-ipopt-type), configures the "Unknown Option Type" Network
+        Security vector.
       - When C(unk-tcp-opt-type), configures the "Unknown TCP Option Type" Network
         Security vector.
       - When C(a), configures the "DNS A Query" DNS Protocol Security vector.
@@ -72,6 +174,10 @@ options:
       - When C(axfr), configures the "DNS AXFR Query" DNS Protocol Security vector.
       - When C(cname), configures the "DNS CNAME Query" DNS Protocol Security vector.
       - When C(dns-malformed), configures the "dns-malformed" DNS Protocol Security vector.
+      - When C(dns-nxdomain-query), configures the "dns-nxdomain-query"
+        DNS Protocol Security vector.
+      - When C(dns-response-flood), configures the "dns-response-flood"
+        DNS Protocol Security vector.
       - When C(ixfr), configures the "DNS IXFR Query" DNS Protocol Security vector.
       - When C(mx), configures the "DNS MX Query" DNS Protocol Security vector.
       - When C(ns), configures the "DNS NS Query" DNS Protocol Security vector.
@@ -97,10 +203,59 @@ options:
       - When C(uri-limit), configures the "uri-limit" SIP Protocol Security vector.
     type: str
     choices:
+      - bad-icmp-chksum
+      - bad-icmp-frame
+      - bad-igmp-frame
+      - bad-ip-opt
+      - bad-ipv6-hop-cnt
+      - bad-ipv6-ver
+      - bad-sctp-chksum
+      - bad-tcp-chksum
+      - bad-tcp-flags-all-clr
+      - bad-tcp-flags-all-set
+      - bad-ttl-val
+      - bad-udp-chksum
+      - bad-udp-hdr
+      - bad-ver
+      - arp-flood
+      - flood
+      - igmp-flood
+      - igmp-frag-flood
+      - ip-bad-src
+      - ip-err-chksum
+      - ip-len-gt-l2-len
+      - ip-other-frag
+      - ip-overlap-frag
+      - ip-short-frag
+      - ip-uncommon-proto
+      - ip-unk-prot
+      - ipv4-mapped-ipv6
+      - ipv6-atomic-frag
+      - ipv6-bad-src
+      - ipv6-len-gt-l2-len
+      - ipv6-other-frag
+      - ipv6-overlap-frag
+      - ipv6-short-frag
+      - l2-len-ggt-ip-len
+      - l4-ext-hdrs-go-end
+      - land-attack
+      - no-l4
+      - no-listener-match
+      - non-tcp-connection
+      - payload-len-ls-l2-len
+      - routing-header-type-0
+      - syn-and-fin-set
+      - tcp-ack-flood
+      - tcp-hdr-len-gt-l2-len
+      - tcp-hdr-len-too-short
+      - hdr-len-gt-l2-len
+      - hdr-len-too-short
+      - bad-ext-hdr-order
       - ext-hdr-too-large
       - hop-cnt-low
       - host-unreachable
       - icmp-frag
+      - icmp-frame-too-large
       - icmpv4-flood
       - icmpv6-flood
       - ip-frag-flood
@@ -120,7 +275,13 @@ options:
       - tcp-window-size
       - tidcmp
       - too-many-ext-hdrs
+      - dup-ext-hdr
+      - fin-only-set
+      - ether-brdcst-pkt
+      - ether-multicst-pkt
+      - ether-mac-sa-eq-da
       - udp-flood
+      - unk-ipopt-type
       - unk-tcp-opt-type
       - a
       - aaaa
@@ -128,6 +289,8 @@ options:
       - axfr
       - cname
       - dns-malformed
+      - dns-nxdomain-query
+      - dns-response-flood
       - ixfr
       - mx
       - ns
@@ -403,10 +566,59 @@ except ImportError:
 
 
 NETWORK_SECURITY_VECTORS = [
+    'bad-icmp-chksum',               # Bad ICMP Checksum
+    'bad-icmp-frame',                # Bad ICMP Frame
+    'bad-igmp-frame',                # Bad IGMP Frame
+    'bad-ip-opt',                    # IP Option Illegal Length
+    'bad-ipv6-hop-cnt',              # Bad IPv6 Hop Count
+    'bad-ipv6-ver',                  # Bad IPv6 Version
+    'bad-sctp-chksum',               # Bad SCTP Checksum
+    'bad-tcp-chksum',                # Bad TCP Checksum
+    'bad-tcp-flags-all-clr',         # Bad TCP Flags (All Cleared)
+    'bad-tcp-flags-all-set',         # Bad TCP Flags (All Flags Set)
+    'bad-ttl-val',                   # Bad IP TTL Value
+    'bad-udp-chksum',                # Bad UDP Checksum
+    'bad-udp-hdr',                   # Bad UDP Header (UDP Length > IP Length or L2 Length)
+    'bad-ver',                       # Bad IP Version
+    'arp-flood',                     # ARP Flood
+    'flood',                         # Single Endpoint Flood
+    'igmp-flood',                    # IGMP Flood
+    'igmp-frag-flood',               # IGMP Fragment Flood
+    'ip-bad-src',                    # Bad Source
+    'ip-err-chksum',                 # IP Error Checksum
+    'ip-len-gt-l2-len',              # IP Length > L2 Length
+    'ip-other-frag',                 # IP Fragment Error
+    'ip-overlap-frag',               # IP Fragment Overlap
+    'ip-short-frag',                 # IP Fragment Too Small
+    'ip-uncommon-proto',             # IP Uncommon Proto
+    'ip-unk-prot',                   # IP Unknown Protocol
+    'ipv4-mapped-ipv6',              # IPv4 Mapped IPv6
+    'ipv6-atomic-frag',              # IPv6 Atomic Fragment
+    'ipv6-bad-src',                  # Bad IPv6 Addr
+    'ipv6-len-gt-l2-len',            # IPv6 Length > L2 Length
+    'ipv6-other-frag',               # IPv6 Fragment Error
+    'ipv6-overlap-frag',             # IPv6 Fragment Overlap
+    'ipv6-short-frag',               # IPv6 Fragment Too Small
+    'l2-len-ggt-ip-len',             # L2 Length >> IP Length
+    'l4-ext-hdrs-go-end',            # No L4 (Extension Headers Go To Or Past The End of Frame)
+    'land-attack',                   # LAND Attack
+    'no-l4',                         # No L4
+    'no-listener-match',             # No Listener Match
+    'non-tcp-connection',            # Non TCP Connection
+    'payload-len-ls-l2-len',         # Payload Length < L2 Length
+    'routing-header-type-0',         # Routing Header Type 0
+    'syn-and-fin-set',               # SYN && FIN Set
+    'tcp-ack-flood',                 # TCP BADACK Flood
+    'tcp-hdr-len-gt-l2-len',         # TCP Header Length > L2 Length
+    'tcp-hdr-len-too-short',         # TCP Header Length Too Short (Length < 5)
+    'hdr-len-gt-l2-len',             # Header Length > L2 Length
+    'hdr-len-too-short',             # Header Length Too Short
+    'bad-ext-hdr-order',             # IPv6 Extended Headers Wrong order
     'ext-hdr-too-large',             # IPv6 extension header too large
     'hop-cnt-low',                   # IPv6 hop count <= <tunable>
     'host-unreachable',              # Host Unreachable
     'icmp-frag',                     # ICMP Fragment
+    'icmp-frame-too-large',          # ICMP Frame Too Large
     'icmpv4-flood',                  # ICMPv4 flood
     'icmpv6-flood',                  # ICMPv6 flood
     'ip-frag-flood',                 # IP Fragment Flood
@@ -427,7 +639,13 @@ NETWORK_SECURITY_VECTORS = [
     'tcp-window-size',               # TCP Window Size
     'tidcmp',                        # TIDCMP
     'too-many-ext-hdrs',             # Too Many Extension Headers
+    'dup-ext-hdr',                   # IPv6 Duplicate Extension Headers
+    'fin-only-set',                  # FIN Only Set
+    'ether-brdcst-pkt',              # Ethernet Broadcast Packet
+    'ether-multicst-pkt',            # Ethernet Multicast Packet
+    'ether-mac-sa-eq-da',            # Ethernet MAC Source Address == Destination Address
     'udp-flood',                     # UDP Flood
+    'unk-ipopt-type',                # Unknown Option Type
     'unk-tcp-opt-type',              # Unknown TCP Option Type
 ]
 
@@ -449,21 +667,23 @@ PROTOCOL_SIP_VECTORS = [
 ]
 
 PROTOCOL_DNS_VECTORS = [
-    'a',              # DNS A Query
-    'aaaa',           # DNS AAAA Query
-    'any',            # DNS ANY Query
-    'axfr',           # DNS AXFR Query
-    'cname',          # DNS CNAME Query
-    'dns-malformed',  # dns-malformed
-    'ixfr',           # DNS IXFR Query
-    'mx',             # DNS MX Query
-    'ns',             # DNS NS Query
-    'other',          # DNS OTHER Query
-    'ptr',            # DNS PTR Query
-    'qdcount',        # DNS QDCOUNT LIMIT
-    'soa',            # DNS SOA Query
-    'srv',            # DNS SRV Query
-    'txt',            # DNS TXT Query
+    'a',                              # DNS A Query
+    'aaaa',                           # DNS AAAA Query
+    'any',                            # DNS ANY Query
+    'axfr',                           # DNS AXFR Query
+    'cname',                          # DNS CNAME Query
+    'dns-malformed',                  # DNS Malformed
+    'dns-nxdomain-query',             # DNS NXDOMAIN Query
+    'dns-response-flood',             # DNS Response Flood
+    'ixfr',                           # DNS IXFR Query
+    'mx',                             # DNS MX Query
+    'ns',                             # DNS NS Query
+    'other',                          # DNS OTHER Query
+    'ptr',                            # DNS PTR Query
+    'qdcount',                        # DNS QDCOUNT LIMIT
+    'soa',                            # DNS SOA Query
+    'srv',                            # DNS SRV Query
+    'txt',                            # DNS TXT Query
 ]
 
 
@@ -1190,10 +1410,59 @@ class ArgumentSpec(object):
             name=dict(
                 required=True,
                 choices=[
+                    'bad-icmp-chksum',
+                    'bad-icmp-frame',
+                    'bad-igmp-frame',
+                    'bad-ip-opt',
+                    'bad-ipv6-hop-cnt',
+                    'bad-ipv6-ver',
+                    'bad-sctp-chksum',
+                    'bad-tcp-chksum',
+                    'bad-tcp-flags-all-clr',
+                    'bad-tcp-flags-all-set',
+                    'bad-ttl-val',
+                    'bad-udp-chksum',
+                    'bad-udp-hdr',
+                    'bad-ver',
+                    'arp-flood',
+                    'flood',
+                    'igmp-flood',
+                    'igmp-frag-flood',
+                    'ip-bad-src',
+                    'ip-err-chksum',
+                    'ip-len-gt-l2-len',
+                    'ip-other-frag',
+                    'ip-overlap-frag',
+                    'ip-short-frag',
+                    'ip-uncommon-proto',
+                    'ip-unk-prot',
+                    'ipv4-mapped-ipv6',
+                    'ipv6-atomic-frag',
+                    'ipv6-bad-src',
+                    'ipv6-len-gt-l2-len',
+                    'ipv6-other-frag',
+                    'ipv6-overlap-frag',
+                    'ipv6-short-frag',
+                    'l2-len-ggt-ip-len',
+                    'l4-ext-hdrs-go-end',
+                    'land-attack',
+                    'no-l4',
+                    'no-listener-match',
+                    'non-tcp-connection',
+                    'payload-len-ls-l2-len',
+                    'routing-header-type-0',
+                    'syn-and-fin-set',
+                    'tcp-ack-flood',
+                    'tcp-hdr-len-gt-l2-len',
+                    'tcp-hdr-len-too-short',
+                    'hdr-len-gt-l2-len',
+                    'hdr-len-too-short',
+                    'bad-ext-hdr-order',
                     'ext-hdr-too-large',
                     'hop-cnt-low',
                     'host-unreachable',
                     'icmp-frag',
+                    'icmp-frame-too-large',
                     'icmpv4-flood',
                     'icmpv6-flood',
                     'ip-frag-flood',
@@ -1213,7 +1482,13 @@ class ArgumentSpec(object):
                     'tcp-window-size',
                     'tidcmp',
                     'too-many-ext-hdrs',
+                    'dup-ext-hdr',
+                    'fin-only-set',
+                    'ether-brdcst-pkt',
+                    'ether-multicst-pkt',
+                    'ether-mac-sa-eq-da',
                     'udp-flood',
+                    'unk-ipopt-type',
                     'unk-tcp-opt-type',
                     'a',
                     'aaaa',
@@ -1221,6 +1496,8 @@ class ArgumentSpec(object):
                     'axfr',
                     'cname',
                     'dns-malformed',
+                    'dns-nxdomain-query',
+                    'dns-response-flood',
                     'ixfr',
                     'mx',
                     'ns',

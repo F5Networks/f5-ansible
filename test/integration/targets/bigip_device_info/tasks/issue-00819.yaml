@@ -6,7 +6,7 @@
   register: result
 
 - name: Issue 00819 - Select iapplx-packages facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - iapplx-packages
   register: result

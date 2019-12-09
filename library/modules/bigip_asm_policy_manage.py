@@ -238,11 +238,9 @@ class Parameters(AnsibleF5Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' in response and response['items'] != []:
             result = dict(link=response['items'][0]['selfLink'])
 
@@ -588,11 +586,8 @@ class BaseManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                raise F5ModuleError(resp.content)
 
             if response['status'] in ['COMPLETED', 'FAILURE']:
                 break
@@ -619,6 +614,9 @@ class BaseManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' in response and response['items'] != []:
             policy_id = response['items'][0]['id']
         if not policy_id:
@@ -642,11 +640,9 @@ class BaseManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+                return True
+            raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         policy_id = self._get_policy_id()
@@ -662,15 +658,10 @@ class BaseManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-
-        response.update((dict(self_link=response['selfLink'])))
-
-        return Parameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response.update((dict(self_link=response['selfLink'])))
+            return Parameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def apply_on_device(self):
         uri = "https://{0}:{1}/mgmt/tm/asm/tasks/apply-policy/".format(
@@ -685,16 +676,13 @@ class BaseManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['id']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response['id']
+        raise F5ModuleError(resp.content)
 
     def create_from_template_on_device(self):
         full_name = fq_name(self.want.partition, self.want.name)
-        cmd = 'tmsh create asm policy {0} policy-template {1}'.format(full_name, self.want.template)
+        cmd = 'tmsh create asm policy {0} policy-template {1} encoding utf-8'.format(full_name, self.want.template)
         uri = "https://{0}:{1}/mgmt/tm/util/bash/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -708,16 +696,14 @@ class BaseManager(object):
         try:
             response = resp.json()
             if 'commandResult' in response:
-                if 'Unexpected Error' in response['commandResult']:
+                if 'Error' in response['commandResult'] or 'error' in response['commandResult']:
                     raise F5ModuleError(response['commandResult'])
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -737,13 +723,10 @@ class BaseManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 401, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        time.sleep(2)
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            time.sleep(2)
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         policy_id = self._get_policy_id()

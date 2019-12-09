@@ -37,4 +37,7 @@
 - import_tasks: issue-00923.yaml
   tags: issue-00923
 
+- import_tasks: fmfa-347.yaml
+  tags: fmfa-347.yaml
+
 - import_tasks: teardown.yaml

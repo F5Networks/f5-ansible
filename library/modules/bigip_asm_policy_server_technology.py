@@ -326,6 +326,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' in response and response['items'] != []:
             policy_id = response['items'][0]['id']
 
@@ -341,18 +344,16 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=contains(serverTechnologyName,'{0}')".format(self.want.name)
+        name = self.want.name.replace(' ', '%20')
+        query = "?$filter=contains(serverTechnologyName,'{0}')".format(name)
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 409, 404]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         if 'items' in response:
             link = response['items'][0]['selfLink']
@@ -376,12 +377,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 409]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         policy_id = self._get_policy_id()

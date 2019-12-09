@@ -111,3 +111,6 @@
       - result is success
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01618.yaml
+  tags: issue-01618

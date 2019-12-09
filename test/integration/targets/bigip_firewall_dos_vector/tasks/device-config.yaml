@@ -2,79 +2,253 @@
 
 - import_tasks: device-config/ext-hdr-too-large.yaml
   tags:
-    - ext-hdr-too-large
+    - device-config-ext-hdr-too-large
 - import_tasks: device-config/hop-cnt-low.yaml
   tags:
-    - hop-cnt-low
+    - device-config-hop-cnt-low
 - import_tasks: device-config/host-unreachable.yaml
   tags:
-    - host-unreachable
+    - device-config-host-unreachable
 - import_tasks: device-config/icmp-frag.yaml
   tags:
-    - icmp-frag
+    - device-config-icmp-frag
 - import_tasks: device-config/icmpv4-flood.yaml
   tags:
-    - icmpv4-flood
+    - device-config-icmpv4-flood
 - import_tasks: device-config/icmpv6-flood.yaml
   tags:
-    - icmpv6-flood
+    - device-config-icmpv6-flood
 - import_tasks: device-config/ip-frag-flood.yaml
   tags:
-    - ip-frag-flood
+    - device-config-ip-frag-flood
 - import_tasks: device-config/ip-low-ttl.yaml
   tags:
-    - ip-low-ttl
+    - device-config-ip-low-ttl
 - import_tasks: device-config/ip-opt-frames.yaml
   tags:
-    - ip-opt-frames
+    - device-config-ip-opt-frames
 - import_tasks: device-config/ipv6-ext-hdr-frames.yaml
   tags:
-    - ipv6-ext-hdr-frames
+    - device-config-ipv6-ext-hdr-frames
 - import_tasks: device-config/ipv6-frag-flood.yaml
   tags:
-    - ipv6-frag-flood
+    - device-config-ipv6-frag-flood
 - import_tasks: device-config/opt-present-with-illegal-len.yaml
   tags:
-    - opt-present-with-illegal-len
+    - device-config-opt-present-with-illegal-len
 - import_tasks: device-config/sweep.yaml
   tags:
-    - sweep
+    - device-config-sweep
 - import_tasks: device-config/tcp-bad-urg.yaml
   tags:
-    - tcp-bad-urg
+    - device-config-tcp-bad-urg
 - import_tasks: device-config/tcp-half-open.yaml
   tags:
-    - tcp-half-open
+    - device-config-tcp-half-open
 - import_tasks: device-config/tcp-opt-overruns-tcp-hdr.yaml
   tags:
-    - tcp-opt-overruns-tcp-hdr
+    - device-config-tcp-opt-overruns-tcp-hdr
 - import_tasks: device-config/tcp-psh-flood.yaml
   tags:
-    - tcp-psh-flood
+    - device-config-tcp-psh-flood
 - import_tasks: device-config/tcp-rst-flood.yaml
   tags:
-    - tcp-rst-flood
+    - device-config-tcp-rst-flood
 - import_tasks: device-config/tcp-syn-flood.yaml
   tags:
-    - tcp-syn-flood
+    - device-config-tcp-syn-flood
 - import_tasks: device-config/tcp-syn-oversize.yaml
   tags:
-    - tcp-syn-oversize
+    - device-config-tcp-syn-oversize
 - import_tasks: device-config/tcp-synack-flood.yaml
   tags:
-    - tcp-synack-flood
+    - device-config-tcp-synack-flood
 - import_tasks: device-config/tcp-window-size.yaml
   tags:
-    - tcp-window-size
+    - device-config-tcp-window-size
 - import_tasks: device-config/tidcmp.yaml
   tags:
-    - tidcmp
+    - device-config-tidcmp
 - import_tasks: device-config/too-many-ext-hdrs.yaml
   tags:
-    - too-many-ext-hdrs
+    - device-config-too-many-ext-hdrs
 - import_tasks: device-config/udp-flood.yaml
   tags:
-    - udp-flood
+    - device-config-udp-flood
 - import_tasks: device-config/unk-tcp-opt-type.yaml
   tags:
-    - unk-tcp-opt-type
+    - device-config-unk-tcp-opt-type
+- import_tasks: device-config/arp-flood.yaml
+  tags:
+    - device-config-arp-flood
+- import_tasks: device-config/bad-ext-hdr-order.yaml
+  tags:
+    - device-config-bad-ext-hdr-order
+- import_tasks: device-config/bad-icmp-chksum.yaml
+  tags:
+    - device-config-bad-icmp-chksum
+- import_tasks: device-config/bad-icmp-frame.yaml
+  tags:
+    - device-config-bad-icmp-frame
+- import_tasks: device-config/bad-igmp-frame.yaml
+  tags:
+    - device-config-bad-igmp-frame
+- import_tasks: device-config/bad-ip-opt.yaml
+  tags:
+    - device-config-bad-ip-opt
+- import_tasks: device-config/bad-ipv6-hop-cnt.yaml
+  tags:
+    - device-config-bad-ipv6-hop-cnt
+- import_tasks: device-config/bad-ipv6-ver.yaml
+  tags:
+    - device-config-bad-ipv6-ver
+- import_tasks: device-config/bad-sctp-chksum.yaml
+  tags:
+    - device-config-bad-sctp-chksum
+- import_tasks: device-config/bad-tcp-chksum.yaml
+  tags:
+    - device-config-bad-tcp-chksum
+- import_tasks: device-config/bad-tcp-flags-all-clr.yaml
+  tags:
+    - device-config-bad-tcp-flags-all-clr
+- import_tasks: device-config/bad-tcp-flags-all-set.yaml
+  tags:
+    - device-config-bad-tcp-flags-all-set
+- import_tasks: device-config/bad-ttl-val.yaml
+  tags:
+    - device-config-bad-ttl-val
+- import_tasks: device-config/bad-udp-chksum.yaml
+  tags:
+    - device-config-bad-udp-chksum
+- import_tasks: device-config/bad-udp-hdr.yaml
+  tags:
+    - device-config-bad-udp-hdr
+- import_tasks: device-config/bad-ver.yaml
+  tags:
+    - device-config-bad-ver
+- import_tasks: device-config/dns-malformed.yaml
+  tags:
+    - device-config-dns-malformed
+- import_tasks: device-config/dns-nxdomain-query.yaml
+  tags:
+    - device-config-dns-nxdomain-query
+- import_tasks: device-config/dns-response-flood.yaml
+  tags:
+    - device-config-dns-response-flood
+- import_tasks: device-config/dup-ext-hdr.yaml
+  tags:
+    - device-config-dup-ext-hdr
+- import_tasks: device-config/ether-brdcst-pkt.yaml
+  tags:
+    - device-config-ether-brdcst-pkt
+- import_tasks: device-config/ether-mac-sa-eq-da.yaml
+  tags:
+    - device-config-ether-mac-sa-eq-da
+- import_tasks: device-config/ether-multicst-pkt.yaml
+  tags:
+    - device-config-ether-multicst-pkt
+- import_tasks: device-config/fin-only-set.yaml
+  tags:
+    - device-config-fin-only-set
+- import_tasks: device-config/flood.yaml
+  tags:
+    - device-config-flood
+- import_tasks: device-config/hdr-len-gt-l2-len.yaml
+  tags:
+    - device-config-hdr-len-gt-l2-len
+- import_tasks: device-config/hdr-len-too-short.yaml
+  tags:
+    - device-config-hdr-len-too-short
+- import_tasks: device-config/icmp-frame-too-large.yaml
+  tags:
+    - device-config-icmp-frame-too-large
+- import_tasks: device-config/igmp-flood.yaml
+  tags:
+    - device-config-igmp-flood
+- import_tasks: device-config/igmp-frag-flood.yaml
+  tags:
+    - device-config-igmp-frag-flood
+- import_tasks: device-config/ip-bad-src.yaml
+  tags:
+    - device-config-ip-bad-src
+- import_tasks: device-config/ip-err-chksum.yaml
+  tags:
+    - device-config-ip-err-chksum
+- import_tasks: device-config/ip-len-gt-l2-len.yaml
+  tags:
+    - device-config-ip-len-gt-l2-len
+- import_tasks: device-config/ip-other-frag.yaml
+  tags:
+    - device-config-ip-other-frag
+- import_tasks: device-config/ip-overlap-frag.yaml
+  tags:
+    - device-config-ip-overlap-frag
+- import_tasks: device-config/ip-short-frag.yaml
+  tags:
+    - device-config-ip-short-frag
+- import_tasks: device-config/ip-uncommon-proto.yaml
+  tags:
+    - device-config-ip-uncommon-proto
+- import_tasks: device-config/ip-unk-prot.yaml
+  tags:
+    - device-config-ip-unk-prot
+- import_tasks: device-config/ipv4-mapped-ipv6.yaml
+  tags:
+    - device-config-ipv4-mapped-ipv6
+- import_tasks: device-config/ipv6-atomic-frag.yaml
+  tags:
+    - device-config-ipv6-atomic-frag
+- import_tasks: device-config/ipv6-bad-src.yaml
+  tags:
+    - device-config-ipv6-bad-src
+- import_tasks: device-config/ipv6-len-gt-l2-len.yaml
+  tags:
+    - device-config-ipv6-len-gt-l2-len
+- import_tasks: device-config/ipv6-other-frag.yaml
+  tags:
+    - device-config-ipv6-other-frag
+- import_tasks: device-config/ipv6-overlap-frag.yaml
+  tags:
+    - device-config-ipv6-overlap-frag
+- import_tasks: device-config/ipv6-short-frag.yaml
+  tags:
+    - device-config-ipv6-short-frag
+- import_tasks: device-config/l2-len-ggt-ip-len.yaml
+  tags:
+    - device-config-l2-len-ggt-ip-len
+- import_tasks: device-config/l4-ext-hdrs-go-end.yaml
+  tags:
+    - device-config-l4-ext-hdrs-go-end
+- import_tasks: device-config/land-attack.yaml
+  tags:
+    - device-config-land-attack
+- import_tasks: device-config/no-l4.yaml
+  tags:
+    - device-config-no-l4
+- import_tasks: device-config/no-listener-match.yaml
+  tags:
+    - device-config-no-listener-match
+- import_tasks: device-config/non-tcp-connection.yaml
+  tags:
+    - device-config-non-tcp-connection
+- import_tasks: device-config/payload-len-ls-l2-len.yaml
+  tags:
+    - device-config-payload-len-ls-l2-len
+- import_tasks: device-config/routing-header-type-0.yaml
+  tags:
+    - device-config-routing-header-type-0
+- import_tasks: device-config/syn-and-fin-set.yaml
+  tags:
+    - device-config-syn-and-fin-set
+- import_tasks: device-config/tcp-ack-flood.yaml
+  tags:
+    - device-config-tcp-ack-flood
+- import_tasks: device-config/tcp-hdr-len-gt-l2-len.yaml
+  tags:
+    - device-config-tcp-hdr-len-gt-l2-len
+- import_tasks: device-config/tcp-hdr-len-too-short.yaml
+  tags:
+    - device-config-tcp-hdr-len-too-short
+- import_tasks: device-config/unk-ipopt-type.yaml
+  tags:
+    - device-config-unk-ipopt-type

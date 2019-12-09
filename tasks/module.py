@@ -31,6 +31,7 @@ from .lib.stubber import unstub_library_file
 from .lib.stubber import unstub_unit_test_file
 
 from invoke import task
+from tasks.test import copy_ignores
 
 
 @task
@@ -74,15 +75,35 @@ HELP1 = dict(
 )
 
 
+def purge_upstreamed_module_files(c, collection, test, modules):
+    if not os.path.exists(collection):
+        return
+    if os.path.exists(test) and len(os.listdir(test)) > 0:
+        print("Purging contents from {0}.".format(test))
+        with c.cd(test):
+            c.run('rm -rf *')
+    if os.path.exists(modules) and len(os.listdir(modules)) > 0:
+        print("Purging contents from {0}.".format(modules))
+        with c.cd(modules):
+            c.run('rm -f *')
+
+
+def copy_ignore_files(c, collection='f5_modules'):
+    """Copy new version of ignore files."""
+    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
+    copy_ignores(c, coll_dest)
+
+
 @task(iterable=['module'], optional=['collection'], help=HELP1)
 def upstream(c, module, collection='f5_modules'):
     """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
     """
-    deprecated = False
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
     test_dir = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/'.format(BASE_DIR, collection)
     fixtures_dir = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/fixtures/'.format(BASE_DIR, collection)
     modules_dir = '{0}/local/ansible_collections/f5networks/{1}/plugins/modules/'.format(BASE_DIR, collection)
+
+    purge_upstreamed_module_files(c, coll_dest, test_dir, modules_dir)
 
     if not os.path.exists(coll_dest):
         print("The required collection directory does not exist, creating...")
@@ -112,26 +133,32 @@ def upstream(c, module, collection='f5_modules'):
     for module in modules:
         deprecated = True if module.startswith('_') else False
 
-        if deprecated and not should_upstream_module(module):
+        if not deprecated and not should_upstream_module(module):
             continue
 
-        print("Upstreaming {0}".format(module))
-        if os.path.exists('{0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module)):
-            # - upstream unit test file
+        if deprecated:
+            print("Warning: Upstreaming deprecated module: {0}".format(module))
+        else:
+            print("Upstreaming {0}".format(module))
+
+        if os.path.exists('{0}/test/units/modules/network/f5/test_{1}.py'.format(
+                BASE_DIR, module.lstrip('_'))) and not deprecated:
+            # - upstream unit test file for non deprecated modules
             cmd = [
-                'cp', '{0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module),
-                '{0}/test_{1}.py'.format(test_dir, module)
+                'cp', '{0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module.lstrip('_')),
+                '{0}/test_{1}.py'.format(test_dir, module.lstrip('_'))
             ]
             c.run(' '.join(cmd))
 
         # - upstream unit test fixtures
-        fixtures = get_fixtures(c, module)
-        for fixture in fixtures:
-            cmd = [
-                'cp', '{0}/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture),
-                '{0}/{1}'.format(fixtures_dir, fixture)
-            ]
-            c.run(' '.join(cmd))
+        if not deprecated:
+            fixtures = get_fixtures(c, module)
+            for fixture in fixtures:
+                cmd = [
+                    'cp', '{0}/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture),
+                    '{0}/{1}'.format(fixtures_dir, fixture)
+                ]
+                c.run(' '.join(cmd))
 
         if os.path.exists('{0}/library/modules/{1}.py'.format(BASE_DIR, module)):
             # - upstream module file
@@ -141,7 +168,9 @@ def upstream(c, module, collection='f5_modules'):
             ]
             c.run(' '.join(cmd))
 
-    if deprecated and not should_upstream_module(module):
-        print("This module is either deprecated or not marked for upstreaming in the YAML playbook metadata.")
+    copy_ignore_files(c)
+
+    if not should_upstream_module(module):
+        print("This module is not marked for upstreaming in the YAML playbook metadata.")
     else:
         print("Copy complete")

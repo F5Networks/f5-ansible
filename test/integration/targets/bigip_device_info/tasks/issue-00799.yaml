@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00799 - Collect BIG-IP facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - system-info
   register: info
@@ -26,7 +26,7 @@
         initial_image: "{{ initial_image|basename }}"
 
     - name: Issue 00799 - Select vcmp-guest facts
-      bigip_device_facts:
+      bigip_device_info:
         include:
           - vcmp-guests
       register: result

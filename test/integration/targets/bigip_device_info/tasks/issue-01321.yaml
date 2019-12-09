@@ -18,7 +18,7 @@
         location: tcl:https://[getfield [HTTP::host] \":\" 1][HTTP::uri]
 
 - name: Issue 01321 - Select LTM policy facts
-  bigip_device_facts:
+  bigip_device_info:
     gather_subset:
       - ltm-policies
   register: result

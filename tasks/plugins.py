@@ -20,15 +20,30 @@ HELP1 = dict(
 )
 
 
+def purge_upstreamed_files(c, target_dir, collection):
+    if not os.path.exists(collection):
+        return
+    if not os.path.exists(target_dir):
+        return
+    if len(os.listdir(target_dir)) > 0:
+        print("Purging contents from {0}.".format(target_dir))
+        with c.cd(target_dir):
+            c.run('rm -f *')
+
+
 def upstream_plugin(c, plugin, collection='f5_modules'):
     plugin_dir = '{0}/library/plugins/{1}/'.format(BASE_DIR, plugin)
     target_dir = '{0}/local/ansible_collections/f5networks/{1}/plugins/{2}/'.format(BASE_DIR, collection, plugin)
+    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
     if not os.path.exists(plugin_dir):
         print("No plugin type {0} directory found ...skipping.".format(plugin))
         return
     if len(list(glob.glob('{0}/*.py'.format(plugin_dir)))) == 0:
         print("No plugin type {0} files found ...skipping.".format(plugin))
         return
+
+    purge_upstreamed_files(c, target_dir, coll_dest)
+
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
     cmd = [
