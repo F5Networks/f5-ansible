@@ -79,6 +79,11 @@ options:
       - This value cannot be changed after it is set.
     type: int
     version_added: 2.3
+  fw_enforced_policy:
+    description:
+      - Specifies AFM policy to be attached to Self IP.
+    type: str
+    version_added: "f5_modules 1.1"
   partition:
     description:
       - Device partition to manage resources on. You can set different partitions
@@ -196,27 +201,27 @@ EXAMPLES = r'''
 
 RETURN = r'''
 allow_service:
-  description: Services that allowed via this Self IP
+  description: Services that allowed via this Self IP.
   returned: changed
   type: list
   sample: ['igmp:0','tcp:22','udp:53']
 address:
-  description: The address for the Self IP
+  description: The address for the Self IP.
   returned: changed
   type: str
   sample: 192.0.2.10
 name:
-  description: The name of the Self IP
+  description: The name of the Self IP.
   returned: created
   type: str
   sample: self1
 netmask:
-  description: The netmask of the Self IP
+  description: The netmask of the Self IP.
   returned: changed
   type: str
   sample: 255.255.255.0
 traffic_group:
-  description: The traffic group that the Self IP is a member of
+  description: The traffic group that the Self IP is a member of.
   returned: changed
   type: str
   sample: traffic-group-local-only
@@ -225,6 +230,11 @@ vlan:
   returned: changed
   type: str
   sample: vlan1
+fw_enforced_policy:
+  description: Specfies AFM policy to be attached to Self IP.
+  returned: changed
+  type: str
+  sample: /Common/afm-blocking-policy
 '''
 
 import re
@@ -254,17 +264,29 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import ipv6_netmask_to_cidr
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
     from ansible.module_utils.compat.ipaddress import ip_address
     from ansible.module_utils.compat.ipaddress import ip_network
     from ansible.module_utils.compat.ipaddress import ip_interface
-    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'trafficGroup': 'traffic_group',
         'allowService': 'allow_service',
+        'fwEnforcedPolicy': 'fw_enforced_policy',
+        'fwEnforcedPolicyReference': 'fw_policy_link',
     }
+
+    api_attributes = [
+        'trafficGroup',
+        'allowService',
+        'vlan',
+        'address',
+        'description',
+        'fwEnforcedPolicy',
+        'fwEnforcedPolicyReference',
+    ]
 
     updatables = [
         'traffic_group',
@@ -273,6 +295,8 @@ class Parameters(AnsibleF5Parameters):
         'netmask',
         'address',
         'description',
+        'fw_enforced_policy',
+        'fw_policy_link',
     ]
 
     returnables = [
@@ -281,14 +305,6 @@ class Parameters(AnsibleF5Parameters):
         'vlan',
         'route_domain',
         'netmask',
-        'address',
-        'description',
-    ]
-
-    api_attributes = [
-        'trafficGroup',
-        'allowService',
-        'vlan',
         'address',
         'description',
     ]
@@ -413,6 +429,24 @@ class ModuleParameters(Parameters):
                     result.append(svc)
         result = sorted(list(set(result)))
         return result
+
+    @property
+    def fw_enforced_policy(self):
+        if self._values['fw_enforced_policy'] is None:
+            return None
+        if self._values['fw_enforced_policy'] in ['none', '']:
+            return None
+        name = self._values['fw_enforced_policy']
+        return fq_name(self.partition, name)
+
+    @property
+    def fw_policy_link(self):
+        policy = self.fw_enforced_policy
+        if policy is None:
+            return None
+        tmp = policy.split('/')
+        link = dict(link='https://localhost/mgmt/tm/security/firewall/policy/~{0}~{1}'.format(tmp[1], tmp[2]))
+        return link
 
     @property
     def description(self):
@@ -574,6 +608,15 @@ class Difference(object):
     @property
     def description(self):
         return cmp_str_with_none(self.want.description, self.have.description)
+
+    @property
+    def fw_policy_link(self):
+        if self.want.fw_enforced_policy is None:
+            return None
+        if self.want.fw_enforced_policy == self.have.fw_enforced_policy:
+            return None
+        if self.want.fw_policy_link != self.have.fw_policy_link:
+            return self.want.fw_policy_link
 
 
 class ModuleManager(object):
@@ -749,6 +792,30 @@ class ModuleManager(object):
             else:
                 raise F5ModuleError(resp.content)
 
+        if self.want.fw_enforced_policy:
+            payload = dict(
+                fwEnforcedPolicy=self.want.fw_enforced_policy,
+                fwEnforcedPolicyReference=self.want.fw_policy_link
+            )
+            uri = "https://{0}:{1}/mgmt/tm/net/self/{2}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.want.partition, self.want.name),
+            )
+            resp = self.client.api.patch(uri, json=payload)
+
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if 'code' in response and response['code'] in [400, 403]:
+                if 'message' in response:
+                    raise F5ModuleError(response['message'])
+                else:
+                    raise F5ModuleError(resp.content)
+        return True
+
     def update_on_device(self):
         params = self.changes.api_params()
         uri = "https://{0}:{1}/mgmt/tm/net/self/{2}".format(
@@ -829,6 +896,7 @@ class ArgumentSpec(object):
             vlan=dict(),
             route_domain=dict(type='int'),
             description=dict(),
+            fw_enforced_policy=dict(),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
