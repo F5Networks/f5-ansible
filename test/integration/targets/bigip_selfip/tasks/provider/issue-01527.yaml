@@ -1,0 +1,119 @@
+---
+
+- name: Issue 01527 - Include task to setup the remote device - Provider
+  import_tasks: setup-main.yaml
+
+- name: Issue 01527 - Include issue variables - Provider
+  include_vars:
+    file: issue-01527.yaml
+
+- name: Issue 01527 - Provision AFM - Provider
+  bigip_provision:
+    name: afm
+    provider: "{{ provider }}"
+  tags:
+    - module-provisioning
+
+- name: Issue 01527 - Create first policy - Provider
+  bigip_firewall_policy:
+    name: "{{ policy_1 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01527 - Create second policy
+  bigip_firewall_policy:
+    name: "{{ policy_2 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01527 - Create Self IP, attach FW policy - Provider
+  bigip_selfip:
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+    fw_enforced_policy: "{{ policy_1 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01527 - Assert Create Self IP, attach FW policy - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01527 - Create Self IP, attach FW policy - Provider - Idempotent check
+  bigip_selfip:
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+    fw_enforced_policy: "{{ policy_1 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01527 - Assert Create Self IP, attach FW policy - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01527 - Change attached FW policy on a Self IP - Provider
+  bigip_selfip:
+    name: "{{ selfip_name }}"
+    fw_enforced_policy: "{{ policy_2 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01527 - Assert Change attached FW policy on a Self IP - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01527 - Change attached FW policy on a Self IP - Provider - Idempotent check
+  bigip_selfip:
+    name: "{{ selfip_name }}"
+    fw_enforced_policy: "{{ policy_2 }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01527 - Assert Change attached FW policy on a Self IP - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01527 - Delete a Self IP - Provider
+  bigip_selfip:
+    name: "{{ selfip_name }}"
+    provider: "{{ provider }}"
+    state: absent
+
+- name: Issue 01527 - Remove AFM policies - Provider
+  bigip_firewall_policy:
+    name: "{{ item }}"
+    provider: "{{ provider }}"
+    state: absent
+  loop:
+    - "{{ policy_1 }}"
+    - "{{ policy_2 }}"
+
+- name: Issue 01527 - De-provision AFM - Provider
+  bigip_provision:
+    name: afm
+    state: absent
+    provider: "{{ provider }}"
+  tags:
+    - module-provisioning
+    - deprovision-module
+
+- name: Issue 01527 - Remove VLANs - Provider
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+  loop:
+    - "{{ selfip_vlan }}"
+    - "{{ selfip_vlan2 }}"
