@@ -34,7 +34,7 @@
         - NA
 
 - name: Test the bigiq_device_discovery module
-  hosts: "f5-test[0]"
+  hosts: "f5-test"
   connection: local
   any_errors_fatal: true
 

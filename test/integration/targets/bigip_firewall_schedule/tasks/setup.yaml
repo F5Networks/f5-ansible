@@ -1,0 +1,7 @@
+---
+
+- name: Provision necessary modules
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning

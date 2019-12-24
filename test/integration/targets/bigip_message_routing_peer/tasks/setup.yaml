@@ -1,0 +1,15 @@
+---
+
+- name: Create pools
+  bigip_pool:
+    lb_method: round-robin
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ pool_1 }}"
+    - "{{ pool_2 }}"
+
+- name: Create transport-config
+  bigip_command:
+    commands:
+      - tmsh create ltm message-routing generic transport-config foo profiles add { tcp genericmsg }

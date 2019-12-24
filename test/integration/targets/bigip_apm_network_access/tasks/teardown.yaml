@@ -1,0 +1,17 @@
+- name: Remove SNAT pool
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    state: absent
+
+- name: Remove IPV4 leasepool
+  bigip_command:
+    commands:
+      - delete apm resource leasepool {{ leasepool }}
+
+- name: De-provision APM
+  bigip_provision:
+    name: apm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

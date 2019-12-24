@@ -8,26 +8,38 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import os
-import sys
 
 from .lib.common import BASE_DIR
 
 from invoke import task
 
 
-@task
-def upstream(c):
-    """Copy all module utils, to the local/ansible/ directory
+HELP1 = dict(
+    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'."
+)
+
+
+@task(optional=['collection'], help=HELP1)
+def upstream(c, collection='f5_modules'):
+    """Copy all module utils, to the local/ansible_collections/f5networks/collection_name directory.
     """
-    root_dest = '{0}/local/ansible/'.format(BASE_DIR)
-    if not os.path.exists(root_dest):
-        print("The specified upstream directory does not exist")
-        sys.exit(1)
+    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
+    module_utils = '{0}/local/ansible_collections/f5networks/{1}/plugins/module_utils/'.format(BASE_DIR, collection)
+
+    if not os.path.exists(coll_dest):
+        print("The required collection directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(coll_dest))
+        print("Collection directory created.")
+
+    if not os.path.exists(module_utils):
+        print("The required module_utils directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(module_utils))
+        print("Module utils directory created.")
 
     # - upstream module utils files
     cmd = [
-        'cp', '{0}/library/module_utils/network/f5/*'.format(BASE_DIR),
-        '{0}/local/ansible/lib/ansible/module_utils/network/f5/'.format(BASE_DIR)
+        'cp', '{0}/library/module_utils/network/f5/*.py'.format(BASE_DIR),
+        '{0}'.format(module_utils)
     ]
     c.run(' '.join(cmd))
     print("Copy complete")

@@ -1,5 +1,14 @@
 ---
 
+- name: Cleanup failed runs - First device
+  bigip_pool:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - cs1.pool
+    - cs2.pool
+    - issue-01361.pool
+
 - name: Create pool
   bigip_pool:
     lb_method: round-robin

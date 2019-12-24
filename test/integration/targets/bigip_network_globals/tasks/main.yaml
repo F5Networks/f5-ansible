@@ -1,0 +1,294 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Update STP settings
+  bigip_network_globals:
+    stp:
+      config_name: foobar
+      config_revision: 1
+      max_hops: 10
+      mode: disabled
+      description: "random description"
+  register: result
+
+- name: Assert Update STP settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update STP settings - Idempotent check
+  bigip_network_globals:
+    stp:
+      config_name: foobar
+      config_revision: 1
+      max_hops: 10
+      mode: disabled
+      description: "random description"
+  register: result
+
+- name: Assert Update STP settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update DAG settings - v12
+  bigip_network_globals:
+    dag:
+      round_robin_mode: local
+  register: result
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Assert Update DAG settings - v12
+  assert:
+    that:
+      - result is changed
+      - result is success
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Update DAG settings - v12 - Idempotent check
+  bigip_network_globals:
+    dag:
+      round_robin_mode: local
+  register: result
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Assert Update DAG settings - v12 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Update DAG settings - v13
+  bigip_network_globals:
+    dag:
+      round_robin_mode: local
+      icmp_hash: ipicmp
+      dag_ipv6_prefix_len: 32
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Update DAG settings - v13
+  assert:
+    that:
+      - result is changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Update DAG settings - v13 - Idempotent check
+  bigip_network_globals:
+    dag:
+      round_robin_mode: local
+      icmp_hash: ipicmp
+      dag_ipv6_prefix_len: 32
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Update DAG settings - v13 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Update multiple settings
+  bigip_network_globals:
+    stp:
+      max_age: 6
+      hello_time: 1
+      description: ""
+    dag:
+      round_robin_mode: global
+    multicast:
+      rate_limit: no
+    lldp:
+      enabled: yes
+      max_neighbors_per_port: 50
+      tx_interval: 60
+      tx_delay: 5
+      tx_hold: 8
+      reinit_delay: 5
+  register: result
+
+- name: Assert Update multiple settings
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update multiple settings - Idempotent check
+  bigip_network_globals:
+    stp:
+      max_age: 6
+      hello_time: 1
+      description: ""
+    dag:
+      round_robin_mode: global
+    multicast:
+      rate_limit: no
+    lldp:
+      enabled: yes
+      max_neighbors_per_port: 50
+      tx_interval: 60
+      tx_delay: 5
+      tx_hold: 8
+      reinit_delay: 5
+  register: result
+
+- name: Assert Update multiple settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update multiple settings - set the defaults - v13
+  bigip_network_globals:
+    stp:
+      config_name: ''
+      config_revision: 0
+      fwd_delay: 15
+      max_age: 20
+      hello_time: 2
+      max_hops: 20
+      transmit_hold: 6
+      mode: passthru
+    dag:
+      round_robin_mode: global
+      icmp_hash: icmp
+      dag_ipv6_prefix_len: 128
+    multicast:
+      rate_limit: yes
+      max_pending_packets: 16
+      max_pending_routes: 256
+      route_lookup_timeout: 2
+    lldp:
+      enabled: no
+      max_neighbors_per_port: 10
+      tx_interval: 30
+      tx_delay: 2
+      tx_hold: 4
+      reinit_delay: 2
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Update multiple settings - set the defaults - v13
+  assert:
+    that:
+      - result is changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Update multiple settings - set the defaults - v13 - Idempotent check
+  bigip_network_globals:
+    stp:
+      config_name: ''
+      config_revision: 0
+      fwd_delay: 15
+      max_age: 20
+      hello_time: 2
+      max_hops: 20
+      transmit_hold: 6
+      mode: passthru
+    dag:
+      round_robin_mode: global
+      icmp_hash: icmp
+      dag_ipv6_prefix_len: 128
+    multicast:
+      rate_limit: yes
+      max_pending_packets: 16
+      max_pending_routes: 256
+      route_lookup_timeout: 2
+    lldp:
+      enabled: no
+      max_neighbors_per_port: 10
+      tx_interval: 30
+      tx_delay: 2
+      tx_hold: 4
+      reinit_delay: 2
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Update multiple settings - set the defaults - v13 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Update multiple settings - set the defaults - v12
+  bigip_network_globals:
+    stp:
+      config_name: ''
+      config_revision: 0
+      fwd_delay: 15
+      max_age: 20
+      hello_time: 2
+      max_hops: 20
+      transmit_hold: 6
+      mode: passthru
+    multicast:
+      rate_limit: yes
+      max_pending_packets: 16
+      max_pending_routes: 256
+      route_lookup_timeout: 2
+    lldp:
+      enabled: no
+      max_neighbors_per_port: 10
+      tx_interval: 30
+      tx_delay: 2
+      tx_hold: 4
+      reinit_delay: 2
+  register: result
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Assert Update multiple settings - set the defaults - v12
+  assert:
+    that:
+      - result is changed
+      - result is success
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Update multiple settings - set the defaults - v12 - Idempotent check
+  bigip_network_globals:
+    stp:
+      config_name: ''
+      config_revision: 0
+      fwd_delay: 15
+      max_age: 20
+      hello_time: 2
+      max_hops: 20
+      transmit_hold: 6
+      mode: passthru
+    dag:
+      round_robin_mode: global
+      icmp_hash: icmp
+      dag_ipv6_prefix_len: 128
+    multicast:
+      rate_limit: yes
+      max_pending_packets: 16
+      max_pending_routes: 256
+      route_lookup_timeout: 2
+    lldp:
+      enabled: no
+      max_neighbors_per_port: 10
+      tx_interval: 30
+      tx_delay: 2
+      tx_hold: 4
+      reinit_delay: 2
+  register: result
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Assert Update multiple settings - set the defaults - v12 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version < "13.0.0"
+
+- import_tasks: teardown.yaml
+
+- import_tasks: issue-01581.yaml
+  tags: issue-01581

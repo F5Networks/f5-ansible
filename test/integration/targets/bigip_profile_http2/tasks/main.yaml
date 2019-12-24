@@ -376,3 +376,6 @@
     - "{{ profile_3 }}"
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-01529.yaml
+  tags: issue-01529

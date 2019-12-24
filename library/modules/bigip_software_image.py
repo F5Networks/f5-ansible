@@ -46,7 +46,7 @@ options:
       - This may be an absolute or relative location on the Ansible controller.
       - Image names, whether they are base ISOs or hotfix ISOs, B(must) be unique.
     type: str
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -111,6 +111,7 @@ file_size:
 import os
 import time
 
+from ansible.module_utils.urls import urlparse
 from ansible.module_utils.basic import AnsibleModule
 
 try:
@@ -120,11 +121,11 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.icontrol import upload_file
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.icontrol import upload_file
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import upload_file
 
 
 class Parameters(AnsibleF5Parameters):
@@ -214,6 +215,7 @@ class ModuleManager(object):
         self.have = ApiParameters()
         self.changes = UsableChanges()
         self.image_type = None
+        self.image_url = None
 
     def _set_changed_options(self):
         changed = {}
@@ -283,42 +285,72 @@ class ModuleManager(object):
             return True
         return False
 
-    def image_exists(self):
-        result = False
-        uri = "https://{0}:{1}/mgmt/tm/sys/software/image/{2}".format(
+    def _set_image_url(self, item):
+        path = urlparse(item['selfLink']).path
+        self.image_url = "https://{0}:{1}{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.filename
+            path
+        )
+
+    def image_exists(self):
+        result = False
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/image/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
         resp = self.client.api.get(uri)
+
         try:
             response = resp.json()
-            if resp.status == 404 or 'code' in response and response['code'] == 404:
-                result = False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
             else:
-                self.image_type = 'release'
-                result = True
-        except ValueError:
-            pass
+                raise F5ModuleError(resp.content)
+
+        if 'items' in response:
+            for item in response['items']:
+                if item['name'].startswith(self.want.filename):
+                    self._set_image_url(item)
+                    self.image_type = 'release'
+                    result = True
+                    break
         return result
 
     def hotfix_exists(self):
         result = False
-        uri = "https://{0}:{1}/mgmt/tm/sys/software/hotfix/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/hotfix/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.filename
         )
         resp = self.client.api.get(uri)
+
         try:
             response = resp.json()
-            if resp.status == 404 or 'code' in response and response['code'] == 404:
-                result = False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
             else:
-                self.image_type = 'hotfix'
-                result = True
-        except ValueError:
-            pass
+                raise F5ModuleError(resp.content)
+
+        if 'items' in response:
+            for item in response['items']:
+                if item['name'].startswith(self.want.filename):
+                    self._set_image_url(item)
+                    self.image_type = 'hotfix'
+                    result = True
+                    break
         return result
 
     def update(self):
@@ -384,19 +416,7 @@ class ModuleManager(object):
             )
 
     def read_current_from_device(self):
-        if self.image_exists():
-            return self.read_iso_from_device('image')
-        elif self.hotfix_exists():
-            return self.read_iso_from_device('hotfix')
-
-    def read_iso_from_device(self, type):
-        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}/{3}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            type,
-            self.want.filename
-        )
-        resp = self.client.api.get(uri)
+        resp = self.client.api.get(self.image_url)
         try:
             response = resp.json()
         except ValueError as ex:

@@ -1,0 +1,243 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create static ACL with L4 entries
+  bigip_apm_acl:
+    name: acltest
+    acl_order: 0
+    type: static
+    entries:
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.1'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: reject
+        dst_port: '*'
+        dst_addr: '192.168.1.1'
+        src_port: '*'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+        log: packet
+  register: result
+
+- name: Assert Create static ACL with L4 entries
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create static ACL with L4 entries - Idempotent check
+  bigip_apm_acl:
+    name: acltest
+    acl_order: 0
+    type: static
+    entries:
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.1'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: reject
+        dst_port: '*'
+        dst_addr: '192.168.1.1'
+        src_port: '*'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+        log: packet
+  register: result
+
+- name: Assert Create static ACL with L4 entries - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify static ACL change entries
+  bigip_apm_acl:
+    name: acltest
+    entries:
+      - action: allow
+        dst_port_range: '80-81'
+        dst_addr: '192.168.1.2'
+        src_port: '443'
+        src_addr: '10.10.115.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+  register: result
+
+- name: Assert Modify static ACL change entries
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify static ACL change entries - Idempotent check
+  bigip_apm_acl:
+    name: acltest
+    entries:
+      - action: allow
+        dst_port_range: '80-81'
+        dst_addr: '192.168.1.2'
+        src_port: '443'
+        src_addr: '10.10.115.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+  register: result
+
+- name: Assert Modify static ACL change entries - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a static ACL with L7/L4 entries
+  bigip_apm_acl:
+    name: acltest2
+    acl_order: 1
+    type: static
+    path_match_case: no
+    entries:
+      - action: allow
+        host_name: 'foobar.com'
+        paths: '/shopfront'
+        scheme: https
+        dst_port: '8181'
+        dst_addr: '192.168.1.1'
+        protocol: tcp
+      - action: reject
+        dst_addr: '192.168.1.1'
+        host_name: 'internal_foobar.com'
+        paths: '/admin'
+        scheme: any
+        protocol: all
+        log: packet
+  register: result
+
+- name: Assert Create a static ACL with L7/L4 entries
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a static ACL with L7/L4 entries - Idempotent check
+  bigip_apm_acl:
+    name: acltest2
+    acl_order: 1
+    type: static
+    path_match_case: no
+    entries:
+      - action: allow
+        host_name: 'foobar.com'
+        paths: '/shopfront'
+        scheme: https
+        dst_port: '8181'
+        dst_addr: '192.168.1.1'
+        protocol: tcp
+      - action: reject
+        dst_addr: '192.168.1.1'
+        host_name: 'internal_foobar.com'
+        paths: '/admin'
+        scheme: any
+        protocol: all
+        log: packet
+  register: result
+
+- name: Assert Create a static ACL with L7/L4 entries - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify static ACL with L7/L4 entries
+  bigip_apm_acl:
+    name: acltest2
+    path_match_case: yes
+    entries:
+      - action: allow
+        host_name: 'foobar.com'
+        paths: '/shopfront'
+        scheme: https
+        dst_port: '8181'
+        dst_addr: '192.168.1.1'
+        protocol: tcp
+      - action: discard
+        dst_addr: '192.168.1.1'
+        host_name: 'internal_foobar.com'
+        paths: '/admin'
+        scheme: http
+        protocol: all
+        log: none
+  register: result
+
+- name: Assert Modify static ACL with L7/L4 entries
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify static ACL with L7/L4 entries - Idempotent check
+  bigip_apm_acl:
+    name: acltest2
+    path_match_case: yes
+    entries:
+      - action: allow
+        host_name: 'foobar.com'
+        paths: '/shopfront'
+        scheme: https
+        dst_port: '8181'
+        dst_addr: '192.168.1.1'
+        protocol: tcp
+      - action: discard
+        dst_addr: '192.168.1.1'
+        host_name: 'internal_foobar.com'
+        paths: '/admin'
+        scheme: http
+        protocol: all
+        log: none
+  register: result
+
+- name: Assert Modify static ACL with L7/L4 entries - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove ACLs
+  bigip_apm_acl:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - acltest
+    - acltest2
+  register: result
+
+- name: Assert Remove ACLs
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove ACLs  - Idempotent check
+  bigip_apm_acl:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - acltest
+    - acltest2
+  register: result
+
+- name: Assert Remove ACLs  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml

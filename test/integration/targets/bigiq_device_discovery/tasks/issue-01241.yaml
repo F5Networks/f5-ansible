@@ -6,79 +6,97 @@
 
 - name: Issue 01241 - Discover a new device and import config, LTM is missing - Expect Failure
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules3 }}"
+  with_items:
+    - "{{ groups['bigips'] }}"
   register: result
   failed_when: "'LTM module must be specified for device discovery and import.' not in result ['msg']"
 
 - name: Issue 01241 - Discover a new device and import config, set different conflict resolutions
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules1 }}"
     device_conflict_policy: "{{ conflict }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Issue 01241 - Assert Discover a new device and import config, set different conflict resolutions
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
 
 - name: Issue 01241 - Discover a new device and import config, set different conflict resolutions - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules1 }}"
     device_conflict_policy: "{{ conflict }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Issue 01241 - Assert Discover a new device and import config, set different conflict resolutions - Idempotent check
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
 
 - name: Issue 01241 - Remove discovered device and its config
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
     state: absent
-
+  with_items:
+    - "{{ groups['bigips'] }}"
+  
 - name: Issue 01241 - Discover a new device and import LTM config, set versioned config policy
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules2 }}"
     versioned_conflict_policy: "{{ conflict2 }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Issue 01241 - Assert Discover a new device and import LTM config, set versioned config policy
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
 
 - name: Issue 01241 - Discover a new device and import LTM config, set versioned config policy - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules2 }}"
     versioned_conflict_policy: "{{ conflict2 }}"
-  register: result
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: discover
 
 - name: Issue 01241 - Assert Discover a new device and import LTM config, set versioned config policy - Idempotent check
+  with_items: "{{ discover.results }}"
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
 
 - name: Issue 01241 - Remove discovered device and its config
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
     state: absent
+  with_items:
+    - "{{ groups['bigips'] }}"

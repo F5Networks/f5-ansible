@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['stableinterface'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -43,9 +43,9 @@ options:
         C(parent) profile.
       - When a number is specified, indicates the number of seconds that the UDP
         connection can remain idle before the system deletes it.
-      - When C(0), or C(indefinite), specifies that UDP connections can remain idle
+      - When C(indefinite), specifies that UDP connections can remain idle
         indefinitely.
-      - When C(immediate), specifies that you do not want the UDP connection to
+      - When C(0) or C(immediate), specifies that you do not want the UDP connection to
         remain idle, and that it is therefore immediately eligible for deletion.
     type: str
   datagram_load_balancing:
@@ -67,7 +67,7 @@ options:
       - present
       - absent
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -116,12 +116,12 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import transform_name
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
 
 
 class Parameters(AnsibleF5Parameters):
@@ -153,8 +153,10 @@ class Parameters(AnsibleF5Parameters):
     def idle_timeout(self):
         if self._values['idle_timeout'] is None:
             return None
-        if self._values['idle_timeout'] in ['indefinite', 'immediate']:
+        if self._values['idle_timeout'] is 'indefinite':
             return self._values['idle_timeout']
+        if self._values['idle_timeout'] in ['0', 'immediate']:
+            return 'immediate'
         return int(self._values['idle_timeout'])
 
 
@@ -311,11 +313,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         self.have = self.read_current_from_device()

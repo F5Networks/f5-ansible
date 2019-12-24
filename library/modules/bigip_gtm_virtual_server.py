@@ -90,7 +90,8 @@ options:
           - Specifies the minimum number of probes that must succeed for this server to be declared up.
           - When creating a new virtual server, if this parameter is specified, then the C(number_of_probers)
             parameter must also be specified.
-          - The value of this parameter should always be B(lower) than, or B(equal to), the value of C(number_of_probers).
+          - The value of this parameter should always be B(lower) than, or B(equal to),
+            the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
@@ -99,7 +100,8 @@ options:
           - Specifies the number of probers that should be used when running probes.
           - When creating a new virtual server, if this parameter is specified, then the C(number_of_probes)
             parameter must also be specified.
-          - The value of this parameter should always be B(higher) than, or B(equal to), the value of C(number_of_probers).
+          - The value of this parameter should always be B(higher) than, or B(equal to),
+            the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
@@ -161,17 +163,20 @@ options:
         type: bool
       bits_limit:
         description:
-          - Specifies the maximum allowable data throughput rate, in bits per second, for the virtual servers on the server.
+          - Specifies the maximum allowable data throughput rate, in bits per second,
+            for the virtual servers on the server.
           - If the network traffic volume exceeds this limit, the system marks the server as unavailable.
         type: int
       packets_limit:
         description:
-          - Specifies the maximum allowable data transfer rate, in packets per second, for the virtual servers on the server.
+          - Specifies the maximum allowable data transfer rate, in packets per second,
+            for the virtual servers on the server.
           - If the network traffic volume exceeds this limit, the system marks the server as unavailable.
         type: int
       connections_limit:
         description:
-          - Specifies the maximum number of concurrent connections, combined, for all of the virtual servers on the server.
+          - Specifies the maximum number of concurrent connections, combined,
+            for all of the virtual servers on the server.
           - If the connections exceed this limit, the system marks the server as unavailable.
         type: int
     version_added: 2.6
@@ -192,7 +197,7 @@ options:
       - enabled
       - disabled
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -284,16 +289,16 @@ try:
     from library.module_utils.network.f5.ipaddress import validate_ip_v6_address
 except ImportError:
     from ansible.module_utils.compat.ipaddress import ip_address
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.compare import compare_complex_list
-    from ansible.module_utils.network.f5.icontrol import module_provisioned
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import compare_complex_list
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import module_provisioned
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import validate_ip_v6_address
 
 
 class Parameters(AnsibleF5Parameters):
@@ -1032,11 +1037,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()

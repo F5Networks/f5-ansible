@@ -1,0 +1,506 @@
+---
+
+- import_tasks: setup.yaml
+
+
+- name: Create ICMP Monitor
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    state: present
+  register: result
+
+- name: Assert Create  ICMP Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Create ICMP Monitor - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    state: present
+  register: result
+
+- name: Assert Create  ICMP Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change IP
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    ip: 10.10.10.10
+  register: result
+
+- name: Assert Change IP
+  assert:
+    that:
+      - result is changed
+      - result.ip == '10.10.10.10'
+
+- name: Change IP - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    ip: 10.10.10.10
+  register: result
+
+- name: Assert Change IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change interval, less than timeout
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    interval: 2
+  register: result
+
+- name: Assert Change interval, less than timeout
+  assert:
+    that:
+      - result is changed
+      - result.interval == 2
+
+- name: Change interval, less than timeout - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    interval: 2
+  register: result
+
+- name: Assert Change interval, less than timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change interval, greater than timeout, expect failure
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    interval: 200
+  register: result
+  ignore_errors: true
+
+- name: Assert Change interval, greater than timeout, expect failure
+  assert:
+    that:
+      - result is not changed
+
+- name: Change timeout
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    timeout: 80
+  register: result
+
+- name: Assert Change timeout
+  assert:
+    that:
+      - result is changed
+      - result.timeout == 80
+
+- name: Change timeout - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    timeout: 80
+  register: result
+
+- name: Assert Change timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change time until up
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    time_until_up: 80
+  register: result
+
+- name: Assert Change time until up
+  assert:
+    that:
+      - result is changed
+      - result.time_until_up == 80
+
+- name: Change time until up - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    time_until_up: 80
+  register: result
+
+- name: Assert Change time until up - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change up interval
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    up_interval: 80
+  register: result
+
+- name: Assert Change up interval
+  assert:
+    that:
+      - result is changed
+      - result.up_interval == 80
+
+- name: Change up interval - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    up_interval: 80
+  register: result
+
+- name: Assert Change up interval - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Disable up interval
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    up_interval: 0
+  register: result
+
+- name: Assert Disable up interval
+  assert:
+    that:
+      - result is changed
+      - result.up_interval == 0
+
+- name: Disable up interval - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    up_interval: 0
+  register: result
+
+- name: Assert Disable up interval - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Zero out time_until_up
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    time_until_up: 0
+  register: result
+
+- name: Assert Zero out time_until_up
+  assert:
+    that:
+      - result is changed
+
+- name: Change transparent - yes
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    transparent: yes
+  register: result
+
+- name: Assert Change transparent - yes
+  assert:
+    that:
+      - result is changed
+      - result.transparent == 'yes'
+
+- name: Change transparent - yes - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    transparent: yes
+  register: result
+
+- name: Assert Change transparent - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change transparent - no
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    transparent: no
+  register: result
+
+- name: Assert Change transparent - no
+  assert:
+    that:
+      - result is changed
+      - result.transparent == 'no'
+
+- name: Change transparent - no - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    transparent: no
+  register: result
+
+- name: Assert Change transparent - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change adaptive - yes
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    adaptive: yes
+  register: result
+
+- name: Assert Change adaptive - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change adaptive - yes - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    adaptive: yes
+  register: result
+
+- name: Assert Change adaptive - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change adaptive - no
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    adaptive: no
+  register: result
+
+- name: Assert Change adaptive - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change adaptive - no - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    adaptive: no
+  register: result
+
+- name: Assert Change adaptive - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change allowed divergence - type absolute
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    allowed_divergence_type: absolute
+  register: result
+
+- name: Assert Change allowed divergence - type absolute
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allowed divergence - type absolute - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    allowed_divergence_type: absolute
+  register: result
+
+- name: Assert Change allowed divergence - type absolute - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change allowed divergence - type relative
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    allowed_divergence_type: relative
+  register: result
+
+- name: Assert Change allowed divergence - type relative
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allowed divergence - type relative - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    allowed_divergence_type: relative
+  register: result
+
+- name: Assert Change allowed divergence - type relative - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change allowed divergence - value
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    allowed_divergence_value: 100
+  register: result
+
+- name: Assert Change allowed divergence - value
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allowed divergence - value - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    allowed_divergence_value: 100
+  register: result
+
+- name: Assert Change allowed divergence - value - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change adaptive limit
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    adaptive_limit: 100
+  register: result
+
+- name: Assert Change adaptive limit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change adaptive limit - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    adaptive_limit: 100
+  register: result
+
+- name: Assert Change adaptive limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change sampling timespan
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    sampling_timespan: 100
+  register: result
+
+- name: Assert Change sampling timespan
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change sampling timespan - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    sampling_timespan: 100
+  register: result
+
+- name: Assert Change sampling timespan - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove ICMP Monitor
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove ICMP Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Remove ICMP Monitor - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove ICMP Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create ICMP Monitor with Description
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Assert Create ICMP Monitor with Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description
+
+- name: Create ICMP Monitor with Description - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Assert Create ICMP Monitor with Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Modify ICMP Monitor Description
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    description: "{{ description_2 }}"
+    state: present
+  register: result
+
+- name: Assert Modify ICMP Monitor Description
+  assert:
+    that:
+      - result is changed
+      - result.description == description_2
+
+- name: Modify ICMP Monitor Description - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    description: "{{ description_2 }}"
+    state: present
+  register: result
+
+- name: Assert Modify ICMP Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove ICMP Monitor Description
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    description: "none"
+    state: present
+  register: result
+
+- name: Assert Remove ICMP Monitor Description
+  assert:
+    that:
+      - result is changed
+
+- name: Remove ICMP Monitor Description - Idempotent check
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    description: "none"
+    state: present
+  register: result
+
+- name: Assert Remove ICMP Monitor Description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove other ICMP Monitor
+  bigip_monitor_icmp:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- import_tasks: teardown.yaml
+

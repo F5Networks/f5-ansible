@@ -1,0 +1,66 @@
+---
+
+- name: Issue 01470 - Create RD - Provider
+  bigip_routedomain:
+    name: rd-01470
+    id: 1470
+    state: present
+    provider: "{{ provider }}"
+
+- name: Issue 01470 - Add virtual address - Provider
+  bigip_virtual_address:
+    name: "abc-rd1470.103.115.233.105"
+    address: 103.115.233.105
+    netmask: 255.255.255.255
+    route_domain: 1470
+    state: present
+    partition: Common
+    provider: "{{ provider }}"
+
+- name: Issue 01470 - Create Virtual Server with VIP name and Source - Provider
+  bigip_virtual_server:
+    name: vs_01470
+    destination: "abc-rd1470.103.115.233.105"
+    source: "125.213.162.205%1470/32"
+    ip_protocol: udp
+    port: 5060
+    state: present
+    partition: Common
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01470 - Assert Create Virtual Server with VIP name and Source - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01470 - Create Virtual Server with VIP name and Source - Provider - Idempotent check
+  bigip_virtual_server:
+    name: vs_01470
+    destination: "abc-rd1470.103.115.233.105"
+    source: "125.213.162.205%1470/32"
+    ip_protocol: udp
+    port: 5060
+    state: present
+    partition: Common
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01470 - Assert Create Virtual Server with VIP name and Source - Provider - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01470 - Remove Virtual Server with VIP name and Source - Provider
+  bigip_virtual_server:
+    name: vs_01470
+    state: absent
+    provider: "{{ provider }}"
+
+- name: Issue 01470 - Remove RD - Provider
+  bigip_routedomain:
+    name: rd-01470
+    state: absent
+    provider: "{{ provider }}"

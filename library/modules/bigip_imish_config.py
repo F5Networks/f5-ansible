@@ -204,8 +204,9 @@ options:
     version_added: "2.8"
 notes:
   - Abbreviated commands are NOT idempotent, see
-    L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-abbreviated-commands).
-extends_documentation_fragment: f5
+    L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-
+    abbreviated-commands).
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -324,16 +325,14 @@ try:
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.icontrol import upload_file
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.icontrol import upload_file
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import upload_file
 
 
 class Parameters(AnsibleF5Parameters):
@@ -661,7 +660,7 @@ class ModuleManager(object):
         return response['commandResult']
 
     def save_on_device(self):
-        command = 'imish -e write'
+        command = 'imish -r {0} -e write'.format(self.want.route_domain)
         params = {
             "command": "run",
             "utilCmdArgs": '-c "{0}"'.format(command)
@@ -681,7 +680,8 @@ class ModuleManager(object):
             else:
                 raise F5ModuleError(resp.content)
 
-    def get_diff(self, candidate=None, running=None, diff_match='line', diff_ignore_lines=None, path=None, diff_replace='line'):
+    def get_diff(self, candidate=None, running=None, diff_match='line',
+                 diff_ignore_lines=None, path=None, diff_replace='line'):
         diff = {}
 
         # prepare candidate configuration
@@ -817,7 +817,7 @@ def main():
         add_file_common_args=spec.add_file_common_args,
     )
 
-    client = F5RestClient(**module.params)
+    F5RestClient(**module.params)
 
     try:
         mm = ModuleManager(module=module)

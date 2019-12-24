@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['stableinterface'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -98,15 +98,16 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
+  - Greg Crosby (@crosbygw)
 '''
 
 EXAMPLES = r'''
 - name: Create a DNS zone for DNS express
   bigip_dns_zone:
-    name: foo.bar.com
+    name: zone.foo.com
     dns_express:
       enabled: yes
       server: dns-lab
@@ -120,6 +121,89 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
+
+- name: Disable DNS express zone, change server, and modify notify_action to bypass
+  bigip_dns_zone:
+    name: zone.foo.com
+    dns_express:
+      enabled: no
+      server: foo1.server.com
+      allow_notify_from:
+        - 192.168.39.10
+      notify_action: bypass
+      verify_tsig: no
+      response_policy: no
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Add nameservers
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers:
+      - foo1.nameserver.com
+      - foo2.nameserver.com
+      - foo3.nameserver.com
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Remove nameserver
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers:
+      - foo1.nameserver.com
+      - foo2.nameserver.com
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Remove all nameservers
+  bigip_dns_zone:
+    name: zone.foo.com
+    nameservers: none
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Add tsig_server_key
+  bigip_dns_zone:
+    name: zone.foo.com
+    tsig_server_key: key1
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Remove tsig_server_key
+  bigip_dns_zone:
+    name: zone.foo.com
+    tsig_server_key: none
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Remove zone
+  bigip_dns_zone:
+    name: zone.foo.com
+    state: absent
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
 '''
 
 RETURN = r'''
@@ -178,14 +262,14 @@ try:
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.compare import cmp_simple_list
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.compare import cmp_simple_list
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_simple_list
 
 
 class Parameters(AnsibleF5Parameters):
@@ -447,6 +531,7 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/ltm/dns/zone/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -455,11 +540,19 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         self.have = self.read_current_from_device()

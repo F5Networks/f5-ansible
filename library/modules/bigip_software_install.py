@@ -40,9 +40,10 @@ options:
       - activated
       - installed
     default: activated
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 EXAMPLES = r'''
 - name: Ensure an existing image is installed in specified volume
@@ -75,6 +76,8 @@ RETURN = r'''
 import time
 import ssl
 
+from ansible.module_utils.six.moves.urllib.error import URLError
+from ansible.module_utils.urls import urlparse
 from ansible.module_utils.basic import AnsibleModule
 
 try:
@@ -83,10 +86,10 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
 
 
 class Parameters(AnsibleF5Parameters):
@@ -135,7 +138,7 @@ class ApiParameters(Parameters):
                 return []
         if 'items' not in response:
             return []
-        return [x['name'] for x in response['items']]
+        return [x['name'].split('/')[0] for x in response['items']]
 
 
 class ModuleParameters(Parameters):
@@ -187,21 +190,22 @@ class ModuleParameters(Parameters):
         return None
 
     def read_image_from_device(self, type):
-        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}/{3}".format(
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             type,
-            self.image,
         )
         resp = self.client.api.get(uri)
+
         try:
             response = resp.json()
-        except ValueError:
-            return None
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 404]:
-            return None
-        return response
+        if 'items' in response:
+            for item in response['items']:
+                if item['name'].startswith(self.image):
+                    return item
 
 
 class Changes(Parameters):
@@ -253,6 +257,7 @@ class ModuleManager(object):
         self.want = ModuleParameters(params=self.module.params, client=self.client)
         self.have = ApiParameters(client=self.client)
         self.changes = UsableChanges()
+        self.volume_url = None
 
     def _set_changed_options(self):
         changed = {}
@@ -312,17 +317,57 @@ class ModuleManager(object):
         else:
             return self.update()
 
-    def exists(self):
-        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume/{2}".format(
+    def _set_volume_url(self, item):
+        path = urlparse(item['selfLink']).path
+        self.volume_url = "https://{0}:{1}{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.volume
+            path
+        )
+
+    def exists(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
         )
         resp = self.client.api.get(uri)
+
+        try:
+            collection = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if collection.status in errors or 'code' in collection and collection['code'] in errors:
+            if 'message' in collection:
+                raise F5ModuleError(collection['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        for item in collection['items']:
+            if item['name'].startswith(self.want.volume):
+                self._set_volume_url(item)
+                break
+
+        if not self.volume_url:
+            self.volume_url = uri + self.want.volume
+
+        resp = self.client.api.get(self.volume_url)
+
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
 
@@ -341,19 +386,25 @@ class ModuleManager(object):
         return False
 
     def volume_exists(self):
-        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            self.want.volume
-        )
-        resp = self.client.api.get(uri)
+        resp = self.client.api.get(self.volume_url)
+
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         if self.module.check_mode:
@@ -361,7 +412,7 @@ class ModuleManager(object):
 
         if self.want.image and self.want.image not in self.have.image_names:
             raise F5ModuleError(
-                "The specified image was not found on the device"
+                "The specified image was not found on the device."
             )
 
         options = list()
@@ -441,19 +492,17 @@ class ModuleManager(object):
                 raise F5ModuleError
 
     def read_volume_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            self.want.volume
-        )
         try:
-            resp = self.client.api.get(uri)
+            resp = self.client.api.get(self.volume_url)
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
         except ssl.SSLError:
             # Suggests BIG-IP is still in the middle of restarting itself or
             # restjavad is restarting.
+            return None
+        except URLError:
+            # At times during reboot BIG-IP will reset or timeout connections so we catch and pass this here.
             return None
 
         if 'code' in response and response['code'] == 400:

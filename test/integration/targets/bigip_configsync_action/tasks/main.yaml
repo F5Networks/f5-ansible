@@ -12,5 +12,9 @@
 - import_tasks: test-pull-recent-device.yaml
   when: ansible_play_batch[1] == inventory_hostname
 
+- import_tasks: issue-01361.yaml
+  when: ansible_play_batch[1] == inventory_hostname
+  tags: issue-01361
+
 - import_tasks: teardown.yaml
   when: ansible_play_batch[0] == inventory_hostname

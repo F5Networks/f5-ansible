@@ -33,12 +33,12 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import ApiParameters
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import ModuleParameters
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import ModuleManager
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import ArgumentSpec
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import UntypedManager
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import TypedManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import UntypedManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip import TypedManager
 
     from ansible.module_utils.network.f5.common import F5ModuleError
 
@@ -120,7 +120,7 @@ class TestParameters(unittest.TestCase):
         with pytest.raises(F5ModuleError) as excinfo:
             p = ModuleParameters(params=args)
             assert p.name == 'foo'
-        assert 'The provided name must be a valid FQDN' in str(excinfo)
+        assert 'The provided name must be a valid FQDN' in str(excinfo.value)
 
 
 class TestUntypedManager(unittest.TestCase):
@@ -132,7 +132,7 @@ class TestUntypedManager(unittest.TestCase):
             self.m1 = self.p1.start()
             self.m1.return_value = True
         except Exception:
-            self.p1 = patch('ansible.modules.network.f5.bigip_gtm_wide_ip.module_provisioned')
+            self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip.module_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = True
 
@@ -183,7 +183,7 @@ class TestTypedManager(unittest.TestCase):
             self.m1 = self.p1.start()
             self.m1.return_value = True
         except Exception:
-            self.p1 = patch('ansible.modules.network.f5.bigip_gtm_wide_ip.module_provisioned')
+            self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_wide_ip.module_provisioned')
             self.m1 = self.p1.start()
             self.m1.return_value = True
 
@@ -224,76 +224,6 @@ class TestTypedManager(unittest.TestCase):
         assert results['name'] == 'foo.baz.bar'
         assert results['state'] == 'present'
         assert results['lb_method'] == 'round-robin'
-
-    def test_create_wideip_deprecated_lb_method1(self, *args):
-        set_module_args(dict(
-            name='foo.baz.bar',
-            lb_method='round_robin',
-            type='a',
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
-        ))
-
-        module = AnsibleModule(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
-        )
-
-        # Override methods in the specific type of manager
-        tm = TypedManager(module=module, params=module.params)
-        tm.exists = Mock(return_value=False)
-        tm.create_on_device = Mock(return_value=True)
-        tm.version_is_less_than_12 = Mock(return_value=False)
-
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(module=module)
-        mm.version_is_less_than_12 = Mock(return_value=False)
-        mm.get_manager = Mock(return_value=tm)
-
-        results = mm.exec_module()
-
-        assert results['changed'] is True
-        assert results['name'] == 'foo.baz.bar'
-        assert results['state'] == 'present'
-        assert results['lb_method'] == 'round-robin'
-
-    def test_create_wideip_deprecated_lb_method2(self, *args):
-        set_module_args(dict(
-            name='foo.baz.bar',
-            lb_method='global_availability',
-            type='a',
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
-        ))
-
-        module = AnsibleModule(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode
-        )
-
-        # Override methods in the specific type of manager
-        tm = TypedManager(module=module, params=module.params)
-        tm.exists = Mock(return_value=False)
-        tm.create_on_device = Mock(return_value=True)
-        tm.version_is_less_than_12 = Mock(return_value=False)
-
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(module=module)
-        mm.version_is_less_than_12 = Mock(return_value=False)
-        mm.get_manager = Mock(return_value=tm)
-
-        results = mm.exec_module()
-
-        assert results['changed'] is True
-        assert results['name'] == 'foo.baz.bar'
-        assert results['state'] == 'present'
-        assert results['lb_method'] == 'global-availability'
 
     def test_create_wideip_with_pool(self, *args):
         set_module_args(dict(

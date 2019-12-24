@@ -9,17 +9,15 @@ opt_1:
 opt_2: ''
 
 opt_3:
-  - netscape-reuse-cipher-change-bug
-  - microsoft-big-sslv3-buffer
-  - msie-sslv2-rsa-padding
-  - ssleay-080-client-dh-bug
-  - tls-d5-bug
-  - tls-block-padding-bug
+  - no-ssl
+  - no-tlsv1
+  - no-tlsv1.1
   - dont-insert-empty-fragments
 
 opt_4:
-  - netscape-reuse-cipher-change-bug
-  - microsoft-big-sslv3-buffer
+  - no-ssl
+  - no-tlsv1
+  - no-tlsv1.1
   - foo
   - bar
 

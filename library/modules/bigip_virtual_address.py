@@ -128,13 +128,6 @@ options:
       - when_any_available
     aliases: ['advertise_route']
     version_added: 2.6
-  use_route_advertisement:
-    description:
-      - Specifies whether the system uses route advertisement for this
-        virtual address.
-      - When disabled, the system does not advertise routes for this virtual address.
-      - Deprecated. Use the C(route_advertisement) parameter instead.
-    type: bool
   route_advertisement:
     description:
       - Specifies whether the system uses route advertisement for this
@@ -201,7 +194,7 @@ options:
         valus is C(no).
     version_added: 2.7
     type: bool
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -223,7 +216,7 @@ EXAMPLES = r'''
   bigip_virtual_address:
     state: present
     address: 10.10.10.10
-    use_route_advertisement: yes
+    route_advertisement: any
     provider:
       server: lb.mydomain.net
       user: admin
@@ -232,11 +225,11 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-use_route_advertisement:
-  description: The new setting for whether to use route advertising or not.
+availability_calculation:
+  description: Specifies what routes of the virtual address the system advertises.
   returned: changed
-  type: bool
-  sample: true
+  type: str
+  sample: always
 auto_delete:
   description: New setting for auto deleting virtual address.
   returned: changed
@@ -296,15 +289,15 @@ try:
     from library.module_utils.network.f5.ipaddress import compress_address
     from library.module_utils.network.f5.icontrol import tmos_version
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.ipaddress import compress_address
-    from ansible.module_utils.network.f5.icontrol import tmos_version
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import compress_address
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
 
 
 class Parameters(AnsibleF5Parameters):
@@ -342,6 +335,7 @@ class Parameters(AnsibleF5Parameters):
         'traffic_group',
         'route_domain',
         'spanning',
+        'availability_calculation',
     ]
 
     api_attributes = [
@@ -356,6 +350,7 @@ class Parameters(AnsibleF5Parameters):
         'serverScope',
         'trafficGroup',
         'spanning',
+        'serverScope',
     ]
 
     @property
@@ -434,23 +429,10 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def route_advertisement_type(self):
-        if self.use_route_advertisement:
-            return self.use_route_advertisement
-        elif self.route_advertisement:
+        if self.route_advertisement:
             return self.route_advertisement
         else:
             return self._values['route_advertisement_type']
-
-    @property
-    def use_route_advertisement(self):
-        if self._values['use_route_advertisement'] is None:
-            return None
-        if self._values['use_route_advertisement'] in BOOLEANS_TRUE:
-            return 'enabled'
-        elif self._values['use_route_advertisement'] == 'enabled':
-            return 'enabled'
-        else:
-            return 'disabled'
 
     @property
     def route_advertisement(self):
@@ -694,8 +676,25 @@ class ModuleManager(object):
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
+
+        if self.module._diff and self.have:
+            result['diff'] = self.make_diff()
+
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+
+        return result
+
+    def _grab_attr(self, item):
+        result = dict()
+        updatables = Parameters.updatables
+        for k in updatables:
+            if getattr(item, k) is not None:
+                result[k] = getattr(item, k)
+        return result
+
+    def make_diff(self):
+        result = dict(before=self._grab_attr(self.have), after=self._grab_attr(self.want))
         return result
 
     def should_update(self):
@@ -779,32 +778,35 @@ class ModuleManager(object):
         return True
 
     def exists(self):
-        # This addresses cases where the name includes a % sign. The URL in the REST
-        # API escapes a % sign as %25. If you don't do this, you will get errors in
-        # the exists() method.
-        name = self.want.name
-        name = name.replace('%', '%25')
         uri = "https://{0}:{1}/mgmt/tm/ltm/virtual-address/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, name)
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
-        name = self.want.name
-        name = name.replace('%', '%25')
         uri = "https://{0}:{1}/mgmt/tm/ltm/virtual-address/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, name)
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.get(uri)
         try:
@@ -821,12 +823,10 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        name = self.want.name
-        name = name.replace('%', '%25')
         uri = "https://{0}:{1}/mgmt/tm/ltm/virtual-address/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, name)
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.patch(uri, json=params)
         try:
@@ -864,12 +864,10 @@ class ModuleManager(object):
         return response['selfLink']
 
     def remove_from_device(self):
-        name = self.want.name
-        name = name.replace('%', '%25')
         uri = "https://{0}:{1}/mgmt/tm/ltm/virtual-address/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, name)
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.delete(uri)
         if resp.status == 200:
@@ -906,12 +904,6 @@ class ArgumentSpec(object):
             ),
             route_domain=dict(),
             spanning=dict(type='bool'),
-
-            # Deprecated pair - route advertisement
-            use_route_advertisement=dict(
-                type='bool',
-                removed_in_version=2.9,
-            ),
             route_advertisement=dict(
                 choices=[
                     'disabled',
@@ -937,7 +929,6 @@ class ArgumentSpec(object):
             ['name', 'address']
         ]
         self.mutually_exclusive = [
-            ['use_route_advertisement', 'route_advertisement'],
             ['arp_state', 'arp']
         ]
 

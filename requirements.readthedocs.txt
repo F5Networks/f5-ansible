@@ -1,8 +1,0 @@
-sphinx
-markupsafe
-git+https://github.com/f5devcentral/f5-sphinx-theme@master
-cloud_sptheme
-sphinxjp.themes.basicstrap
-sphinxcontrib-napoleon
-awscli
-invoke

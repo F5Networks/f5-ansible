@@ -1,0 +1,41 @@
+---
+config_1: transport1
+config_2: transport2
+
+rule_1:
+ - test1
+
+rule_2:
+  - test1
+  - test2
+
+profiles_1:
+  - genericmsg
+  - udp_decrement_ttl
+
+profiles_2:
+  - diametersession
+  - tcp-lan-optimized
+
+desc_1: "Some description"
+desc_2: ""
+
+type_1: none
+type_2: snat
+type_3: automap
+
+pool_name: my-snat-pool
+
+port_1: 1024
+port_2: 10024
+
+src_1:
+    type: none
+
+src_2:
+    type: snat
+    pool: "/Common/my-snat-pool"
+
+src_3:
+    type: automap
+

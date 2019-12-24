@@ -170,7 +170,8 @@ options:
           - Specifies the minimum number of probes that must succeed for this server to be declared up.
           - When creating a new virtual server, if this parameter is specified, then the C(number_of_probers)
             parameter must also be specified.
-          - The value of this parameter should always be B(lower) than, or B(equal to), the value of C(number_of_probers).
+          - The value of this parameter should always be B(lower) than, or B(equal to),
+            the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
@@ -179,7 +180,8 @@ options:
           - Specifies the number of probers that should be used when running probes.
           - When creating a new virtual server, if this parameter is specified, then the C(number_of_probes)
             parameter must also be specified.
-          - The value of this parameter should always be B(higher) than, or B(equal to), the value of C(number_of_probers).
+          - The value of this parameter should always be B(higher) than, or B(equal to),
+            the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
@@ -292,7 +294,7 @@ options:
         type: int
     type: dict
     version_added: 2.8
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Robert Teller (@r-teller)
   - Tim Rupp (@caphrim007)
@@ -439,15 +441,15 @@ try:
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import module_provisioned
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import is_empty_list
-    from ansible.module_utils.network.f5.icontrol import tmos_version
-    from ansible.module_utils.network.f5.icontrol import module_provisioned
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_empty_list
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import module_provisioned
 
 try:
     from collections import OrderedDict
@@ -1449,7 +1451,8 @@ class BaseManager(object):
             )
 
     def _check_link_discovery_requirements(self):
-        if self.want.link_discovery in ['enabled', 'enabled-no-delete'] and self.want.virtual_server_discovery == 'disabled':
+        if (self.want.link_discovery in ['enabled', 'enabled-no-delete'] and
+           self.want.virtual_server_discovery == 'disabled'):
             raise F5ModuleError(
                 "Virtual server discovery must be enabled if link discovery is enabled"
             )
@@ -1583,11 +1586,21 @@ class BaseManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
 
 class V1Manager(BaseManager):

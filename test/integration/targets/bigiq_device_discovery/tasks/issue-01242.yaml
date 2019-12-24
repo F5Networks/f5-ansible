@@ -3,85 +3,144 @@
   include_vars:
     file: issue-01242.yaml
 
+- name: Issue 01242 - Collect BIG-IP facts
+  bigip_device_info:
+    include: system-info
+    provider:
+      server: "{{ hostvars[item].ansible_host }}"
+  with_items:
+    - "{{ groups['bigips'] }}"    
+  register: f
+  
 - name: Issue 01242 - Discover a new device and import config, APM properties missing - Expect Failure
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules1 }}"
+  with_items:
+    - "{{ groups['bigips'] }}"
   register: result
   failed_when: "'When importing APM' not in result ['msg']"
 
 - name: Issue 01242 - Discover a new device and import APM config
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item[0]].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules1 }}"
-    access_group_name: "{{ group1 }}"
+    access_group_name: "foobar{{ item[1].system_info.product_version }}"
     access_conflict_policy: "{{ conflict2 }}"
-  register: result
+  with_nested:
+    - "{{ groups['bigips'] }}"
+    - "{{ f.results }}"
+  register: discover
+  when:
+    - item[1].item == item[0]
+    - item[1].system_info.product_version < "14.0.0"
 
 - name: Issue 01242 - Assert Discover a new device and import APM configs
+  with_items:
+    - "{{ discover.results }}"
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
+  when: 
+    - item is not skipped
 
 - name: Issue 01242 - Discover a new device and import APM config - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
-    device_username: "{{ user }}"
-    device_password: "{{ pass }}"
+    device_address: "{{ hostvars[item[0]].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
     modules: "{{ modules1 }}"
-    access_group_name: "{{ group1 }}"
+    access_group_name: "foobar{{ item[1].system_info.product_version }}"
     access_conflict_policy: "{{ conflict2 }}"
-  register: result
+  with_nested:
+    - "{{ groups['bigips'] }}"
+    - "{{ f.results }}"
+  register: discover
+  when: 
+    - item[1].item == item[0]
+    - item[1].system_info.product_version < "14.0.0"
 
 - name: Issue 01242 - Assert Discover a new device and import APM configs - Idempotent check
+  with_items:
+    - "{{ discover.results }}"
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
+  when: 
+    - item is not skipped
 
 - name: Issue 01242 - Rediscover device and import multiple modules including APM
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item[0]].ansible_host }}"
     modules: "{{ modules2 }}"
-    access_group_name: "{{ group1 }}"
+    access_group_name: "foobar{{ item[1].system_info.product_version }}"
     access_conflict_policy: "{{ conflict }}"
-  register: result
+  with_nested:
+    - "{{ groups['bigips'] }}"
+    - "{{ f.results }}"
+  register: discover
+  when: 
+    - item[1].item == item[0]
+    - item[1].system_info.product_version < "14.0.0"
 
 - name: Issue 01242 - Assert Rediscover device and import multiple modules including APM
+  with_items: 
+    - "{{ discover.results }}"
   assert:
     that:
-      - result is changed
-      - result is success
+      - item is changed
+      - item is success
+  when: 
+    - item is not skipped
 
 - name: Issue 01242 - Rediscover device and import multiple modules including APM - Idempotent check
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item[0]].ansible_host }}"
     modules: "{{ modules2 }}"
-    access_group_name: "{{ group1 }}"
+    access_group_name: "foobar{{ item[1].system_info.product_version }}"
     access_conflict_policy: "{{ conflict }}"
-  register: result
+  with_nested:
+    - "{{ groups['bigips'] }}"
+    - "{{ f.results }}"
+  register: discover
+  when: 
+    - item[1].item == item[0]
+    - item[1].system_info.product_version < "14.0.0"
 
 - name: Issue 01242 - Assert Rediscover device and import multiple modules including APM - Idempotent check
+  with_items: 
+    - "{{ discover.results }}"
   assert:
     that:
-      - result is not changed
-      - result is success
+      - item is not changed
+      - item is success
+  when: 
+    - item is not skipped
 
 - name: Issue 01242 - Rediscover device use different access group name - Expect Failure
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item[0]].ansible_host }}"
     modules: "{{ modules2 }}"
-    access_group_name: "{{ group2 }}"
+    access_group_name: "foobar"
     access_conflict_policy: "{{ conflict }}"
-  register: result
-  failed_when: "'Access group name cannot be modified once it is set.' not in result ['msg']"
+  with_nested:
+    - "{{ groups['bigips'] }}"
+    - "{{ f.results }}"
+  register: discover
+  when: 
+    - item[1].item == item[0]
+    - item[1].system_info.product_version < "14.0.0"
+  failed_when: "'Access group name cannot be modified once it is set.' not in discover ['msg']"
 
 - name: Issue 01242 - Remove discovered device and its config
   bigiq_device_discovery:
-    device_address: "{{ bigip12 }}"
+    device_address: "{{ hostvars[item].ansible_host }}" 
     state: absent
+  with_items:
+    - "{{ groups['bigips'] }}"

@@ -1,6 +1,7 @@
 ---
 
 - import_tasks: setup.yaml
+  tags: setup
 
 - name: Create rule for published policy, no actions, no conditions
   bigip_policy_rule:
@@ -109,7 +110,7 @@
   assert:
     that:
       - result is not changed
-      - result|failed
+      - result is not success
       - "'parameters are mutually exclusive' in result.msg"
 
 - name: Create published rule with actions
@@ -220,8 +221,8 @@
   assert:
     that:
       - result is not changed
-      - result|failed
-      - "'condition is required when using' in result.msg"
+      - result is not success
+      - "'must have a default rule' in result.msg"
 
 - name: Blank all conditions and actions
   bigip_policy_rule:
@@ -369,8 +370,6 @@
     that:
       - result is not changed
 
-- import_tasks: teardown.yaml
-
 - import_tasks: issue-00727.yaml
   tags: issue-00727
 
@@ -379,3 +378,20 @@
 
 - import_tasks: issue-00899.yaml
   tags: issue-00899
+
+- import_tasks: issue-01405.yaml
+  tags: issue-01405
+
+- import_tasks: issue-01413.yaml
+  tags: issue-01413
+
+- import_tasks: issue-01543.yaml
+  tags: issue-01543
+
+- import_tasks: issue-01545.yaml
+  tags: issue-01545
+
+- import_tasks: issue-01546.yaml
+  tags: issue-01546
+
+- import_tasks: teardown.yaml

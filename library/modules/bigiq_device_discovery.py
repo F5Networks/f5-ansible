@@ -119,6 +119,7 @@ options:
   statistics:
     description:
       - Specify the statistics collection for discovered device.
+    type: dict
     suboptions:
       enable:
         description:
@@ -159,7 +160,7 @@ options:
       - absent
       - present
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - BIG-IQ >= 6.1.0.
   - This module does not support atomic removal of discovered modules on the device.
@@ -294,13 +295,13 @@ try:
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.network.f5.icontrol import bigiq_version
 except ImportError:
-    from ansible.module_utils.network.f5.bigiq import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.icontrol import bigiq_version
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigiq import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import bigiq_version
 
 
 class Parameters(AnsibleF5Parameters):
@@ -746,7 +747,7 @@ class ModuleManager(object):
             self.client.provider['server_port'],
         )
 
-        query = "?$filter=address eq '{0}'".format(self.want.device_address)
+        query = "?$filter=address%20eq%20'{0}'".format(self.want.device_address)
         resp = self.client.api.get(uri + query)
 
         try:
@@ -1008,7 +1009,7 @@ class ModuleManager(object):
                 self.client.provider['server_port'],
             )
 
-        query = "?$filter=deviceReference/link eq '{0}'".format(self.device_id)
+        query = "?$filter=deviceReference/link%20eq%20'{0}'".format(self.device_id)
         resp = self.client.api.get(uri + query)
 
         try:

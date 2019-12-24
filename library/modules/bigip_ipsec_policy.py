@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['stableinterface'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -138,6 +138,13 @@ options:
       - modp4096
       - modp6144
       - modp8192
+  ipv4_interface:
+    description:
+      - When C(mode) is C(interface) indicate if the IPv4 C(any) address should be used.
+        By default C(BIG-IP) assumes C(any6) address for tunnel addresses when C(mode) is C(interface).
+      - This option takes effect only when C(mode) is set to C(interface).
+    type: bool
+    version_added: 2.9
   partition:
     description:
       - Device partition to manage resources on.
@@ -152,9 +159,10 @@ options:
       - present
       - absent
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -245,16 +253,18 @@ try:
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.compare import cmp_str_with_none
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
@@ -312,8 +322,28 @@ class Parameters(AnsibleF5Parameters):
         'route_domain',
     ]
 
+    @property
+    def tunnel_local_address(self):
+        if self._values['tunnel_local_address'] is None:
+            return None
+        result = self._values['tunnel_local_address'].split('%')[0]
+        return result
+
+    @property
+    def tunnel_remote_address(self):
+        if self._values['tunnel_remote_address'] is None:
+            return None
+        result = self._values['tunnel_remote_address'].split('%')[0]
+        return result
+
 
 class ApiParameters(Parameters):
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
     @property
     def encrypt_algorithm(self):
         if self._values['encrypt_algorithm'] is None:
@@ -323,41 +353,46 @@ class ApiParameters(Parameters):
         return self._values['encrypt_algorithm']
 
     @property
-    def description(self):
-        if self._values['description'] in [None, 'none']:
-            return None
-        return self._values['description']
-
-    @property
     def route_domain(self):
-        if self.tunnel_local_address is None and self.tunnel_remote_address is None:
+        if self._values['tunnel_local_address'] is None and self._values['tunnel_remote_address'] is None:
             return None
-        elif self.tunnel_local_address is None and self.tunnel_remote_address is not None:
-            if self.tunnel_remote_address == 'any6':
+        elif self._values['tunnel_local_address'] is None and self._values['tunnel_remote_address'] is not None:
+            if self._values['tunnel_remote_address'] == 'any6':
                 result = 'any6'
+            elif self._values['tunnel_remote_address'] == 'any':
+                result = 'any'
             else:
-                result = int(self.tunnel_remote_address.split('%')[1])
-        elif self.tunnel_remote_address is None and self.tunnel_local_address is not None:
-            if self.tunnel_local_address == 'any6':
+                result = int(self._values['tunnel_remote_address'].split('%')[1])
+        elif self._values['tunnel_remote_address'] is None and self._values['tunnel_local_address'] is not None:
+            if self._values['tunnel_local_address'] == 'any6':
                 result = 'any6'
+            elif self._values['tunnel_local_address'] == 'any':
+                result = 'any'
             else:
-                result = int(self.tunnel_local_address.split('%')[1])
+                result = int(self._values['tunnel_local_address'].split('%')[1])
         else:
             try:
-                result = int(self.tunnel_local_address.split('%')[1])
+                result = int(self._values['tunnel_local_address'].split('%')[1])
             except Exception:
-                if self.tunnel_local_address == 'any6':
+                if self._values['tunnel_local_address'] in ['any6', 'any']:
                     return 0
                 return None
         try:
-            if result == 'any6':
+            if result in ['any6', 'any']:
                 return 0
-            return int(self.tunnel_local_address.split('%')[1])
+            return int(self._values['tunnel_local_address'].split('%')[1])
         except Exception:
             return None
 
 
 class ModuleParameters(Parameters):
+    @property
+    def ipv4_interface(self):
+        result = flatten_boolean(self._values['ipv4_interface'])
+        if result == 'yes':
+            return True
+        return False
+
     @property
     def description(self):
         if self._values['description'] is None:
@@ -387,6 +422,24 @@ class UsableChanges(Changes):
         elif self._values['encrypt_algorithm'] == 'none':
             return 'null'
         return self._values['encrypt_algorithm']
+
+    @property
+    def tunnel_local_address(self):
+        if self._values['tunnel_local_address'] is None:
+            return None
+        if self._values['route_domain'] and len(self._values['tunnel_local_address'].split('%')) == 1:
+            result = '{0}%{1}'.format(self._values['tunnel_local_address'], self._values['route_domain'])
+            return result
+        return self._values['tunnel_local_address']
+
+    @property
+    def tunnel_remote_address(self):
+        if self._values['tunnel_remote_address'] is None:
+            return None
+        if self._values['route_domain'] and len(self._values['tunnel_remote_address'].split('%')) == 1:
+            result = '{0}%{1}'.format(self._values['tunnel_remote_address'], self._values['route_domain'])
+            return result
+        return self._values['tunnel_remote_address']
 
 
 class ReportableChanges(Changes):
@@ -422,19 +475,20 @@ class Difference(object):
 
     @property
     def description(self):
-        if self.want.description is None:
-            return None
-        if self.have.description is None and self.want.description == '':
-            return None
-        if self.want.description != self.have.description:
-            return self.want.description
+        return cmp_str_with_none(self.want.description, self.have.description)
 
     @property
     def route_domain(self):
         if self.want.route_domain is None:
             return None
         if self.have.route_domain != self.want.route_domain:
-            if self.want.route_domain == 0:
+            if self.want.route_domain == 0 and self.want.ipv4_interface:
+                return dict(
+                    tunnel_local_address='any',
+                    tunnel_remote_address='any',
+                    route_domain=self.want.route_domain,
+                )
+            elif self.want.route_domain == 0 and not self.want.ipv4_interface:
                 return dict(
                     tunnel_local_address='any6',
                     tunnel_remote_address='any6',
@@ -528,11 +582,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -552,11 +616,24 @@ class ModuleManager(object):
         return True
 
     def create(self):
+        if self.want.mode == 'interface':
+            if self.want.ipv4_interface:
+                self._set_any_on_interface(ip='ipv4')
+            else:
+                self._set_any_on_interface()
         self._set_changed_options()
         if self.module.check_mode:
             return True
         self.create_on_device()
         return True
+
+    def _set_any_on_interface(self, ip='ipv6'):
+        if ip == 'ipv4':
+            self.want.update({'tunnel_local_address': 'any'})
+            self.want.update({'tunnel_remote_address': 'any'})
+        else:
+            self.want.update({'tunnel_local_address': 'any6'})
+            self.want.update({'tunnel_remote_address': 'any6'})
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -644,6 +721,7 @@ class ArgumentSpec(object):
             mode=dict(
                 choices=['transport', 'interface', 'isession', 'tunnel']
             ),
+            ipv4_interface=dict(type='bool'),
             tunnel_local_address=dict(),
             tunnel_remote_address=dict(),
             encrypt_algorithm=dict(

@@ -1,0 +1,59 @@
+---
+
+- name: Issue 01284 - Include issue variables
+  include_vars:
+    file: issue-01284.yaml
+
+- name: Issue 01284 - Create SNAT pool with description
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
+    description: "{{ snat_pool_description }}"
+  register: result
+
+- name: Issue 01284 - Assert Create SNAT pool with description
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01284 - Create SNAT pool with description - Idempotent check
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
+    description: "{{ snat_pool_description }}"
+  register: result
+
+- name: Issue 01284 - Assert Create SNAT pool with description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01284 - Update SNAT pool description
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
+    description: "{{ snat_pool_new_description }}"
+  register: result
+
+- name: Issue 01284 - Assert Update SNAT pool description
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01284 - Update SNAT pool description - Idempotent check
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
+    description: "{{ snat_pool_new_description }}"
+  register: result
+
+- name: Issue 01284 - Assert Update SNAT pool description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01284 - Delete SNAT pool
+  bigip_snat_pool:
+    name: "{{ snat_pool_name }}"
+    state: absent
+

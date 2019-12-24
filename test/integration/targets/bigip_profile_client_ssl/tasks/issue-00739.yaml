@@ -2,7 +2,7 @@
 
 - name: Issue 00739 - Create a parent SSL profile
   bigip_profile_client_ssl:
-    name: parent
+    name: issue00739parent
   register: result
 
 - name: Issue 00739 - Assert Create a parent SSL profile
@@ -13,8 +13,8 @@
 
 - name: Issue 00739 - Create a child SSL profile
   bigip_profile_client_ssl:
-    name: test
-    parent: /Common/parent
+    name: issue00739
+    parent: /Common/issue00739parent
   register: result
 
 - name: Issue 00739 - Assert Create a child SSL profile
@@ -32,12 +32,12 @@
 - name: Assert Get facts about profiles
   assert:
     that:
-      - f.client_ssl_profiles | json_query("[?name=='test'].parent") | first == '/Common/parent'
+      - f.client_ssl_profiles | json_query("[?name=='issue00739'].parent") | first == '/Common/issue00739parent'
 
 - name: Issue 00739 - Remove client SSL profiles
   bigip_profile_client_ssl:
     name: "{{ item }}"
     state: absent
   loop:
-    - test
-    - parent
+    - issue00739
+    - issue00739parent

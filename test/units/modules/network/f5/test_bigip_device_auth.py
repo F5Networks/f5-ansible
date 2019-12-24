@@ -26,20 +26,18 @@ try:
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
     from test.units.compat.mock import Mock
-    from test.units.compat.mock import patch
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_device_auth import TacacsApiParameters
-    from ansible.modules.network.f5.bigip_device_auth import TacacsModuleParameters
-    from ansible.modules.network.f5.bigip_device_auth import TacacsManager
-    from ansible.modules.network.f5.bigip_device_auth import ModuleManager
-    from ansible.modules.network.f5.bigip_device_auth import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth import TacacsApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth import TacacsModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth import TacacsManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
     from units.compat.mock import Mock
-    from units.compat.mock import patch
 
     from units.modules.utils import set_module_args
 
@@ -71,6 +69,7 @@ class TestParameters(unittest.TestCase):
         args = dict(
             type="tacacs",
             authentication="use-all-servers",
+            accounting="send-to-all-servers",
             protocol_name="ip",
             secret="$XXXXXXXXXXXXXXXXXXXX==",
             servers=['10.10.10.10', '10.10.10.11'],
@@ -81,11 +80,13 @@ class TestParameters(unittest.TestCase):
         p = TacacsModuleParameters(params=args)
         assert p.type == 'tacacs'
         assert p.authentication == 'use-all-servers'
+        assert p.accounting == 'send-to-all-servers'
 
     def test_api_parameters(self):
         args = load_fixture('load_tm_auth_tacacs_1.json')
         p = TacacsApiParameters(params=args)
         assert p.authentication == 'use-first-server'
+        assert p.accounting == 'send-to-first-server'
         assert p.protocol_name == 'ftp'
         assert p.secret == 'secret'
         assert p.servers == ['11.11.11.11']
@@ -101,6 +102,7 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             type="tacacs",
             authentication="use-all-servers",
+            accounting="send-to-all-servers",
             protocol_name="ip",
             secret="secret",
             servers=['10.10.10.10', '10.10.10.11'],

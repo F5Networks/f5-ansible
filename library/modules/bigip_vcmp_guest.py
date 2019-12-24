@@ -47,6 +47,7 @@ options:
       - Specifies the hotfix ISO image file which will be applied on top of the base
         image.
     type: str
+    version_added: 2.9
   mgmt_network:
     description:
       - Specifies the method by which the management address is used in the vCMP guest.
@@ -171,7 +172,7 @@ notes:
     means that it is not unusual for a vCMP host with many guests to take a
     long time (60+ minutes) to reboot and bring all the guests online. The
     BIG-IP chassis will be available before all vCMP guests are online.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -239,13 +240,13 @@ try:
     from library.module_utils.network.f5.ipaddress import is_valid_ip
     from library.module_utils.compat.ipaddress import ip_interface
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.urls import parseStats
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.urls import parseStats
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
     from ansible.module_utils.compat.ipaddress import ip_interface
 
 
@@ -321,7 +322,7 @@ class ModuleParameters(Parameters):
             return self._values['mgmt_route']
         else:
             raise F5ModuleError(
-                "The specified 'mgmt_route' is not a valid IP address"
+                "The specified 'mgmt_route' is not a valid IP address."
             )
 
     @property
@@ -333,7 +334,7 @@ class ModuleParameters(Parameters):
             return str(addr.with_prefixlen)
         except ValueError:
             raise F5ModuleError(
-                "The specified 'mgmt_address' is not a valid IP address"
+                "The specified 'mgmt_address' is not a valid IP address."
             )
 
     @property
@@ -376,7 +377,7 @@ class ModuleParameters(Parameters):
         if self.initial_image_exists(self._values['initial_image']):
             return self._values['initial_image']
         raise F5ModuleError(
-            "The specified 'initial_image' does not exist on the remote device"
+            "The specified 'initial_image' does not exist on the remote device."
         )
 
     @property
@@ -386,7 +387,7 @@ class ModuleParameters(Parameters):
         if self.initial_hotfix_exists(self._values['initial_hotfix']):
             return self._values['initial_hotfix']
         raise F5ModuleError(
-            "The specified 'initial_hotfix' does not exist on the remote device"
+            "The specified 'initial_hotfix' does not exist on the remote device."
         )
 
     def initial_image_exists(self, image):
@@ -626,11 +627,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()

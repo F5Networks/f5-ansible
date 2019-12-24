@@ -1,0 +1,7 @@
+- name: De-provision CGNAT
+  bigip_provision:
+    name: cgnat
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

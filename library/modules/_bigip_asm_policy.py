@@ -104,7 +104,7 @@ options:
     description:
       - Device partition to manage resources on.
     default: Common
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
   - Tim Rupp (@caphrim007)
@@ -1046,8 +1046,6 @@ def main():
             ['file', 'template']
         ]
     )
-
-    client = F5RestClient(**module.params)
 
     try:
         mm = ModuleManager(module=module)

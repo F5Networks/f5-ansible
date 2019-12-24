@@ -1,0 +1,41 @@
+---
+
+# show all the hosts in the inventory
+# Host file requires a group named 'bigips' which are used to define bigips being discovered by bigiq
+- debug:
+    msg: "BIGIP_ADDR:{{ hostvars[item].ansible_host }}"
+  with_items: "{{ groups['bigips'] }}"
+
+# show all the hosts in the current play
+- debug:
+    msg: "BIGIQ_ADDR:{{ item }}"
+  with_items:
+    - "{{ play_hosts }}"
+
+- name: cleanup failed tasks for each bigip being discovered
+  bigiq_device_discovery:
+    device_address: "{{ hostvars[item].ansible_host }}"
+    device_username: "{{ bigip_username }}"
+    device_password: "{{ bigip_password }}"
+    state: absent
+  with_items:
+    - "{{ groups['bigips'] }}"
+  register: cleanup
+
+- name: assert
+  with_items:
+    - "{{ cleanup.results }}"
+  assert:
+    that:
+      - item is success
+
+- name: Setup big-ip modules used during big-iq discovery
+  bigip_provision:
+    provider:
+      server: "{{ hostvars[item[0]].ansible_host }}"
+      password: "{{ bigip_password }}"
+      user: "{{ bigip_username }}"
+    module: "{{ item[1] }}"
+  with_nested:
+    - "{{ groups['bigips'] }}"
+    - [ ltm, asm, afm, gtm, apm ]

@@ -95,3 +95,10 @@ class TestModuleUtils(unittest.TestCase):
         # sub-path. This sub-path exists **between** the partition and
         # the resource name.
         assert transform_name('Common', '/Common/foo', 'bar.app') == '~Common~bar.app~foo'
+
+    def test_transform_name_9(self):
+        # Test a resource that has a route domain in its name
+        #
+        # The percent sign needs to be escaped for the correct API access
+        # The URL escape for '%' is '%25'
+        assert transform_name('Common', 'foo%3456') == '~Common~foo%253456'

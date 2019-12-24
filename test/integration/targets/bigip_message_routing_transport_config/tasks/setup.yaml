@@ -1,0 +1,17 @@
+---
+- name: Create iRules in LTM
+  bigip_irule:
+    content: "{{ lookup('template', 'irule-02.tcl') }}"
+    module: ltm
+    name: "{{ item }}"
+  with_items:
+    - "{{ rule_1 }}"
+    - "{{ rule_2 }}"
+
+- name: Create a pool
+  bigip_snat_pool:
+    name: "{{ pool_name }}"
+    state: present
+    members:
+      - 10.10.10.10
+      - 20.20.20.20

@@ -1,0 +1,52 @@
+---
+
+vlan_name: alice
+vlan_tag: 3605
+
+pool_description: this is my pool
+pool_lb_method: round-robin
+pool_name: pool1
+
+# Used for vCMP tests
+initial_image: "{{ role_path }}/files/BIGIP-13.1.0.8-0.0.3.iso"
+
+# Used for User info testing
+username_credential: johnd
+password_credential: C0m-T19fx$s4v02mc10
+shell: bash
+
+
+valid_includes:
+  - provision-info
+#  - "address_class"
+#  - "certificate"
+#  - "client_ssl_profile"
+#  - "device"
+#  - "device_group"
+#  - "interface"
+#  - "key"
+#  - "node"
+#  - "pool"
+#  - "rule"
+#  - "self_ip"
+#  - "software"
+#  - system_info
+#  - "traffic_group"
+#  - "trunk"
+#  - "virtual_address"
+#  - "virtual_server"
+#  - "vlan"
+
+# Un-comment this value to run the checks for software-images
+#
+# Note: To allow this to work, it is required that you have an
+# existing ISO on the system. Not just the installed image.
+#
+# software_image: BIGIP-13.1.0.7-0.0.1.iso
+
+# Un-comment this value to run the checks for hotfix-images
+#
+# Note: To allow this to work, it is required that you have an
+# existing ISO on the system. Not just the installed image.
+#
+# hotfix_image: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso

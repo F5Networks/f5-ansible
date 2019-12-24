@@ -1,0 +1,213 @@
+---
+
+- name: Collect BIG-IP facts
+  bigip_device_facts:
+    include: system-info
+  register: f
+
+- name: Provision SSLO on the device with level minimum
+  bigip_provision:
+    module: sslo
+    level: minimum
+  register: result
+  when: f.system_info.product_version >= "14.0.0"
+
+- name: Assert Provision SSLO on the device with level minimum
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.level == 'minimum'
+  when: f.system_info.product_version >= "14.0.0"
+
+- name: Provision SSLO on the device with level minimum - Idempotent check
+  bigip_provision:
+    module: sslo
+    level: minimum
+  register: result
+  when: f.system_info.product_version >= "14.0.0"
+
+- name: Assert Provision SSLO on the device with level minimum - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "14.0.0"
+
+- name: Deprovision SSLO on the device
+  bigip_provision:
+    module: sslo
+    state: absent
+  register: result
+  when: f.system_info.product_version >= "14.0.0"
+
+- name: Assert Deprovision SSLO on the device
+  assert:
+    that:
+      - result is changed
+      - result is success
+  when: f.system_info.product_version >= "14.0.0"
+
+- name: Provision URLDB on the device with level dedicated
+  bigip_provision:
+    module: urldb
+    level: dedicated
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Provision URLDB on the device with level dedicated
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.level == 'dedicated'
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Provision URLDB on the device with level dedicated - Idempotent check
+  bigip_provision:
+    module: urldb
+    level: dedicated
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Provision URLDB on the device with level dedicated - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Provision URLDB on the device with level nominal
+  bigip_provision:
+    module: urldb
+    level: nominal
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Provision URLDB on the device with level nominal
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.level == 'nominal'
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Provision URLDB on the device with level nominal - Idempotent check
+  bigip_provision:
+    module: urldb
+    level: nominal
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Provision URLDB on the device with level nominal - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Deprovision URLDB on the device
+  bigip_provision:
+    module: urldb
+    state: absent
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Deprovision URLDB on the device
+  assert:
+    that:
+      - result is changed
+      - result is success
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Provision CGNAT on the device with level dedicated
+  bigip_provision:
+    module: cgnat
+    level: dedicated
+  register: result
+  when: f.system_info.product_version >= "15.0.0"
+
+- name: Assert Provision CGNAT on the device with level dedicated
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.level == 'dedicated'
+  when: f.system_info.product_version >= "15.0.0"
+
+- name: Provision CGNAT on the device with level dedicated - Idempotent check
+  bigip_provision:
+    module: cgnat
+    level: dedicated
+  register: result
+  when: f.system_info.product_version >= "15.0.0"
+
+- name: Assert Provision CGNAT on the device with level dedicated - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  when: f.system_info.product_version >= "15.0.0"
+
+- name: Provision mgmt on the device with large memory reserve
+  bigip_provision:
+    module: mgmt
+    memory: large
+  register: result
+
+- name: Assert Provision mgmt on the device with large memory reserve
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.memory == 'large'
+
+- name: Provision mgmt on the device with large memory reserve - Idempotent check
+  bigip_provision:
+    module: mgmt
+    memory: large
+  register: result
+
+- name: Assert mgmt on the device with large memory reserve - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Provision mgmt on the device with 400MB memory reserve
+  bigip_provision:
+    module: mgmt
+    memory: 400
+  register: result
+
+- name: Assert mgmt on the device with 400MB memory reserve
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.memory == '400'
+
+- name: Provision mgmt on the device with 400MB memory reserve - Idempotent check
+  bigip_provision:
+    module: mgmt
+    memory: 400
+  register: result
+
+- name: Assert mgmt on the device with 400MB memory reserve - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Provision mgmt on the device with small memory reserve
+  bigip_provision:
+    module: mgmt
+    memory: small
+  register: result
+
+- name: Assert mgmt on the device with small memory reserve
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.memory == 'small'

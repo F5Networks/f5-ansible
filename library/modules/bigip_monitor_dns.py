@@ -23,6 +23,7 @@ options:
   name:
     description:
       - Specifies the name of the monitor.
+    type: str
     required: True
   parent:
     description:
@@ -227,7 +228,7 @@ options:
       - present
       - absent
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -380,17 +381,17 @@ try:
     from library.module_utils.network.f5.ipaddress import validate_ip_address
     from library.module_utils.network.f5.compare import cmp_str_with_none
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.ipaddress import validate_ip_v6_address
-    from ansible.module_utils.network.f5.ipaddress import validate_ip_address
-    from ansible.module_utils.network.f5.compare import cmp_str_with_none
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import validate_ip_v6_address
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import validate_ip_address
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
@@ -798,11 +799,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def _address_type_matches_query_type(self, type, validator):
         if self.want.query_type == type and self.have.query_type == type:
@@ -869,7 +880,8 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "Monitor has a IPv6 address. Only a 'query_type' of 'aaaa' is supported for IPv6."
             )
-        elif self.want.receive is not None and validate_ip_address(self.want.receive) and self.want.query_type == 'aaaa':
+        elif (self.want.receive is not None and validate_ip_address(self.want.receive) and
+              self.want.query_type == 'aaaa'):
             raise F5ModuleError(
                 "Monitor has a IPv4 address. Only a 'query_type' of 'a' is supported for IPv4."
             )

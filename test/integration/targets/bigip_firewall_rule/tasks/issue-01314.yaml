@@ -1,0 +1,110 @@
+---
+
+- name: Issue 01314 - Include issue variables
+  include_vars:
+    file: issue-01314.yaml
+
+- name: Issue 01314 - Provision necessary modules
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Issue 01314 - Create rule list
+  bigip_firewall_rule_list:
+    name: "{{ rule_list_cricket.name }}"
+    description: "{{ rule_list_cricket.description }}"
+    rules:
+      - "{{ rule_list_cricket.rule1_name }}"
+      - "{{ rule_list_cricket.rule2_name }}"
+      - "{{ rule_list_cricket.rule3_name }}"
+
+- name: Issue 01314 - Update rule 1 in rule list
+  bigip_firewall_rule:
+    name: "{{ rule_list_cricket.rule1_name }}"
+    description: "{{ rule_list_cricket.rule1_desc }}"
+    parent_rule_list: "{{ rule_list_cricket.name }}"
+    protocol: "{{ rule_list_cricket.rule1_proto }}"
+    source:
+      - address_list: "{{ rule_list_cricket.rule1_src_addr }}"
+    destination:
+      - address_list: "{{ rule_list_cricket.rule1_dst_addr }}"
+      - port_list: "{{ rule_list_cricket.rule1_dst_port }}"
+    action: "{{ rule_list_cricket.rule1_act }}"
+    logging: yes
+
+- name: Issue 01314 - Update rule 2 in rule list
+  bigip_firewall_rule:
+    name: "{{ rule_list_cricket.rule2_name }}"
+    description: "{{ rule_list_cricket.rule2_desc }}"
+    parent_rule_list: "{{ rule_list_cricket.name }}"
+    protocol: "{{ rule_list_cricket.rule2_proto }}"
+    icmp_message:
+      - type: 0
+      - type: 8
+      - type: 30
+    action: "{{ rule_list_cricket.rule2_act }}"
+    logging: yes
+
+- name: Issue 01314 - Update rule 3 in rule list
+  bigip_firewall_rule:
+    name: "{{ rule_list_cricket.rule3_name }}"
+    description: "{{ rule_list_cricket.rule3_desc }}"
+    parent_rule_list: "{{ rule_list_cricket.name }}"
+    action: "{{ rule_list_cricket.rule3_act }}"
+    logging: yes
+
+- name: Issue 01314 - Create policy with rules object
+  bigip_firewall_policy:
+    name: TESTPOLICY
+    rules: TESTPOLICY-RULES
+
+- name: Issue 01314 - Get Policy Facts Before
+  bigip_command:
+    commands:
+      - tmsh list security firewall policy TESTPOLICY
+  register: before
+
+- name: Issue 01314 - Assert Policy does not have list yet
+  assert:
+    that:
+      - "'CRICKET-RL-IPV4' not in before.stdout_lines[0][4]"
+      - "'rule-list' not in before.stdout_lines[0][4]"
+
+- name: Issue 01314 - Bind rule-list to Rule used in Policy
+  bigip_firewall_rule:
+    name: "TESTPOLICY-RULES"
+    description: "Test Rule Binding to Policy"
+    parent_policy: "TESTPOLICY"
+    rule_list: "CRICKET-RL-IPV4"
+
+- name: Issue 01314 - Get Policy Facts After Change
+  bigip_command:
+    commands:
+      - tmsh list security firewall policy TESTPOLICY
+  register: after
+
+- name: Issue 01314 - Assert Changes successfull
+  assert:
+    that:
+      - "'CRICKET-RL-IPV4' in after.stdout_lines[0][4]"
+      - "'rule-list' in after.stdout_lines[0][4]"
+
+- name: Issue 01314 - Remove policy
+  bigip_firewall_policy:
+    name: TESTPOLICY
+    state: absent
+
+- name: Issue 01314 - Remove rule list
+  bigip_firewall_rule_list:
+    name: "{{ rule_list_cricket.name }}"
+    state: absent
+
+
+- name: De-provision modules
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

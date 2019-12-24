@@ -25,19 +25,17 @@ try:
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
     from test.units.compat.mock import Mock
-    from test.units.compat.mock import patch
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_firewall_global_rules import ApiParameters
-    from ansible.modules.network.f5.bigip_firewall_global_rules import ModuleParameters
-    from ansible.modules.network.f5.bigip_firewall_global_rules import ModuleManager
-    from ansible.modules.network.f5.bigip_firewall_global_rules import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_global_rules import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_global_rules import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_global_rules import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_firewall_global_rules import ArgumentSpec
 
     # Ansible 2.8 imports
     from units.compat import unittest
     from units.compat.mock import Mock
-    from units.compat.mock import patch
 
     from units.modules.utils import set_module_args
 

@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['stableinterface'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -52,7 +52,6 @@ options:
       port:
         description:
           - The port of the server.
-        default: 49163
   secret:
     description:
       - Secret key used to encrypt and decrypt packets sent or received from the
@@ -119,6 +118,20 @@ options:
     choices:
       - use-first-server
       - use-all-servers
+  accounting:
+    description:
+      - Specifies how the system returns accounting information, such as which services
+        users access and how much network resources they consume, to the TACACS+ server.
+      - When C(send-to-first-server), specifies that the system transmits accounting
+        information back to the first available TACACS+ server in the list.
+      - When C(send-to-all-servers), specifies that the system transmits accounting
+        information back to all TACACS+ servers in the list.
+      - This parameter is supported by the C(tacacs) type.
+    version_added: "f5_modules 1.1"
+    type: str
+    choices:
+      - send-to-first-server
+      - send-to-all-servers
   use_for_auth:
     description:
       - Specifies whether or not this auth source is put in use on the system.
@@ -143,9 +156,10 @@ options:
       - always
       - on_create
     default: always
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
+  - Nitin Khanna (@nitinthewiz)
 '''
 
 EXAMPLES = r'''
@@ -153,6 +167,7 @@ EXAMPLES = r'''
   bigip_device_auth:
     type: tacacs
     authentication: use-all-servers
+    accounting: send-to-all-servers
     protocol_name: ip
     secret: secret
     servers:
@@ -198,6 +213,11 @@ authentication:
   returned: changed
   type: str
   sample: use-all-servers
+accounting:
+  description: Which servers to send information to when using TACACS.
+  returned: changed
+  type: str
+  sample: send-to-all-servers
 service_name:
   description: Name of the service the user is requesting to be authorized to use.
   returned: changed
@@ -219,10 +239,10 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
 
 
 class BaseParameters(AnsibleF5Parameters):
@@ -279,6 +299,7 @@ class TacacsParameters(BaseParameters):
 
     api_attributes = [
         'authentication',
+        'accounting',
         'protocol',
         'service',
         'secret',
@@ -289,6 +310,7 @@ class TacacsParameters(BaseParameters):
         'servers',
         'secret',
         'authentication',
+        'accounting',
         'service_name',
         'protocol_name'
     ]
@@ -297,6 +319,7 @@ class TacacsParameters(BaseParameters):
         'servers',
         'secret',
         'authentication',
+        'accounting',
         'service_name',
         'protocol_name',
         'auth_source',
@@ -320,11 +343,14 @@ class TacacsModuleParameters(TacacsParameters):
                         "An 'address' field must be provided when specifying separate fields to the 'servers' parameter."
                     )
                 address = server.get('address')
-                port = server.get('port', 49163)
+                port = server.get('port', None)
             elif isinstance(server, string_types):
                 address = server
-                port = 49163
-            result.append('{0}:{1}'.format(address, port))
+                port = None
+            if port is None:
+                result.append('{0}'.format(address))
+            else:
+                result.append('{0}:{1}'.format(address, port))
         return result
 
     @property
@@ -765,6 +791,12 @@ class ArgumentSpec(object):
                 choices=[
                     'use-first-server',
                     'use-all-servers'
+                ]
+            ),
+            accounting=dict(
+                choices=[
+                    'send-to-first-server',
+                    'send-to-all-servers'
                 ]
             ),
             use_for_auth=dict(type='bool'),

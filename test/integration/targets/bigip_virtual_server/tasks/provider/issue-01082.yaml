@@ -100,32 +100,6 @@
     name: vs_test
     state: absent
 
-- name: Issue 01082 - Test VS 5 - Expected failure
-  bigip_virtual_server:
-    provider: "{{ provider }}"
-    name: vs_test
-    destination: 1.1.1.1
-    port: 443
-    ip_intelligence_policy: ip-intelligence
-    profiles:
-      - f5-tcp-progressive
-      - http
-      - { name: serverssl, context: client-side }
-  register: result
-  failed_when: result is success
-
-- name: Issue 01082 - Assert Test VS 5 - Expected failure
-  assert:
-    that:
-      - result is success
-      - result is not changed
-
-- name: Issue 01082 - Delete Test VS 5 - Expected failure
-  bigip_virtual_server:
-    provider: "{{ provider }}"
-    name: vs_test
-    state: absent
-
 - name: Issue 01082 - De-provision AFM on the device
   bigip_provision:
     module: afm

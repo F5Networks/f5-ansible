@@ -1,0 +1,34 @@
+---
+
+- name: Issue 01364 - Select users facts
+  bigip_device_info:
+    include:
+      - users
+  register: result
+
+- name: Issue 01364 - Assert users facts
+  assert:
+    that:
+      - result is success
+
+- name: Issue 01364 - Create an admin user
+  bigip_user:
+    partition_access:
+      - all:admin
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
+    shell: "{{ shell }}"
+  register: result
+
+- name: Issue 01364 - Select users facts
+  bigip_device_info:
+    include:
+      - users
+  register: result
+
+- name: Issue 01364 - Assert users facts changed
+  assert:
+    that:
+      - result is success
+      - result.users | selectattr("name", "match", "johnd") | map(attribute='shell') | first == 'bash'

@@ -1,0 +1,6 @@
+---
+
+pool_lb_method: round-robin
+pool_name: issue-persistence
+wide_ip1: issue.persist
+wide_ip2: issue.nopersist

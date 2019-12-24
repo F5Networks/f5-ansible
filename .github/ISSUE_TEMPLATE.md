@@ -29,15 +29,6 @@ Paste verbatim output from “tmsh show sys version” between quotes below
 
 ```
 
-##### ROLE VERSION
-<!---
-Paste verbatim output from “ansible-galaxy info f5devcentral.f5ansible” between quotes below. 
-Bug reports must be reproduced with the role and this input is mandatory
--->
-```
-
-```
-
 ##### CONFIGURATION
 <!---
 Mention any settings you have changed/added/removed in ansible.cfg

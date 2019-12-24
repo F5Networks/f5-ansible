@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # Copyright: (c) 2017, F5 Networks Inc.
@@ -40,8 +39,7 @@ RETURN = """
 import random
 
 from ansible.errors import AnsibleError
-from ansible.module_utils._text import to_native
-from ansible.module_utils.network.f5.bigiq import F5RestClient
+from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigiq import F5RestClient
 from ansible.plugins.lookup import LookupBase
 
 

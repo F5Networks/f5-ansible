@@ -1,0 +1,10 @@
+---
+
+snat_pool_name: issue_01429
+snat_translation_name: translate_01429
+st_address: 192.168.1.1
+members_list:
+  - 10.10.10.10
+  - 20.20.20.20
+
+

@@ -1,0 +1,15 @@
+log_prof: alg_log_profile
+log_pub: local-db-publisher
+
+name1: ftp_test1
+name2: ftp_test2
+
+desc1: "my description"
+desc2: "this description"
+
+port1: 3424
+port2: 20
+
+pub1: test_pub
+
+log1: test_log

@@ -31,7 +31,6 @@ options:
         been set, it cannot be changed. By default, this value is the C(clientssl)
         parent on the C(Common) partition.
     type: str
-    default: /Common/clientssl
   ciphers:
     description:
       - Specifies the list of ciphers that the system supports. When creating a new
@@ -70,6 +69,13 @@ options:
             to compare them when updating a client SSL profile. Due to this, if you specify a
             passphrase, this module will always register a C(changed) event.
         type: str
+      true_names:
+        description:
+          - When C(yes) the module will not append C(.crt) and C(.key) extension to the given certificate and key names.
+          - When C(no) the module will append C(.crt) and C(.key) extension to the given certificate and key names.
+        type: bool
+        default: no
+        version_added: "f5_modules 1.1"
     type: list
   partition:
     description:
@@ -96,6 +102,7 @@ options:
       - no-session-resumption-on-renegotiation
       - no-tlsv1.1
       - no-tlsv1.2
+      - no-tlsv1.3
       - single-dh-use
       - ephemeral-rsa
       - cipher-server-preference
@@ -138,6 +145,7 @@ options:
       - Specifies the fully qualified DNS hostname of the server used in Server Name Indication communications.
         When creating a new profile, the setting is provided by the parent profile.
       - The server name can also be a wildcard string containing the asterisk C(*) character.
+    type: str
     version_added: 2.8
   sni_default:
     description:
@@ -225,6 +233,22 @@ options:
       - Instructs the system to use the specified CRL file even if it has expired.
     type: bool
     version_added: 2.8
+  cache_size:
+    description:
+      - Specifies the number of sessions in the SSL session cache.
+      - The valid value range is between 0 and 4194304 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided
+        by the parent profile.
+    type: int
+    version_added: "f5_modules 1.0"
+  cache_timeout:
+    description:
+      - Specifies the timeout value in seconds of the SSL session cache entries.
+      - Acceptable values are between 0 and 86400 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided
+        by the parent profile.
+    type: int
+    version_added: "f5_modules 1.0"
   state:
     description:
       - When C(present), ensures that the profile exists.
@@ -237,7 +261,7 @@ options:
     version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -335,6 +359,16 @@ renegotiation:
   returned: changed
   type: bool
   sample: yes
+cache_size:
+  description: Specifies the number of sessions in the SSL session cache.
+  returned: changed
+  type: int
+  sample: 2000
+cache_timeout:
+  description: Specifies the timeout value in seconds of the SSL session cache entries.
+  returned: changed
+  type: int
+  sample: 1800
 '''
 
 import os
@@ -353,14 +387,14 @@ try:
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import is_empty_list
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import is_empty_list
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_empty_list
 
 
 class Parameters(AnsibleF5Parameters):
@@ -382,7 +416,8 @@ class Parameters(AnsibleF5Parameters):
         'crlFile': 'client_auth_crl',
         'allowExpiredCrl': 'allow_expired_crl',
         'strictResume': 'strict_resume',
-        'renegotiation': 'renegotiation',
+        'cacheSize': 'cache_size',
+        'cacheTimeout': 'cache_timeout',
     }
 
     api_attributes = [
@@ -405,6 +440,8 @@ class Parameters(AnsibleF5Parameters):
         'allowExpiredCrl',
         'strictResume',
         'renegotiation',
+        'cacheSize',
+        'cacheTimeout',
     ]
 
     returnables = [
@@ -427,9 +464,12 @@ class Parameters(AnsibleF5Parameters):
         'allow_expired_crl',
         'strict_resume',
         'renegotiation',
+        'cache_size',
+        'cache_timeout',
     ]
 
     updatables = [
+        'parent',
         'ciphers',
         'cert_key_chain',
         'allow_non_ssl',
@@ -448,6 +488,8 @@ class Parameters(AnsibleF5Parameters):
         'allow_expired_crl',
         'strict_resume',
         'renegotiation',
+        'cache_size',
+        'cache_timeout',
     ]
 
     @property
@@ -461,12 +503,16 @@ class Parameters(AnsibleF5Parameters):
 
 class ModuleParameters(Parameters):
     def _key_filename(self, name):
+        if self.true_names:
+            return name
         if name.endswith('.key'):
             return name
         else:
             return name + '.key'
 
     def _cert_filename(self, name):
+        if self.true_names:
+            return name
         if name.endswith('.crt'):
             return name
         else:
@@ -478,6 +524,14 @@ class ModuleParameters(Parameters):
         else:
             result = self._cert_filename(fq_name(self.partition, item['chain']))
         return result
+
+    @property
+    def true_names(self):
+        result = flatten_boolean(self._values['true_names'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
     @property
     def parent(self):
@@ -655,6 +709,26 @@ class ApiParameters(Parameters):
             return None
         return self._values['client_auth_crl']
 
+    @property
+    def cache_size(self):
+        if self._values['cache_size'] is None:
+            return None
+        if 0 <= self._values['cache_size'] <= 4194304:
+            return self._values['cache_size']
+        raise F5ModuleError(
+            "Valid 'cache_size' must be in range 0 - 4194304 sessions."
+        )
+
+    @property
+    def cache_timeout(self):
+        if self._values['cache_timeout'] is None:
+            return None
+        if 0 <= self._values['cache_timeout'] <= 4194304:
+            return self._values['cache_timeout']
+        raise F5ModuleError(
+            "Valid 'cache_timeout' must be in range 0 - 86400 seconds."
+        )
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -754,13 +828,6 @@ class Difference(object):
             return want
 
     @property
-    def parent(self):
-        if self.want.parent != self.have.parent:
-            raise F5ModuleError(
-                "The parent profile cannot be changed"
-            )
-
-    @property
     def cert_key_chain(self):
         result = self._diff_complex_items(self.want.cert_key_chain, self.have.cert_key_chain)
         return result
@@ -769,14 +836,19 @@ class Difference(object):
     def options(self):
         if self.want.options is None:
             return None
+        # starting with v14 options may return as a space delimited string in curly
+        # braces, eg "{ option1 option2 }", or simply "none" to indicate empty set
+        if self.have.options is None or self.have.options == 'none':
+            self.have.options = []
+        if not isinstance(self.have.options, list):
+            if self.have.options.startswith('{'):
+                self.have.options = self.have.options[2:-2].split(' ')
+            else:
+                self.have.options = [self.have.options]
         if not self.want.options:
-            if self.have.options is None:
-                return None
-            if not self.have.options:
-                return None
-            if self.have.options is not None:
-                return self.want.options
-        if self.have.options is None:
+            # we don't want options.  If we have any, indicate we should remove, else noop
+            return [] if self.have.options else None
+        if not self.have.options:
             return self.want.options
         if set(self.want.options) != set(self.have.options):
             return self.want.options
@@ -903,11 +975,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -1013,7 +1095,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            parent=dict(default='/Common/clientssl'),
+            parent=dict(),
             ciphers=dict(),
             allow_non_ssl=dict(type='bool'),
             secure_renegotiation=dict(
@@ -1034,6 +1116,7 @@ class ArgumentSpec(object):
                     'no-session-resumption-on-renegotiation',
                     'no-tlsv1.1',
                     'no-tlsv1.2',
+                    'no-tlsv1.3',
                     'single-dh-use',
                     'ephemeral-rsa',
                     'cipher-server-preference',
@@ -1055,7 +1138,11 @@ class ArgumentSpec(object):
                     cert=dict(required=True),
                     key=dict(required=True),
                     chain=dict(),
-                    passphrase=dict()
+                    passphrase=dict(),
+                    true_names=dict(
+                        type='bool',
+                        default='no'
+                    ),
                 )
             ),
             state=dict(
@@ -1079,6 +1166,8 @@ class ArgumentSpec(object):
             allow_expired_crl=dict(type='bool'),
             strict_resume=dict(type='bool'),
             renegotiation=dict(type='bool'),
+            cache_size=dict(type='int'),
+            cache_timeout=dict(type='int'),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

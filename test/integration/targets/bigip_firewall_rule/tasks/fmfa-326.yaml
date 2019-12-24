@@ -1,0 +1,94 @@
+---
+
+- name: FMFA 326 - Include issue variables
+  include_vars:
+    file: issue-01314.yaml
+
+- name: FMFA 326 - Provision necessary modules
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: FMFA 326 - Create rule list
+  bigip_firewall_rule_list:
+    name: "foo-list2"
+    description: "foo-list2"
+    rules:
+      - "{{ rule_list_cricket.rule1_name }}"
+  register: result
+
+- name: Assert Create rule list
+  assert:
+    that:
+      - result is success
+
+- name: Create a new rule with invalid VLAN in rule list
+  bigip_firewall_rule:
+    name: foo-rule3
+    parent_rule_list: foo-list2
+    protocol: tcp
+    source:
+      - address: 1.2.3.4
+      - address_range: 1.1.1.1-2.2.2.2
+      - vlan: vlan_that_doesnt_exist
+      - country: US
+      - port: 22
+      - port_range: 80-443
+    destination:
+      - address: 1.2.3.4
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 22
+      - port_range: 80-443
+    action: accept
+    logging: yes
+  register: result
+  ignore_errors: yes
+
+- name: Assert Create a new rule with invalid VLAN in rule list
+  assert:
+    that:
+      - result is failed
+      - result is not changed
+
+- name: Create a new rule without invalid VLAN in rule list
+  bigip_firewall_rule:
+    name: foo-rule3
+    parent_rule_list: foo-list2
+    protocol: tcp
+    source:
+      - address: 1.2.3.4
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 22
+      - port_range: 80-443
+    destination:
+      - address: 1.2.3.4
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 22
+      - port_range: 80-443
+    action: accept
+    logging: yes
+  register: result
+  ignore_errors: yes
+
+- name: Assert Create a new rule with invalid VLAN in rule list
+  assert:
+    that:
+      - result is success
+
+- name: FMFA 326 - Remove rule list
+  bigip_firewall_rule_list:
+    name: "{{ rule_list_cricket.name }}"
+    state: absent
+
+
+- name: De-provision modules
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

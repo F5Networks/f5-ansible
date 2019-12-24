@@ -1,0 +1,25 @@
+---
+
+- name: Provision AFM
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Create partition
+  bigip_partition:
+    name: "{{ partition }}"
+
+- name: Create a log publisher
+  bigip_log_publisher:
+    name: "{{ log_name }}"
+    destinations:
+      - "/Common/local-syslog"
+    partition: "{{ partition }}"
+
+- name: Create a basic log profile with port misuse
+  bigip_firewall_log_profile:
+    name: "{{ log_profile }}"
+    port_misuse:
+      rate_limit: 30000
+      log_publisher: "{{ publisher1 }}"

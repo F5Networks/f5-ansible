@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['stableinterface'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -58,7 +58,7 @@ options:
   passphrase:
     description:
       - Specifies the passphrase that is necessary to load the specified UCS file.
-    type: bool
+    type: str
   reset_trust:
     description:
       - When specified, the device and trust domain certs and keys are not
@@ -98,7 +98,7 @@ notes:
    - This module does not support re-licensing a BIG-IP restored from a UCS
    - This module does not support restoring encrypted archives on replacement
      RMA units.
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -190,12 +190,12 @@ try:
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import upload_file
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.icontrol import tmos_version
-    from ansible.module_utils.network.f5.icontrol import upload_file
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import upload_file
 
 try:
     from collections import OrderedDict
@@ -446,7 +446,7 @@ class BaseManager(object):
                         raise F5ModuleError(output['message'])
                     else:
                         raise F5ModuleError(resp.content)
-            except Exception as ex:
+            except Exception:
                 # This can be caused by restjavad restarting.
                 continue
 

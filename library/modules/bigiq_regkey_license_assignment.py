@@ -76,7 +76,7 @@ options:
       - present
       - absent
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -140,11 +140,11 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.ipaddress import is_valid_ip
 except ImportError:
-    from ansible.module_utils.network.f5.bigiq import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigiq import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
@@ -242,11 +242,9 @@ class ModuleParameters(Parameters):
                 "Unknown device format '{0}'".format(self.device)
             )
 
-        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/?$filter={2}&$top=1".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            filter
-        )
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/" \
+              "?$filter={2}&$top=1".format(self.client.provider['server'],
+                                           self.client.provider['server_port'], filter)
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
@@ -304,13 +302,9 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(
                 "Unknown device format '{0}'".format(self.device)
             )
-        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses/{2}/offerings/{3}/members/?$filter={4}'.format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            self.pool_id,
-            self.key,
-            filter
-        )
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses/{2}/offerings/{3}/members/' \
+              '?$filter={4}'.format(self.client.provider['server'], self.client.provider['server_port'],
+                                    self.pool_id, self.key, filter)
         resp = self.client.api.get(uri)
         try:
             response = resp.json()

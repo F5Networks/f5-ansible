@@ -24,9 +24,16 @@ options:
     description:
       - List of members to put in the SNAT pool. When a C(state) of present is
         provided, this parameter is required. Otherwise, it is optional.
+      - The members can be either IP addresses, or names of the SNAT translation objects.
     type: list
     aliases:
       - member
+  description:
+    description:
+      - A general description of the SNAT pool, provided by the user for their
+        benefit. It is optional.
+    type: str
+    version_added: 2.9
   name:
     description:
       - The name of the SNAT pool.
@@ -46,7 +53,11 @@ options:
     type: str
     default: Common
     version_added: 2.5
-extends_documentation_fragment: f5
+notes:
+  - When C(bigip_snat_pool) object is removed it also removes any associated C(bigip_snat_translation) objects.
+  - This is a BIG-IP behavior not module behavior and it only occurs when the C(bigip_snat_translation) objects
+    are also not referenced by another C(bigip_snat_pool).
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -86,6 +97,20 @@ EXAMPLES = r'''
       user: admin
       password: secret
   delegate_to: localhost
+
+- name: Add the SNAT pool 'my-snat-pool' with a description
+  bigip_snat_pool:
+    name: my-snat-pool
+    state: present
+    members:
+      - 10.10.10.10
+      - 20.20.20.20
+    description: A SNAT pool description
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -97,6 +122,7 @@ members:
   sample: "['10.10.10.10']"
 '''
 
+import re
 import os
 
 from ansible.module_utils.basic import AnsibleModule
@@ -106,33 +132,38 @@ try:
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.ipaddress import compress_address
+    from library.module_utils.network.f5.compare import cmp_str_with_none
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import compress_address
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {}
 
     updatables = [
-        'members'
+        'members',
+        'description',
     ]
 
     returnables = [
-        'members'
+        'members',
+        'description',
     ]
 
     api_attributes = [
-        'members'
+        'members',
+        'description',
     ]
 
 
@@ -146,13 +177,25 @@ class ModuleParameters(Parameters):
         return result
 
     def _format_member_address(self, member):
-        if is_valid_ip(member):
-            address = '/{0}/{1}'.format(self.partition, member)
-            return address
+        if len(member.split('%')) > 1:
+            address, rd = member.split('%')
+            if is_valid_ip(address):
+                result = '/{0}/{1}%{2}'.format(self.partition, compress_address(address), rd)
+                return result
         else:
-            raise F5ModuleError(
-                'The provided member address is not a valid IP address'
-            )
+            if is_valid_ip(member):
+                address = '/{0}/{1}'.format(self.partition, member)
+                return address
+            else:
+                # names must start with alphabetic character, and can contain hyphens and underscores and numbers
+                # no special characters are allowed
+                pattern = re.compile(r'(?!-)[A-Z-].*(?<!-)$', re.IGNORECASE)
+                if pattern.match(member):
+                    address = '/{0}/{1}'.format(self.partition, member)
+                    return address
+        raise F5ModuleError(
+            'The provided member address: {0} is not a valid IP address or snat translation name'.format(member)
+        )
 
     @property
     def members(self):
@@ -164,6 +207,14 @@ class ModuleParameters(Parameters):
             address = self._format_member_address(member)
             result.update([address])
         return list(result)
+
+    @property
+    def description(self):
+        if self._values['description'] is None:
+            return None
+        elif self._values['description'] in ['none', '']:
+            return ''
+        return self._values['description']
 
 
 class Changes(Parameters):
@@ -214,6 +265,11 @@ class Difference(object):
         if set(self.want.members) == set(self.have.members):
             return None
         result = list(set(self.want.members))
+        return result
+
+    @property
+    def description(self):
+        result = cmp_str_with_none(self.want.description, self.have.description)
         return result
 
 
@@ -272,8 +328,25 @@ class ModuleManager(object):
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
+
+        if self.module._diff and self.have:
+            result['diff'] = self.make_diff()
+
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+
+        return result
+
+    def _grab_attr(self, item):
+        result = dict()
+        updatables = Parameters.updatables
+        for k in updatables:
+            if getattr(item, k) is not None:
+                result[k] = getattr(item, k)
+        return result
+
+    def make_diff(self):
+        result = dict(before=self._grab_attr(self.have), after=self._grab_attr(self.want))
         return result
 
     def present(self):
@@ -329,11 +402,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -416,6 +499,7 @@ class ArgumentSpec(object):
                 type='list',
                 aliases=['member']
             ),
+            description=dict(),
             state=dict(
                 default='present',
                 choices=['absent', 'present']

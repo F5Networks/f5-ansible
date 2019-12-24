@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['stableinterface'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -23,6 +23,7 @@ options:
   name:
     description:
       - Specifies the name of the region.
+    type: str
     required: True
   region_members:
     description:
@@ -38,6 +39,11 @@ options:
           - Only a single list entry can be specified together with negate.
         type: bool
         default: no
+      subnet:
+        description:
+          - An IP address and network mask in the CIDR format.
+        type: str
+        version_added: 2.9
       region:
         description:
           - Specifies the name of region already defined in the configuration.
@@ -106,7 +112,7 @@ options:
       - present
       - absent
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -167,15 +173,17 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.compare import cmp_simple_list
+    from library.module_utils.network.f5.ipaddress import is_valid_ip_network
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.compare import cmp_simple_list
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_simple_list
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip_network
 
 
 class Parameters(AnsibleF5Parameters):
@@ -531,7 +539,18 @@ class ModuleParameters(Parameters):
             return key, self.countries.get(value, value)
         if key == 'geo_isp':
             return 'geoip-isp', value
+        if key == 'subnet':
+            return key, self._test_subnet(value)
         return key, value
+
+    def _test_subnet(self, item):
+        if item is None:
+            return None
+        if is_valid_ip_network(item):
+            return item
+        raise F5ModuleError(
+            "Specified 'subnet' is not a valid subnet."
+        )
 
 
 class Changes(Parameters):
@@ -696,11 +715,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         if self.changes.region_members:
@@ -822,6 +851,7 @@ class ArgumentSpec(object):
                 type='list',
                 elements='dict',
                 options=dict(
+                    subnet=dict(),
                     region=dict(),
                     continent=dict(),
                     country=dict(),

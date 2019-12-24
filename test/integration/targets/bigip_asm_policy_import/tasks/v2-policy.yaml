@@ -155,10 +155,12 @@
       - result is changed
       - result is success
 
-- name: Delete ASM Policies
-  bigip_command:
-    commands:
-      - tmsh delete asm policy foo-policy
-      - tmsh delete asm policy foo-policy2
-      - tmsh delete asm policy foo-policy3
-      - tmsh delete asm policy foo-policy4
+- name: Remove ASM policies
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - foo-policy
+    - foo-policy2
+    - foo-policy3
+    - foo-policy4

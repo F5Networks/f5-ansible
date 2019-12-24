@@ -42,6 +42,8 @@ options:
           - When C(type) is C(ignore), will remove all existing actions from this
             rule.
           - When C(type) is C(redirect), will redirect an HTTP request to a different URL.
+          - When C(type) is C(reset), will reset the connection upon C(event).
+          - When C(type) is C(persist), will associate C(cookie_insert) and C(cookie_expiry) with this rule.
         type: str
         required: true
         choices:
@@ -49,6 +51,8 @@ options:
           - enable
           - ignore
           - redirect
+          - reset
+          - persist
       pool:
         description:
           - Pool that you want to forward traffic to.
@@ -69,6 +73,22 @@ options:
           - The new URL for which a redirect response will be sent.
           - A Tcl command substitution can be used for this field.
         type: str
+      event:
+        description:
+          - Events on which actions such as reset can be triggered.
+        type: str
+      cookie_insert:
+        description:
+          - Cookie name to persist on.
+          - This parameter is only valid with the C(persist) type.
+        type: str
+        version_added: "f5_modules 1.1"
+      cookie_expiry:
+        description:
+          - Optional argument, specifying the time for which the session will be persisted.
+          - This parameter is only valid with the C(persist) type.
+        type: int
+        version_added: "f5_modules 1.1"
     type: list
   policy:
     description:
@@ -105,6 +125,7 @@ options:
           - http_uri
           - all_traffic
           - http_host
+          - ssl_extension
       path_begins_with_any:
         description:
           - A list of strings of characters that the HTTP URI should start with.
@@ -115,10 +136,24 @@ options:
           - A list of strings of characters that the HTTP Host should match.
           - This parameter is only valid with the C(http_host) type.
         type: str
+      host_is_not_any:
+        description:
+          - A list of strings of characters that the HTTP Host should not match.
+          - This parameter is only valid with the C(http_host) type.
+        type: str
       host_begins_with_any:
         description:
           - A list of strings of characters that the HTTP Host should start with.
           - This parameter is only valid with the C(http_host) type.
+        type: str
+      server_name_is_any:
+        description:
+          - A list of strings of characters that the SSL Extension should match.
+          - This parameter is only valid with the C(ssl_extension) type.
+        type: str
+      event:
+        description:
+          - Events on which conditions such as SSL Extension can be triggered.
         type: str
     type: list
   state:
@@ -136,12 +171,13 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 requirements:
   - BIG-IP >= v12.1.0
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
+  - Greg Crosby (@crosbygw)
 '''
 
 EXAMPLES = r'''
@@ -189,14 +225,14 @@ EXAMPLES = r'''
           pool: pool-svrs
       conditions:
         - type: http_uri
-          path_starts_with: /euro
+          path_begins_with_any: /euro
     - name: rule2
       actions:
         - type: forward
           pool: pool-svrs
       conditions:
         - type: http_uri
-          path_starts_with: /HomePage/
+          path_begins_with_any: /HomePage/
 
 - name: Remove all rules and confitions from the rule
   bigip_policy_rule:
@@ -265,12 +301,12 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import transform_name
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
 
 
 class Parameters(AnsibleF5Parameters):
@@ -340,6 +376,14 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'redirect'
                 del action['redirect']
+            elif 'shutdown' in item:
+                action.update(item)
+                action['type'] = 'reset'
+                del action['shutdown']
+            if 'persist' in item:
+                action.update(item)
+                action['type'] = 'persist'
+                del action['persist']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -370,6 +414,11 @@ class ApiParameters(Parameters):
                 action['type'] = 'http_host'
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
+            elif 'sslExtension' in item:
+                action.update(item)
+                action['type'] = 'ssl_extension'
+                if 'values' in action:
+                    action['values'] = [str(x) for x in action['values']]
             result.append(action)
         # Names contains the index in which the rule is at.
         result = sorted(result, key=lambda x: x['name'])
@@ -396,6 +445,11 @@ class ModuleParameters(Parameters):
                 return [dict(type='ignore')]
             elif item['type'] == 'redirect':
                 self._handle_redirect_action(action, item)
+            elif item['type'] == 'reset':
+                self._handle_reset_action(action, item)
+                del action['shutdown']
+            elif item['type'] == 'persist':
+                self._handle_persist_action(action, item)
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -415,6 +469,8 @@ class ModuleParameters(Parameters):
                 self._handle_http_uri_condition(action, item)
             elif item['type'] == 'http_host':
                 self._handle_http_host_condition(action, item)
+            elif item['type'] == 'ssl_extension':
+                self._handle_ssl_extension_condition(action, item)
             elif item['type'] == 'all_traffic':
                 return [dict(type='all_traffic')]
             result.append(action)
@@ -443,6 +499,17 @@ class ModuleParameters(Parameters):
                 host=True,
                 values=values
             ))
+        elif 'host_is_not_any' in item:
+            if isinstance(item['host_is_not_any'], list):
+                values = item['host_is_not_any']
+            else:
+                values = [item['host_is_not_any']]
+            action.update({
+                'equals': True,
+                'host': True,
+                'not': True,
+                'values': values
+            })
 
     def _handle_http_uri_condition(self, action, item):
         """Handle the nuances of the forwarding type
@@ -469,6 +536,31 @@ class ModuleParameters(Parameters):
             startsWith=True,
             values=values
         ))
+
+    def _handle_ssl_extension_condition(self, action, item):
+        action['type'] = 'ssl_extension'
+        if 'server_name_is_any' in item:
+            if isinstance(item['server_name_is_any'], list):
+                values = item['server_name_is_any']
+            else:
+                values = [item['server_name_is_any']]
+            action.update(dict(
+                equals=True,
+                serverName=True,
+                values=values
+            ))
+        if 'event' not in item:
+            raise F5ModuleError(
+                "An 'event' must be specified when the 'ssl_extension' condition is used."
+            )
+        elif 'ssl_client_hello' in item['event']:
+            action.update(dict(
+                sslClientHello=True
+            ))
+        elif 'ssl_server_hello' in item['event']:
+            action.update(dict(
+                sslServerHello=True
+            ))
 
     def _handle_forward_action(self, action, item):
         """Handle the nuances of the forwarding type
@@ -525,6 +617,49 @@ class ModuleParameters(Parameters):
             httpReply=True,
         )
 
+    def _handle_reset_action(self, action, item):
+        """Handle the nuances of the reset type
+
+        :param action:
+        :param item:
+        :return:
+        """
+        action['type'] = 'reset'
+        if 'event' not in item:
+            raise F5ModuleError(
+                "An 'event' must be specified when the 'reset' type is used."
+            )
+        elif 'ssl_client_hello' in item['event']:
+            action.update(dict(
+                sslClientHello=True,
+                connection=True,
+                shutdown=True
+            ))
+
+    def _handle_persist_action(self, action, item):
+        """Handle the nuances of the persist type
+
+        :param action:
+        :param item:
+        :return:
+        """
+        action['type'] = 'persist'
+        if 'cookie_insert' not in item:
+            raise F5ModuleError(
+                "A 'cookie_insert' must be specified when the 'persist' type is used."
+            )
+        elif 'cookie_expiry' in item:
+            action.update(
+                cookieInsert=True,
+                tmName=item['cookie_insert'],
+                expiry=str(item['cookie_expiry'])
+            )
+        else:
+            action.update(
+                cookieInsert=True,
+                tmName=item['cookie_insert']
+            )
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -563,6 +698,21 @@ class ReportableChanges(Changes):
                 action['type'] = 'redirect'
                 del action['redirect']
                 del action['httpReply']
+            elif 'reset' in item:
+                action.update(item)
+                action['type'] = 'reset'
+                del action['connection']
+                del action['shutdown']
+            elif 'persist' in item:
+                action.update(item)
+                action['type'] = 'persist'
+                action['cookie_insert'] = action['tmName']
+                if 'expiry' in item:
+                    action['cookie_expiry'] = int(action['expiry'])
+                    del action['expiry']
+                del action['tmName']
+                del action['persist']
+                del action['cookieInsert']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -582,6 +732,10 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'http_host'
                 del action['httpHost']
+            elif 'sslExtension' in item:
+                action.update(item)
+                action['type'] = 'ssl_extension'
+                del action['sslExtension']
             result.append(action)
         # Names contains the index in which the rule is at.
         result = sorted(result, key=lambda x: x['name'])
@@ -610,6 +764,13 @@ class UsableChanges(Changes):
                 action['httpReply'] = True
                 action['redirect'] = True
                 del action['type']
+            elif action['type'] == 'reset':
+                action['shutdown'] = True
+                action['connection'] = True
+                del action['type']
+            elif action['type'] == 'persist':
+                action['persist'] = True
+                del action['type']
             result.append(action)
         return result
 
@@ -626,6 +787,9 @@ class UsableChanges(Changes):
                 del condition['type']
             elif condition['type'] == 'http_host':
                 condition['httpHost'] = True
+                del condition['type']
+            elif condition['type'] == 'ssl_extension':
+                condition['sslExtension'] = True
                 del condition['type']
             elif condition['type'] == 'all_traffic':
                 result = []
@@ -683,7 +847,7 @@ class Difference(object):
         result = self._diff_complex_items(self.want.actions, self.have.actions)
         if self._conditions_missing_default_rule_for_asm(result):
             raise F5ModuleError(
-                "The 'all_traffic' condition is required when using an ASM policy in a rule's 'enable' action."
+                "Valid options when using an ASM policy in a rule's 'enable' action include all_traffic, http_uri, or http_host."
             )
         return result
 
@@ -703,7 +867,7 @@ class Difference(object):
             conditions = self._diff_complex_items(self.want.conditions, self.have.conditions)
             if conditions is None:
                 return False
-            if any(y for y in conditions if y['type'] != 'all_traffic'):
+            if any(y for y in conditions if y['type'] not in ['all_traffic', 'http_uri', 'http_host']):
                 return True
         return False
 
@@ -839,11 +1003,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def draft_exists(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}".format(
@@ -854,11 +1028,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def _create_existing_policy_draft_on_device(self):
         params = dict(createDraft=True)
@@ -883,7 +1067,7 @@ class ModuleManager(object):
     def publish_on_device(self):
         params = dict(
             name=fq_name(self.want.partition,
-                         self.want.name,
+                         self.want.policy,
                          sub_path='Drafts'
                          ),
             command="publish"
@@ -1004,6 +1188,8 @@ class ArgumentSpec(object):
                             'enable',
                             'ignore',
                             'redirect',
+                            'reset',
+                            'persist'
                         ],
                         required=True
                     ),
@@ -1011,9 +1197,12 @@ class ArgumentSpec(object):
                     asm_policy=dict(),
                     virtual=dict(),
                     location=dict(),
+                    event=dict(),
+                    cookie_insert=dict(),
+                    cookie_expiry=dict(type='int')
                 ),
                 mutually_exclusive=[
-                    ['pool', 'asm_policy', 'virtual', 'location']
+                    ['pool', 'asm_policy', 'virtual', 'location', 'cookie_insert']
                 ]
             ),
             conditions=dict(
@@ -1023,13 +1212,17 @@ class ArgumentSpec(object):
                         choices=[
                             'http_uri',
                             'http_host',
+                            'ssl_extension',
                             'all_traffic'
                         ],
                         required=True
                     ),
                     path_begins_with_any=dict(),
                     host_begins_with_any=dict(),
-                    host_is_any=dict()
+                    host_is_any=dict(),
+                    host_is_not_any=dict(),
+                    server_name_is_any=dict(),
+                    event=dict(),
                 ),
             ),
             name=dict(required=True),

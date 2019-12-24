@@ -44,6 +44,10 @@ options:
     description:
       - The receive string for the monitor call.
     type: str
+  receive_disable:
+    description:
+      - The receive disable string for the monitor call.
+    type: str
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
@@ -103,7 +107,7 @@ options:
     version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -154,6 +158,11 @@ receive:
   returned: changed
   type: str
   sample: tcp string to receive
+receive_disable:
+  description: The new receive disable string for this monitor.
+  returned: changed
+  type: str
+  sample: tcp string to receive
 ip:
   description: The new IP of IP/port definition.
   returned: changed
@@ -195,14 +204,14 @@ try:
     from library.module_utils.network.f5.compare import cmp_str_with_none
 
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import transform_name
-    from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    from ansible.module_utils.network.f5.compare import cmp_str_with_none
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
@@ -210,6 +219,7 @@ class Parameters(AnsibleF5Parameters):
         'timeUntilUp': 'time_until_up',
         'defaultsFrom': 'parent',
         'recv': 'receive',
+        'recvDisable': 'receive_disable'
     }
 
     api_attributes = [
@@ -218,6 +228,7 @@ class Parameters(AnsibleF5Parameters):
         'interval',
         'timeout',
         'recv',
+        'recvDisable',
         'send',
         'destination',
         'description',
@@ -227,6 +238,7 @@ class Parameters(AnsibleF5Parameters):
         'parent',
         'send',
         'receive',
+        'receive_disable',
         'ip',
         'port',
         'interval',
@@ -239,6 +251,7 @@ class Parameters(AnsibleF5Parameters):
         'destination',
         'send',
         'receive',
+        'receive_disable',
         'interval',
         'timeout',
         'time_until_up',
@@ -502,11 +515,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -628,6 +651,7 @@ class ArgumentSpec(object):
             description=dict(),
             send=dict(),
             receive=dict(),
+            receive_disable=dict(),
             ip=dict(),
             port=dict(),
             interval=dict(type='int'),

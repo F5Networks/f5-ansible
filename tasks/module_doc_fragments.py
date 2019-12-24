@@ -8,36 +8,35 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import os
-import sys
 
 from .lib.common import BASE_DIR
 
 from invoke import task
 
+HELP1 = dict(
+    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'."
+)
 
-@task
-def upstream(c):
-    """Upstream module_doc_fragments to Ansible core
+
+@task(optional=['collection'], help=HELP1)
+def upstream(c, collection='f5_modules'):
+    """Upstream module_doc_fragments to Ansible collection.
 
     Module doc fragments are documentation blobs that apply to **all** F5
     Ansible modules. They are typically used to document parameters that
     are available to all modules (such as connection params).
 
-    Args:
-        c:
-
-    Returns:
-
     """
-    root_dest = '{0}/local/ansible/'.format(BASE_DIR)
+    root_dest = '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
     if not os.path.exists(root_dest):
-        print("The specified upstream directory does not exist")
-        sys.exit(1)
+        print("The required upstream directory does not exist, creating...")
+        c.run('mkdir -p {0}'.format(root_dest))
+        print("Doc fragments directory created.")
 
-    # - upstream module utils files
+    # - upstream doc fragments
     cmd = [
-        'cp', '{0}/library/plugins/doc_fragments/*'.format(BASE_DIR),
-        '{0}/local/ansible/lib/ansible/plugins/doc_fragments/'.format(BASE_DIR)
+        'cp', '{0}/library/plugins/doc_fragments/*.py'.format(BASE_DIR),
+        '{0}'.format(root_dest)
     ]
     c.run(' '.join(cmd))
     print("Copy complete")

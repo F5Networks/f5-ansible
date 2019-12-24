@@ -32,11 +32,11 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_ucs import ModuleParameters
-    from ansible.modules.network.f5.bigip_ucs import ModuleManager
-    from ansible.modules.network.f5.bigip_ucs import ArgumentSpec
-    from ansible.modules.network.f5.bigip_ucs import V1Manager
-    from ansible.modules.network.f5.bigip_ucs import V2Manager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs import V1Manager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs import V2Manager
 
     from ansible.module_utils.network.f5.common import F5ModuleError
 
@@ -127,9 +127,11 @@ class TestV1Manager(unittest.TestCase):
     def test_ucs_default_present(self, *args):
         set_module_args(dict(
             ucs="/root/bigip.localhost.localdomain.ucs",
-            server='localhost',
-            password='password',
-            user='admin'
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
         ))
 
         module = AnsibleModule(

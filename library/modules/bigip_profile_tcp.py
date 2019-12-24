@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['stableinterface'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -55,6 +55,76 @@ options:
         is provided by the parent profile.
     type: bool
     version_added: 2.7
+  nagle:
+    description:
+      - When C(enabled) the system applies Nagle's algorithm to reduce the number of short segments on the network.
+      - When C(auto), the use of Nagle's algorithm is decided based on network conditions.
+      - Note that for interactive protocols such as Telnet, rlogin, or SSH, F5 recommends disabling this setting on
+        high-latency networks, to improve application responsiveness.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: str
+    choices:
+      - auto
+      - enabled
+      - disabled
+    version_added: 2.9
+  early_retransmit:
+    description:
+      - When C(yes) the system uses early fast retransmits to reduce the recovery time for connections that are
+        receive-buffer or user-data limited.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: bool
+    version_added: 2.9
+  proxy_options:
+    description:
+      - When C(yes) the system advertises an option, such as a time-stamp to the server only if it was negotiated
+        with the client.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: bool
+    version_added: 2.9
+  initial_congestion_window_size:
+    description:
+      - Specifies the initial congestion window size for connections to this destination. The actual window size is
+        this value multiplied by the MSS for the same connection.
+      - When set to C(0) the system uses the values specified in RFC2414.
+      - The valid value range is 0 - 16 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: int
+    version_added: 2.9
+  initial_receive_window_size:
+    description:
+      - Specifies the initial receive window size for connections to this destination. The actual window size is
+        this value multiplied by the MSS for the same connection.
+      - When set to C(0) the system uses the Slow Start value.
+      - The valid value range is 0 - 16 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: int
+    version_added: 2.9
+  syn_rto_base:
+    description:
+      - Specifies the initial RTO C(Retransmission TimeOut) base multiplier for SYN retransmission, in C(milliseconds).
+      - This value is modified by the exponential backoff table to select the interval for subsequent retransmissions.
+      - The valid value range is 0 - 5000 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: int
+    version_added: 2.9
+  delayed_acks:
+    description:
+      - When C(yes) the system sends fewer than one ACK segment per data segment received.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: bool
+    version_added: "f5_modules 1.0"
+  ip_tos_to_client:
+    description:
+      - Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
+      - When C(pass-through) the IP ToS setting remains unchanged.
+      - When C(mimic) the system sets the ToS level of outgoing packets to the same ToS level of the most-recently
+        received incoming packet.
+      - When set as a number, the number indicates the IP ToS setting that the system inserts in the IP packet header.
+        Valid number range is 0 - 255 inclusive.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: str
+    version_added: "f5_modules 1.0"
   partition:
     description:
       - Device partition to manage resources on.
@@ -69,7 +139,7 @@ options:
       - present
       - absent
     default: present
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -102,10 +172,50 @@ idle_timeout:
   type: int
   sample: 100
 time_wait_recycle:
-  description: Reuse connections in TIME-WAIT state
+  description: Reuse connections in TIME-WAIT state.
   returned: changed
   type: bool
   sample: yes
+nagle:
+  description: Specifies the use of Nagle's algorithm.
+  returned: changed
+  type: str
+  sample: auto
+early_retransmit:
+  description: Specifies the use of early fast retransmits.
+  returned: changed
+  type: bool
+  sample: yes
+proxy_options:
+  description: Specifies if that the system advertises negotiated options to the server.
+  returned: changed
+  type: bool
+  sample: no
+initial_congestion_window_size:
+  description: Specifies the initial congestion window size for connections to this destination.
+  returned: changed
+  type: int
+  sample: 5
+initial_receive_window_size:
+  description: Specifies the initial receive window size for connections to this destination.
+  returned: changed
+  type: int
+  sample: 10
+syn_rto_base:
+  description: Specifies the initial Retransmission TimeOut base multiplier for SYN retransmission.
+  returned: changed
+  type: int
+  sample: 2000
+delayed_acks:
+  description: Specifies if the system sends fewer than one ACK segment per data segment received.
+  returned: changed
+  type: bool
+  sample: yes
+ip_tos_to_client:
+  description: Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
+  returned: changed
+  type: str
+  sample: mimic
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -120,13 +230,13 @@ try:
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.common import transform_name
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import fq_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import flatten_boolean
-    from ansible.module_utils.network.f5.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
 
 
 class Parameters(AnsibleF5Parameters):
@@ -134,30 +244,66 @@ class Parameters(AnsibleF5Parameters):
         'idleTimeout': 'idle_timeout',
         'defaultsFrom': 'parent',
         'timeWaitRecycle': 'time_wait_recycle',
+        'earlyRetransmit': 'early_retransmit',
+        'proxyOptions': 'proxy_options',
+        'initCwnd': 'initial_congestion_window_size',
+        'initRwnd': 'initial_receive_window_size',
+        'synRtoBase': 'syn_rto_base',
+        'delayedAcks': 'delayed_acks',
+        'ipTosToClient': 'ip_tos_to_client',
     }
 
     api_attributes = [
         'idleTimeout',
         'defaultsFrom',
         'timeWaitRecycle',
+        'nagle',
+        'earlyRetransmit',
+        'proxyOptions',
+        'initCwnd',
+        'initRwnd',
+        'synRtoBase',
+        'delayedAcks',
+        'ipTosToClient',
     ]
 
     returnables = [
         'idle_timeout',
         'parent',
         'time_wait_recycle',
-
+        'nagle',
+        'early_retransmit',
+        'proxy_options',
+        'initial_congestion_window_size',
+        'initial_receive_window_size',
+        'syn_rto_base',
+        'delayed_acks',
+        'ip_tos_to_client',
     ]
 
     updatables = [
         'idle_timeout',
         'parent',
         'time_wait_recycle',
+        'nagle',
+        'early_retransmit',
+        'proxy_options',
+        'initial_congestion_window_size',
+        'initial_receive_window_size',
+        'syn_rto_base',
+        'delayed_acks',
+        'ip_tos_to_client',
     ]
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def ip_tos_to_client(self):
+        if self._values['ip_tos_to_client'] is None:
+            return None
+        if self._values['ip_tos_to_client'] in ['pass-through', 'mimic']:
+            return self._values['ip_tos_to_client']
+        return int(self._values['ip_tos_to_client'])
 
 
 class ModuleParameters(Parameters):
@@ -184,6 +330,74 @@ class ModuleParameters(Parameters):
         if result == 'yes':
             return 'enabled'
         return 'disabled'
+
+    @property
+    def early_retransmit(self):
+        result = flatten_boolean(self._values['early_retransmit'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def proxy_options(self):
+        result = flatten_boolean(self._values['proxy_options'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def initial_congestion_window_size(self):
+        if self._values['initial_congestion_window_size'] is None:
+            return None
+        if 0 <= self._values['initial_congestion_window_size'] <= 16:
+            return self._values['initial_congestion_window_size']
+        raise F5ModuleError(
+            "Valid 'initial_congestion_window_size' must be in range 0 - 16 MSS units."
+        )
+
+    @property
+    def initial_receive_window_size(self):
+        if self._values['initial_receive_window_size'] is None:
+            return None
+        if 0 <= self._values['initial_receive_window_size'] <= 16:
+            return self._values['initial_receive_window_size']
+        raise F5ModuleError(
+            "Valid 'initial_receive_window_size' must be in range 0 - 16 MSS units."
+        )
+
+    @property
+    def syn_rto_base(self):
+        if self._values['syn_rto_base'] is None:
+            return None
+        if 0 <= self._values['syn_rto_base'] <= 5000:
+            return self._values['syn_rto_base']
+        raise F5ModuleError(
+            "Valid 'syn_rto_base' must be in range 0 - 5000 miliseconds."
+        )
+
+    @property
+    def delayed_acks(self):
+        result = flatten_boolean(self._values['delayed_acks'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
+    @property
+    def ip_tos_to_client(self):
+        if self._values['ip_tos_to_client'] is None:
+            return None
+        if self._values['ip_tos_to_client'] in ['pass-through', 'mimic']:
+            return self._values['ip_tos_to_client']
+        if 0 <= int(self._values['ip_tos_to_client']) <= 255:
+            return int(self._values['ip_tos_to_client'])
+        raise F5ModuleError(
+            "Valid 'ip_tos_to_client' must be in range 0 - 255 or 'pass-through', 'mimic'."
+        )
 
 
 class Changes(Parameters):
@@ -227,6 +441,16 @@ class ReportableChanges(Changes):
             return 'yes'
         return 'no'
 
+    @property
+    def early_retransmit(self):
+        result = flatten_boolean(self._values['early_retransmit'])
+        return result
+
+    @property
+    def proxy_options(self):
+        result = flatten_boolean(self._values['proxy_options'])
+        return result
+
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -248,6 +472,19 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def ip_tos_to_client(self):
+        if self.want.ip_tos_to_client is None:
+            return None
+        if self.want.ip_tos_to_client in ['pass-through', 'mimic']:
+            if isinstance(self.have.ip_tos_to_client, int):
+                return self.want.ip_tos_to_client
+        if self.have.ip_tos_to_client in ['pass-through', 'mimic']:
+            if isinstance(self.want.ip_tos_to_client, int):
+                return self.want.ip_tos_to_client
+        if self.want.ip_tos_to_client != self.have.ip_tos_to_client:
+            return self.want.ip_tos_to_client
 
 
 class ModuleManager(object):
@@ -330,11 +567,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -450,6 +697,16 @@ class ArgumentSpec(object):
                 choices=['present', 'absent']
             ),
             time_wait_recycle=dict(type='bool'),
+            nagle=dict(
+                choices=['enabled', 'disabled', 'auto']
+            ),
+            early_retransmit=dict(type='bool'),
+            proxy_options=dict(type='bool'),
+            initial_congestion_window_size=dict(type='int'),
+            initial_receive_window_size=dict(type='int'),
+            syn_rto_base=dict(type='int'),
+            delayed_acks=dict(type='bool'),
+            ip_tos_to_client=dict(),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

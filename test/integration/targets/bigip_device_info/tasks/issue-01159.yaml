@@ -1,0 +1,48 @@
+---
+- name: Issue 01159 - Create Empty Pool
+  bigip_pool:
+    name: issue_01159_empty_one
+    state: present
+
+- name: Issue 01159 - Create node
+  bigip_node:
+    host: 1.1.1.1
+    name: issue-01159-host
+
+- name: Issue 01159 - Create Pool with members
+  bigip_pool:
+    name: issue_01159_not_empty_one
+    state: present
+
+- name: Issue 01159 - Add Pool members
+  bigip_pool_member:
+    state: present
+    name: issue-01159-host
+    host: issue-01159-host
+    port: 80
+    pool: issue_01159_not_empty_one
+
+- name: Issue 01159 - Collect Bigip pool facts
+  bigip_device_facts:
+    gather_subset:
+      - ltm-pools
+  register: result
+
+- name: Issue 01159 - Assert Bigip pool facts
+  assert:
+    that:
+      - result is success
+      - result is queried
+
+- name: Issue 01159 - Remove pools
+  bigip_pool:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+      - issue_01159_not_empty_one
+      - issue_01159_empty_one
+
+- name: Issue 01159 - Remove node
+  bigip_node:
+    name: issue-01159-host
+    state: absent

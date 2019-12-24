@@ -27,7 +27,7 @@ options:
         range for other systems that can communicate with this system.
       - To specify all addresses, use the value C(all).
       - IP address can be specified, such as 172.27.1.10.
-      - IP rangees can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
+      - IP ranges can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
     type: list
   auth_name:
     description:
@@ -110,7 +110,7 @@ notes:
     C(pip install requests).
 requirements:
   - requests
-extends_documentation_fragment: f5
+extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Joe Reifel (@JoeReifel)
   - Tim Rupp (@caphrim007)
@@ -267,10 +267,10 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
 
 
 class Parameters(AnsibleF5Parameters):

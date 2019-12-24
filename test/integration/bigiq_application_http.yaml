@@ -40,9 +40,9 @@
 
   environment:
     F5_SERVER: "{{ ansible_host }}"
-    F5_USER: "{{ f5_username }}"
-    F5_PASSWORD: "{{ f5_password }}"
-    F5_SERVER_PORT: "{{ f5_port }}"
+    F5_USER: "{{ bigiq_username }}"
+    F5_PASSWORD: "{{ bigiq_password }}"
+    F5_SERVER_PORT: "{{ bigiq_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   tasks:
@@ -66,17 +66,3 @@
       tags:
         - provider
         - provider-rest
-
-- name: Test the bigiq_application_http module - Args-rest
-  hosts: "f5-bigiq[0]"
-  connection: local
-  any_errors_fatal: true
-
-  tasks:
-    - name: Include role - Args-rest
-      import_role:
-        name: bigiq_application_http
-        tasks_from: args-rest.yaml
-      tags:
-        - args
-        - args-rest

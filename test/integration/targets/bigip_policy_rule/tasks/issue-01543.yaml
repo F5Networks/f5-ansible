@@ -1,0 +1,144 @@
+---
+
+- name: Issue 01543 - Create published policy
+  bigip_policy:
+    name: issue-01543
+
+- name: Issue 01543 - Change condition is_not_any
+  bigip_policy_rule:
+    policy: issue-01543
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_not_any:
+          - foo.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 01543 - Change condition is_not_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01543 - Change condition is_not_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01543
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_not_any:
+          - foo.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 01543 - Change condition is_not_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01543 - Add value condition is_not_any
+  bigip_policy_rule:
+    policy: issue-01543
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_not_any:
+          - foo.bar.com
+          - baz.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 01543 - Add value condition is_not_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01543 - Add value condition is_not_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01543
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_not_any:
+          - foo.bar.com
+          - baz.bar.com
+          - cat.dog.com
+  register: result
+
+- name: Issue 01543 - Add value condition is_not_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01543 - Remove value condition is_not_any
+  bigip_policy_rule:
+    policy: issue-01543
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_not_any:
+          - foo.bar.com
+          - baz.bar.com
+  register: result
+
+- name: Issue 01543 - Remove value condition is_not_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01543 - Remove value condition is_not_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01543
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_not_any:
+          - foo.bar.com
+          - baz.bar.com
+  register: result
+
+- name: Issue 01543 - Remove value condition is_not_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01543 - One value condition is_not_any
+  bigip_policy_rule:
+    policy: issue-01543
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_not_any: foo.bar.com
+  register: result
+
+- name: Issue 01543 - One value condition is_not_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01543 - One value condition is_not_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01543
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_not_any: foo.bar.com
+  register: result
+
+- name: Issue 01543 - One value condition is_not_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01543 - Remove published policy
+  bigip_policy:
+    name: issue-01543
+    state: absent

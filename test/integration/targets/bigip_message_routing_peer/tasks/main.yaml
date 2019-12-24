@@ -1,0 +1,184 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a simple peer with some settings
+  bigip_message_routing_peer:
+    name: "{{ peer_1 }}"
+    pool: "{{ pool_1 }}"
+    ratio: "{{ ratio_1 }}"
+  register: result
+
+- name: Assert Create a simple peer with some settings
+  assert:
+    that:
+      - result is changed
+      - result.pool == '/Common/somepool'
+      - result.ratio == ratio_1
+
+- name: Create a simple peer with some settings - Idempotent check
+  bigip_message_routing_peer:
+    name: "{{ peer_1 }}"
+    pool: "{{ pool_1 }}"
+    ratio: "{{ ratio_1 }}"
+  register: result
+
+- name: Assert Create a simple peer with some settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify message routing peer settings
+  bigip_message_routing_peer:
+    name: "{{ peer_1 }}"
+    ratio: "{{ ratio_2 }}"
+    number_of_connections: "{{ conn }}"
+    connection_mode: "{{ mode_1 }}"
+    auto_init: yes
+    auto_init_interval: "{{ interval }}"
+    pool: "{{ pool_2 }}"
+    transport_config: "{{ transport_1 }}"
+    description: "{{ desc_1 }}"
+  register: result
+
+- name: Assert Modify message routing peer settings
+  assert:
+    that:
+      - result is changed
+      - result.auto_init == 'yes'
+      - result.pool == '/Common/test'
+      - result.number_of_connections == conn
+      - result.connection_mode == mode_1
+      - result.auto_init_interval == interval
+      - result.transport_config == transport_1
+      - result.ratio == ratio_2
+      - result.description == desc_1
+
+- name: Modify message routing peer settings - Idempotent check
+  bigip_message_routing_peer:
+    name: "{{ peer_1 }}"
+    ratio: "{{ ratio_2 }}"
+    number_of_connections: "{{ conn }}"
+    connection_mode: "{{ mode_1 }}"
+    auto_init: yes
+    auto_init_interval: "{{ interval }}"
+    pool: "{{ pool_2 }}"
+    transport_config: "{{ transport_1 }}"
+    description: "{{ desc_1 }}"
+  register: result
+
+- name: Assert Modify message routing peer settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create a second peer with more settings
+  bigip_message_routing_peer:
+    name: "{{ peer_2 }}"
+    pool: "{{ pool_2 }}"
+    auto_init: yes
+    connection_mode: "{{ mode_1 }}"
+    ratio: "{{ ratio_1 }}"
+    description: "{{ desc_1 }}"
+    transport_config: "{{ transport_1 }}"
+  register: result
+
+- name: Assert Create a second peer with more settings
+  assert:
+    that:
+      - result is changed
+      - result.pool == '/Common/test'
+      - result.auto_init == 'yes'
+      - result.connection_mode == mode_1
+      - result.ratio == ratio_1
+      - result.description == desc_1
+      - result.transport_config == transport_1
+
+- name: Create a second peer with more settings - Idempotent check
+  bigip_message_routing_peer:
+    name: "{{ peer_2 }}"
+    pool: "{{ pool_2 }}"
+    auto_init: yes
+    connection_mode: "{{ mode_1 }}"
+    ratio: "{{ ratio_1 }}"
+    description: "{{ desc_1 }}"
+    transport_config: "{{ transport_1 }}"
+  register: result
+
+- name: Assert Create a second peer with more settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify second peer settings
+  bigip_message_routing_peer:
+    name: "{{ peer_2 }}"
+    pool: "{{ pool_1 }}"
+    auto_init: no
+    connection_mode: "{{ mode_2 }}"
+    ratio: "{{ ratio_2 }}"
+    description: "{{ desc_2 }}"
+    transport_config: "{{ transport_2 }}"
+  register: result
+
+- name: Assert Modify second peer settings
+  assert:
+    that:
+      - result is changed
+      - result.pool == '/Common/somepool'
+      - result.auto_init == 'no'
+      - result.connection_mode == mode_2
+      - result.ratio == ratio_2
+      - result.description == desc_2
+      - result.transport_config == transport_2
+
+- name: Modify second peer settings - Idempotent check
+  bigip_message_routing_peer:
+    name: "{{ peer_2 }}"
+    pool: "{{ pool_1 }}"
+    auto_init: no
+    connection_mode: "{{ mode_2 }}"
+    ratio: "{{ ratio_2 }}"
+    description: "{{ desc_2 }}"
+    transport_config: "{{ transport_2 }}"
+  register: result
+
+- name: Assert Modify second peer settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove peer
+  bigip_message_routing_peer:
+    name: "{{ peer_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove peer
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove peer - Idempotent check
+  bigip_message_routing_peer:
+    name: "{{ peer_1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove peer - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove peer - cleanup
+  bigip_message_routing_peer:
+    name: "{{ peer_2 }}"
+    state: absent
+
+- import_tasks: teardown.yaml

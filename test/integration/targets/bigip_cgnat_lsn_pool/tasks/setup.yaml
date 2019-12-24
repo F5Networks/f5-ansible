@@ -1,0 +1,5 @@
+- name: Provision CGNAT
+  bigip_provision:
+    name: cgnat
+  tags:
+    - module-provisioning

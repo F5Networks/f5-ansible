@@ -27,21 +27,19 @@ try:
     # In Ansible 2.8, Ansible changed import paths.
     from test.units.compat import unittest
     from test.units.compat.mock import Mock
-    from test.units.compat.mock import patch
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible.modules.network.f5.bigip_device_connectivity import ApiParameters
-    from ansible.modules.network.f5.bigip_device_connectivity import ModuleParameters
-    from ansible.modules.network.f5.bigip_device_connectivity import ModuleManager
-    from ansible.modules.network.f5.bigip_device_connectivity import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_connectivity import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_connectivity import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_connectivity import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_connectivity import ArgumentSpec
 
     from ansible.module_utils.network.f5.common import F5ModuleError
 
     # Ansible 2.8 imports
     from units.compat import unittest
     from units.compat.mock import Mock
-    from units.compat.mock import patch
 
     from units.modules.utils import set_module_args
 
@@ -292,7 +290,7 @@ class TestManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as ex:
             mm.exec_module()
 
-        assert 'must be between' in str(ex)
+        assert 'must be between' in str(ex.value)
 
     def test_set_multicast_address(self, *args):
         set_module_args(dict(

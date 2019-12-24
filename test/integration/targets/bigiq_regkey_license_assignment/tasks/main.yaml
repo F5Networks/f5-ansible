@@ -1,136 +1,169 @@
 ---
-
 - import_tasks: setup.yaml
+  tags: setup
 
 - name: Assign a license to a BIG-IP
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license_assignment:
-    device: "{{ hostvars['bigip1']['ansible_host'] }}"
+    device: "{{ hostvars[item].ansible_host }}"
     device_username: "{{ bigip_username }}"
     device_password: "{{ bigip_password }}"
     managed: no
     pool: foo-pool
-    key: "{{ regkey_license_1 }}"
+    key: "{{ vars[reg_key] }}"
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
-- name: Assert Assign a license to a BIG-IP
+- name: Assert Assign a license to BIG-IPs
   assert:
     that:
-      - result is changed
+      - item is changed
+  with_items: "{{ result.results }}"
 
 - name: Assign a license to a BIG-IP - Idempotent check
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license_assignment:
-    device: "{{ hostvars['bigip1']['ansible_host'] }}"
+    device: "{{ hostvars[item].ansible_host }}"
     device_username: "{{ bigip_username }}"
     device_password: "{{ bigip_password }}"
     managed: no
     pool: foo-pool
-    key: "{{ regkey_license_1 }}"
+    key: "{{ vars[reg_key] }}"
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Assign a license to a BIG-IP - Idempotent check
   assert:
     that:
-      - result is not changed
+      - item is not changed
+  with_items: "{{ result.results }}"
 
 - name: Wait for licensing to settle
   pause:
     minutes: 3
 
 - name: Revoke a license on a BIG-IP
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license_assignment:
-    device: "{{ hostvars['bigip1']['ansible_host'] }}"
+    device: "{{ hostvars[item].ansible_host }}"
     device_username: "{{ bigip_username }}"
     device_password: "{{ bigip_password }}"
     managed: no
     pool: foo-pool
-    key: "{{ regkey_license_1 }}"
+    key: "{{ vars[reg_key] }}"
     state: absent
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Revoke a license on a BIG-IP
   assert:
     that:
-      - result is changed
+      - item is changed
+  with_items: "{{ result.results }}"
 
 - name: Revoke a license on a BIG-IP - Idempotent check
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license_assignment:
-    device: "{{ hostvars['bigip1']['ansible_host'] }}"
+    device: "{{ hostvars[item].ansible_host }}"
     device_username: "{{ bigip_username }}"
     device_password: "{{ bigip_password }}"
     managed: no
     pool: foo-pool
-    key: "{{ regkey_license_1 }}"
+    key: "{{ vars[reg_key] }}"
     state: absent
   register: result
+  with_items: "{{ groups['bigips'] }}"  
 
 - name: Assert Revoke a license on a BIG-IP - Idempotent check
   assert:
     that:
-      - result is not changed
+      - item is not changed
+  with_items: "{{ result.results }}"
 
 - name: Wait for licensing to settle
   pause:
-    minutes: 3
+    minutes: 5
 
 - import_tasks: setup-managed-device.yaml
+  tags: setup-managed-device
 
 - name: Assign a license to a managed BIG-IP
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license_assignment:
-    device: "{{ hostvars['bigip1']['inventory_hostname'] }}"
+    device: "{{ hostvars[item].hostname }}"
     managed: yes
     pool: foo-pool
-    key: "{{ regkey_license_1 }}"
+    key: "{{ vars[reg_key] }}"
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Assign a license to a managed BIG-IP
   assert:
     that:
-      - result is changed
+      - item is changed
+  with_items: "{{ result.results }}"
 
 - name: Assign a license to a managed BIG-IP - Idempotent check
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license_assignment:
-    device: "{{ hostvars['bigip1']['inventory_hostname'] }}"
+    device: "{{ hostvars[item].hostname }}"
     managed: yes
     pool: foo-pool
-    key: "{{ regkey_license_1 }}"
+    key: "{{ vars[reg_key] }}"
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Assign a license to a managed BIG-IP - Idempotent check
   assert:
     that:
-      - result is not changed
+      - item is not changed
+  with_items: "{{ result.results }}"
 
 - name: Wait for licensing to settle
   pause:
     minutes: 3
 
 - name: Revoke a license on a managed BIG-IP
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license_assignment:
-    device: "{{ hostvars['bigip1']['inventory_hostname'] }}"
+    device: "{{ hostvars[item].hostname }}"
     managed: yes
     pool: foo-pool
-    key: "{{ regkey_license_1 }}"
+    key: "{{ vars[reg_key] }}"
     state: absent
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Revoke a license on a managed BIG-IP
   assert:
     that:
-      - result is changed
+      - item is changed
+  with_items: "{{ result.results }}"
 
 - name: Revoke a license on a managed BIG-IP - Idempotent check
+  vars:
+    reg_key: regkey_license_{{ item }}
   bigiq_regkey_license_assignment:
-    device: "{{ hostvars['bigip1']['inventory_hostname'] }}"
+    device: "{{ hostvars[item].hostname }}"
     managed: yes
     pool: foo-pool
-    key: "{{ regkey_license_1 }}"
+    key: "{{ vars[reg_key] }}"
     state: absent
   register: result
+  with_items: "{{ groups['bigips'] }}"
 
 - name: Assert Revoke a license on a managed BIG-IP - Idempotent check
   assert:
     that:
-      - result is not changed
+      - item is not changed
+  with_items: "{{ result.results }}"
 
 - import_tasks: teardown-managed-device.yaml
 
