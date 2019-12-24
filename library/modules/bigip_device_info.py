@@ -4778,6 +4778,12 @@ ssl_certs:
       returned: queried
       type: str
       sample: "emailAddress=support@f5.com,CN=..."
+    subjectAlternativeName:
+      description:
+        - Specifies the standard X.509 extension as shown in RFC 2459.
+      returned: queried
+      type: str
+      sample: "DNS:support.f5.com, DNS:f5.com"
     last_update_time:
       description:
         - Specifies the last time at which the file-object was
@@ -13231,6 +13237,7 @@ class SslCertificatesParameters(BaseParameters):
         'system_path',
         'sha1_checksum',
         'subject',
+        'subjectAlternativeName',
         'last_update_time',
         'issuer',
         'is_bundle',
