@@ -9,7 +9,7 @@ __metaclass__ = type
 
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['deprecated'],
                     'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
@@ -20,6 +20,12 @@ description:
   - Manages application service deployments via the App Services Extension functionality
     in BIG-IP.
 version_added: 2.7
+deprecated:
+  removed_in: 'f5_modules 1.3'
+  alternative: f5_atc_deploy_declaration
+  why: >
+    The new Ansible Galaxy role f5_atc_deploy_declaration, handles entire Automation Toolchain: AS3, TS, DO, covering
+    and extending functionality of this module, effectively making the module redundant.
 options:
   content:
     description:
