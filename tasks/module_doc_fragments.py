@@ -18,6 +18,17 @@ HELP1 = dict(
 )
 
 
+def purge_upstreamed_files(c, root_dest, collection):
+    if not os.path.exists(collection):
+        return
+    if not os.path.exists(root_dest):
+        return
+    if len(os.listdir(root_dest)) > 0:
+        print("Purging contents from {0}.".format(root_dest))
+        with c.cd(root_dest):
+            c.run('rm -rf *')
+
+
 @task(optional=['collection'], help=HELP1)
 def upstream(c, collection='f5_modules'):
     """Upstream module_doc_fragments to Ansible collection.
@@ -27,7 +38,11 @@ def upstream(c, collection='f5_modules'):
     are available to all modules (such as connection params).
 
     """
+    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
     root_dest = '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
+
+    purge_upstreamed_files(c, root_dest, coll_dest)
+
     if not os.path.exists(root_dest):
         print("The required upstream directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(root_dest))

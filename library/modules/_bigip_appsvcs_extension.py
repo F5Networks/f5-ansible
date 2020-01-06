@@ -21,7 +21,7 @@ description:
     in BIG-IP.
 version_added: 2.7
 deprecated:
-  removed_in: 'f5_modules 1.3'
+  removed_in: "f5_modules 1.3"
   alternative: f5_atc_deploy_declaration
   why: >
     The new Ansible Galaxy role f5_atc_deploy_declaration, handles entire Automation Toolchain: AS3, TS, DO, covering
