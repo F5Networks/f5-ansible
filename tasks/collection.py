@@ -13,6 +13,10 @@ import sys
 
 from .lib.common import BASE_DIR
 from invoke import task
+from tasks.module import upstream as upstream_module
+from tasks.module_utils import upstream as upstream_utils
+from tasks.module_doc_fragments import upstream as upstream_doc
+from tasks.plugins import upstream as upstream_plugins
 
 try:
     from jinja2 import Environment
@@ -93,3 +97,12 @@ def update_galaxy(c, version, collection='f5_modules'):
     validate_version(version)
     update_galaxy_file(version, collection)
     print("File galaxy.yml updated.")
+
+@task
+def make_local(c):
+    """Creates local collection structure, used in local testing and debugging."""
+    upstream_module(c, ['all'])
+    upstream_utils(c)
+    upstream_doc(c)
+    upstream_plugins(c)
+    print('Collection created locally.')

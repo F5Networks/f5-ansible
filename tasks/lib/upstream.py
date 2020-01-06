@@ -77,7 +77,7 @@ def should_upstream_module(module):
     if not os.path.exists(yfile):
         return False
     with open(yfile, 'r') as fh:
-        pb = yaml.load(fh)
+        pb = yaml.safe_load(fh)
         try:
             if 'Metadata of' in pb[0]['name']:
                 result = pb[0]['vars']['__metadata__']['upstream']
