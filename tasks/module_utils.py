@@ -19,12 +19,25 @@ HELP1 = dict(
 )
 
 
+def purge_upstreamed_files(c, module_utils, collection):
+    if not os.path.exists(collection):
+        return
+    if not os.path.exists(module_utils):
+        return
+    if len(os.listdir(module_utils)) > 0:
+        print("Purging contents from {0}.".format(module_utils))
+        with c.cd(module_utils):
+            c.run('rm -rf *')
+
+
 @task(optional=['collection'], help=HELP1)
 def upstream(c, collection='f5_modules'):
     """Copy all module utils, to the local/ansible_collections/f5networks/collection_name directory.
     """
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
     module_utils = '{0}/local/ansible_collections/f5networks/{1}/plugins/module_utils/'.format(BASE_DIR, collection)
+
+    purge_upstreamed_files(c, module_utils, coll_dest)
 
     if not os.path.exists(coll_dest):
         print("The required collection directory does not exist, creating...")
