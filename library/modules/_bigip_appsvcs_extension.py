@@ -22,9 +22,9 @@ description:
 version_added: 2.7
 deprecated:
   removed_in: "f5_modules 1.3"
-  alternative: f5_atc_deploy_declaration
+  alternative: atc_deploy
   why: >
-    The new Ansible Galaxy role f5_atc_deploy_declaration, handles entire Automation Toolchain: AS3, TS, DO, covering
+    The new Ansible Galaxy role atc_deploy, handles entire Automation Toolchain: AS3, TS, DO, covering
     and extending functionality of this module, effectively making the module redundant.
 options:
   content:
