@@ -1,5 +1,11 @@
 ---
 
+- name: Provision AFM
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
 - name: Create a new DoS profile container
   bigip_firewall_dos_profile:
     name: profile1
