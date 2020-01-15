@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00373 - Collect BIG-IP facts
-  bigip_device_facts:
+  bigip_device_info:
     include: system-info
   register: f
 

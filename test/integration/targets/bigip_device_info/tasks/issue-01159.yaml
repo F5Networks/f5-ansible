@@ -23,7 +23,7 @@
     pool: issue_01159_not_empty_one
 
 - name: Issue 01159 - Collect Bigip pool facts
-  bigip_device_facts:
+  bigip_device_info:
     gather_subset:
       - ltm-pools
   register: result

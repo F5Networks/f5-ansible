@@ -11,7 +11,7 @@
     parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
 
 - name: Issue 00327 - Select iApp service facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - iapp-services
   register: result

@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Select multiple facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - interfaces
       - system-info
@@ -17,7 +17,7 @@
       - "'system_info' in result"
 
 - name: Select partition facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - partitions
   register: result
@@ -30,7 +30,7 @@
       - result.partitions | json_query("[?name=='part1'].default_route_domain") | first == 0
 
 - name: Select route domain facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - route-domains
   register: result
@@ -43,7 +43,7 @@
       - result.route_domains | json_query("[?name=='foo'].id") | first == 100
 
 - name: Select system-info facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - system-info
   register: result
@@ -55,7 +55,7 @@
       - result.system_info.product_code == 'BIG-IP'
 
 - name: Select interface facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - interfaces
   register: result
@@ -68,7 +68,7 @@
       - result.interfaces | json_query("[?name=='1.0'].mtu") | first == 1500
 
 - name: Select internal data group facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - internal-data-groups
   register: result
@@ -81,7 +81,7 @@
       - result.internal_data_groups | json_query("[?name=='aol'].type") | first == 'ip'
 
 - name: Select virtual server facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - virtual-servers
   register: result
@@ -94,7 +94,7 @@
       - result.virtual_servers | json_query("[?name=='virtual1'].description") | first == 'my virtual1'
 
 - name: Select virtual address facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - virtual-addresses
   register: result
@@ -107,7 +107,7 @@
       - result.virtual_addresses | json_query("[?name=='2.3.4.5'].address") | first == '2.3.4.5'
 
 - name: Select device group facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - device-groups
   register: result
@@ -120,7 +120,7 @@
       - result.device_groups | json_query("[?name=='mydg1'].autosync_enabled") | first == 'no'
 
 - name: Select ssl-cert facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - ssl-certs
   register: result
@@ -133,7 +133,7 @@
       - result.ssl_certs | json_query("[?name=='ca-bundle.crt'].key_type") | first == 'rsa-public'
 
 - name: Select ssl-key facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - ssl-keys
   register: result
@@ -146,7 +146,7 @@
       - result.ssl_keys | json_query("[?name=='default.key'].security_type") | first == 'normal'
 
 - name: Select device facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - devices
   register: result
@@ -159,7 +159,7 @@
       - result.devices | json_query("[?name=='bigip1'].hostname") | first == 'bigip1'
 
 - name: Select client-ssl-profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - client-ssl-profiles
   register: result
@@ -172,7 +172,7 @@
       - result.client_ssl_profiles | json_query("[?name=='clientssl'].ciphers") | first | first == 'DEFAULT'
 
 - name: Select traffic group facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - traffic-groups
   register: result
@@ -185,7 +185,7 @@
       - result.traffic_groups | json_query("[?name=='tg1'].auto_failback_time") | first == 60
 
 - name: Select node facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - nodes
   register: result
@@ -198,7 +198,7 @@
       - result.nodes | json_query("[?name=='5.6.7.8'].connection_limit") | first == 100
 
 - name: Select trunk facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - trunks
   register: result
@@ -211,7 +211,7 @@
       - result.trunks | json_query("[?name=='trunk1'].description") | first == "my trunk"
 
 - name: Select selfip facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - self-ips
   register: result
@@ -224,7 +224,7 @@
       - result.self_ips | json_query("[?name=='net1'].floating") | first == "no"
 
 - name: Select irule facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - irules
   register: result
@@ -237,7 +237,7 @@
       - result.irules | json_query("[?name=='_sys_https_redirect'].ignore_verification") | first == "no"
 
 - name: Select ltm-pool facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - ltm-pools
   register: result
@@ -250,7 +250,7 @@
       - result.ltm_pools | json_query("[?name=='pool1'].lb_method") | first == "round-robin"
 
 - name: Select software-volume facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - software-volumes
   register: result
@@ -264,7 +264,7 @@
       - "'HD1.1' not in result.software_volumes | json_query(\"[?active!='yes'].name\")"
 
 - name: Select vlans facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - vlans
   register: result
@@ -278,7 +278,7 @@
       - "'alice' not in result.vlans | json_query(\"[?tag!=`3605`].name\")"
 
 - name: Select provision-info facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - provision-info
   register: result
@@ -292,7 +292,7 @@
       - "'ltm' not in result.provision_info | json_query(\"[?level=='none'].name\")"
 
 - name: Try an invalid provision-info include choice
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - provision
   register: result
@@ -305,7 +305,7 @@
       - result is success
 
 - name: Select all facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - client-ssl-profiles
       - device-groups
@@ -353,7 +353,7 @@
       - "'vlans' in result"
 
 - name: Select all facts, single keyword
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - all
   register: result
@@ -383,7 +383,7 @@
       - "'vlans' in result"
 
 - name: Select all facts, except trunks
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - all
       - "!trunks"
