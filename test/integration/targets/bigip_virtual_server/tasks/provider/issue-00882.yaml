@@ -43,7 +43,7 @@
       - result is success
 
 - name: Issue 00882 - Gather facts of virtual - Provider
-  bigip_device_facts:
+  bigip_device_info:
     gather_subset:
       - virtual-servers
     provider: "{{ provider }}"

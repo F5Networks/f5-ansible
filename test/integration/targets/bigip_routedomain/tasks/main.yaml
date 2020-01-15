@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Collect BIG-IP facts
-  bigip_device_facts:
+  bigip_device_info:
     include: system-info
   register: f
 

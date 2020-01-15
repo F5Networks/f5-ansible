@@ -16,7 +16,7 @@
   register: result
 
 - name: Issue 01091 - Select ASM policies facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - asm-policies
   register: result
@@ -36,7 +36,7 @@
   register: result
 
 - name: Issue 01091 - Update ASM policies facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - asm-policies
   register: result

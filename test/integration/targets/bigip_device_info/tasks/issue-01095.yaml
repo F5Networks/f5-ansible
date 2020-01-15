@@ -6,7 +6,7 @@
     - module-provisioning
 
 - name: Issue 01095 - Select ASM signature sets facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - asm-signature-sets
   register: result

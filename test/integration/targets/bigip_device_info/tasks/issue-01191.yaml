@@ -60,7 +60,7 @@
     - { name: 'server3.example.com', vs: 'test.example.com_443', order: '2', ratio: '1', state: 'enabled' }
 
 - name: Issue 01191 - Select gtm-a-pools members facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-a-pools
   register: result

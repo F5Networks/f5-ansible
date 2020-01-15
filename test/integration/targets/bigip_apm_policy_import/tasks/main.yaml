@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - import_tasks: import-v14-1.yaml
-  when: f.system_info.product_version == "14.1.0"
+  when: f.system_info.product_version >= "14.1.0"
 
 
 - import_tasks: teardown.yaml
