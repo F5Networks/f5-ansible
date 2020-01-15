@@ -529,7 +529,7 @@ class ModuleManager(object):
         try:
             response = resp.json()
             if 'commandResult' in response:
-                if 'Error' or 'error' in response['commandResult']:
+                if 'Error' in response['commandResult'] or 'error' in response['commandResult']:
                     raise F5ModuleError(response['commandResult'])
         except ValueError as ex:
             raise F5ModuleError(str(ex))
