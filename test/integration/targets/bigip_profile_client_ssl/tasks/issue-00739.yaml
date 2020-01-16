@@ -24,7 +24,7 @@
       - result is changed
 
 - name: Get facts about profiles
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - client-ssl-profiles
   register: f

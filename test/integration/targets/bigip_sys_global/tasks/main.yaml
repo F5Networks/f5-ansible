@@ -1,7 +1,7 @@
 ---
 
 - name: Get facts from device
-  bigip_device_facts:
+  bigip_device_info:
     include: system-info
   register: f
 

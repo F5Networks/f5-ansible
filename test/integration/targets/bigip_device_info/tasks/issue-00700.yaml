@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00700 - Select external-monitor facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - external-monitors
   register: result
@@ -14,7 +14,7 @@
       - result.external_monitors | json_query("[?name=='external'].manual_resume") | first == "no"
 
 - name: Issue 00700 - Select https-monitor facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - https-monitors
   register: result
@@ -27,7 +27,7 @@
       - result.https_monitors | json_query("[?name=='https'].manual_resume") | first == "no"
 
 - name: Issue 00700 - Select tcp-half-open-monitor facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - tcp-half-open-monitors
   register: result
@@ -40,7 +40,7 @@
       - result.tcp_half_open_monitors | json_query("[?name=='tcp_half_open'].manual_resume") | first == "no"
 
 - name: Issue 00700 - Select tcp-monitor facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - tcp-monitors
   register: result
@@ -53,7 +53,7 @@
       - result.tcp_monitors | json_query("[?name=='tcp'].manual_resume") | first == "no"
 
 - name: Issue 00700 - Select icmp-monitor facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - icmp-monitors
   register: result
@@ -66,7 +66,7 @@
       - result.icmp_monitors | json_query("[?name=='icmp'].manual_resume") | first == "no"
 
 - name: Issue 00700 - Select gateway-icmp-monitor facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gateway-icmp-monitors
   register: result
@@ -79,7 +79,7 @@
       - result.gateway_icmp_monitors | json_query("[?name=='gateway_icmp'].manual_resume") | first == "no"
 
 - name: Issue 00700 - Select http-monitor facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - http-monitors
   register: result
@@ -92,7 +92,7 @@
       - result.http_monitors | json_query("[?name=='http'].manual_resume") | first == "no"
 
 - name: Issue 00700 - Select tcp-profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - tcp-profiles
   register: result
@@ -105,7 +105,7 @@
       - result.tcp_profiles | json_query("[?name=='tcp'].fast_open") | first == "no"
 
 - name: Issue 00700 - Select server-ssl-profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - server-ssl-profiles
   register: result
@@ -118,7 +118,7 @@
       - result.server_ssl_profiles | json_query("[?name=='serverssl'].mode") | first == "yes"
 
 - name: Issue 00700 - Select udp-profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - udp-profiles
   register: result
@@ -131,7 +131,7 @@
       - result.udp_profiles | json_query("[?name=='udp'].proxy_mss") | first == "no"
 
 - name: Issue 00700 - Select http-profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - http-profiles
   register: result
@@ -144,7 +144,7 @@
       - result.http_profiles | json_query("[?name=='http'].proxy_mode") | first == "reverse"
 
 - name: Issue 00700 - Select fasthttp-profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - fasthttp-profiles
   register: result
@@ -157,7 +157,7 @@
       - result.fasthttp_profiles | json_query("[?name=='fasthttp'].oneconnect_maximum_pool_size") | first == 2048
 
 - name: Issue 00700 - Select fastl4-profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - fastl4-profiles
   register: result
@@ -170,7 +170,7 @@
       - result.fastl4_profiles | json_query("[?name=='fastL4'].idle_timeout") | first == 300
 
 - name: Issue 00700 - Select oneconnect-profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - oneconnect-profiles
   register: result
@@ -183,7 +183,7 @@
       - result.oneconnect_profiles | json_query("[?name=='oneconnect'].max_age") | first == 86400
 
 - name: Issue 00700 - Select all profile facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - profiles
   register: result

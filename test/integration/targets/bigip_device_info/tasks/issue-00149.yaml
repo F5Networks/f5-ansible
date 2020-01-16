@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00149 - Select system-db facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - system-db
   register: result

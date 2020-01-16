@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 01017 - Select all facts, single keyword
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - all
   register: result

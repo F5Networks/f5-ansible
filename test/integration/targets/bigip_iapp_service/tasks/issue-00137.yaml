@@ -1,7 +1,7 @@
 ---
 
 - name: Collect BIGIP facts
-  bigip_device_facts:
+  bigip_device_info:
     gather_subset:
       - devices
   register: f
