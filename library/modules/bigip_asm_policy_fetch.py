@@ -274,7 +274,6 @@ class ModuleParameters(Parameters):
 
     @property
     def fulldest(self):
-        result = None
         if os.path.isdir(self.dest):
             result = os.path.join(self.dest, self.file)
         else:
@@ -286,14 +285,15 @@ class ModuleParameters(Parameters):
                     # circumstances where the directory does not have
                     # the execute bit for the current user set, in
                     # which case the stat() call will raise an OSError
+                    result = self.dest
                     os.stat(os.path.dirname(result))
                 except OSError as e:
                     if "permission denied" in str(e).lower():
                         raise F5ModuleError(
-                            "Destination directory {0} is not accessible".format(os.path.dirname(result))
+                            "Destination directory {0} is not accessible".format(os.path.dirname(self.dest))
                         )
                     raise F5ModuleError(
-                        "Destination directory {0} does not exist".format(os.path.dirname(result))
+                        "Destination directory {0} does not exist".format(os.path.dirname(self.dest))
                     )
 
         if not os.access(os.path.dirname(result), os.W_OK):
@@ -448,11 +448,8 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         result, output = self.wait_for_task(response['id'])
         if result and output:
@@ -475,11 +472,8 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                raise F5ModuleError(resp.content)
 
             if response['status'] in ['COMPLETED', 'FAILURE']:
                 break
@@ -535,16 +529,13 @@ class ModuleManager(object):
         try:
             response = resp.json()
             if 'commandResult' in response:
-                if 'Unexpected Error' in response['commandResult']:
+                if 'Error' in response['commandResult'] or 'error' in response['commandResult']:
                     raise F5ModuleError(response['commandResult'])
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         self._move_binary_to_download()
 
@@ -577,13 +568,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def download_from_device(self, dest):
         url = 'https://{0}:{1}/mgmt/tm/asm/file-transfer/downloads/{2}'.format(
@@ -617,11 +604,10 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):

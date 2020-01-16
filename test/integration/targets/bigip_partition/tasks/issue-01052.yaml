@@ -13,7 +13,7 @@
       - result is changed
 
 - name: Issue 01052 - Gather Facts
-  bigip_device_facts:
+  bigip_device_info:
     gather_subset:
       - partitions
   register: f

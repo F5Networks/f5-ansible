@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00753 - Get device facts to determine management IP - Environment
-  bigip_device_facts:
+  bigip_device_info:
     gather_subset:
       - devices
   register: f

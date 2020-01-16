@@ -7,7 +7,7 @@
     - module-provisioning
 
 - name: Issue 00954 - Collect BIG-IP facts
-  bigip_device_facts:
+  bigip_device_info:
     include: system-info
     provider: "{{ provider }}"
   register: f

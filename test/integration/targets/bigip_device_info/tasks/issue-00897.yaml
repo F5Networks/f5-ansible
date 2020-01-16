@@ -49,7 +49,7 @@
     - srv
 
 - name: Issue 00897 - Select gtm-a-pools facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-a-pools
   register: result
@@ -62,7 +62,7 @@
       - result.gtm_a_pools | json_query("[?name=='gtm-pool-a'].load_balancing_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-aaaa-pools facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-aaaa-pools
   register: result
@@ -75,7 +75,7 @@
       - result.gtm_aaaa_pools | json_query("[?name=='gtm-pool-aaaa'].load_balancing_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-cname-pools facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-cname-pools
   register: result
@@ -88,7 +88,7 @@
       - result.gtm_cname_pools | json_query("[?name=='gtm-pool-cname'].load_balancing_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-mx-pools facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-mx-pools
   register: result
@@ -101,7 +101,7 @@
       - result.gtm_mx_pools | json_query("[?name=='gtm-pool-mx'].load_balancing_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-naptr-pools facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-naptr-pools
   register: result
@@ -114,7 +114,7 @@
       - result.gtm_naptr_pools | json_query("[?name=='gtm-pool-naptr'].load_balancing_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-srv-pools facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-srv-pools
   register: result
@@ -127,7 +127,7 @@
       - result.gtm_srv_pools | json_query("[?name=='gtm-pool-srv'].load_balancing_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-a-wide-ips facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-a-wide-ips
   register: result
@@ -140,7 +140,7 @@
       - result.gtm_a_wide_ips | json_query("[?name=='wide-a.foo.bar'].pool_lb_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-aaaaa-wide-ips facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-aaaa-wide-ips
   register: result
@@ -153,7 +153,7 @@
       - result.gtm_aaaa_wide_ips | json_query("[?name=='wide-aaaa.foo.bar'].pool_lb_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-cname-wide-ips facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-cname-wide-ips
   register: result
@@ -166,7 +166,7 @@
       - result.gtm_cname_wide_ips | json_query("[?name=='wide-cname.foo.bar'].pool_lb_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-mx-wide-ips facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-mx-wide-ips
   register: result
@@ -179,7 +179,7 @@
       - result.gtm_mx_wide_ips | json_query("[?name=='wide-mx.foo.bar'].pool_lb_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-naptr-wide-ips facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-naptr-wide-ips
   register: result
@@ -192,7 +192,7 @@
       - result.gtm_naptr_wide_ips | json_query("[?name=='wide-naptr.foo.bar'].pool_lb_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-srv-wide-ips facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-srv-wide-ips
   register: result
@@ -205,7 +205,7 @@
       - result.gtm_srv_wide_ips | json_query("[?name=='wide-srv.foo.bar'].pool_lb_mode") | first == "round-robin"
 
 - name: Issue 00897 - Select gtm-servers facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - gtm-servers
   register: result

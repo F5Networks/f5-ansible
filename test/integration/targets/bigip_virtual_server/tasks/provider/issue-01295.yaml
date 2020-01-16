@@ -29,7 +29,7 @@
       - result is success
 
 - name: Issue 01295 - Gather Facts on VS created - Provider
-  bigip_device_facts:
+  bigip_device_info:
     gather_subset:
       - virtual-servers
     provider: "{{ provider }}"

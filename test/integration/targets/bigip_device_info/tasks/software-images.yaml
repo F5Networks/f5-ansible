@@ -1,7 +1,7 @@
 ---
 
 - name: Select software image facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - software-images
   register: result

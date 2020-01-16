@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 00082 - Select system-info facts
-  bigip_device_facts:
+  bigip_device_info:
     include:
       - system-info
   register: result
