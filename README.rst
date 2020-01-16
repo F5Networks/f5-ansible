@@ -112,7 +112,7 @@ See `License`_.
 
 .. |dailybuild| raw:: html
 
-   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-1.2.0-devel.tar.gz" target="_blank">here</a>
+   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-1.1.0-devel.tar.gz" target="_blank">here</a>
 
 .. |f5_collection| raw:: html
 
