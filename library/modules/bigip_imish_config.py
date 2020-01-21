@@ -202,6 +202,14 @@ options:
         type: path
     type: dict
     version_added: "2.8"
+  allow_duplicates:
+    description:
+      - Allows duplicate commands to be sent to the device, this is to accommodate scenarios where
+        address families are configured.
+      - Only used with C(lines) parameter.
+    type: bool
+    default: 'no'
+    version_added: "f5_modules 1.2"
 notes:
   - Abbreviated commands are NOT idempotent, see
     L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-
@@ -209,6 +217,7 @@ notes:
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -317,7 +326,7 @@ except ImportError:
 import os
 import tempfile
 
-from ansible.module_utils.network.common.config import NetworkConfig, dumps
+from ansible.module_utils.network.common.config import dumps
 from ansible.module_utils.network.common.utils import to_list
 from ansible.module_utils.basic import AnsibleModule
 
@@ -326,12 +335,14 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import ImishConfig
     from library.module_utils.network.f5.icontrol import upload_file
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import ImishConfig
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import upload_file
 
 
@@ -462,7 +473,7 @@ class ModuleManager(object):
 
         if self.want.backup or (self.module._diff and self.want.diff_against == 'running'):
             contents = self.read_current_from_device()
-            config = NetworkConfig(indent=1, contents=contents)
+            config = ImishConfig(indent=1, contents=contents)
             if self.want.backup:
                 # The backup file is created in the bigip_imish_config action plugin. Refer
                 # to that if you have questions. The key below is removed by the action plugin.
@@ -511,8 +522,8 @@ class ModuleManager(object):
         elif self.want.save_when == 'modified':
             output = self.execute_show_commands(['show running-config', 'show startup-config'])
 
-            running_config = NetworkConfig(indent=1, contents=output[0], ignore_lines=self.want.diff_ignore_lines)
-            startup_config = NetworkConfig(indent=1, contents=output[1], ignore_lines=self.want.diff_ignore_lines)
+            running_config = ImishConfig(indent=1, contents=output[0], ignore_lines=self.want.diff_ignore_lines)
+            startup_config = ImishConfig(indent=1, contents=output[1], ignore_lines=self.want.diff_ignore_lines)
 
             if running_config.sha1 != startup_config.sha1:
                 self.save_config(result)
@@ -527,7 +538,7 @@ class ModuleManager(object):
                 contents = running_config
 
             # recreate the object in order to process diff_ignore_lines
-            running_config = NetworkConfig(indent=1, contents=contents, ignore_lines=self.want.diff_ignore_lines)
+            running_config = ImishConfig(indent=1, contents=contents, ignore_lines=self.want.diff_ignore_lines)
 
             if self.want.diff_against == 'running':
                 if self.module.check_mode:
@@ -547,7 +558,7 @@ class ModuleManager(object):
                 contents = self.want.intended_config
 
             if contents is not None:
-                base_config = NetworkConfig(indent=1, contents=contents, ignore_lines=self.want.diff_ignore_lines)
+                base_config = ImishConfig(indent=1, contents=contents, ignore_lines=self.want.diff_ignore_lines)
 
                 if running_config.sha1 != base_config.sha1:
                     if self.want.diff_against == 'intended':
@@ -685,12 +696,12 @@ class ModuleManager(object):
         diff = {}
 
         # prepare candidate configuration
-        candidate_obj = NetworkConfig(indent=1)
+        candidate_obj = ImishConfig(indent=1)
         candidate_obj.load(candidate)
 
         if running and diff_match != 'none' and diff_replace != 'config':
             # running configuration
-            running_obj = NetworkConfig(indent=1, contents=running, ignore_lines=diff_ignore_lines)
+            running_obj = ImishConfig(indent=1, contents=running, ignore_lines=diff_ignore_lines)
             configdiffobjs = candidate_obj.difference(running_obj, path=path, match=diff_match, replace=diff_replace)
         else:
             configdiffobjs = candidate_obj.items
@@ -713,9 +724,12 @@ class ModuleManager(object):
             candidate = self.want.src
 
         elif self.want.lines:
-            candidate_obj = NetworkConfig(indent=1)
+            candidate_obj = ImishConfig(indent=1)
             parents = self.want.parents or list()
-            candidate_obj.add(self.want.lines, parents=parents)
+            if self.want.allow_duplicates:
+                candidate_obj.add(self.want.lines, parents=parents, duplicates=True)
+            else:
+                candidate_obj.add(self.want.lines, parents=parents)
             candidate = dumps(candidate_obj, 'raw')
         return candidate
 
@@ -789,6 +803,7 @@ class ArgumentSpec(object):
 
             diff_against=dict(choices=['running', 'startup', 'intended'], default='startup'),
             diff_ignore_lines=dict(type='list'),
+            allow_duplicates=dict(type='bool', default=False)
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
