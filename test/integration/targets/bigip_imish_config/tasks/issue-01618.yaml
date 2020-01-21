@@ -1,0 +1,82 @@
+---
+- name: Configure IPV6 Address family
+  bigip_imish_config:
+    lines:
+      - bgp graceful-restart restart-time 120
+      - neighbor 2001::1 remote-as 65309
+      - neighbor 2001::1 ebgp-multihop 255
+      - neighbor 2001::1 fall-over bfd
+      - neighbor 2001::1 soft-reconfiguration inbound
+      - no neighbor 2001::1 capability graceful-restart
+      - neighbor 2001::1 route-map routes_filter in
+      - neighbor 2001::1 route-map routes_filter out
+      - neighbor 2001::2 remote-as 65310
+      - neighbor 2001::2 ebgp-multihop 255
+      - neighbor 2001::2 fall-over bfd
+      - neighbor 2001::2 soft-reconfiguration inbound
+      - no neighbor 2001::2 capability graceful-restart
+      - neighbor 2001::2 route-map routes_filter in
+      - neighbor 2001::2 route-map routes_filter out
+      - address-family ipv6
+      - neighbor 2001::1 activate
+      - neighbor 2001::1 soft-reconfiguration inbound
+      - no neighbor 2001::1 capability graceful-restart
+      - neighbor 2001::1 route-map routes_filter in
+      - neighbor 2001::1 route-map routes_filter out
+      - neighbor 2001::2 activate
+      - neighbor 2001::2 soft-reconfiguration inbound
+      - no neighbor 2001::2 capability graceful-restart
+      - neighbor 2001::2 route-map routes_filter in
+      - neighbor 2001::2 route-map routes_filter out
+      - exit-address-family
+    parents: "router bgp 65315"
+    allow_duplicates: 'yes'
+    save_when: modified
+  register: result
+
+- name: Assert Configure IPV6 Address family
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Configure IPV6 Address family - Idempotent check
+  bigip_imish_config:
+    lines:
+      - bgp graceful-restart restart-time 120
+      - neighbor 2001::1 remote-as 65309
+      - neighbor 2001::1 ebgp-multihop 255
+      - neighbor 2001::1 fall-over bfd
+      - neighbor 2001::1 soft-reconfiguration inbound
+      - no neighbor 2001::1 capability graceful-restart
+      - neighbor 2001::1 route-map routes_filter in
+      - neighbor 2001::1 route-map routes_filter out
+      - neighbor 2001::2 remote-as 65310
+      - neighbor 2001::2 ebgp-multihop 255
+      - neighbor 2001::2 fall-over bfd
+      - neighbor 2001::2 soft-reconfiguration inbound
+      - no neighbor 2001::2 capability graceful-restart
+      - neighbor 2001::2 route-map routes_filter in
+      - neighbor 2001::2 route-map routes_filter out
+      - address-family ipv6
+      - neighbor 2001::1 activate
+      - neighbor 2001::1 soft-reconfiguration inbound
+      - no neighbor 2001::1 capability graceful-restart
+      - neighbor 2001::1 route-map routes_filter in
+      - neighbor 2001::1 route-map routes_filter out
+      - neighbor 2001::2 activate
+      - neighbor 2001::2 soft-reconfiguration inbound
+      - no neighbor 2001::2 capability graceful-restart
+      - neighbor 2001::2 route-map routes_filter in
+      - neighbor 2001::2 route-map routes_filter out
+      - exit-address-family
+    parents: "router bgp 65315"
+    allow_duplicates: 'yes'
+    save_when: modified
+  register: result
+
+- name: Assert Configure IPV6 Address family - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
