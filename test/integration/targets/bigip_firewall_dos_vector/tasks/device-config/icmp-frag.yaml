@@ -267,6 +267,12 @@
       - result is not changed
       - result is success
 
+- name: Change threshold_mode - manual - Network Security ICMP Fragment
+  bigip_firewall_dos_vector:
+    name: icmp-frag
+    profile: device-config
+    threshold_mode: manual
+
 - name: Change simulate_auto_threshold - yes - Network Security ICMP Fragment
   bigip_firewall_dos_vector:
     name: icmp-frag
@@ -765,4 +771,10 @@
   bigip_firewall_dos_vector:
     name: icmp-frag
     profile: device-config
+    blacklist_detection_seconds: 60
+    blacklist_duration: 14400
+    attack_floor: 5000
+    attack_ceiling: infinite
+    detection_threshold_eps: 10
+    detection_threshold_percent: 500
     state: disabled

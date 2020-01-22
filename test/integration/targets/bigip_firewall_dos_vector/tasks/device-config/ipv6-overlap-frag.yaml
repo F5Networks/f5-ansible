@@ -1,0 +1,546 @@
+---
+
+- name: Add vector for device-config - detect-only - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: detect-only
+  register: result
+
+- name: Assert Add vector for device-config - detect-only - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - detect-only - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: detect-only
+  register: result
+
+- name: Assert Add vector for device-config - detect-only - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - mitigate - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - mitigate - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - learn-only - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for device-config - learn-only - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - learn-only - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for device-config - learn-only - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - disabled - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: disabled
+  register: result
+
+- name: Assert Add vector for device-config - disabled - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - disabled - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: disabled
+  register: result
+
+- name: Assert Add vector for device-config - disabled - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change state to mitigate - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Change allow_advertisement - yes - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    allow_advertisement: yes
+  register: result
+
+- name: Assert Change allow_advertisement - yes - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allow_advertisement - yes - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    allow_advertisement: yes
+  register: result
+
+- name: Assert Change allow_advertisement - yes - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change allow_advertisement - no - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    allow_advertisement: no
+  register: result
+
+- name: Assert Change allow_advertisement - no - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allow_advertisement - no - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    allow_advertisement: no
+  register: result
+
+- name: Assert Change allow_advertisement - no - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change blacklist_detection_seconds - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    blacklist_detection_seconds: 90
+  register: result
+
+- name: Assert Change blacklist_detection_seconds - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change blacklist_detection_seconds - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    blacklist_detection_seconds: 90
+  register: result
+
+- name: Assert Change blacklist_detection_seconds - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change blacklist_duration - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    blacklist_duration: 10000
+  register: result
+
+- name: Assert Change blacklist_duration - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change blacklist_duration - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    blacklist_duration: 10000
+  register: result
+
+- name: Assert Change blacklist_duration - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_floor - number - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    attack_floor: 20
+  register: result
+
+- name: Assert Change attack_floor - number - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_floor - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    attack_floor: 20
+  register: result
+
+- name: Assert Change attack_floor - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    detection_threshold_eps: 50
+
+- name: Change attack_ceiling - number - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    attack_ceiling: 50
+  register: result
+
+- name: Assert Change attack_ceiling - number - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_ceiling - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    attack_ceiling: 50
+  register: result
+
+- name: Assert Change attack_ceiling - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_ceiling - infinite - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    attack_ceiling: infinite
+  register: result
+
+- name: Assert Change attack_ceiling - infinite - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_ceiling - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    attack_ceiling: infinite
+  register: result
+
+- name: Assert Change attack_ceiling - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - number - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    per_source_ip_detection_threshold: 50
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - number - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    per_source_ip_detection_threshold: 50
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - infinite - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    per_source_ip_detection_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - infinite - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    per_source_ip_detection_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - number - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    per_source_ip_mitigation_threshold: 20
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - number - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    per_source_ip_mitigation_threshold: 20
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - infinite - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    per_source_ip_mitigation_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    per_source_ip_mitigation_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_percent - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    detection_threshold_percent: 200
+  register: result
+
+- name: Assert Change detection_threshold_percent - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_percent - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    detection_threshold_percent: 200
+  register: result
+
+- name: Assert Change detection_threshold_percent - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    detection_threshold_eps: 80
+  register: result
+
+- name: Assert Change detection_threshold_eps - number - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    detection_threshold_eps: 80
+  register: result
+
+- name: Assert Change detection_threshold_eps - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - infinite - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    detection_threshold_eps: infinite
+  register: result
+
+- name: Assert Change detection_threshold_eps - infinite - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_eps - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    detection_threshold_eps: infinite
+  register: result
+
+- name: Assert Change detection_threshold_eps - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - number - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    mitigation_threshold_eps: 90
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - number - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    mitigation_threshold_eps: 90
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - number - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - infinite - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    mitigation_threshold_eps: infinite
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - infinite - Network Security IPv6 Fragment Overlap
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    mitigation_threshold_eps: infinite
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - infinite - Network Security IPv6 Fragment Overlap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove vector from device-config - Network Security IPv6 Fragment Overlap
+  bigip_firewall_dos_vector:
+    name: ipv6-overlap-frag
+    profile: device-config
+    blacklist_detection_seconds: 60
+    blacklist_duration: 14400
+    attack_floor: 5000
+    attack_ceiling: infinite
+    detection_threshold_eps: 10
+    detection_threshold_percent: 500
+    state: disabled
