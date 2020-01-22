@@ -1,0 +1,567 @@
+---
+
+- name: Add vector for device-config - detect-only - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: detect-only
+  register: result
+
+- name: Assert Add vector for device-config - detect-only - DNS Response Flood
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - detect-only - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: detect-only
+  register: result
+
+- name: Assert Add vector for device-config - detect-only - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - mitigate - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - DNS Response Flood
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - mitigate - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - learn-only - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for device-config - learn-only - DNS Response Flood
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - learn-only - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for device-config - learn-only - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - disabled - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: disabled
+  register: result
+
+- name: Assert Add vector for device-config - disabled - DNS Response Flood
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - disabled - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: disabled
+  register: result
+
+- name: Assert Add vector for device-config - disabled - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change state to mitigate - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Change allow_advertisement - yes - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    allow_advertisement: yes
+  register: result
+
+- name: Assert Change allow_advertisement - yes - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allow_advertisement - yes - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    allow_advertisement: yes
+  register: result
+
+- name: Assert Change allow_advertisement - yes - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change allow_advertisement - no - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    allow_advertisement: no
+  register: result
+
+- name: Assert Change allow_advertisement - no - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allow_advertisement - no - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    allow_advertisement: no
+  register: result
+
+- name: Assert Change allow_advertisement - no - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change blacklist_detection_seconds - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    blacklist_detection_seconds: 90
+  register: result
+
+- name: Assert Change blacklist_detection_seconds - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change blacklist_detection_seconds - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    blacklist_detection_seconds: 90
+  register: result
+
+- name: Assert Change blacklist_detection_seconds - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change blacklist_duration - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    blacklist_duration: 10000
+  register: result
+
+- name: Assert Change blacklist_duration - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change blacklist_duration - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    blacklist_duration: 10000
+  register: result
+
+- name: Assert Change blacklist_duration - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_floor - number - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    attack_floor: 20
+  register: result
+
+- name: Assert Change attack_floor - number - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_floor - number - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    attack_floor: 20
+  register: result
+
+- name: Assert Change attack_floor - number - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_ceiling - number - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    attack_ceiling: 50
+  register: result
+
+- name: Assert Change attack_ceiling - number - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_ceiling - number - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    attack_ceiling: 50
+  register: result
+
+- name: Assert Change attack_ceiling - number - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_ceiling - infinite - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    attack_ceiling: infinite
+  register: result
+
+- name: Assert Change attack_ceiling - infinite - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_ceiling - infinite - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    attack_ceiling: infinite
+  register: result
+
+- name: Assert Change attack_ceiling - infinite - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - number - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    per_source_ip_detection_threshold: 10
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - number - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - number - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    per_source_ip_detection_threshold: 10
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - number - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - infinite - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    per_source_ip_detection_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - infinite - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - infinite - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    per_source_ip_detection_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - infinite - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - number - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    per_source_ip_mitigation_threshold: 10000
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - number - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - number - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    per_source_ip_mitigation_threshold: 10000
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - number - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - infinite - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    per_source_ip_mitigation_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - infinite - DNS Response Flood- Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    per_source_ip_mitigation_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_percent - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    detection_threshold_percent: 200
+  register: result
+
+- name: Assert Change detection_threshold_percent - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_percent - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    detection_threshold_percent: 200
+  register: result
+
+- name: Assert Change detection_threshold_percent - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    detection_threshold_eps: 80
+  register: result
+
+- name: Assert Change detection_threshold_eps - number - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    detection_threshold_eps: 80
+  register: result
+
+- name: Assert Change detection_threshold_eps - number - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - infinite - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    detection_threshold_eps: infinite
+  register: result
+
+- name: Assert Change detection_threshold_eps - infinite - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_eps - infinite - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    detection_threshold_eps: infinite
+  register: result
+
+- name: Assert Change detection_threshold_eps - infinite - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - number - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    mitigation_threshold_eps: 90
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - number - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - number - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    mitigation_threshold_eps: 90
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - number - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - infinite - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    mitigation_threshold_eps: infinite
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - infinite - DNS Response Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - infinite - DNS Response Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    mitigation_threshold_eps: infinite
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - infinite - DNS Response Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - stress-based-mitigation - DNS Response Flood - Expected failure
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    threshold_mode: stress-based-mitigation
+  register: result
+
+- name: Assert Change threshold_mode - stress-based-mitigation - DNS Response Flood - Expected failure
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - fully-automatic - DNS Response Flood - Expected failure
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    threshold_mode: fully-automatic
+  register: result
+
+- name: Assert Change threshold_mode - fully-automatic - DNS Response Flood - Expected failure
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove vector from device-config - DNS Response Flood
+  bigip_firewall_dos_vector:
+    name: dns-response-flood
+    profile: device-config
+    blacklist_detection_seconds: 60
+    blacklist_duration: 14400
+    attack_floor: 5000
+    attack_ceiling: infinite
+    detection_threshold_eps: 10
+    detection_threshold_percent: 500
+    threshold_mode: manual
+    state: disabled

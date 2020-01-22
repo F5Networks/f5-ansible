@@ -1,0 +1,677 @@
+---
+
+- name: Add vector for device-config - detect-only - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: detect-only
+  register: result
+
+- name: Assert Add vector for device-config - detect-only - ARP Flood
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - detect-only - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: detect-only
+  register: result
+
+- name: Assert Add vector for device-config - detect-only - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - mitigate - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - ARP Flood
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - mitigate - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Assert Add vector for device-config - mitigate - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - learn-only - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for device-config - learn-only - ARP Flood
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - learn-only - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: learn-only
+  register: result
+
+- name: Assert Add vector for device-config - learn-only - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Add vector for device-config - disabled - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: disabled
+  register: result
+
+- name: Assert Add vector for device-config - disabled - ARP Flood
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add vector for device-config - disabled - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: disabled
+  register: result
+
+- name: Assert Add vector for device-config - disabled - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change state to mitigate - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    state: mitigate
+  register: result
+
+- name: Change allow_advertisement - yes - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    allow_advertisement: yes
+  register: result
+
+- name: Assert Change allow_advertisement - yes - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allow_advertisement - yes - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    allow_advertisement: yes
+  register: result
+
+- name: Assert Change allow_advertisement - yes - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change allow_advertisement - no - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    allow_advertisement: no
+  register: result
+
+- name: Assert Change allow_advertisement - no - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change allow_advertisement - no - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    allow_advertisement: no
+  register: result
+
+- name: Assert Change allow_advertisement - no - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - manual - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    threshold_mode: manual
+
+- name: Change simulate_auto_threshold - yes - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    simulate_auto_threshold: yes
+  register: result
+
+- name: Assert Change simulate_auto_threshold - yes - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change simulate_auto_threshold - yes - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    simulate_auto_threshold: yes
+  register: result
+
+- name: Assert Change simulate_auto_threshold - yes - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change simulate_auto_threshold - no - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    simulate_auto_threshold: no
+  register: result
+
+- name: Assert Change simulate_auto_threshold - no - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change simulate_auto_threshold - no - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    simulate_auto_threshold: no
+  register: result
+
+- name: Assert Change simulate_auto_threshold - no - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change blacklist_detection_seconds - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    blacklist_detection_seconds: 90
+  register: result
+
+- name: Assert Change blacklist_detection_seconds - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change blacklist_detection_seconds - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    blacklist_detection_seconds: 90
+  register: result
+
+- name: Assert Change blacklist_detection_seconds - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change blacklist_duration - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    blacklist_duration: 10000
+  register: result
+
+- name: Assert Change blacklist_duration - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change blacklist_duration - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    blacklist_duration: 10000
+  register: result
+
+- name: Assert Change blacklist_duration - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_floor - number - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    attack_floor: 20
+  register: result
+
+- name: Assert Change attack_floor - number - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_floor - number - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    attack_floor: 20
+  register: result
+
+- name: Assert Change attack_floor - number - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_ceiling - number - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    attack_ceiling: 50
+  register: result
+
+- name: Assert Change attack_ceiling - number - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_ceiling - number - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    attack_ceiling: 50
+  register: result
+
+- name: Assert Change attack_ceiling - number - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change attack_ceiling - infinite - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    attack_ceiling: infinite
+  register: result
+
+- name: Assert Change attack_ceiling - infinite - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change attack_ceiling - infinite - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    attack_ceiling: infinite
+  register: result
+
+- name: Assert Change attack_ceiling - infinite - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - number - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    per_source_ip_detection_threshold: 50
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - number - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - number - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    per_source_ip_detection_threshold: 50
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - number - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - infinite - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    per_source_ip_detection_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - infinite - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_detection_threshold - infinite - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    per_source_ip_detection_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_detection_threshold - infinite - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - number - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    per_source_ip_mitigation_threshold: 20
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - number - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - number - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    per_source_ip_mitigation_threshold: 20
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - number - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - infinite - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    per_source_ip_mitigation_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change per_source_ip_mitigation_threshold - infinite - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    per_source_ip_mitigation_threshold: infinite
+  register: result
+
+- name: Assert Change per_source_ip_mitigation_threshold - infinite - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_percent - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    detection_threshold_percent: 200
+  register: result
+
+- name: Assert Change detection_threshold_percent - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_percent - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    detection_threshold_percent: 200
+  register: result
+
+- name: Assert Change detection_threshold_percent - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    detection_threshold_eps: 80
+  register: result
+
+- name: Assert Change detection_threshold_eps - number - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_eps - number - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    detection_threshold_eps: 80
+  register: result
+
+- name: Assert Change detection_threshold_eps - number - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change detection_threshold_eps - infinite - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    detection_threshold_eps: infinite
+  register: result
+
+- name: Assert Change detection_threshold_eps - infinite - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change detection_threshold_eps - infinite - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    detection_threshold_eps: infinite
+  register: result
+
+- name: Assert Change detection_threshold_eps - infinite - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - number - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    mitigation_threshold_eps: 90
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - number - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - number - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    mitigation_threshold_eps: 90
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - number - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - infinite - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    mitigation_threshold_eps: infinite
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - infinite - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change mitigation_threshold_eps - infinite - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    mitigation_threshold_eps: infinite
+  register: result
+
+- name: Assert Change mitigation_threshold_eps - infinite - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - stress-based-mitigation - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    threshold_mode: stress-based-mitigation
+  register: result
+
+- name: Assert Change threshold_mode - stress-based-mitigation - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - stress-based-mitigation - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    threshold_mode: stress-based-mitigation
+  register: result
+
+- name: Assert Change threshold_mode - stress-based-mitigation - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - fully-automatic - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    threshold_mode: fully-automatic
+  register: result
+
+- name: Assert Change threshold_mode - fully-automatic - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - fully-automatic - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    threshold_mode: fully-automatic
+  register: result
+
+- name: Assert Change threshold_mode - fully-automatic - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change threshold_mode - manual - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    threshold_mode: manual
+  register: result
+
+- name: Assert Change threshold_mode - manual - ARP Flood
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change threshold_mode - manual - ARP Flood - Idempotent check
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    threshold_mode: manual
+  register: result
+
+- name: Assert Change threshold_mode - manual - ARP Flood - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove vector from device-config - ARP Flood
+  bigip_firewall_dos_vector:
+    name: arp-flood
+    profile: device-config
+    blacklist_detection_seconds: 60
+    blacklist_duration: 14400
+    attack_floor: 5000
+    attack_ceiling: infinite
+    detection_threshold_eps: 10
+    detection_threshold_percent: 500
+    threshold_mode: stress-based-mitigation
+    state: disabled
