@@ -46,7 +46,8 @@ options:
       - "!vlans"
 extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
-  - This module will not work on BIGIQ version 7.0.x or greater.
+  - This module is supported with all BIGIQ versions
+  - With BIGIQ 7.0 and later, a few metadata fields not included/supported (i.e. uptime, product_changelist, product_jobid)
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -646,11 +647,13 @@ system_info:
     product_changelist:
       description:
         - Changelist that product branches from.
+        - Not supported with BIGIQ 7.0 and later versions
       type: int
       sample: 2557198
     product_jobid:
       description:
         - ID of the job that built the product version.
+        - Not supported with BIGIQ 7.0 and later versions
       type: int
       sample: 1012030
     chassis_serial:
@@ -682,6 +685,7 @@ system_info:
     uptime:
       description:
         - Time, in seconds, since the system booted.
+        - Not supported with BIGIQ 7.0 and later versions
       type: int
       sample: 603202
   sample: hash/dictionary of values
@@ -823,6 +827,7 @@ import datetime
 import math
 import re
 
+from distutils.version import LooseVersion
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.six import string_types
@@ -834,6 +839,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.common import transform_name
+    from library.module_utils.network.f5.icontrol import bigiq_version
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigiq import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
@@ -841,6 +847,7 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import bigiq_version
 
 
 def parseStats(entry):
@@ -1711,13 +1718,14 @@ class SystemInfoFactManager(BaseManager):
         if tmp:
             result.update(tmp)
 
-        tmp = self.read_uptime_info_from_device()
-        if tmp:
-            result.update(tmp)
+        if LooseVersion(bigiq_version(self.client)) < LooseVersion('7.0.0'):
+            tmp = self.read_uptime_info_from_device()
+            if tmp:
+                result.update(tmp)
 
-        tmp = self.read_version_file_info_from_device()
-        if tmp:
-            result.update(tmp)
+            tmp = self.read_version_file_info_from_device()
+            if tmp:
+                result.update(tmp)
 
         return result
 
