@@ -1,0 +1,26 @@
+---
+
+- name: Select uptime on BIGIQ7
+  bigiq_device_info:
+      gather_subset:
+          - system-info
+  register: result
+
+- name: Assert Metadata Fields (uptime, product_changelist, product_jobid) missing on BIGIQ7 and later
+  assert:
+      that:
+          - result is success
+          - result.system_info.uptime is undefined
+          - result.system_info.product_changelist is undefined
+          - result.system_info.product_jobid is undefined
+  when: result.system_info.product_version >= "7.0.0"
+
+
+- name: Assert Metadata Fields (uptime, product_changelist, product_jobid) present on BIGIQ6 and previous
+  assert:
+      that:
+          - result is success
+          - result.system_info.uptime is defined
+          - result.system_info.product_changelist is defined
+          - result.system_info.product_jobid is defined
+  when: result.system_info.product_version < "7.0.0"
