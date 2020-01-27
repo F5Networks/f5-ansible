@@ -4,29 +4,29 @@
 
 - name: Select system-info facts
   bigiq_device_info:
-    gather_subset:
-      - system-info
+      gather_subset:
+          - system-info
   register: result
 
 - name: Assert Select system-info facts
   assert:
-    that:
-      - result is success
-      - result.system_info.product_code == 'BIG-IQ'
+      that:
+          - result is success
+          - result.system_info.product_code == 'BIG-IQ'
 
 - name: Select vlans facts
   bigiq_device_info:
-    gather_subset:
-      - vlans
+      gather_subset:
+          - vlans
   register: result
 
 - name: Assert Select vlans facts
   assert:
-    that:
-      - result is success
-      - result.vlans | selectattr("name", "match", "alice") | map(attribute='mtu') | first == 1500
-      - result.vlans | json_query("[?name=='alice'].mtu") | first == 1500
-      - "'alice' not in result.vlans | json_query(\"[?tag!=`3605`].name\")"
+      that:
+          - result is success
+          - result.vlans | selectattr("name", "match", "alice") | map(attribute='mtu') | first == 1500
+          - result.vlans | json_query("[?name=='alice'].mtu") | first == 1500
+          - "'alice' not in result.vlans | json_query(\"[?tag!=`3605`].name\")"
 
 - import_tasks: issue-00921.yaml
   tags: issue-00921
@@ -36,5 +36,8 @@
 
 - import_tasks: issue-00923.yaml
   tags: issue-00923
+
+- import_tasks: fmfa-347.yaml
+  tags: fmfa-347.yaml
 
 - import_tasks: teardown.yaml
