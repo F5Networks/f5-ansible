@@ -312,7 +312,7 @@ class ModuleManager(object):
             )
 
     def present(self):
-        if self.exists():
+        if self.volume_exists():
             return False
         else:
             return self.update()
@@ -325,7 +325,7 @@ class ModuleManager(object):
             path
         )
 
-    def exists(self):
+    def volume_exists(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/software/volume/".format(
             self.client.provider['server'],
             self.client.provider['server_port']
@@ -339,7 +339,7 @@ class ModuleManager(object):
 
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
 
-        if collection.status in errors or 'code' in collection and collection['code'] in errors:
+        if resp.status in errors or 'code' in collection and collection['code'] in errors:
             if 'message' in collection:
                 raise F5ModuleError(collection['message'])
             else:
@@ -385,7 +385,7 @@ class ModuleManager(object):
                 return True
         return False
 
-    def volume_exists(self):
+    def exists(self):
         resp = self.client.api.get(self.volume_url)
 
         try:
