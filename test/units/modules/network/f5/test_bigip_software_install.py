@@ -109,7 +109,7 @@ class TestManager(unittest.TestCase):
 
         mm.exists = Mock(side_effect=[False, True])
         mm.create_on_device = Mock(return_value=True)
-        mm.volume_exists = Mock(return_value=True)
+        mm.volume_exists = Mock(return_value=False)
         mm.update_on_device = Mock(return_value=True)
         mm.wait_for_device_reboot = Mock(return_value=True)
         mm.wait_for_software_install_on_device = Mock(return_value=True)
