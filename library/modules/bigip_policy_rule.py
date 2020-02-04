@@ -39,6 +39,8 @@ options:
             with this rule.
           - When C(type) is C(enable), will associate a given C(asm_policy) with
             this rule.
+          - When C(type) is C(disable), will associate a given C(target) with
+            this rule.
           - When C(type) is C(ignore), will remove all existing actions from this
             rule.
           - When C(type) is C(redirect), will redirect an HTTP request to a different URL.
@@ -49,6 +51,7 @@ options:
         choices:
           - forward
           - enable
+          - disable
           - ignore
           - redirect
           - reset
@@ -67,6 +70,10 @@ options:
         description:
           - ASM policy to enable.
           - This parameter is only valid with the C(enable) type.
+        type: str
+      target:
+        description:
+          - Target which will be disabled.
         type: str
       location:
         description:
@@ -372,6 +379,10 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'enable'
                 del action['enable']
+            elif 'disable' in item:
+                action.update(item)
+                action['type'] = 'disable'
+                del action['disable']
             elif 'redirect' in item:
                 action.update(item)
                 action['type'] = 'redirect'
@@ -441,6 +452,8 @@ class ModuleParameters(Parameters):
                 self._handle_forward_action(action, item)
             elif item['type'] == 'enable':
                 self._handle_enable_action(action, item)
+            elif item['type'] == 'disable':
+                self._handle_disable_action(action, item)
             elif item['type'] == 'ignore':
                 return [dict(type='ignore')]
             elif item['type'] == 'redirect':
@@ -600,6 +613,24 @@ class ModuleParameters(Parameters):
             asm=True
         ))
 
+    def _handle_disable_action(self, action, item):
+        """Handle the nuances of the disable type
+
+        :param action:
+        :param item:
+        :return:
+        """
+        action['type'] = 'disable'
+        if 'target' not in item:
+            raise F5ModuleError(
+                "An 'target' must be specified when the 'disable' type is used."
+            )
+        elif 'server_ssl' in item['target']:
+            action.update(dict(
+                serverSsl=True,
+                disable=True
+            ))
+
     def _handle_redirect_action(self, action, item):
         """Handle the nuances of the redirect type
 
@@ -699,6 +730,10 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'enable'
                 del action['enable']
+            elif 'disable' in item:
+                action.update(item)
+                action['type'] = 'disable'
+                del action['disable']
             elif 'redirect' in item:
                 action.update(item)
                 action['type'] = 'redirect'
@@ -762,6 +797,9 @@ class UsableChanges(Changes):
                 del action['type']
             elif action['type'] == 'enable':
                 action['enable'] = True
+                del action['type']
+            elif action['type'] == 'disable':
+                action['disable'] = True
                 del action['type']
             elif action['type'] == 'ignore':
                 result = []
@@ -1192,6 +1230,7 @@ class ArgumentSpec(object):
                         choices=[
                             'forward',
                             'enable',
+                            'disable',
                             'ignore',
                             'redirect',
                             'reset',
@@ -1204,6 +1243,7 @@ class ArgumentSpec(object):
                     virtual=dict(),
                     location=dict(),
                     event=dict(),
+                    target=dict(),
                     cookie_insert=dict(),
                     cookie_expiry=dict(type='int')
                 ),
