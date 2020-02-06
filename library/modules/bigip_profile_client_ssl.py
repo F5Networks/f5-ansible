@@ -35,6 +35,17 @@ options:
     description:
       - Specifies the list of ciphers that the system supports. When creating a new
         profile, the default cipher list is provided by the parent profile.
+        Note that client SSL profiles can only have one of either ciphers or
+        cipher_group. If you attempt to assign both to a single client SSL profile,
+        the device will reject this.
+    type: str
+  cipher_group:
+    description:
+      - Specifies the cipher group to assign to this profile. When creating a new
+        profile, the default cipher group is provided by the parent profile.
+        Note that client SSL profiles can only have one of either ciphers or
+        cipher_group. If you attempt to assign both to a single client SSL profile,
+        the device will reject this.
     type: str
   cert_key_chain:
     description:
@@ -289,6 +300,17 @@ EXAMPLES = r'''
       password: secret
   delegate_to: localhost
 
+- name: Create client SSL profile with specific cipher group
+  bigip_profile_client_ssl:
+    state: present
+    name: my_profile
+    cipher_group: "/Common/f5-secure"
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
 - name: Create client SSL profile with specific SSL options
   bigip_profile_client_ssl:
     state: present
@@ -334,6 +356,11 @@ ciphers:
   returned: changed
   type: str
   sample: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
+cipher_group:
+  description: The cipher group applied to the profile.
+  returned: changed
+  type: str
+  sample: "/Common/f5-secure"
 options:
   description: The list of options for SSL processing.
   returned: changed
@@ -400,6 +427,7 @@ except ImportError:
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'certKeyChain': 'cert_key_chain',
+        'cipherGroup': 'cipher_group',
         'defaultsFrom': 'parent',
         'allowNonSsl': 'allow_non_ssl',
         'secureRenegotiation': 'secure_renegotiation',
@@ -422,6 +450,7 @@ class Parameters(AnsibleF5Parameters):
 
     api_attributes = [
         'ciphers',
+        'cipherGroup',
         'certKeyChain',
         'defaultsFrom',
         'tmOptions',
@@ -446,6 +475,7 @@ class Parameters(AnsibleF5Parameters):
 
     returnables = [
         'ciphers',
+        'cipher_group',
         'allow_non_ssl',
         'options',
         'secure_renegotiation',
@@ -471,6 +501,7 @@ class Parameters(AnsibleF5Parameters):
     updatables = [
         'parent',
         'ciphers',
+        'cipher_group',
         'cert_key_chain',
         'allow_non_ssl',
         'options',
@@ -1097,6 +1128,7 @@ class ArgumentSpec(object):
             name=dict(required=True),
             parent=dict(),
             ciphers=dict(),
+            cipher_group=dict(),
             allow_non_ssl=dict(type='bool'),
             secure_renegotiation=dict(
                 choices=['require', 'require-strict', 'request']
