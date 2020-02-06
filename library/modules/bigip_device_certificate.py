@@ -259,11 +259,7 @@ import ssl
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
-
-try:
-    from library.module_utils.network.f5.connection import exec_command
-except ImportError:
-    from ansible_collections.f5networks.f5_modules.plugins.module_utils.connection import exec_command
+from ansible.module_utils.connection import exec_command
 
 
 try:
