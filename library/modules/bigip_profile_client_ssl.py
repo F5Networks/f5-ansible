@@ -502,32 +502,33 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ModuleParameters(Parameters):
-    def _key_filename(self, name):
-        if self.true_names:
+    def _key_filename(self, name, true_name):
+        if true_name:
             return name
         if name.endswith('.key'):
             return name
         else:
             return name + '.key'
 
-    def _cert_filename(self, name):
-        if self.true_names:
+    def _cert_filename(self, name, true_name):
+        if true_name:
             return name
         if name.endswith('.crt'):
             return name
         else:
             return name + '.crt'
 
-    def _get_chain_value(self, item):
+    def _get_chain_value(self, item, true_name):
         if 'chain' not in item or item['chain'] == 'none':
             result = 'none'
         else:
-            result = self._cert_filename(fq_name(self.partition, item['chain']))
+            result = self._cert_filename(fq_name(self.partition, item['chain']), true_name)
         return result
 
-    @property
-    def true_names(self):
-        result = flatten_boolean(self._values['true_names'])
+    def _get_true_names(self, item):
+        if 'true_names' not in item:
+            return False
+        result = flatten_boolean(item['true_names'])
         if result == 'yes':
             return True
         if result == 'no':
@@ -556,9 +557,10 @@ class ModuleParameters(Parameters):
                 raise F5ModuleError(
                     "When providing a 'cert', you must also provide a 'key'"
                 )
-            key = self._key_filename(item['key'])
-            cert = self._cert_filename(item['cert'])
-            chain = self._get_chain_value(item)
+            item['true_names'] = self._get_true_names(item)
+            key = self._key_filename(item['key'], item['true_names'])
+            cert = self._cert_filename(item['cert'], item['true_names'])
+            chain = self._get_chain_value(item, item['true_names'])
             name = os.path.basename(cert)
             filename, ex = os.path.splitext(name)
             tmp = {
@@ -569,6 +571,8 @@ class ModuleParameters(Parameters):
             }
             if 'passphrase' in item:
                 tmp['passphrase'] = item['passphrase']
+            if 'true_names' in item:
+                tmp['true_names'] = item['true_names']
             result.append(tmp)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -662,7 +666,7 @@ class ApiParameters(Parameters):
             tmp = dict(
                 name=item['name'],
             )
-            for x in ['cert', 'key', 'chain', 'passphrase']:
+            for x in ['cert', 'key', 'chain', 'passphrase', 'true_names']:
                 if x in item:
                     tmp[x] = item[x]
                 if 'chain' not in item:
