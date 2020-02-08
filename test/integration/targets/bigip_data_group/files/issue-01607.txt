@@ -1,0 +1,1 @@
+network 2402:6940:: prefixlen 32 := "Deakin University Network"
