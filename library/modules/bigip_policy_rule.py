@@ -35,8 +35,8 @@ options:
       type:
         description:
           - The action type. This value controls what below options are required.
-          - When C(type) is C(forward), will associate a given C(pool), or C(virtual)
-            with this rule.
+          - When C(type) is C(forward), will associate a given C(pool), or C(virtual),
+            or C(node) with this rule.
           - When C(type) is C(enable), will associate a given C(asm_policy) with
             this rule.
           - When C(type) is C(ignore), will remove all existing actions from this
@@ -63,6 +63,12 @@ options:
           - Virtual Server that you want to forward traffic to.
           - This parameter is only valid with the C(forward) type.
         type: str
+      node:
+        description:
+          - Node that you want to forward traffic to.
+          - This parameter is only valid with the C(forward) type.
+        type: str
+        version_added: "f5_modules 1.2"
       asm_policy:
         description:
           - ASM policy to enable.
@@ -178,6 +184,7 @@ author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
   - Greg Crosby (@crosbygw)
+  - Nitin Khanna (@nitinthewiz)
 '''
 
 EXAMPLES = r'''
@@ -574,14 +581,16 @@ class ModuleParameters(Parameters):
         :return:
         """
         action['type'] = 'forward'
-        if not any(x for x in ['pool', 'virtual'] if x in item):
+        if not any(x for x in ['pool', 'virtual', 'node'] if x in item):
             raise F5ModuleError(
-                "A 'pool' or 'virtual' must be specified when the 'forward' type is used."
+                "A 'pool' or 'virtual' or 'node' must be specified when the 'forward' type is used."
             )
         if item.get('pool', None):
             action['pool'] = fq_name(self.partition, item['pool'])
         elif item.get('virtual', None):
             action['virtual'] = fq_name(self.partition, item['virtual'])
+        elif item.get('node', None):
+            action['node'] = item['node']
 
     def _handle_enable_action(self, action, item):
         """Handle the nuances of the enable type
@@ -1194,6 +1203,7 @@ class ArgumentSpec(object):
                         required=True
                     ),
                     pool=dict(),
+                    node=dict(),
                     asm_policy=dict(),
                     virtual=dict(),
                     location=dict(),
@@ -1202,7 +1212,7 @@ class ArgumentSpec(object):
                     cookie_expiry=dict(type='int')
                 ),
                 mutually_exclusive=[
-                    ['pool', 'asm_policy', 'virtual', 'location', 'cookie_insert']
+                    ['pool', 'asm_policy', 'virtual', 'location', 'cookie_insert', 'node']
                 ]
             ),
             conditions=dict(
