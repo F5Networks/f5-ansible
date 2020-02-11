@@ -27,6 +27,14 @@ options:
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
     type: str
+  addon_keys:
+    description:
+      - The list of addon keys to use to in conjunction with base license.
+      - This parameter will be ignored if no C(license_key) is provided.
+      - This parameter is not required when C(state) is C(absent) and will be
+        ignored if it is provided.
+    type: list
+    version_added: "f5_modules 1.2"
   license_server:
     description:
       - The F5 license server to use when getting a license and validating a dossier.
@@ -39,7 +47,6 @@ options:
     description:
       - The state of the license on the system.
       - When C(present), only guarantees that a license is there.
-      - When C(latest), ensures that the license is always valid.
       - When C(absent), removes the license on the system.
       - When C(revoked), removes the license on the system and revokes its future usage
         on the F5 license servers.
@@ -63,9 +70,19 @@ options:
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = '''
+- name: License BIG-IP using a key
+  bigip_device_license:
+    license_key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
+    provider:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+  delegate_to: localhost
+
 - name: License BIG-IP using a key
   bigip_device_license:
     license_key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
@@ -101,12 +118,14 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_empty_list
     from library.module_utils.network.f5.icontrol import iControlRestSession
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_empty_list
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import iControlRestSession
 
 
@@ -289,6 +308,15 @@ class ModuleParameters(Parameters):
           </ns2:Body>
         </SOAP-ENV:Envelope>"""
         result = result.format(self.license_server, self.dossier, **self.license_options)
+        return result
+
+    @property
+    def addon_keys(self):
+        if self._values['license_key'] is None:
+            return None
+        if self._values['addon_keys'] is None or is_empty_list(self._values['addon_keys']):
+            return None
+        result = ' '.join(self._values['addon_keys'])
         return result
 
 
@@ -474,6 +502,10 @@ class ModuleManager(object):
             command='run',
             utilCmdArgs='-b "{0}"'.format(self.want.license_key)
         )
+        if self.want.addon_keys:
+            addons = self.want.addon_keys
+            params['utilCmdArgs'] = '-a {0} '.format(addons) + params['utilCmdArgs']
+
         if self.want.state == 'revoked':
             params['utilCmdArgs'] = '-r ' + params['utilCmdArgs']
 
@@ -848,6 +880,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             license_key=dict(),
+            addon_keys=dict(type='list'),
             license_server=dict(
                 default='activate.f5.com'
             ),
