@@ -1,0 +1,61 @@
+---
+
+- name: Issue 01112 - Check that the license hopper exists
+  stat:
+    path: "{{ default_hopper }}"
+  register: st
+
+- name: Issue 01112 - Fail if the file doesn't meet basic requirements
+  fail:
+    msg: License hopper file is missing, or malformed and needs to be corrected
+  when: not st.stat.exists or st.stat.size < 32
+
+- name: Issue 01112 - Get a license key
+  set_fact:
+    license_key_to_use: "{{ lookup('license_hopper', filename=default_hopper, remove=False) }}"
+
+- name: Issue 01112 - Check that the addon license hopper exists
+  stat:
+    path: "{{ default_hopper }}"
+  register: st2
+
+- name: Issue 01112 - Fail if the addon file doesn't meet basic requirements
+  fail:
+    msg: License hopper file is missing, or malformed and needs to be corrected
+  when: not st.stat.exists or st.stat.size < 32
+
+- name: Issue 01112 - Get addon key
+  set_fact:
+    addon_key: "{{ lookup('license_hopper', filename=default_hopper2, remove=False) }}"
+
+- name: Issue 01112 - Add license with addons
+  bigip_device_license:
+    license_key: "{{ license_key_to_use }}"
+    license_server: "{{ license_server }}"
+    addon_keys:
+      - "{{ addon_key }}"
+    accept_eula: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01112 - Assert Add license with addons
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01112 - Add license with addons - Idempotent check
+  bigip_device_license:
+    license_key: "{{ license_key_to_use }}"
+    license_server: "{{ license_server }}"
+    addon_keys:
+      - "{{ addon_key }}"
+    accept_eula: yes
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01112 - Assert Add license with addons - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
