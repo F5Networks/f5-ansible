@@ -1228,7 +1228,7 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if response.status in [200, 201]:
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return True
         raise F5ModuleError(response.content)
 
@@ -1298,14 +1298,15 @@ class ExternalManager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
+        response = self.client.api.delete(uri)
 
         # Remove the remote data group file if asked to
         if self.want.delete_data_group_file:
             self.remove_data_group_file_from_device()
 
-        if resp.status == 200:
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def remove_data_group_file_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/file/data-group/{2}".format(

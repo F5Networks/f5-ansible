@@ -315,40 +315,40 @@ class Parameters(AnsibleF5Parameters):
         'scope',
         'servers',
         'ssl',
-        'ssl_ca_cert',
-        'ssl_check_peer',
-        'ssl_client_cert',
-        'ssl_client_key',
+        'ca_cert',
+        'validate_certs',
+        'client_cert',
+        'client_key',
         'user_template',
     ]
 
     @property
-    def ssl_ca_cert(self):
-        if self._values['ssl_ca_cert'] is None:
+    def ca_cert(self):
+        if self._values['ca_cert'] is None:
             return None
-        elif self._values['ssl_ca_cert'] in ['none', '']:
+        elif self._values['ca_cert'] in ['none', '']:
             return ''
-        return fq_name(self.partition, self._values['ssl_ca_cert'])
+        return fq_name(self.partition, self._values['ca_cert'])
 
     @property
-    def ssl_client_key(self):
-        if self._values['ssl_client_key'] is None:
+    def client_key(self):
+        if self._values['client_key'] is None:
             return None
-        elif self._values['ssl_client_key'] in ['none', '']:
+        elif self._values['client_key'] in ['none', '']:
             return ''
-        return fq_name(self.partition, self._values['ssl_client_key'])
+        return fq_name(self.partition, self._values['client_key'])
 
     @property
-    def ssl_client_cert(self):
-        if self._values['ssl_client_cert'] is None:
+    def client_cert(self):
+        if self._values['client_cert'] is None:
             return None
-        elif self._values['ssl_client_cert'] in ['none', '']:
+        elif self._values['client_cert'] in ['none', '']:
             return ''
-        return fq_name(self.partition, self._values['ssl_client_cert'])
+        return fq_name(self.partition, self._values['client_cert'])
 
     @property
-    def ssl_check_peer(self):
-        return flatten_boolean(self._values['ssl_check_peer'])
+    def validate_certs(self):
+        return flatten_boolean(self._values['validate_certs'])
 
     @property
     def fallback_to_local(self):
@@ -405,10 +405,10 @@ class Changes(Parameters):
 
 class UsableChanges(Changes):
     @property
-    def ssl_check_peer(self):
-        if self._values['ssl_check_peer'] is None:
+    def validate_certs(self):
+        if self._values['validate_certs'] is None:
             return None
-        elif self._values['ssl_check_peer'] == 'yes':
+        elif self._values['validate_certs'] == 'yes':
             return 'enabled'
         return 'disabled'
 
@@ -445,8 +445,8 @@ class ReportableChanges(Changes):
         return None
 
     @property
-    def ssl_check_peer(self):
-        return flatten_boolean(self._values['ssl_check_peer'])
+    def validate_certs(self):
+        return flatten_boolean(self._values['validate_certs'])
 
     @property
     def check_member_attr(self):
@@ -491,16 +491,16 @@ class Difference(object):
         return cmp_str_with_none(self.want.user_template, self.have.user_template)
 
     @property
-    def ssl_ca_cert(self):
-        return cmp_str_with_none(self.want.ssl_ca_cert, self.have.ssl_ca_cert)
+    def ca_cert(self):
+        return cmp_str_with_none(self.want.ca_cert, self.have.ca_cert)
 
     @property
-    def ssl_client_key(self):
-        return cmp_str_with_none(self.want.ssl_client_key, self.have.ssl_client_key)
+    def client_key(self):
+        return cmp_str_with_none(self.want.client_key, self.have.client_key)
 
     @property
-    def ssl_client_cert(self):
-        return cmp_str_with_none(self.want.ssl_client_cert, self.have.ssl_client_cert)
+    def client_cert(self):
+        return cmp_str_with_none(self.want.client_cert, self.have.client_cert)
 
     @property
     def bind_password(self):
@@ -782,8 +782,8 @@ class ModuleManager(object):
 
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
             raise F5ModuleError(resp.content)
-
-        result.update({'fallback': response['fallback']})
+        if 'fallback' in response:
+            result.update({'fallback': response['fallback']})
         return result
 
 
