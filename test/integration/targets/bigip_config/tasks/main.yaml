@@ -4,16 +4,23 @@
 # functionality is all executable. Therefore, you will find no
 # idempotent tests for this module
 
+- name: Collect BIG-IP facts
+  bigip_device_info:
+    include: system-info
+  register: f
+
 - name: Save the running BIG-IP configuration to disk
   bigip_config:
     save: True
   register: result
+  when: f.system_info.product_version < "14.0.0"
 
 - name: Reset device
   bigip_config:
     reset: True
     save: True
   register: result
+  when: f.system_info.product_version < "14.0.0"
 
 - name: Reset device, load new running configuration, save it
   bigip_config:
@@ -21,6 +28,7 @@
     save: True
     merge_content: "{{ lookup('file', 'bigip.scf') }}"
   register: result
+  when: f.system_info.product_version < "14.0.0"
 
 - name: Ensure virtual server description is same as in SCF file
   bigip_virtual_server:
@@ -30,14 +38,18 @@
     port: 80
     state: present
   register: result
+  when: f.system_info.product_version < "14.0.0"
 
 - name: Assert Ensure virtual server description is same as in SCF file
   assert:
     that:
       - result is not changed
+  when: f.system_info.product_version < "14.0.0"
 
 - import_tasks: issue-00549.yaml
   tags: issue-00549
+  when: f.system_info.product_version < "14.0.0"
 
 - import_tasks: issue-00710.yaml
   tags: issue-00710
+  when: f.system_info.product_version < "14.0.0"
