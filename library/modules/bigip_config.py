@@ -235,14 +235,12 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if 'commandResult' in response:
+                return str(response['commandResult'])
             else:
-                raise F5ModuleError(resp.content)
-
-        if 'commandResult' in response:
-            return str(response['commandResult'])
+                return
+        raise F5ModuleError(resp.content)
 
     def merge(self, verify=True):
         temp_name = next(tempfile._get_candidate_names())
@@ -282,14 +280,12 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if 'commandResult' in response:
+                return str(response['commandResult'])
             else:
-                raise F5ModuleError(resp.content)
-
-        if 'commandResult' in response:
-            return str(response['commandResult'])
+                return
+        raise F5ModuleError(resp.content)
 
     def remove_temporary_file(self, remote_path):
         uri = "https://{0}:{1}/mgmt/tm/util/unix-rm".format(
@@ -307,11 +303,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def move_on_device(self, remote_path):
         uri = "https://{0}:{1}/mgmt/tm/util/unix-mv".format(
@@ -331,11 +325,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def upload_to_device(self, temp_name):
         template = StringIO(self.want.merge_content)
@@ -372,14 +364,12 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if 'commandResult' in response:
+                return str(response['commandResult'])
             else:
-                raise F5ModuleError(resp.content)
-
-        if 'commandResult' in response:
-            return str(response['commandResult'])
+                return
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):

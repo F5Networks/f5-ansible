@@ -368,11 +368,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -387,11 +385,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def absent(self):
         if self.exists():
@@ -404,11 +400,13 @@ class ModuleManager(object):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
-            return True
+        response = self.client.api.delete(uri)
 
-    def read_current_from_device(self):  # lgtm [py/similar-function]
+        if response.status in [200, 201]:
+            return True
+        raise F5ModuleError(response.content)
+
+    def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/cli/script/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -420,12 +418,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
