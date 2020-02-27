@@ -130,7 +130,7 @@
     that:
       - result.stdout_lines|length == 3
 
-- import_tasks: ssh-key.yaml
+- import_tasks: targets/bigip_command/tasks/provider-cli/ssh-key.yaml
   tags: provider-ssh-key
 
 - import_tasks: issue-00705.yaml
