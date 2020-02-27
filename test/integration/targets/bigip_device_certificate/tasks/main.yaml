@@ -7,7 +7,7 @@
     days_valid: 365
     force: yes
     provider: "{{ cli_provider }}"
-  register: results
+  register: result
 
 - name: Assert Update not expired certificate - force yes
   assert:
