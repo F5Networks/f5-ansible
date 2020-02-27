@@ -1033,11 +1033,9 @@ class InternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403, 409]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1052,11 +1050,9 @@ class InternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/internal/{2}".format(
@@ -1064,9 +1060,11 @@ class InternalManager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/internal/{2}".format(
@@ -1080,12 +1078,9 @@ class InternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ExternalManager(BaseManager):
@@ -1122,6 +1117,7 @@ class ExternalManager(BaseManager):
         return True
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/external/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1130,11 +1126,19 @@ class ExternalManager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def external_file_exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
@@ -1188,11 +1192,6 @@ class ExternalManager(BaseManager):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
         else:
             uri = "https://{0}:{1}/mgmt/tm/sys/file/data-group/".format(
                 self.client.provider['server'],
@@ -1210,12 +1209,9 @@ class ExternalManager(BaseManager):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] in [400, 403]:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
-        return response['name']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response['name']
+        raise F5ModuleError(resp.content)
 
     def remove_file_on_device(self, remote_path):
         uri = "https://{0}:{1}/mgmt/tm/util/unix-rm/".format(
@@ -1231,11 +1227,10 @@ class ExternalManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(response.content)
 
     def create_on_device(self):
         name = self.want.external_file_name
@@ -1261,11 +1256,8 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(response.content)
 
         self.remove_file_on_device(remote_path)
 
@@ -1296,11 +1288,9 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/external/{2}".format(
@@ -1308,14 +1298,15 @@ class ExternalManager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
+        response = self.client.api.delete(uri)
 
         # Remove the remote data group file if asked to
         if self.want.delete_data_group_file:
             self.remove_data_group_file_from_device()
 
-        if resp.status == 200:
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def remove_data_group_file_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/file/data-group/{2}".format(
@@ -1323,12 +1314,11 @@ class ExternalManager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.external_file_name)
         )
-        resp = self.client.api.delete(uri)
+        response = self.client.api.delete(uri)
 
-        if resp.status == 200:
+        if response.status in [200, 201]:
             return True
-        else:
-            return False
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         """Reads the current configuration from the device
@@ -1361,11 +1351,8 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response_dg and response_dg['code'] == 400:
-            if 'message' in response_dg:
-                raise F5ModuleError(response_dg['message'])
-            else:
-                raise F5ModuleError(resp_dg.content)
+        if resp_dg.status not in [200, 201] or 'code' in response_dg and response_dg['code'] not in [200, 201]:
+            raise F5ModuleError(resp_dg.content)
 
         external_file = os.path.basename(response_dg['externalFileName'])
         external_file_partition = os.path.dirname(response_dg['externalFileName']).strip('/')
@@ -1382,14 +1369,11 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        result = ApiParameters(params=response)
-        result.update({'description': response_dg.get('description', None)})
-        return result
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            result = ApiParameters(params=response)
+            result.update({'description': response_dg.get('description', None)})
+            return result
+        raise F5ModuleError(resp.content)
 
 
 class ModuleManager(object):
