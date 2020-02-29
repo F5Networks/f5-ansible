@@ -497,10 +497,20 @@ options:
          - serverside
     type: list
     version_added: 2.8
+  check_profiles:
+    description:
+      - Specifies whether the client and server ssl profiles specified by the user should be verified to be
+      - correct against the existing profiles. Useful in cases where a large number of profiles are being
+      - added in one go. Not recommended for common use. In case of duplicate profiles, or erroneous profiles,
+        the BIGIP will throw an error.
+    type: bool
+    default: yes
+    version_added: "f5_modules 1.2"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
+  - Nitin Khanna (@nitinthewiz)
 '''
 
 EXAMPLES = r'''
@@ -1063,6 +1073,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_src_mask',
         'rate_limit_dst_mask',
         'clone_pools',
+        'check_profiles',
     ]
 
     profiles_mutex = [
@@ -1747,12 +1758,20 @@ class ModuleParameters(Parameters):
         tmp['context'] = tmp['context'].replace('client-side', 'clientside')
 
     def _handle_ssl_profile_nuances(self, profile):
-        if profile['name'] == 'serverssl' or self._is_server_ssl_profile(profile):
-            if profile['context'] != 'serverside':
-                profile['context'] = 'serverside'
-        if profile['name'] == 'clientssl' or self._is_client_ssl_profile(profile):
-            if profile['context'] != 'clientside':
-                profile['context'] = 'clientside'
+        if self._values['check_profiles']:
+            if profile['name'] == 'serverssl' or self._is_server_ssl_profile(profile):
+                if profile['context'] != 'serverside':
+                    profile['context'] = 'serverside'
+            if profile['name'] == 'clientssl' or self._is_client_ssl_profile(profile):
+                if profile['context'] != 'clientside':
+                    profile['context'] = 'clientside'
+        else:
+            if profile['name'] == 'serverssl':
+                if profile['context'] != 'serverside':
+                    profile['context'] = 'serverside'
+            if profile['name'] == 'clientssl':
+                if profile['context'] != 'clientside':
+                    profile['context'] = 'clientside'
         return
 
     def _check_port(self):
@@ -3660,6 +3679,10 @@ class ArgumentSpec(object):
                         ]
                     )
                 )
+            ),
+            check_profiles=dict(
+                type='bool',
+                default='yes'
             )
         )
         self.argument_spec = {}
