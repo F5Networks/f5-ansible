@@ -6879,6 +6879,12 @@ virtual_servers:
       returned: queried
       type: list
       sample: ['/Common/rule1', /Common/rule2']
+    policies:
+      description:
+        - List of LTM policies attached to the virtual server.
+      returned: queried
+      type: list
+      sample: ['/Common/policy1', /Common/policy2']
     security_log_profiles:
       description:
         - Specifies the log profile applied to the virtual server.
@@ -15203,7 +15209,8 @@ class VirtualServersParameters(BaseParameters):
         'mirror': 'connection_mirror_enabled',
         'rules': 'irules',
         'securityLogProfiles': 'security_log_profiles',
-        'profilesReference': 'profiles'
+        'profilesReference': 'profiles',
+        'policiesReference': 'policies',
     }
 
     returnables = [
@@ -15241,6 +15248,7 @@ class VirtualServersParameters(BaseParameters):
         'irules',
         'security_log_profiles',
         'type',
+        'policies',
         'profiles',
         'destination_address',
         'destination_port',
@@ -15851,6 +15859,15 @@ class VirtualServersParameters(BaseParameters):
         else:
             result = Destination(ip=None, port=None, route_domain=None)
             return result
+
+    @property
+    def policies(self):
+        if 'items' not in self._values['policies']:
+            return None
+        results = []
+        for item in self._values['policies']['items']:
+            results.append(item['fullPath'])
+        return results
 
 
 class VirtualServersFactManager(BaseManager):
