@@ -1,0 +1,13 @@
+---
+
+- name: Issue 01497 - Select virtual server facts
+  bigip_device_info:
+    include:
+      - management-routes
+  register: result
+
+- name: Issue 01497 - Assert Management Route fact is gathered
+  assert:
+    that:
+      - result is success
+      - result.management_routes | json_query("[?name=='default'].network") | first == 'default'
