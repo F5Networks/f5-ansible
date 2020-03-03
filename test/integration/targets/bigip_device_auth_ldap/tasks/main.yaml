@@ -312,93 +312,165 @@
       - result is success
       - result is not changed
 
+- name: Change both ssl_client_key and ssl_client_cert
+  bigip_device_auth_ldap:
+    ssl_client_key: default.key
+    ssl_client_cert: default.crt
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Change both ssl_client_key and ssl_client_cert
+  assert:
+    that:
+      - result is success
+      - result is changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Change both ssl_client_key and ssl_client_cert - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_client_key: default.key
+    ssl_client_cert: default.crt
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Change both ssl_client_key and ssl_client_cert - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Change both ssl_client_key and ssl_client_cert - none
+  bigip_device_auth_ldap:
+    ssl_client_key: none
+    ssl_client_cert: none
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Change both ssl_client_key and ssl_client_cert - none
+  assert:
+    that:
+      - result is success
+      - result is changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Change both ssl_client_key and ssl_client_cert - none - Idempotent check
+  bigip_device_auth_ldap:
+    ssl_client_key: none
+    ssl_client_cert: none
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Change both ssl_client_key and ssl_client_cert - none - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
+
 - name: Change ssl_client_key
   bigip_device_auth_ldap:
     ssl_client_key: default.key
   register: result
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Assert Change ssl_client_key
   assert:
     that:
       - result is success
       - result is changed
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Change ssl_client_key - Idempotent check
   bigip_device_auth_ldap:
     ssl_client_key: default.key
   register: result
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Assert Change ssl_client_key - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Change ssl_client_key - none
   bigip_device_auth_ldap:
     ssl_client_key: none
   register: result
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Assert Change ssl_client_key - none
   assert:
     that:
       - result is success
       - result is changed
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Change ssl_client_key - none - Idempotent check
   bigip_device_auth_ldap:
     ssl_client_key: none
   register: result
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Assert Change ssl_client_key - none - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Change ssl_client_cert
   bigip_device_auth_ldap:
     ssl_client_cert: default.crt
   register: result
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Assert Change ssl_client_cert
   assert:
     that:
       - result is success
       - result is changed
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Change ssl_client_cert - Idempotent check
   bigip_device_auth_ldap:
     ssl_client_cert: default.crt
   register: result
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Assert Change ssl_client_cert - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Change ssl_client_cert - none
   bigip_device_auth_ldap:
     ssl_client_cert: none
   register: result
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Assert Change ssl_client_cert - none
   assert:
     that:
       - result is success
       - result is changed
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Change ssl_client_cert - none - Idempotent check
   bigip_device_auth_ldap:
     ssl_client_cert: none
   register: result
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Assert Change ssl_client_cert - none - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
+  when: f.system_info.product_version < "13.0.0"
 
 - name: Change ssl - yes
   bigip_device_auth_ldap:
@@ -554,23 +626,27 @@
   bigip_device_auth_ldap:
     fallback_to_local: yes
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change fallback_to_local - yes
   assert:
     that:
       - result is success
       - result is changed
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Change fallback_to_local - yes - Idempotent check
   bigip_device_auth_ldap:
     fallback_to_local: yes
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change fallback_to_local - yes - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
 
 
@@ -579,23 +655,27 @@
   bigip_device_auth_ldap:
     fallback_to_local: no
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change fallback_to_local - no
   assert:
     that:
       - result is success
       - result is changed
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Change fallback_to_local - no - Idempotent check
   bigip_device_auth_ldap:
     fallback_to_local: no
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change fallback_to_local - no - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
 
 - name: Remove LDAP device auth

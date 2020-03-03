@@ -22,7 +22,8 @@ try:
     from library.modules.bigip_data_group import ExternalManager
     from library.modules.bigip_data_group import InternalManager
     from library.modules.bigip_data_group import ArgumentSpec
-
+    from library.modules.bigip_data_group import RecordsEncoder
+    from library.modules.bigip_data_group import RecordsDecoder
     from library.module_utils.network.f5.common import F5ModuleError
 
     # In Ansible 2.8, Ansible changed import paths.
@@ -36,6 +37,8 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import ExternalManager
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import InternalManager
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import RecordsEncoder
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_data_group import RecordsDecoder
 
     from ansible.module_utils.network.f5.common import F5ModuleError
 
@@ -66,6 +69,138 @@ def load_fixture(name):
 
     fixture_data[path] = data
     return data
+
+
+class TestAuxClasses(unittest.TestCase):
+    def setUp(self):
+        self.ip_encode = RecordsEncoder(record_type='ip', separator=':=')
+        self.int_encode = RecordsEncoder(record_type='int', separator=':=')
+        self.str_encode = RecordsEncoder(record_type='str', separator=':=')
+        self.ip_decode = RecordsDecoder(record_type='ip', separator=':=')
+        self.int_decode = RecordsDecoder(record_type='int', separator=':=')
+        self.str_decode = RecordsDecoder(record_type='str', separator=':=')
+
+    def test_encode_ipv6_ipv4_cidr_dict(self, *args):
+        dg1 = dict(key='10.0.0.0/8', value='Network1')
+        dg2 = dict(key='2402:6940::/32', value='Network2')
+        dg3 = dict(key='192.168.1.1/32', value='Host1')
+        dg4 = dict(key='2402:9400:1000::/128', value='Host2')
+
+        net1 = self.ip_encode.encode(dg1)
+        net2 = self.ip_encode.encode(dg2)
+        host1 = self.ip_encode.encode(dg3)
+        host2 = self.ip_encode.encode(dg4)
+
+        assert net1 == 'network 10.0.0.0 prefixlen 8 := Network1'
+        assert net2 == 'network 2402:6940:: prefixlen 32 := Network2'
+        assert host1 == 'host 192.168.1.1 := Host1'
+        assert host2 == 'host 2402:9400:1000:: := Host2'
+
+    def test_encode_ipv6_ipv4_cidr_rd_dict(self, *args):
+        dg1 = dict(key='10.0.0.0%11/8', value='Network1')
+        dg2 = dict(key='2402:6940::%11/32', value='Network2')
+        dg3 = dict(key='192.168.1.1%11/32', value='Host1')
+        dg4 = dict(key='2402:9400:1000::%11/128', value='Host2')
+
+        net1 = self.ip_encode.encode(dg1)
+        net2 = self.ip_encode.encode(dg2)
+        host1 = self.ip_encode.encode(dg3)
+        host2 = self.ip_encode.encode(dg4)
+
+        assert net1 == 'network 10.0.0.0%11 prefixlen 8 := Network1'
+        assert net2 == 'network 2402:6940::%11 prefixlen 32 := Network2'
+        assert host1 == 'host 192.168.1.1%11 := Host1'
+        assert host2 == 'host 2402:9400:1000::%11 := Host2'
+
+    def test_encode_ipv6_ipv4_cidr_str(self, *args):
+        dg1 = '10.0.0.0/8'
+        dg2 = '2402:6940::/32 := Network2'
+        dg3 = '192.168.1.1/32 := Host1'
+        dg4 = '2402:9400:1000::/128'
+
+        net1 = self.ip_encode.encode(dg1)
+        net2 = self.ip_encode.encode(dg2)
+        host1 = self.ip_encode.encode(dg3)
+        host2 = self.ip_encode.encode(dg4)
+
+        assert net1 == 'network 10.0.0.0 prefixlen 8 := 10.0.0.0'
+        assert net2 == 'network 2402:6940:: prefixlen 32 := Network2'
+        assert host1 == 'host 192.168.1.1 := Host1'
+        assert host2 == 'host 2402:9400:1000:: := 2402:9400:1000::'
+
+    def test_encode_ipv6_ipv4_cidr_rd_str(self, *args):
+        dg1 = '10.0.0.0%12/8'
+        dg2 = 'network 2402:6940::%12 prefixlen 32 := Network2'
+        dg3 = 'host 192.168.1.1%12 := Host1'
+        dg4 = '2402:9400:1000::%12/128'
+
+        net1 = self.ip_encode.encode(dg1)
+        net2 = self.ip_encode.encode(dg2)
+        host1 = self.ip_encode.encode(dg3)
+        host2 = self.ip_encode.encode(dg4)
+
+        assert net1 == 'network 10.0.0.0%12 prefixlen 8 := 10.0.0.0%12'
+        assert net2 == 'network 2402:6940::%12 prefixlen 32 := Network2'
+        assert host1 == 'host 192.168.1.1%12 := Host1'
+        assert host2 == 'host 2402:9400:1000::%12 := 2402:9400:1000::%12'
+
+    def test_encode_host_net_ptrn_str(self, *args):
+        dg1 = 'network 10.0.0.0 prefixlen 8 := Network1'
+        dg2 = 'network 2402:6940:: prefixlen 32 := Network2'
+        dg3 = 'host 192.168.1.1 := Host1'
+        dg4 = 'host 2402:9400:1000:: := Host2'
+
+        net1 = self.ip_encode.encode(dg1)
+        net2 = self.ip_encode.encode(dg2)
+        host1 = self.ip_encode.encode(dg3)
+        host2 = self.ip_encode.encode(dg4)
+
+        assert net1 == 'network 10.0.0.0 prefixlen 8 := Network1'
+        assert net2 == 'network 2402:6940:: prefixlen 32 := Network2'
+        assert host1 == 'host 192.168.1.1 := Host1'
+        assert host2 == 'host 2402:9400:1000:: := Host2'
+
+    def test_encode_int_and_str(self, *args):
+        dg1 = dict(key=1, value='one')
+        dg2 = '10'
+        dg3 = dict(key='one', value='is_not_the_answer')
+        dg4 = 'fifty'
+
+        int1 = self.int_encode.encode(dg1)
+        int2 = self.int_encode.encode(dg2)
+        str1 = self.str_encode.encode(dg3)
+        str2 = self.str_encode.encode(dg4)
+
+        assert int1 == '1 := one'
+        assert int2 == '10 := ""'
+        assert str1 == 'one := is_not_the_answer'
+        assert str2 == 'fifty := ""'
+
+    def test_decode_ipv6_ipv4_cidr_rd(self, *args):
+        dg1 = 'network 192.168.0.0%11 prefixlen 16 := "Network3"'
+        dg2 = 'network 2402:9400:1000:0::%11 prefixlen 64 := "Network4"'
+        dg3 = 'host 172.16.1.1%11 := "Host3"'
+        dg4 = 'host 2001:0db8:85a3:0000:0000:8a2e:0370:7334%11 := "Host4"'
+
+        net1 = self.ip_decode.decode(dg1)
+        net2 = self.ip_decode.decode(dg2)
+        host1 = self.ip_decode.decode(dg3)
+        host2 = self.ip_decode.decode(dg4)
+
+        assert net1 == dict(name='192.168.0.0%11/16', data='Network3')
+        assert net2 == dict(name='2402:9400:1000:0::%11/64', data='Network4')
+        assert host1 == dict(name='172.16.1.1%11/32', data='Host3')
+        assert host2 == dict(name='2001:0db8:85a3:0000:0000:8a2e:0370:7334%11/128', data='Host4')
+
+    def test_decode_int_str(self, *args):
+        dg1 = '10'
+        dg2 = 'one := "is_not_the_answer"'
+
+        int1 = self.int_decode.decode(dg1)
+        str1 = self.str_decode.decode(dg2)
+
+        assert int1 == dict(name='10', data="")
+        assert str1 == dict(name='one', data='is_not_the_answer')
 
 
 class TestParameters(unittest.TestCase):

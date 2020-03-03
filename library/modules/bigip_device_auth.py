@@ -656,12 +656,10 @@ class BaseManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['type']
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response['type']
+        raise F5ModuleError(resp.content)
 
 
 class LocalManager(BaseManager):
@@ -705,14 +703,11 @@ class LocalManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        if response['type'] == 'local':
-            return True
-        return False
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if response['type'] == 'local':
+                return True
+            return False
+        raise F5ModuleError(resp.content)
 
     def create(self):
         self._set_changed_options()
@@ -1022,6 +1017,7 @@ class TacacsManager(BaseManager):
         return TacacsApiParameters(params=params)
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/auth/tacacs/~Common~system-auth".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1029,11 +1025,19 @@ class TacacsManager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create(self):
         self._set_changed_options()
@@ -1080,11 +1084,9 @@ class TacacsManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1102,22 +1104,20 @@ class TacacsManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/auth/tacacs/~Common~system-auth".format(
             self.client.provider['server'],
             self.client.provider['server_port']
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
-        raise F5ModuleError(resp.content)
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/auth/tacacs/~Common~system-auth".format(
@@ -1129,13 +1129,10 @@ class TacacsManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        response['auth_source'] = self.read_current_auth_source_from_device()
-        return self.get_api_parameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response['auth_source'] = self.read_current_auth_source_from_device()
+            return self.get_api_parameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ModuleManager(object):

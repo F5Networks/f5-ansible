@@ -72,6 +72,7 @@ options:
       - irules
       - ltm-pools
       - ltm-policies
+      - management-routes
       - nodes
       - oneconnect-profiles
       - partitions
@@ -137,6 +138,7 @@ options:
       - "!irules"
       - "!ltm-pools"
       - "!ltm-policies"
+      - "!management-routes"
       - "!nodes"
       - "!oneconnect-profiles"
       - "!partitions"
@@ -3831,6 +3833,48 @@ ltm_policies:
           sample: hash/dictionary of values
       sample: hash/dictionary of values
   sample: hash/dictionary of values
+management_routes:
+  description: Management route related information.
+  returned: When C(management-routes) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: queried
+      type: str
+      sample: /Common/default
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: queried
+      type: str
+      sample: default
+    description:
+      description:
+        - User defined description of the route.
+      returned: queried
+      type: str
+      sample: route-1-external
+    gateway:
+      description:
+        - The gateway IP address through which the system forwards packets to the destination.
+      returned: queried
+      type: str
+      sample: 192.168.0.1
+    mtu:
+      description:
+        - The maximum transmission unit for the management interface.
+      returned: queried
+      type: str
+      sample: 0
+    network:
+      description:
+        - The destination subnet and netmask, also specified as default or default-inet6.
+      returned: queried
+      type: str
+      sample: default
+  sample: hash/dictionary of values
 nodes:
   description: Node related information.
   returned: When C(nodes) is specified in C(gather_subset).
@@ -6879,6 +6923,12 @@ virtual_servers:
       returned: queried
       type: list
       sample: ['/Common/rule1', /Common/rule2']
+    policies:
+      description:
+        - List of LTM policies attached to the virtual server.
+      returned: queried
+      type: list
+      sample: ['/Common/policy1', /Common/policy2']
     security_log_profiles:
       description:
         - Specifies the log profile applied to the virtual server.
@@ -15203,7 +15253,8 @@ class VirtualServersParameters(BaseParameters):
         'mirror': 'connection_mirror_enabled',
         'rules': 'irules',
         'securityLogProfiles': 'security_log_profiles',
-        'profilesReference': 'profiles'
+        'profilesReference': 'profiles',
+        'policiesReference': 'policies',
     }
 
     returnables = [
@@ -15241,6 +15292,7 @@ class VirtualServersParameters(BaseParameters):
         'irules',
         'security_log_profiles',
         'type',
+        'policies',
         'profiles',
         'destination_address',
         'destination_port',
@@ -15852,6 +15904,15 @@ class VirtualServersParameters(BaseParameters):
             result = Destination(ip=None, port=None, route_domain=None)
             return result
 
+    @property
+    def policies(self):
+        if 'items' not in self._values['policies']:
+            return None
+        results = []
+        for item in self._values['policies']['items']:
+            results.append(item['fullPath'])
+        return results
+
 
 class VirtualServersFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
@@ -16091,6 +16152,72 @@ class VlansFactManager(BaseManager):
             return {}
 
 
+class ManagementRouteParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'description',
+        'gateway',
+        'mtu',
+        'network',
+    ]
+
+
+class ManagementRouteFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ManagementRouteFactManager, self).__init__(**kwargs)
+        self.want = ManagementRouteParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(management_routes=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            attrs = resource
+            params = ManagementRouteParameters(params=attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/management-route?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
@@ -16134,6 +16261,7 @@ class ModuleManager(object):
             'irules': IrulesFactManager,
             'ltm-pools': LtmPoolsFactManager,
             'ltm-policies': LtmPolicyFactManager,
+            'management-routes': ManagementRouteFactManager,
             'nodes': NodesFactManager,
             'oneconnect-profiles': OneConnectProfilesFactManager,
             'partitions': PartitionFactManager,
@@ -16336,6 +16464,7 @@ class ArgumentSpec(object):
                     'irules',
                     'ltm-pools',
                     'ltm-policies',
+                    'management-routes',
                     'nodes',
                     'oneconnect-profiles',
                     'partitions',
@@ -16405,6 +16534,7 @@ class ArgumentSpec(object):
                     '!irules',
                     '!ltm-pools',
                     '!ltm-policies',
+                    '!management-routes',
                     '!nodes',
                     '!oneconnect-profiles',
                     '!partitions',
