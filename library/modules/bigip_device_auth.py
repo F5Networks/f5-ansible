@@ -30,6 +30,7 @@ options:
       - This module only supports a subset, at this time, of the total available auth types.
     type: str
     choices:
+      - radius
       - tacacs
       - local
   servers:
@@ -37,6 +38,8 @@ options:
       - Specifies a list of the IPv4 addresses for servers using the Terminal
         Access Controller Access System (TACACS)+ protocol with which the system
         communicates to obtain authorization data.
+      - Specifies a list of the IPv4 addresses for servers using the RADIUS protocol with which the system
+        communicates to obtain authorization data   
       - For each address, an alternate TCP port number may be optionally specified
         by specifying the C(port) key.
       - If no port number is specified, the default port C(49163) is used.
@@ -51,13 +54,14 @@ options:
             more clarification.
       port:
         description:
-          - The port of the server.
+          - The port of the server.           
   secret:
     description:
       - Secret key used to encrypt and decrypt packets sent or received from the
         server.
       - B(Do not) use the pound/hash sign in the secret for TACACS+ servers.
       - When configuring TACACS+ auth for the first time, this value is required.
+      - When configuring RADIUS auth, provide 
     type: str
   service_name:
     description:
@@ -79,6 +83,41 @@ options:
       - connection
       - system
       - firewall
+  timeout:
+    description: 
+      - This setting applies only for RADIUS.
+      - Specifies the timeout value in seconds.
+    type: str
+    default: 3
+  retries:
+    description:
+      - This setting applies only for RADIUS.
+      - Specifies the number of authentication retries that the BIG-IP local traffic management system allows before authentication fails. 
+    default: 3
+    choices:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5      
+  service_type:
+    description: 
+      - Specifies the type of service requested from the RADIUS server. The default value is authenticate-only
+    type: str
+    choices: 
+      - authenticate-only
+      - login
+      - default
+      - framed
+      - callback-login
+      - callback-framed
+      - outbound
+      - administrative
+      - nas-prompt
+      - callback-nas-prompt
+      - call-check
+      - callback-administrative
   protocol_name:
     description:
       - Specifies the protocol associated with the value specified in C(service_name),
@@ -160,9 +199,25 @@ extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Nitin Khanna (@nitinthewiz)
+  - Andrey Kashcheev (@andreykashcheev)
 '''
 
 EXAMPLES = r'''
+- name: Set the system auth to RADIUS, default server port
+  bigip_device_auth:
+    type: radius
+    secret: secret
+    servers:
+      - address: 10.10.10.10
+      port: 1812
+    state: present
+    use_for_auth: yes
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+  
 - name: Set the system auth to TACACS+, default server port
   bigip_device_auth:
     type: tacacs
@@ -303,7 +358,8 @@ class TacacsParameters(BaseParameters):
         'protocol',
         'service',
         'secret',
-        'servers'
+        'servers',
+        'service_name'
     ]
 
     returnables = [
@@ -325,9 +381,76 @@ class TacacsParameters(BaseParameters):
         'auth_source',
     ]
 
+class RadiusParameters(BaseParameters):
+    api_map = {
+        'serviceType': 'service_type'
+    }
+
+    api_attributes = [
+        'secret',
+        'servers',
+        'serviceType',
+        'timeout',
+        'retries'
+    ]
+
+    returnables = [
+        'servers',
+        'secret',
+        'service_type',
+        'type',
+        'timeout',
+        'retries'
+    ]
+
+    updatables = [
+        'servers',
+        'secret',
+        'service_type',
+        'timeout',
+        'retries'
+    ]
 
 class TacacsApiParameters(TacacsParameters):
     pass
+
+
+class RadiusApiParameters(RadiusParameters):
+    pass
+
+class RadiusModuleParameters(RadiusParameters):
+    @property
+    def servers(self):
+        if self._values['servers'] is None:
+            return None
+        result = []
+        for server in self._values['servers']:
+            if isinstance(server, dict):
+                if 'address' not in server:
+                    raise F5ModuleError(
+                        "An 'address' field must be provided when specifying separate fields to the 'servers' parameter."
+                    )
+                address = server.get('address')
+                port = server.get('port', None)
+            elif isinstance(server, string_types):
+                address = server
+                port = None
+            if port is None:
+                result.append({
+                    "address": address
+                })
+            else:
+                result.append({
+                    "address" : address,
+                    "port": port
+                })
+        return result
+
+    @property
+    def auth_source(self):
+        return 'radius'
+
+
 
 
 class TacacsModuleParameters(TacacsParameters):
@@ -362,15 +485,25 @@ class TacacsChanges(BaseChanges, TacacsParameters):
     pass
 
 
+class RadiusChanges(BaseChanges, RadiusParameters):
+    pass
+
 class TacacsUsableChanges(TacacsChanges):
     pass
 
+class RadiusUsableChanges(RadiusChanges):
+    pass
 
 class TacacsReportableChanges(TacacsChanges):
     @property
     def secret(self):
         return None
 
+
+class RadiusReportableChanges(RadiusChanges):
+    @property
+    def secret(self):
+        return None
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -598,6 +731,267 @@ class LocalManager(BaseManager):
             "Instead, specify a 'state' of 'present' on other types."
         )
 
+class RadiusManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.client = F5RestClient(**self.module.params)
+        self.want = self.get_module_parameters(params=self.module.params)
+        self.have = self.get_api_parameters()
+        self.changes = self.get_usable_changes()
+
+    @property
+    def returnables(self):
+        return RadiusParameters.returnables
+
+    @property
+    def updatables(self):
+        return RadiusParameters.updatables
+
+    def get_usable_changes(self, params=None):
+        return RadiusUsableChanges(params=params)
+
+    def get_reportable_changes(self, params=None):
+        return RadiusReportableChanges(params=params)
+
+    def get_module_parameters(self, params=None):
+        return RadiusModuleParameters(params=params)
+
+    def get_api_parameters(self, params=None):
+        if params == None:
+            return RadiusApiParameters(params=params)
+        temp_params=dict()
+        if 'radius_server_1' in  temp_params:
+            temp_params['servers']=list()
+            temp_params['servers'].append({
+                'address': params['radius_server_1']['server'],
+                'port': params['radius_server_1']['port'],
+            })
+        if 'radius_server_2' in temp_params:
+            temp_params['servers'].append({
+                'address': params['radius_server_2']['server'],
+                'port': params['radius_server_2']['port'],
+            })
+        temp_params['service_type']=params['radius_config']['serviceType']
+        return RadiusApiParameters(params=temp_params)
+
+    def exists(self):
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        return True
+
+    def create(self):
+        self._set_changed_options()
+        if self.module.check_mode:
+            return True
+        self.create_on_device()
+        if self.want.use_for_auth:
+            self.update_auth_source_on_device('radius')
+        return True
+
+    def create_on_device(self):
+        params = self.changes.api_params()
+
+        uri_radius_server = "https://{0}:{1}/mgmt/tm/auth/radius-server".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        uri_radius_config = "https://{0}:{1}/mgmt/tm/auth/radius".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+
+        radius_servers = []
+        count=1
+        for server in params['servers']:
+            if count < 3:
+                params['name'] = 'system_auth_name{0}'.format(str(count))
+                count=count+1
+                radius_servers.append(params['name'])
+                params['server'] = server['address']
+                if 'port' in server:
+                    params['port'] = server['port']
+                else:
+                    params['port'] = None
+                resp1 = self.client.api.post(uri_radius_server, json=params)
+        params = self.changes.api_params()
+        params['name'] = 'system-auth'
+        params['servers'] = radius_servers
+        resp2 = self.client.api.post(uri_radius_config, json=params)
+
+        try:
+            response1 = resp1.json()
+            response2 = resp2.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if ('code' in response2 and response2['code'] in [400, 403]) or ('code' in response1 and response1['code'] in [400, 403]):
+            if 'message' in response2:
+                raise F5ModuleError(response2['message'])
+            elif 'message' in response1:
+                raise F5ModuleError(response1['message'])
+            else:
+                raise F5ModuleError(resp2.content)
+
+    def read_current_from_device(self):
+        response=dict()
+        uri_radius_config = "https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+
+        try:
+            count = 1
+            for name in ['system_auth_name1', 'system_auth_name2']:
+                uri_radius_server = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~{2}".format(
+                    self.client.provider['server'],
+                    self.client.provider['server_port'],
+                    name
+                )
+                resp = self.client.api.get(uri_radius_server)
+                response['radius_server_' + str(count)] = resp.json()
+                count = count+1
+            resp = self.client.api.get(uri_radius_config)
+            response['radius_config'] = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if ('code' in response['radius_config'] and response['radius_config']['code'] == 400) or \
+            ('code' in response['radius_server_1'] and response['radius_server_1']['code'] == 400) or \
+            ('code' in response['radius_server_2'] and response['radius_server_2']['code'] == 400):
+            if 'message' in response['radius_config']:
+                raise F5ModuleError(response['radius_config']['message'])
+            elif 'message' in response['radius_server_1']:
+                raise F5ModuleError(response['radius_server_1']['message'])
+            elif 'message' in response['radius_server_2']:
+                raise F5ModuleError(response['radius_server_2']['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        response['auth_source'] = self.read_current_auth_source_from_device()
+        return self.get_api_parameters(params=response)
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
+            return True
+        result = False
+        if self.update_on_device():
+            result = True
+        if self.want.use_for_auth and self.changes.auth_source == 'radius':
+            self.update_auth_source_on_device('radius')
+            result = True
+        return result
+
+    def update_on_device(self):
+        params = self.changes.api_params()
+        if not params:
+            return False
+        response = dict()
+
+        uri_radius_config = 'https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+
+        try:
+            if 'servers' in params:
+                count=1
+                for server in params['servers']:
+                    uri_radius_server = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~{2}".format(
+                        self.client.provider['server'],
+                        self.client.provider['server_port'],
+                        'system_auth_name' + str(count)
+                    )
+                    params['server'] = server['address']
+                    if 'port' in server:
+                        params['port'] = server['port']
+                    else:
+                        params['port'] = '1812'
+
+                    resp = self.client.api.patch(uri_radius_server, json=params)
+                    response['radius_server' + str(count)] = resp.json()
+                    count=count+1
+            else:
+                count=1
+                for name in ['system_auth_name1', 'system_auth_name2']:
+                    uri_radius_server = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~{2}".format(
+                        self.client.provider['server'],
+                        self.client.provider['server_port'],
+                        name
+                    )
+                    resp = self.client.api.patch(uri_radius_server, json=params)
+                    response['radius_server' + str(count)] = resp.json()
+                    count=count+1
+
+            if 'server' in params:
+                params.pop('server')
+            if 'port' in params:
+                params.pop('port')
+            if 'servers' in params:
+                params.pop('servers')
+            if 'timeout' in params:
+                params.pop('timeout')
+
+            if len(params.keys()) > 1:
+                resp=self.client.api.patch(uri_radius_config, json=params)
+                response['radius_config'] = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if ('radius_config' in response and 'code' in response['radius_config'] and response['radius_config']['code'] == 400) or \
+            ('radius_server_1' in response and 'code' in response['radius_server_1'] and response['radius_server_1']['code'] == 400) or \
+            ('radius_server_2' in response and 'code' in response['radius_server_2'] and response['radius_server_2']['code'] == 400):
+            if 'message' in response['radius_config']:
+                raise F5ModuleError(response['radius_config']['message'])
+            elif 'message' in response['radius_server_1']:
+                raise F5ModuleError(response['radius_server_1']['message'])
+            elif 'message' in response['radius_server_2']:
+                raise F5ModuleError(response['radius_server_2']['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        return True
+
+    def remove(self):
+        if self.module.check_mode:
+            return True
+        self.update_auth_source_on_device('local')
+        self.remove_from_device()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the resource.")
+        return True
+
+    def remove_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.delete(uri)
+        if not resp.status == 200:
+            raise F5ModuleError(resp.content)
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~system_auth_name1".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.delete(uri)
+        if not resp.status == 200:
+            raise F5ModuleError(resp.content)
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~system_auth_name2".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        self.client.api.delete(uri)
+        return True
+
 
 class TacacsManager(BaseManager):
     def __init__(self, *args, **kwargs):
@@ -756,6 +1150,8 @@ class ModuleManager(object):
     def get_manager(self, type):
         if type == 'tacacs':
             return TacacsManager(**self.kwargs)
+        elif type == 'radius':
+            return RadiusManager(**self.kwargs)
         elif type == 'local':
             return LocalManager(**self.kwargs)
         else:
@@ -770,7 +1166,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             type=dict(
                 required=True,
-                choices=['local', 'tacacs']
+                choices=['local', 'tacacs', 'radius']
             ),
             servers=dict(type='raw'),
             secret=dict(no_log=True),
@@ -779,6 +1175,23 @@ class ArgumentSpec(object):
                     'slip', 'ppp', 'arap', 'shell', 'tty-daemon',
                     'connection', 'system', 'firewall'
                 ]
+            ),
+            retries=dict(
+                default='3',
+                choices=[
+                    '0', '1', '2',
+                    '3', '4', '5'
+                ]
+            ),
+            timeout=dict(
+                default='3'
+            ),
+            service_type=dict(
+                choices=[
+                    'authenticate-only', 'login', 'default', 'framed', 'callback-login', 'callback-framed', 'outbound', 'administrative',
+                    'nas-prompt', 'callback-nas-prompt', 'call-check', 'callback-administrative'
+                ],
+                default='authenticate-only'
             ),
             protocol_name=dict(
                 choices=[
