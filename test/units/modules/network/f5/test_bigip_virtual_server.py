@@ -993,3 +993,69 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['port_translation'] is False
+
+    def test_create_virtual_server_with_check_profiles_bool_true(self, *args):
+        set_module_args(dict(
+            all_profiles=[
+                'http', 'clientssl'
+            ],
+            destination="10.10.10.10",
+            name="my-snat-pool",
+            partition="Common",
+            port="443",
+            state="present",
+            check_profiles=True,
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['check_profiles'] is True
+
+    def test_create_virtual_server_with_check_profiles_bool_false(self, *args):
+        set_module_args(dict(
+            all_profiles=[
+                'http', 'clientssl'
+            ],
+            destination="10.10.10.10",
+            name="my-snat-pool",
+            partition="Common",
+            port="443",
+            state="present",
+            check_profiles=False,
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['check_profiles'] is False
