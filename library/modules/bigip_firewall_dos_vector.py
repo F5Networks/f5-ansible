@@ -178,6 +178,8 @@ options:
         DNS Protocol Security vector.
       - When C(dns-response-flood), configures the "dns-response-flood"
         DNS Protocol Security vector.
+      - When C(dns-oversize), configures the "dns-oversize"
+        DNS Protocol Security vector.
       - When C(ixfr), configures the "DNS IXFR Query" DNS Protocol Security vector.
       - When C(mx), configures the "DNS MX Query" DNS Protocol Security vector.
       - When C(ns), configures the "DNS NS Query" DNS Protocol Security vector.
@@ -261,6 +263,7 @@ options:
       - ip-frag-flood
       - ip-low-ttl
       - ip-opt-frames
+      - ipv6-ext-hdr-frames
       - ipv6-frag-flood
       - opt-present-with-illegal-len
       - sweep
@@ -291,6 +294,7 @@ options:
       - dns-malformed
       - dns-nxdomain-query
       - dns-response-flood
+      - dns-oversize
       - ixfr
       - mx
       - ns
@@ -446,6 +450,7 @@ requirements:
   - BIG-IP >= v13.0.0
 author:
   - Tim Rupp (@caphrim007)
+  - Nitin Khanna (@nitinthewiz)
 '''
 
 EXAMPLES = r'''
@@ -675,6 +680,7 @@ PROTOCOL_DNS_VECTORS = [
     'dns-malformed',                  # DNS Malformed
     'dns-nxdomain-query',             # DNS NXDOMAIN Query
     'dns-response-flood',             # DNS Response Flood
+    'dns-oversize',                   # DNS Oversize
     'ixfr',                           # DNS IXFR Query
     'mx',                             # DNS MX Query
     'ns',                             # DNS NS Query
@@ -1468,6 +1474,7 @@ class ArgumentSpec(object):
                     'ip-frag-flood',
                     'ip-low-ttl',
                     'ip-opt-frames',
+                    'ipv6-ext-hdr-frames',
                     'ipv6-frag-flood',
                     'opt-present-with-illegal-len',
                     'sweep',
@@ -1498,6 +1505,7 @@ class ArgumentSpec(object):
                     'dns-malformed',
                     'dns-nxdomain-query',
                     'dns-response-flood',
+                    'dns-oversize',
                     'ixfr',
                     'mx',
                     'ns',
