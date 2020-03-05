@@ -12,4 +12,9 @@
     max_clients: 10
     redirect_http_to_https: no
     ssl_port: 443
-    server_port: 10444
+    provider:
+      password: "admin"
+      server: "{{ ansible_host }}"
+      user: "admin"
+      validate_certs: "no"
+      server_port: "8444"
