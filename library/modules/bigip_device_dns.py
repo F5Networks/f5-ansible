@@ -416,12 +416,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         cache = self.read_dns_cache_setting()
@@ -435,14 +432,11 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        if cache:
-            response['cache'] = cache['value']
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if cache:
+                response['cache'] = cache['value']
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -457,11 +451,9 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                raise F5ModuleError(resp.content)
+
         if self.want.cache:
             uri = "https://{0}:{1}/mgmt/tm/sys/db/{2}".format(
                 self.client.provider['server'],
@@ -475,11 +467,10 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+                return True
+            raise F5ModuleError(resp.content)
+        return True
 
     def absent_on_device(self):
         params = self.changes.api_params()
@@ -489,15 +480,13 @@ class ModuleManager(object):
         )
         resp = self.client.api.patch(uri, json=params)
         try:
-            response = resp.json()
+            resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):

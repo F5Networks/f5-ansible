@@ -77,6 +77,7 @@ options:
       - oneconnect-profiles
       - partitions
       - provision-info
+      - route-domains
       - self-ips
       - server-ssl-profiles
       - software-volumes
@@ -143,6 +144,7 @@ options:
       - "!oneconnect-profiles"
       - "!partitions"
       - "!provision-info"
+      - "!route-domains"
       - "!self-ips"
       - "!server-ssl-profiles"
       - "!software-volumes"
@@ -4147,6 +4149,84 @@ provision_info:
       type: int
       sample: 0
   sample: hash/dictionary of values
+route_domains:
+  description: Self-IP related information.
+  returned: When C(self-ips) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: queried
+      type: str
+      sample: /Common/rd1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: queried
+      type: str
+      sample: rd1
+    description:
+      description:
+        - Description of the Route Domain.
+      returned: queried
+      type: str
+      sample: My route domain
+    id:
+      description:
+        - The unique identifying integer representing the route domain.
+      returned: queried
+      type: int
+      sample: 10
+    parent:
+      description:
+        - The route domain the system searches when it cannot find a route in the configured domain.
+      returned: queried
+      type: str
+      sample: 0
+    bwc_policy:
+      description:
+        - The bandwidth controller for the route domain.
+      returned: queried
+      type: str
+      sample: /Common/foo
+    connection_limit:
+      description:
+        - The new connection limit for the route domain.
+      returned: queried
+      type: int
+      sample: 100
+    flow_eviction_policy:
+      description:
+        - The new eviction policy to use with this route domain.
+      returned: queried
+      type: str
+      sample: /Common/default-eviction-policy
+    service_policy:
+      description:
+        - The new service policy to use with this route domain.
+      returned: queried
+      type: str
+      sample: /Common-my-service-policy
+    strict:
+      description:
+        - The new strict isolation setting.
+      returned: queried
+      type: str
+      sample: enabled
+    routing_protocol:
+      description:
+        - List of routing protocols applied to the route domain.
+      returned: queried
+      type: list
+      sample: ['bfd', 'bgp']
+    vlans:
+      description:
+        - List of new VLANs the route domain is applied to.
+      returned: queried
+      type: list
+      sample: ['/Common/http-tunnel', '/Common/socks-tunnel']
+  sample: hash/dictionary of values
 self_ips:
   description: Self-IP related information.
   returned: When C(self-ips) is specified in C(gather_subset).
@@ -7317,11 +7397,9 @@ class AsmPolicyStatsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
         return dict(
             policies=response['items']
         )
@@ -7743,14 +7821,11 @@ class AsmPolicyFactManagerV12(AsmPolicyFactManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         if 'items' not in response:
-            return None
+            return []
         return response['items']
 
 
@@ -7779,15 +7854,11 @@ class AsmPolicyFactManagerV13(AsmPolicyFactManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         if 'items' not in response:
-            return None
-
+            return []
         return response['items']
 
 
@@ -7854,11 +7925,10 @@ class AsmServerTechnologyFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -7964,11 +8034,8 @@ class AsmSignatureSetsFactManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         if 'items' not in response:
             return None
@@ -8275,11 +8342,10 @@ class ClientSslProfilesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -8390,11 +8456,10 @@ class DeviceGroupsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -8549,11 +8614,10 @@ class DevicesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -8651,11 +8715,10 @@ class ExternalMonitorsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -8801,11 +8864,10 @@ class FastHttpProfilesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9129,11 +9191,10 @@ class FastL4ProfilesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9230,11 +9291,10 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9472,11 +9532,10 @@ class GtmAPoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9525,11 +9584,10 @@ class GtmAaaaPoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9578,11 +9636,10 @@ class GtmCnamePoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9631,11 +9688,10 @@ class GtmMxPoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9684,11 +9740,10 @@ class GtmNaptrPoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9737,11 +9792,10 @@ class GtmSrvPoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -9991,11 +10045,10 @@ class GtmServersFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -10117,11 +10170,10 @@ class GtmAWideIpsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -10169,11 +10221,10 @@ class GtmAaaaWideIpsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -10221,11 +10272,10 @@ class GtmCnameWideIpsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -10273,11 +10323,10 @@ class GtmMxWideIpsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -10325,11 +10374,10 @@ class GtmNaptrWideIpsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -10377,11 +10425,10 @@ class GtmSrvWideIpsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -10468,11 +10515,10 @@ class GtmTopologyRegionFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -10583,11 +10629,10 @@ class HttpMonitorsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = response['items']
         return result
 
@@ -10698,11 +10743,10 @@ class HttpsMonitorsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = response['items']
         return result
 
@@ -10950,11 +10994,10 @@ class HttpProfilesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -11050,11 +11093,10 @@ class IappServicesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -11116,11 +11158,8 @@ class IapplxPackagesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201, 202] or 'code' in response and response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(resp.content)
 
         status = self.wait_for_task(response['id'])
         if status == 'FINISHED':
@@ -11134,11 +11173,9 @@ class IapplxPackagesFactManager(BaseManager):
                 response = resp.json()
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status not in [200, 201, 202] or 'code' in response and response['code'] not in [200, 201, 202]:
+                raise F5ModuleError(resp.content)
+
         else:
             raise F5ModuleError(
                 "An error occurred querying iAppLX packages."
@@ -11158,11 +11195,10 @@ class IapplxPackagesFactManager(BaseManager):
                 response = resp.json()
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+
+            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                raise F5ModuleError(resp.content)
+
             if response['status'] in ['FINISHED', 'FAILED']:
                 return response['status']
             time.sleep(1)
@@ -11259,11 +11295,10 @@ class IcmpMonitorsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -11380,11 +11415,10 @@ class InterfacesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -11443,11 +11477,10 @@ class InternalDataGroupsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -11542,11 +11575,10 @@ class IrulesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -11913,11 +11945,10 @@ class LtmPoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -11934,11 +11965,10 @@ class LtmPoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -11955,11 +11985,10 @@ class LtmPoolsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = parseStats(response)
         try:
             return result['stats']
@@ -12071,11 +12100,10 @@ class LtmPolicyFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -12206,11 +12234,10 @@ class NodesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -12227,11 +12254,10 @@ class NodesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = parseStats(response)
         try:
             return result['stats']
@@ -12327,11 +12353,10 @@ class OneConnectProfilesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -12391,11 +12416,10 @@ class PartitionFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -12459,11 +12483,10 @@ class ProvisionInfoFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -12473,11 +12496,11 @@ class ProvisionInfoFactManager(BaseManager):
 class RouteDomainParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
-        'bwcPolicy': 'bandwidth_controller_policy',
+        'bwcPolicy': 'bwc_policy',
         'connectionLimit': 'connection_limit',
         'flowEvictionPolicy': 'flow_eviction_policy',
         'servicePolicy': 'service_policy',
-        'routingProtocol': 'routing_protocol'
+        'routingProtocol': 'routing_protocol',
     }
 
     returnables = [
@@ -12485,14 +12508,14 @@ class RouteDomainParameters(BaseParameters):
         'id',
         'full_path',
         'parent',
-        'bandwidth_controller_policy',
+        'bwc_policy',
         'connection_limit',
         'description',
         'flow_eviction_policy',
         'service_policy',
         'strict',
         'routing_protocol',
-        'vlans'
+        'vlans',
     ]
 
     @property
@@ -12504,6 +12527,12 @@ class RouteDomainParameters(BaseParameters):
         if self._values['connection_limit'] is None:
             return None
         return int(self._values['connection_limit'])
+
+    @property
+    def id(self):
+        if self._values['id'] is None:
+            return None
+        return int(self._values['id'])
 
 
 class RouteDomainFactManager(BaseManager):
@@ -12545,11 +12574,10 @@ class RouteDomainFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -12659,11 +12687,10 @@ class SelfIpsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -12965,11 +12992,10 @@ class ServerSslProfilesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -13053,11 +13079,10 @@ class SoftwareVolumesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -13121,11 +13146,10 @@ class SoftwareHotfixesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -13248,11 +13272,10 @@ class SoftwareImagesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -13345,11 +13368,10 @@ class SslCertificatesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -13423,11 +13445,10 @@ class SslKeysFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -13457,7 +13478,7 @@ class SystemDbFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SystemDbFactManager, self).__init__(**kwargs)
-        self.want = SystemInfoParameters(params=self.module.params)
+        self.want = SystemDbParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13491,11 +13512,10 @@ class SystemDbFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -13734,11 +13754,10 @@ class SystemInfoFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         try:
             pattern = r'^(?P<key>(Product|Build|Sequence|BaseBuild|Edition|Date|Built|Changelist|JobID))\:(?P<value>.*)'
             result = response['commandResult'].strip()
@@ -13776,11 +13795,10 @@ class SystemInfoFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         try:
             parts = response['commandResult'].strip().split(' ')
             return dict(
@@ -13799,11 +13817,10 @@ class SystemInfoFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = parseStats(response)
         return result
 
@@ -13860,11 +13877,10 @@ class SystemInfoFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = parseStats(response)
         return result[0]
 
@@ -13940,11 +13956,10 @@ class SystemInfoFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = parseStats(response)
         return result[0]
 
@@ -14046,11 +14061,10 @@ class TcpMonitorsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -14134,11 +14148,10 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -14559,11 +14572,10 @@ class TcpProfilesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -14665,11 +14677,10 @@ class TrafficGroupsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -14686,11 +14697,10 @@ class TrafficGroupsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = parseStats(response)
         try:
             return result['stats']
@@ -14791,11 +14801,10 @@ class TrunksFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -14895,11 +14904,10 @@ class UsersFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -15007,11 +15015,10 @@ class UdpProfilesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -15099,11 +15106,10 @@ class VcmpGuestsFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -15213,11 +15219,10 @@ class VirtualAddressesFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -15637,11 +15642,9 @@ class VirtualServersParameters(BaseParameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = [x['name'] for x in response['items']]
         return result
 
@@ -15656,11 +15659,9 @@ class VirtualServersParameters(BaseParameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = [x['name'] for x in response['items']]
         return result
 
@@ -15675,11 +15676,9 @@ class VirtualServersParameters(BaseParameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = [x['name'] for x in response['items']]
         return result
 
@@ -15694,11 +15693,9 @@ class VirtualServersParameters(BaseParameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = [x['name'] for x in response['items']]
         return result
 
@@ -15955,11 +15952,10 @@ class VirtualServersFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -15976,11 +15972,10 @@ class VirtualServersFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = parseStats(response)
         try:
             return result['stats']
@@ -16119,11 +16114,10 @@ class VlansFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -16140,11 +16134,10 @@ class VlansFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         result = parseStats(response)
         try:
             return result['stats']
@@ -16207,11 +16200,10 @@ class ManagementRouteFactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' not in response:
             return []
         result = response['items']
@@ -16469,6 +16461,7 @@ class ArgumentSpec(object):
                     'oneconnect-profiles',
                     'partitions',
                     'provision-info',
+                    'route-domains',
                     'self-ips',
                     'server-ssl-profiles',
                     'software-volumes',
@@ -16539,6 +16532,7 @@ class ArgumentSpec(object):
                     '!oneconnect-profiles',
                     '!partitions',
                     '!provision-info',
+                    '!route-domains',
                     '!self-ips',
                     '!server-ssl-profiles',
                     '!software-volumes',

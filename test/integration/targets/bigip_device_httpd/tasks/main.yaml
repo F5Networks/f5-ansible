@@ -192,13 +192,13 @@
     that:
       - result is changed
 
-- name: Change ssl port - Idempotent check
+- name: Change ssl port, expect connection timeout - Idempotent check
   bigip_device_httpd:
     ssl_port: 8444
   register: result
   ignore_errors: true
 
-- name: Assert Change ssl port - Idempotent check
+- name: Assert Change ssl port, expect connection timeout - Idempotent check
   assert:
     that:
       - result is not changed
@@ -206,9 +206,13 @@
 - name: Change ssl port - using correct port - Idempotent check
   bigip_device_httpd:
     ssl_port: 8444
-    server_port: 10444
+    provider:
+      password: "admin"
+      server: "{{ ansible_host }}"
+      user: "admin"
+      validate_certs: "no"
+      server_port: "8444"
   register: result
-  ignore_errors: true
 
 - name: Assert Change ssl port - Idempotent check
   assert:
