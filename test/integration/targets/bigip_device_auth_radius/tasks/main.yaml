@@ -1,0 +1,167 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create an RADIUS device configuration
+  bigip_device_auth_radius:
+      servers:
+          - server: 1.1.1.1
+            port: 1812
+            secret: secret
+            timeout: 5
+      retries: 3
+      service_type: authenticate-only
+      accounting_bug: no
+      update_secret: on_create
+      use_for_auth: yes
+      state: present
+
+  register: result
+
+- name: Assert Create an RADIUS device configuration
+  assert:
+      that:
+          - result is success
+          - result is changed
+
+- name: Create an RADIUS device configuration - Idempotent check
+  bigip_device_auth_radius:
+      servers:
+          - server: 1.1.1.1
+            port: 1812
+            secret: secret
+            timeout: 5
+      retries: 3
+      service_type: authenticate-only
+      accounting_bug: no
+      update_secret: on_create
+      use_for_auth: yes
+      state: present
+  register: result
+
+- debug:
+      var: result
+      verbosity: 3
+
+- name: Assert Create an RADIUS device configuration - Idempotent check
+  assert:
+      that:
+          - result is success
+          - result is not changed
+
+- name: Update an RADIUS device configuration
+  bigip_device_auth_radius:
+      servers:
+          - server: 2.2.2.2
+            port: 1812
+            secret: secret
+            timeout: 5
+      retries: 3
+      service_type: authenticate-only
+      update_secret: on_create
+      accounting_bug: no
+      use_for_auth: yes
+      state: present
+  register: result
+
+- name: Assert update an RADIUS device configuration
+  assert:
+      that:
+          - result is success
+          - result is changed
+
+- name: Update an RADIUS device configuration - Idempotent check
+  bigip_device_auth_radius:
+      servers:
+          - server: 2.2.2.2
+            port: 1812
+            secret: secret
+            timeout: 5
+      retries: 3
+      service_type: authenticate-only
+      update_secret: on_create
+      accounting_bug: no
+      use_for_auth: yes
+      state: present
+  register: result
+
+- name: Assert update an RADIUS device configuration
+  assert:
+      that:
+          - result is success
+          - result is not changed
+
+- name: Creare primary and secondary hosts
+  bigip_device_auth_radius:
+      servers:
+          - server: 10.10.10.10
+            port: 1812
+            timeout: 5
+            secret: secret1
+          - server: 11.10.10.11
+            port: 1813
+            timeout: 10
+            secret: secret2
+      retries: 3
+      service_type: authenticate-only
+      update_secret: on_create
+      accounting_bug: no
+      use_for_auth: yes
+      state: present
+  register: result
+
+- name: Assert primary and secondary hosts creation
+  assert:
+      that:
+          - result is success
+          - result is changed
+
+- name: Creare primary and secondary hosts - Idempotent check
+  bigip_device_auth_radius:
+      servers:
+          - server: 10.10.10.10
+            port: 1812
+            timeout: 5
+            secret: secret1
+          - server: 11.10.10.11
+            port: 1813
+            timeout: 10
+            secret: secret2
+      retries: 3
+      service_type: authenticate-only
+      update_secret: on_create
+      accounting_bug: no
+      use_for_auth: yes
+      state: present
+  register: result
+
+- name: Assert primary and secondary hosts creation
+  assert:
+      that:
+          - result is success
+          - result is not changed
+
+- name: Disable/Remove RADIUS auth
+  bigip_device_auth_radius:
+      servers:
+          - server: 10.10.10.10
+            port: 1812
+            timeout: 5
+            secret: secret1
+          - server: 11.10.10.11
+            port: 1813
+            timeout: 10
+            secret: secret2
+      retries: 3
+      service_type: authenticate-only
+      accounting_bug: no
+      use_for_auth: yes
+      state: absent
+  register: result
+
+- name: Assert disable/remove RADIUS auth
+  assert:
+      that:
+          - result is success
+
+- import_tasks: teardown.yaml
