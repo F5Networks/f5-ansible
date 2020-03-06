@@ -55,6 +55,9 @@ options:
         '*'.
       - If this value is an IP address, and the C(type) is C(tcp) (the default),
         then a C(port) number must be specified.
+      - In BIG IP Management UI, this field is titled as 'Alias Address'.
+    aliases:
+      - alias_address
     type: str
   port:
     description:
@@ -63,7 +66,10 @@ options:
         '*'. Note that if specifying an IP address, a value between 1 and 65535
         must be specified
       - This argument is not supported for TCP Echo types.
+      - In BIG IP Management UI, this field is titled as 'Alias Service Port'.
     type: str
+    aliases:
+      - alias_service_port
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
@@ -652,8 +658,12 @@ class ArgumentSpec(object):
             send=dict(),
             receive=dict(),
             receive_disable=dict(),
-            ip=dict(),
-            port=dict(),
+            ip=dict(
+                aliases=['alias_address']
+            ),
+            port=dict(
+                aliases=['alias_service_port']
+            ),
             interval=dict(type='int'),
             timeout=dict(type='int'),
             time_until_up=dict(type='int'),
