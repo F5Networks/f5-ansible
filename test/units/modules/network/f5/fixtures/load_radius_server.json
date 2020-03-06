@@ -1,0 +1,6 @@
+{
+  "name": "system_auth_name1",
+  "port": 1812,
+  "server": "1.1.1.1",
+  "timeout": 5
+}
