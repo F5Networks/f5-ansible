@@ -1,0 +1,94 @@
+---
+
+- name: Issue 01521 - Create a node with
+  bigip_node:
+    name: 1.2.3.4
+    address: 1.2.3.4
+    description: node
+  register: result
+
+- name: Issue 01521 - Create published policy
+  bigip_policy:
+    name: "{{ policy_name1 }}"
+
+- name: Issue 01521 - Create published rule with actions
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        node: 1.2.3.4
+  register: result
+
+- name: Issue 01521 - Assert Create published rule with actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01521 - Create published rule with actions - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        node: 1.2.3.4
+  register: result
+
+- name: Issue 01521 - Assert Create published rule with actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01521 - Create a node with route domain
+  bigip_node:
+    name: 2.3.4.5%0
+    address: 2.3.4.5
+    description: node with route domain
+  register: result
+
+- name: Issue 01521 - Create published rule with actions
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule2
+    actions:
+      - type: forward
+        node: 2.3.4.5%0
+  register: result
+
+- name: Issue 01521 - Assert Create published rule with actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01521 - Create published rule with actions - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule2
+    actions:
+      - type: forward
+        node: 2.3.4.5%0
+  register: result
+
+- name: Issue 01521 - Assert Create published rule with actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01521 - Remove published policy
+  bigip_policy:
+    name: "{{ policy_name1 }}"
+    state: absent
+
+- name: Issue 01521 - Remove node
+  bigip_node:
+    name: 1.2.3.4
+    state: absent
+
+- name: Issue 01521 - Remove node with route domain
+  bigip_node:
+    name: 2.3.4.5%0
+    state: absent

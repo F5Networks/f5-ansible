@@ -252,3 +252,6 @@
 - import_tasks: device-config/unk-ipopt-type.yaml
   tags:
     - device-config-unk-ipopt-type
+- import_tasks: device-config/dns-oversize.yaml
+  tags:
+    - device-config-dns-oversize

@@ -1,0 +1,81 @@
+---
+
+- name: Issue 01607 - Create a data group of addresses
+  bigip_data_group:
+    name: foo
+    internal: yes
+    records:
+      - key: 2402:6941::/32
+        value: "Deakin University Network"
+    type: address
+  register: result
+
+- name: Issue 01607 - Assert Create a data group of addresses
+  assert:
+    that:
+      - result is changed
+      - result.records[0].name == "2402:6941::/32"
+
+- name: Issue 01607 - Create a data group of addresses - Idempotent check
+  bigip_data_group:
+    name: foo
+    internal: yes
+    records:
+      - key: 2402:6941::/32
+        value: "Deakin University Network"
+    type: address
+  register: result
+
+- name: Issue 01607 - Assert Create a data group of addresses - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01607 - Remove internal datagroup
+  bigip_data_group:
+    internal: "yes"
+    name: 'foo'
+    state: absent
+  register: result
+
+- name: Issue 01607 - Assert Remove internal datagroup
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01607 - Create external data group of addresses
+  bigip_data_group:
+    name: external-01607
+    records_src: "{{ role_path }}/files/issue-01607.txt"
+    type: address
+  register: result
+
+- name: Issue 01607 - Assert Create external data group of addresses
+  assert:
+    that:
+      - result is changed
+      - result.records[0].name == "2402:6940::/32"
+
+- name: Issue 01607 - Create external data group of addresses - Idempotent check
+  bigip_data_group:
+    name: external-01607
+    records_src: "{{ role_path }}/files/issue-01607.txt"
+    type: address
+  register: result
+
+- name: Issue 01607 - Assert Create external data group of addresses - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01607 - Remove external datagroup
+  bigip_data_group:
+    name: external-01607
+    state: absent
+    delete_data_group_file: yes
+  register: result
+
+- name: Issue 01607 - Assert Remove external datagroup
+  assert:
+    that:
+      - result is changed

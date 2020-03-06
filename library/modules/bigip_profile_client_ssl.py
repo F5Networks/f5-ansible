@@ -33,9 +33,18 @@ options:
     type: str
   ciphers:
     description:
-      - Specifies the list of ciphers that the system supports. When creating a new
-        profile, the default cipher list is provided by the parent profile.
+      - Specifies the list of ciphers that the system supports.
+      - When C(cipher_group) parameter is in use the C(ciphers) parameter needs to be set to either C(none) or C('').
     type: str
+  cipher_group:
+    description:
+      - Specifies the cipher group to assign to this profile.
+      - When C(ciphers) parameter is in use the C(cipher_group) must be set to either C(none) or C('').
+      - When creating a new profile with C(cipher_group) if the parent profile has C(ciphers) set by default then
+        the C(cipher) parameter must be set to C(none) or C('') during creation.
+      - The parameter only works on TMOS version 13.x and above.
+    type: str
+    version_added: "f5_modules 1.2"
   cert_key_chain:
     description:
       - One or more certificates and keys to associate with the SSL profile. This
@@ -289,6 +298,18 @@ EXAMPLES = r'''
       password: secret
   delegate_to: localhost
 
+- name: Create client SSL profile with specific cipher group
+  bigip_profile_client_ssl:
+    state: present
+    name: my_profile
+    ciphers: "none"
+    cipher_group: "/Common/f5-secure"
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
 - name: Create client SSL profile with specific SSL options
   bigip_profile_client_ssl:
     state: present
@@ -334,6 +355,11 @@ ciphers:
   returned: changed
   type: str
   sample: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
+cipher_group:
+  description: The cipher group applied to the profile.
+  returned: changed
+  type: str
+  sample: "/Common/f5-secure"
 options:
   description: The list of options for SSL processing.
   returned: changed
@@ -400,6 +426,7 @@ except ImportError:
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'certKeyChain': 'cert_key_chain',
+        'cipherGroup': 'cipher_group',
         'defaultsFrom': 'parent',
         'allowNonSsl': 'allow_non_ssl',
         'secureRenegotiation': 'secure_renegotiation',
@@ -422,6 +449,7 @@ class Parameters(AnsibleF5Parameters):
 
     api_attributes = [
         'ciphers',
+        'cipherGroup',
         'certKeyChain',
         'defaultsFrom',
         'tmOptions',
@@ -446,6 +474,7 @@ class Parameters(AnsibleF5Parameters):
 
     returnables = [
         'ciphers',
+        'cipher_group',
         'allow_non_ssl',
         'options',
         'secure_renegotiation',
@@ -471,6 +500,7 @@ class Parameters(AnsibleF5Parameters):
     updatables = [
         'parent',
         'ciphers',
+        'cipher_group',
         'cert_key_chain',
         'allow_non_ssl',
         'options',
@@ -502,32 +532,33 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ModuleParameters(Parameters):
-    def _key_filename(self, name):
-        if self.true_names:
+    def _key_filename(self, name, true_name):
+        if true_name:
             return name
         if name.endswith('.key'):
             return name
         else:
             return name + '.key'
 
-    def _cert_filename(self, name):
-        if self.true_names:
+    def _cert_filename(self, name, true_name):
+        if true_name:
             return name
         if name.endswith('.crt'):
             return name
         else:
             return name + '.crt'
 
-    def _get_chain_value(self, item):
+    def _get_chain_value(self, item, true_name):
         if 'chain' not in item or item['chain'] == 'none':
             result = 'none'
         else:
-            result = self._cert_filename(fq_name(self.partition, item['chain']))
+            result = self._cert_filename(fq_name(self.partition, item['chain']), true_name)
         return result
 
-    @property
-    def true_names(self):
-        result = flatten_boolean(self._values['true_names'])
+    def _get_true_names(self, item):
+        if 'true_names' not in item:
+            return False
+        result = flatten_boolean(item['true_names'])
         if result == 'yes':
             return True
         if result == 'no':
@@ -556,9 +587,10 @@ class ModuleParameters(Parameters):
                 raise F5ModuleError(
                     "When providing a 'cert', you must also provide a 'key'"
                 )
-            key = self._key_filename(item['key'])
-            cert = self._cert_filename(item['cert'])
-            chain = self._get_chain_value(item)
+            item['true_names'] = self._get_true_names(item)
+            key = self._key_filename(item['key'], item['true_names'])
+            cert = self._cert_filename(item['cert'], item['true_names'])
+            chain = self._get_chain_value(item, item['true_names'])
             name = os.path.basename(cert)
             filename, ex = os.path.splitext(name)
             tmp = {
@@ -569,6 +601,8 @@ class ModuleParameters(Parameters):
             }
             if 'passphrase' in item:
                 tmp['passphrase'] = item['passphrase']
+            if 'true_names' in item:
+                tmp['true_names'] = item['true_names']
             result.append(tmp)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -651,6 +685,27 @@ class ModuleParameters(Parameters):
         result = fq_name(self.partition, self._values['client_auth_crl'])
         return result
 
+    @property
+    def ciphers(self):
+        if self._values['ciphers'] is None:
+            return None
+        if self._values['ciphers'] in ['', 'none']:
+            return 'none'
+        if self.cipher_group and self.cipher_group != 'none':
+            raise F5ModuleError("The cipher parameter must be set to 'none' if cipher_group is defined.")
+        return self._values['ciphers']
+
+    @property
+    def cipher_group(self):
+        if self._values['cipher_group'] is None:
+            return None
+        if self._values['cipher_group'] in ['', 'none']:
+            return 'none'
+        if self.ciphers and self.ciphers != 'none':
+            raise F5ModuleError("The cipher_group parameter must be set to 'none' if cipher is defined.")
+        result = fq_name(self.partition, self._values['cipher_group'])
+        return result
+
 
 class ApiParameters(Parameters):
     @property
@@ -662,7 +717,7 @@ class ApiParameters(Parameters):
             tmp = dict(
                 name=item['name'],
             )
-            for x in ['cert', 'key', 'chain', 'passphrase']:
+            for x in ['cert', 'key', 'chain', 'passphrase', 'true_names']:
                 if x in item:
                     tmp[x] = item[x]
                 if 'chain' not in item:
@@ -894,6 +949,24 @@ class Difference(object):
         if self.want.client_auth_crl != self.have.client_auth_crl:
             return self.want.client_auth_crl
 
+    @property
+    def ciphers(self):
+        if self.want.ciphers is None:
+            return None
+        if self.want.ciphers == 'none' and self.have.ciphers == 'none':
+            return None
+        if self.want.ciphers != self.have.ciphers:
+            return self.want.ciphers
+
+    @property
+    def cipher_group(self):
+        if self.want.cipher_group is None:
+            return None
+        if self.want.cipher_group == 'none' and self.have.cipher_group == 'none':
+            return None
+        if self.want.cipher_group != self.have.cipher_group:
+            return self.want.cipher_group
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
@@ -1097,6 +1170,7 @@ class ArgumentSpec(object):
             name=dict(required=True),
             parent=dict(),
             ciphers=dict(),
+            cipher_group=dict(),
             allow_non_ssl=dict(type='bool'),
             secure_renegotiation=dict(
                 choices=['require', 'require-strict', 'request']

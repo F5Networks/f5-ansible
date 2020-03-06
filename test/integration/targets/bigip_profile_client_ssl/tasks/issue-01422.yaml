@@ -17,7 +17,7 @@
       - result is changed
       - result.options == opt_1
 
-- name: Issue 01422 - Create a client SSL profile with options  - Idempotent check
+- name: Issue 01422 - Create a client SSL profile with options - Idempotent check
   bigip_profile_client_ssl:
     name: "{{ profile }}"
     ciphers: "{{ ciphers }}"

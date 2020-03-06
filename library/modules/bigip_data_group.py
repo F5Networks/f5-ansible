@@ -232,9 +232,9 @@ EXAMPLES = r'''
       network 2402:9400:1000:0:: prefixlen 64 := "Network4",
       host 192.168.20.1 := "Host1",
       host 172.16.1.1 := "Host2",
-      host 172.16.1.1/32 := "Host3",
+      host 172.16.1.1 := "Host3",
       host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4",
-      host 2001:0db8:85a3:0000:0000:8a2e:0370:7334/128 := "Host5"
+      host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host5"
 
 - name: Show the data format expected for records_content - address 2
   copy:
@@ -350,9 +350,39 @@ class RecordsEncoder(object):
         self._record_type = record_type
         self._separator = separator
         self._network_pattern = re.compile(r'^network\s+(?P<addr>[^ ]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
-        self._host_pattern = re.compile(r'^host\s+(?P<addr>[^ ]+)\s+.*')
-        self._rd_net_pattern = re.compile(r'(?P<addr>[^%]+)%(?P<rd>[0-9]+)/(?P<prefix>[0-9]+)')
-        self._rd_host_pattern = re.compile(r'(?P<addr>[^%]+)%(?P<rd>[0-9]+)')
+        self._rd_net_prefix_ptrn = re.compile(
+            r'^network\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*'
+        )
+        self._host_pattern = re.compile(r'^host\s+(?P<addr>[^%]+)\s+.*')
+        self._rd_host_ptrn = re.compile(r'^host\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)\s+.*')
+        self._ipv4_cidr_ptrn = re.compile(r'^(?P<addr>((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|'
+                                          r'2[0-4][0-9]|[01]?[0-9][0-9]?))/(?P<cidr>(3[0-2]|2[0-9]|1[0-9]|[0-9]))')
+        self._ipv4_cidr_ptrn_rd = re.compile(r'^(?P<addr>((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|'
+                                             r'2[0-4][0-9]|[01]?[0-9][0-9]?))%(?P<rd>[0-9]+)/'
+                                             r'(?P<cidr>(3[0-2]|2[0-9]|1[0-9]|[0-9]))')
+        self._ipv6_cidr_ptrn = re.compile(r'^(?P<addr>^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:)'
+                                          r'{1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}'
+                                          r'(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|'
+                                          r'([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}'
+                                          r'(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:'
+                                          r'((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}'
+                                          r'|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.)'
+                                          r'{3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:'
+                                          r'((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}'
+                                          r'[0-9]){0,1}[0-9])))/(?P<cidr>((1(1[0-9]|2[0-8]))|([0-9][0-9])|([0-9])))')
+        self._ipv6_cidr_ptrn_rd = re.compile(r'^(?P<addr>^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|'
+                                             r'([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|'
+                                             r'([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|'
+                                             r'([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|'
+                                             r'([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|'
+                                             r'([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|'
+                                             r'[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|'
+                                             r':)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}'
+                                             r'|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|'
+                                             r'1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|'
+                                             r'([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.)'
+                                             r'{3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))%(?P<rd>[0-9]+)'
+                                             r'/(?P<cidr>((1(1[0-9]|2[0-8]))|([0-9][0-9])|([0-9])))')
 
     def encode(self, record):
         if isinstance(record, dict):
@@ -368,60 +398,67 @@ class RecordsEncoder(object):
         else:
             return self.encode_string_from_dict(record)
 
-    def encode_rd_address(self, record, match, host=False):
-        if host:
-            if is_valid_ip_interface(match.group('addr')):
-                key = ip_interface(u"{0}".format(match.group('addr')))
-            else:
-                raise F5ModuleError(
-                    "When specifying an 'address' type, the value to the left of the separator must be an IP."
-                )
+    def encode_rd_address(self, record, match, ipv6=False):
+        if is_valid_ip_interface(match.group('addr')):
+            key = ip_interface(u"{0}/{1}".format(match.group('addr'), match.group('cidr')))
         else:
-            if is_valid_ip_interface(match.group('addr')):
-                key = ip_interface(u"{0}/{1}".format(match.group('addr'), match.group('prefix')))
-            else:
-                raise F5ModuleError(
-                    "When specifying an 'address' type, the value to the left of the separator must be an IP."
-                )
+            raise F5ModuleError(
+                "When specifying an 'address' type, the value to the left of the separator must be an IP."
+            )
         if key and 'value' in record:
-            if key.network.prefixlen in [32, 128]:
+            if ipv6 and key.network.prefixlen == 128:
                 return self.encode_host(str(key.ip) + '%' + match.group('rd'), record['value'])
+            else:
+                if not ipv6 and key.network.prefixlen == 32:
+                    return self.encode_host(str(key.ip) + '%' + match.group('rd'), record['value'])
             return self.encode_network(
                 str(key.network.network_address) + '%' + match.group('rd'), key.network.prefixlen, record['value']
             )
         elif key:
-            if key.network.prefixlen in [32, 128]:
-                return self.encode_host(str(key.ip) + '%' + match.group('rd'), str(key.ip) + '%' + match.group('rd'))
+            if ipv6 and key.network.prefixlen == 128:
+                return self.encode_host(
+                    str(key.ip) + '%' + match.group('rd'), str(key.ip) + '%' + match.group('rd')
+                )
+            else:
+                if not ipv6 and key.network.prefixlen == 32:
+                    return self.encode_host(
+                        str(key.ip) + '%' + match.group('rd'), str(key.ip) + '%' + match.group('rd')
+                    )
             return self.encode_network(
                 str(key.network.network_address) + '%' + match.group('rd'), key.network.prefixlen,
                 str(key.network.network_address) + '%' + match.group('rd')
             )
 
     def encode_address_from_dict(self, record):
-        rd_match = re.match(self._rd_net_pattern, record['key'])
+        rd_match = re.match(self._ipv4_cidr_ptrn_rd, record['key'])
         if rd_match:
             return self.encode_rd_address(record, rd_match)
-        rd_match = re.match(self._rd_host_pattern, record['key'])
+        rd_match = re.match(self._ipv6_cidr_ptrn_rd, record['key'])
         if rd_match:
-            return self.encode_rd_address(record, rd_match, host=True)
+            return self.encode_rd_address(record, rd_match, ipv6=True)
         if is_valid_ip_interface(record['key']):
             key = ip_interface(u"{0}".format(str(record['key'])))
         else:
             raise F5ModuleError(
                 "When specifying an 'address' type, the value to the left of the separator must be an IP."
             )
+        ipv4_match = re.match(self._ipv4_cidr_ptrn, record['key'])
+        ipv6_match = re.match(self._ipv6_cidr_ptrn, record['key'])
+
         if key and 'value' in record:
-            if key.network.prefixlen in [32, 128]:
+            if (ipv6_match and key.network.prefixlen == 128) or (ipv4_match and key.network.prefixlen == 32):
                 return self.encode_host(str(key.ip), record['value'])
-            return self.encode_network(
-                str(key.network.network_address), key.network.prefixlen, record['value']
-            )
+            else:
+                return self.encode_network(
+                    str(key.network.network_address), key.network.prefixlen, record['value']
+                )
         elif key:
-            if key.network.prefixlen in [32, 128]:
+            if (ipv6_match and key.network.prefixlen == 128) or (ipv4_match and key.network.prefixlen == 32):
                 return self.encode_host(str(key.ip), str(key.ip))
-            return self.encode_network(
-                str(key.network.network_address), key.network.prefixlen, str(key.network.network_address)
-            )
+            else:
+                return self.encode_network(
+                    str(key.network.network_address), key.network.prefixlen, str(key.network.network_address)
+                )
 
     def encode_integer_from_dict(self, record):
         try:
@@ -452,23 +489,62 @@ class RecordsEncoder(object):
 
     def encode_address_from_string(self, record):
         if self._network_pattern.match(record):
-            # network 192.168.0.0 prefixlen 16 := "Network3",
-            # network 2402:9400:1000:0:: prefixlen 64 := "Network4",
+            # network 192.168.0.0 prefixlen 16 := "Network3"
+            # network 2402:9400:1000:0:: prefixlen 64 := "Network4"
             return record
         elif self._host_pattern.match(record):
             # host 172.16.1.1/32 := "Host3"
             # host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4"
             return record
-        elif self._rd_net_pattern.match(record) or self._rd_host_pattern.match(record):
-            # 192.168.0.0%11/16 := "Network3",
-            # 2402:9400:1000:0::%11/64 := "Network4",
-            # 192.168.1.1%11/32 := "Host3",
-            # 2001:0db8:85a3:0000:0000:8a2e:0370:7334%11 := "Host4"
+        elif self._rd_net_prefix_ptrn.match(record) or self._rd_host_ptrn.match(record):
+            # network 192.168.0.0%11/16 := "Network3"
+            # network 2402:9400:1000:0::%11/64 := "Network4"
+            # host 192.168.1.1%11/32 := "Host3"
+            # host 2001:0db8:85a3:0000:0000:8a2e:0370:7334%11 := "Host4"
             return record
+        elif self._ipv4_cidr_ptrn_rd.match(record) or self._ipv6_cidr_ptrn_rd.match(record):
+            # 10.0.0.0%12/8
+            # 2402:6940::%12/32 := "Network2"
+            # 192.168.1.1%12/32 := "Host1"
+            # 2402:9400:1000::%12/128
+            parts = [r.strip() for r in record.split(self._separator)]
+            if parts[0] == '':
+                return
+            pattern = re.compile(r'(?P<addr>[^%]+)%(?P<rd>[0-9]+)/(?P<prefix>[0-9]+)')
+            match = pattern.match(parts[0])
+            addr = u"{0}/{1}".format(match.group('addr'), match.group('prefix'))
+            if not is_valid_ip_interface(addr):
+                raise F5ModuleError(
+                    "When specifying an 'address' type, the value to the left of the separator must be an IP."
+                )
+            key = ip_interface(addr)
+            ipv4_match = re.match(self._ipv4_cidr_ptrn, addr)
+            ipv6_match = re.match(self._ipv6_cidr_ptrn, addr)
+            if len(parts) == 2:
+                if (ipv4_match and key.network.prefixlen == 32) or (ipv6_match and key.network.prefixlen == 128):
+                    return self.encode_host(str(key.ip) + '%' + str(match.group('rd')), parts[1])
+                else:
+                    return self.encode_network(
+                        str(key.network.network_address) + '%' + str(match.group('rd')),
+                        key.network.prefixlen, parts[1]
+                    )
+            elif len(parts) == 1 and parts[0] != '':
+                if (ipv4_match and key.network.prefixlen == 32) or (ipv6_match and key.network.prefixlen == 128):
+                    return self.encode_host(
+                        str(key.ip) + '%' + str(match.group('rd')), str(key.ip) + '%' + str(match.group('rd'))
+                    )
+                return self.encode_network(
+                    str(key.network.network_address) + '%' + str(match.group('rd')),
+                    key.network.prefixlen, str(key.network.network_address) + '%' + str(match.group('rd'))
+                )
         else:
-            # 192.168.0.0/16 := "Network3",
-            # 2402:9400:1000:0::/64 := "Network4",
-            parts = record.split(self._separator)
+            # 192.168.0.0/16 := "Network3"
+            # 2402:9400:1000:0::/64 := "Network4"
+            # 10.0.0.0/8
+            # 2402:6940::/32 := "Network2"
+            # 192.168.1.1/32 := "Host1"
+            # 2402:9400:1000::/128
+            parts = [r.strip() for r in record.split(self._separator)]
             if parts[0] == '':
                 return
             if not is_valid_ip_interface(parts[0]):
@@ -476,15 +552,16 @@ class RecordsEncoder(object):
                     "When specifying an 'address' type, the value to the left of the separator must be an IP."
                 )
             key = ip_interface(u"{0}".format(str(parts[0])))
+            ipv4_match = re.match(self._ipv4_cidr_ptrn, str(parts[0]))
+            ipv6_match = re.match(self._ipv6_cidr_ptrn, str(parts[0]))
 
             if len(parts) == 2:
-                if key.network.prefixlen in [32, 128]:
+                if (ipv4_match and key.network.prefixlen == 32) or (ipv6_match and key.network.prefixlen == 128):
                     return self.encode_host(str(key.ip), parts[1])
-                return self.encode_network(
-                    str(key.network.network_address), key.network.prefixlen, parts[1]
-                )
+                else:
+                    return self.encode_network(str(key.network.network_address), key.network.prefixlen, parts[1])
             elif len(parts) == 1 and parts[0] != '':
-                if key.network.prefixlen in [32, 128]:
+                if (ipv4_match and key.network.prefixlen == 32) or (ipv6_match and key.network.prefixlen == 128):
                     return self.encode_host(str(key.ip), str(key.ip))
                 return self.encode_network(
                     str(key.network.network_address), key.network.prefixlen, str(key.network.network_address)
@@ -525,9 +602,10 @@ class RecordsDecoder(object):
     def __init__(self, record_type=None, separator=None):
         self._record_type = record_type
         self._separator = separator
-        self._network_pattern = re.compile(r'^network\s+(?P<addr>[^ ]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
+        self._net_prefix_pattern = re.compile(r'^network\s+(?P<addr>[^ ]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
+        self._rd_net_prefix_ptrn = re.compile(r'^network\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)'
+                                              r'\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
         self._host_pattern = re.compile(r'^host\s+(?P<addr>[^ ]+)\s+.*')
-        self._rd_net_ptrn = re.compile(r'^network\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
         self._rd_host_ptrn = re.compile(r'^host\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)\s+.*')
 
     def decode(self, record):
@@ -538,7 +616,7 @@ class RecordsDecoder(object):
             return self.decode_from_string(record)
 
     def decode_address_from_string(self, record):
-        matches = self._rd_net_ptrn.match(record)
+        matches = self._rd_net_prefix_ptrn.match(record)
         if matches:
             # network 192.168.0.0%11 prefixlen 16 := "Network3",
             # network 2402:9400:1000:0::%11 prefixlen 64 := "Network4",
@@ -546,7 +624,7 @@ class RecordsDecoder(object):
             addr = "{0}%{1}/{2}".format(matches.group('addr'), matches.group('rd'), matches.group('prefix'))
             result = dict(name=addr, data=value)
             return result
-        matches = self._network_pattern.match(record)
+        matches = self._net_prefix_pattern.match(record)
         if matches:
             # network 192.168.0.0 prefixlen 16 := "Network3",
             # network 2402:9400:1000:0:: prefixlen 64 := "Network4",
@@ -581,7 +659,7 @@ class RecordsDecoder(object):
     def decode_from_string(self, record):
         parts = record.split(self._separator)
         if len(parts) == 2:
-            return dict(name=parts[0].strip(), data=parts[1].strip('"').strip())
+            return dict(name=parts[0].strip(), data=parts[1].strip().strip('"'))
         else:
             return dict(name=parts[0].strip(), data="")
 
@@ -955,11 +1033,9 @@ class InternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403, 409]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -974,11 +1050,9 @@ class InternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/internal/{2}".format(
@@ -986,9 +1060,11 @@ class InternalManager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/internal/{2}".format(
@@ -1002,12 +1078,9 @@ class InternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ExternalManager(BaseManager):
@@ -1044,6 +1117,7 @@ class ExternalManager(BaseManager):
         return True
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/external/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1052,11 +1126,19 @@ class ExternalManager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def external_file_exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
@@ -1110,11 +1192,6 @@ class ExternalManager(BaseManager):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
         else:
             uri = "https://{0}:{1}/mgmt/tm/sys/file/data-group/".format(
                 self.client.provider['server'],
@@ -1132,12 +1209,9 @@ class ExternalManager(BaseManager):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] in [400, 403]:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
-        return response['name']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response['name']
+        raise F5ModuleError(resp.content)
 
     def remove_file_on_device(self, remote_path):
         uri = "https://{0}:{1}/mgmt/tm/util/unix-rm/".format(
@@ -1153,11 +1227,10 @@ class ExternalManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(response.content)
 
     def create_on_device(self):
         name = self.want.external_file_name
@@ -1183,11 +1256,8 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(response.content)
 
         self.remove_file_on_device(remote_path)
 
@@ -1218,11 +1288,9 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/external/{2}".format(
@@ -1230,14 +1298,15 @@ class ExternalManager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
+        response = self.client.api.delete(uri)
 
         # Remove the remote data group file if asked to
         if self.want.delete_data_group_file:
             self.remove_data_group_file_from_device()
 
-        if resp.status == 200:
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def remove_data_group_file_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/file/data-group/{2}".format(
@@ -1245,12 +1314,11 @@ class ExternalManager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.external_file_name)
         )
-        resp = self.client.api.delete(uri)
+        response = self.client.api.delete(uri)
 
-        if resp.status == 200:
+        if response.status in [200, 201]:
             return True
-        else:
-            return False
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         """Reads the current configuration from the device
@@ -1283,11 +1351,8 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response_dg and response_dg['code'] == 400:
-            if 'message' in response_dg:
-                raise F5ModuleError(response_dg['message'])
-            else:
-                raise F5ModuleError(resp_dg.content)
+        if resp_dg.status not in [200, 201] or 'code' in response_dg and response_dg['code'] not in [200, 201]:
+            raise F5ModuleError(resp_dg.content)
 
         external_file = os.path.basename(response_dg['externalFileName'])
         external_file_partition = os.path.dirname(response_dg['externalFileName']).strip('/')
@@ -1304,14 +1369,11 @@ class ExternalManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        result = ApiParameters(params=response)
-        result.update({'description': response_dg.get('description', None)})
-        return result
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            result = ApiParameters(params=response)
+            result.update({'description': response_dg.get('description', None)})
+            return result
+        raise F5ModuleError(resp.content)
 
 
 class ModuleManager(object):
