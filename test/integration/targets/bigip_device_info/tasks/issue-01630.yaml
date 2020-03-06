@@ -1,0 +1,45 @@
+---
+
+- name: Issue 01630 - Create a published policy
+  bigip_policy:
+    name: policy1
+    state: present
+
+- name: Issue 01630 - Create rule for published policy, no actions, no conditions
+  bigip_policy_rule:
+    policy: policy1
+    name: rule1
+    state: present
+
+- name: Issue 01630 - Create virtual server
+  bigip_virtual_server:
+    destination: 10.10.10.10
+    port: 80
+    name: issue_01630
+    state: present
+    all_profiles:
+      - http
+    all_policies:
+      - /Common/policy1
+
+- name: Issue 01630 - Select virtual server facts
+  bigip_device_info:
+    include:
+      - virtual-servers
+  register: result
+
+- name: Issue 01630 - Assert Policies attached to a virtual server
+  assert:
+    that:
+      - result is success
+      - result.virtual_servers | json_query("[?name=='issue_01630'].policies[0]") | first == '/Common/policy1'
+
+- name: Issue 01630 - Remove virtual server
+  bigip_virtual_server:
+    name: issue_01630
+    state: absent
+
+- name: Issue 01630 - Remove a published policy
+  bigip_policy:
+    name: policy1
+    state: absent

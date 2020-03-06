@@ -72,10 +72,10 @@ class TestParameters(unittest.TestCase):
             user_template='alice',
             check_member_attr=False,
             ssl='no',
-            ssl_ca_cert='default.crt',
-            ssl_client_key='default.key',
-            ssl_client_cert='default1.crt',
-            ssl_check_peer=True,
+            ca_cert='default.crt',
+            client_key='default.key',
+            client_cert='default1.crt',
+            validate_certs=True,
             login_ldap_attr='bob',
             fallback_to_local=True,
             update_password='on_create',
@@ -90,10 +90,10 @@ class TestParameters(unittest.TestCase):
         assert p.user_template == 'alice'
         assert p.check_member_attr == 'no'
         assert p.ssl == 'no'
-        assert p.ssl_ca_cert == '/Common/default.crt'
-        assert p.ssl_client_key == '/Common/default.key'
-        assert p.ssl_client_cert == '/Common/default1.crt'
-        assert p.ssl_check_peer == 'yes'
+        assert p.ca_cert == '/Common/default.crt'
+        assert p.client_key == '/Common/default.key'
+        assert p.client_cert == '/Common/default1.crt'
+        assert p.validate_certs == 'yes'
         assert p.login_ldap_attr == 'bob'
         assert p.fallback_to_local == 'yes'
         assert p.update_password == 'on_create'
