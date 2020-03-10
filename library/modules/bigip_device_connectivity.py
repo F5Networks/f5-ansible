@@ -556,11 +556,8 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         for item in response['items']:
             if item['selfDevice'] == 'true':
@@ -575,12 +572,10 @@ class ModuleManager(object):
                 except ValueError as ex:
                     raise F5ModuleError(str(ex))
 
-                if 'code' in response and response['code'] == 400:
-                    if 'message' in response:
-                        raise F5ModuleError(response['message'])
-                    else:
-                        raise F5ModuleError(resp.content)
-                return
+                if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+                    return True
+                raise F5ModuleError(resp.content)
+
         raise F5ModuleError(
             "The host device was not found."
         )
@@ -598,11 +593,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         db = self.read_cluster_mirroring_from_device()
@@ -616,11 +609,8 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         for item in response['items']:
             if item['selfDevice'] == 'true':
@@ -635,14 +625,12 @@ class ModuleManager(object):
                 except ValueError as ex:
                     raise F5ModuleError(str(ex))
 
-                if 'code' in response and response['code'] == 400:
-                    if 'message' in response:
-                        raise F5ModuleError(response['message'])
-                    else:
-                        raise F5ModuleError(resp.content)
-                if db:
-                    response['cluster_mirroring'] = db['value']
-                return ApiParameters(params=response)
+                if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+                    if db:
+                        response['cluster_mirroring'] = db['value']
+                    return ApiParameters(params=response)
+                raise F5ModuleError(resp.content)
+
         raise F5ModuleError(
             "The host device was not found."
         )
@@ -659,12 +647,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):

@@ -1,5 +1,5 @@
 ---
-
+# A number of these tests are platform specific so the assertions will fail on different devices, these tests need a rework at some stage when we automated them to be checking against device inventory facts.
 - import_tasks: setup.yaml
 
 - name: Select multiple facts
@@ -64,8 +64,8 @@
   assert:
     that:
       - result is success
-      - result.interfaces | selectattr("name", "match", "1.0") | map(attribute='mtu') | first == 1500
-      - result.interfaces | json_query("[?name=='1.0'].mtu") | first == 1500
+      - result.interfaces | selectattr("name", "match", "1.1") | map(attribute='mtu') | first == 9198
+      - result.interfaces | json_query("[?name=='1.1'].mtu") | first == 9198
 
 - name: Select internal data group facts
   bigip_device_info:
@@ -301,7 +301,7 @@
 - name: Assert Try an invalid provision-info include choice
   assert:
     that:
-      - "'options are invalid: provision' in result.msg"
+      - "'Got no match for: provision' in result.msg"
       - result is success
 
 - name: Select all facts
