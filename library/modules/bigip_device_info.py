@@ -4951,7 +4951,7 @@ ssl_certs:
   sample: hash/dictionary of values
 ssl_keys:
   description: SSL certificate related information.
-  returned: When C(ssl-certs) is specified in C(gather_subset).
+  returned: When C(ssl-keys) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
