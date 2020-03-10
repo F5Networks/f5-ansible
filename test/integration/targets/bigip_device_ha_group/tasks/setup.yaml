@@ -4,7 +4,6 @@
     name: "{{ trunk_name }}"
     interfaces:
       - 1.1
-      - 1.2
 
 - name: Create pool
   bigip_pool:

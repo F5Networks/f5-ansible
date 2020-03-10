@@ -1,21 +1,29 @@
 ---
+- name: Issue 01095 - Collect BIG-IP facts
+  bigip_device_info:
+    include: system-info
+  register: f
+
 - name: Issue 01095 - Provision ASM
   bigip_provision:
     name: asm
   tags:
     - module-provisioning
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01095 - Select ASM signature sets facts
   bigip_device_info:
     include:
       - asm-signature-sets
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01095 - Assert Select ASM signature sets facts
   assert:
     that:
       - result is success
       - result.asm_signature_sets | json_query("[?name=='Java Servlets/JSP Signatures'].type") | first == 'filter-based'
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01095 - De-provision ASM
   bigip_provision:
@@ -24,3 +32,4 @@
   tags:
     - module-provisioning
     - deprovision-module
+  when: f.system_info.product_version >= "13.0.0"

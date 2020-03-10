@@ -10,6 +10,6 @@
   assert:
     that:
       - result is success
-      - result.system_info.product_information.product_built > 100
-      - result.system_info.product_information.product_changelist > 100
-      - result.system_info.product_information.product_jobid > 100
+      - result.system_info.product_built > 100
+      - result.system_info.product_changelist > 100
+      - result.system_info.product_jobid > 100

@@ -20,7 +20,7 @@ try:
     from library.modules.{{ module }} import ApiParameters
     from library.modules.{{ module }} import ModuleParameters
     from library.modules.{{ module }} import ModuleManager
-    from library.modules.{{ modue }} import ArgumentSpec
+    from library.modules.{{ module }} import ArgumentSpec
     from test.units.compat import unittest
     from test.units.compat.mock import Mock
     from test.units.compat.mock import patch

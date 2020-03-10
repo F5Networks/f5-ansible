@@ -11,9 +11,10 @@
     - module-provisioning
 
 - name: Issue 00289 - Create ASM policies
-  bigip_asm_policy:
+  bigip_asm_policy_manage:
     name: "asm-policy{{ item }}"
-    file: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+    active: yes
+    state: present
   with_sequence: start=1 end=3
 
 - name: Issue 00289 - Create published policy, w/asm, attached to virtual
@@ -79,7 +80,7 @@
   with_sequence: start=1 end=3
 
 - name: Issue 00289 - Remove ASM policies
-  bigip_asm_policy:
+  bigip_asm_policy_manage:
     name: "asm-policy{{ item }}"
     state: absent
   with_sequence: start=1 end=3
