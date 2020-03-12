@@ -39,6 +39,7 @@ options:
     description:
       - Simple list of port values to add to the list
     type: list
+    elements: str
   port_ranges:
     description:
       - A list of port ranges where the range starts with a port number, is followed
@@ -46,6 +47,7 @@ options:
       - If the first number is greater than the second number, the numbers will be
         reversed so-as to be properly formatted. ie, 90-78 would become 78-90.
     type: list
+    elements: str
   port_lists:
     description:
       - Simple list of existing port lists to add to this list. Port lists can be
@@ -53,6 +55,7 @@ options:
         name (foo). If a short name is used, the C(partition) argument will automatically
         be prepended to the short name.
     type: list
+    elements: str
   state:
     description:
       - When C(present), ensures that the address list and entries exists.
@@ -618,9 +621,18 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             description=dict(),
-            ports=dict(type='list'),
-            port_ranges=dict(type='list'),
-            port_lists=dict(type='list'),
+            ports=dict(
+                type='list',
+                elements='str',
+            ),
+            port_ranges=dict(
+                type='list',
+                elements='str',
+            ),
+            port_lists=dict(
+                type='list',
+                elements='str',
+            ),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

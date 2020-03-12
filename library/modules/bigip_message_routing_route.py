@@ -61,6 +61,7 @@ options:
       - Specifies a list of ltm messagerouting-peer objects.
       - The specified peer must be on the same partition as the route.
     type: list
+    elements: str
   partition:
     description:
       - Device partition to create route object on.
@@ -522,7 +523,8 @@ class ArgumentSpec(object):
                 choices=['ratio', 'sequential']
             ),
             peers=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             type=dict(
                 choices=['generic'],

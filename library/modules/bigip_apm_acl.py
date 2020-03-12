@@ -54,6 +54,7 @@ options:
       - The order in which the rules are placed as arguments to this parameter, determines their order in the ACL,
         in other words changing the order of the same elements will cause a change on the unit.
     type: list
+    elements: dict
     suboptions:
       action:
         description:

@@ -146,6 +146,7 @@ options:
       - Specifies the set of interfaces on which the source address translation is allowed or disallowed,
         as determined by the C(egress_intf_enabled) setting.
     type: list
+    elements: str
   members:
     description:
       - Specifies the set of translation IP addresses available in the pool. This is a collection of IP prefixes with
@@ -154,12 +155,14 @@ options:
         LSN pools must not overlap. Every external address used for deterministic mapping must occur only in one LSN
         pool.
     type: list
+    elements: str
   backup_members:
     description:
       - Specifies translation IP addresses available for backup members, which is used by Deterministic translation
         mode if C(deterministic) mode translation fails and falls back to C(napt) mode.
       - This is a collection of IP prefixes with their prefix lengths.
     type: list
+    elements: str
   log_profile:
     description:
       - Specifies the name of the logging profile the pool uses.
@@ -1107,9 +1110,18 @@ class ArgumentSpec(object):
             port_range_low=dict(type='int'),
             port_range_high=dict(type='int'),
             egress_intf_enabled=dict(type='bool'),
-            egress_interfaces=dict(type='list'),
-            members=dict(type='list'),
-            backup_members=dict(type='list'),
+            egress_interfaces=dict(
+                type='list',
+                elements='str',
+            ),
+            members=dict(
+                type='list',
+                elements='str',
+            ),
+            backup_members=dict(
+                type='list',
+                elements='str',
+            ),
             log_profile=dict(),
             log_publisher=dict(),
             partition=dict(

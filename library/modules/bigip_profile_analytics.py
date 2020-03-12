@@ -95,6 +95,7 @@ options:
       - Specifies which email addresses receive alerts by email when
         C(notification_by_email) is enabled.
     type: list
+    elements: str
   partition:
     description:
       - Device partition to manage resources on.
@@ -728,7 +729,10 @@ class ArgumentSpec(object):
             external_logging_publisher=dict(),
             notification_by_syslog=dict(type='bool'),
             notification_by_email=dict(type='bool'),
-            notification_email_addresses=dict(type='list'),
+            notification_email_addresses=dict(
+                type='list',
+                elements='str',
+            ),
             state=dict(
                 default='present',
                 choices=['present', 'absent']

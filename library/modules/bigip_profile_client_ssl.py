@@ -54,6 +54,8 @@ options:
         RSA, one DSA, and one ECDSA per profile. If you attempt to assign two
         RSA, DSA, or ECDSA certificate/key combo, the device will reject this.
       - This list is a complex list that specifies a number of keys.
+    type: list
+    elements: dict
     suboptions:
       cert:
         description:
@@ -85,7 +87,6 @@ options:
         type: bool
         default: no
         version_added: "f5_modules 1.1"
-    type: list
   partition:
     description:
       - Device partition to manage resources on.
@@ -98,6 +99,7 @@ options:
         creating a new profile, the list is provided by the parent profile.
       - When a C('') or C(none) value is provided all options for SSL processing are disabled.
     type: list
+    elements: str
     choices:
       - netscape-reuse-cipher-change-bug
       - microsoft-big-sslv3-buffer
@@ -1177,6 +1179,7 @@ class ArgumentSpec(object):
             ),
             options=dict(
                 type='list',
+                elements='str',
                 choices=[
                     'netscape-reuse-cipher-change-bug',
                     'microsoft-big-sslv3-buffer',
@@ -1208,6 +1211,7 @@ class ArgumentSpec(object):
             ),
             cert_key_chain=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     cert=dict(required=True),
                     key=dict(required=True),

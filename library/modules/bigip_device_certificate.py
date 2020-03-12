@@ -108,7 +108,6 @@ options:
       - Configures the transport connection to use when connecting to the
         remote device.
       - This module currently supports only connectivity to the device over cli (ssh).
-    required: True
     type: str
     choices:
         - cli

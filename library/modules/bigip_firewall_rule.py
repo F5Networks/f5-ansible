@@ -110,6 +110,8 @@ options:
         or IPv6 address range, geographic location, VLAN, address list, port,
         port range, port list or address list.
       - You can specify a mix of different types of items for the source address.
+    type: list
+    elements: dict
     suboptions:
       address:
         description:
@@ -149,7 +151,6 @@ options:
           - Specifies VLANs to which the rule applies.
           - The VLAN source refers to the packet's source.
         type: str
-    type: list
   destination:
     description:
       - Specifies packet destinations to which the rule applies.
@@ -158,6 +159,8 @@ options:
         an IPv4 or IPv6 address range, geographic location, VLAN, address list, port,
         port range, port list or address list.
       - You can specify a mix of different types of items for the source address.
+    type: list
+    elements: dict
     suboptions:
       address:
         description:
@@ -192,7 +195,6 @@ options:
             port to the right.
           - This option is only valid when C(protocol) is C(tcp)(6) or C(udp)(17).
         type: str
-    type: list
   logging:
     description:
       - Specifies whether logging is enabled or disabled for the firewall rule.
@@ -213,6 +215,8 @@ options:
         C(type) and C(code) that the rule uses.
       - This parameter is only relevant when C(protocol) is either C(icmp)(1) or
         C(icmpv6)(58).
+    type: list
+    elements: dict
     suboptions:
       type:
         description:
@@ -236,7 +240,6 @@ options:
           - The ICMP protocol contains definitions for the existing message code and
             number pairs.
         type: str
-    type: list
   partition:
     description:
       - Device partition to manage resources on.

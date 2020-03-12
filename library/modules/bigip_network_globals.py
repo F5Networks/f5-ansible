@@ -23,6 +23,7 @@ options:
   stp:
     description:
       - Manage global settings for STP on BIG-IP.
+    type: dict
     suboptions:
       config_name:
         description:
@@ -86,10 +87,10 @@ options:
             may transmit on a port in any hello time interval.
           - The valid range is 1 to 10 packets.
         type: int
-    type: dict
   multicast:
     description:
       - Manage multicast traffic configuration options.
+    type: dict
     suboptions:
       max_pending_packets:
         description:
@@ -111,10 +112,10 @@ options:
           - When C(yes), the DB variable switchboard.maxmcastrate setting controls the multicast packet per second rate
             limiting in the switch.
         type: bool
-    type: dict
   dag:
     description:
       -  Manage global disaggregation settings.
+    type: dict
     suboptions:
       round_robin_mode:
         description:
@@ -143,10 +144,10 @@ options:
           - The valid value range is 0 - 128, with C(128) value SPAG is in use.
           - This option is only available in C(TMOS) version C(13.x) and above.
         type: int
-    type: dict
   lldp:
     description:
       - Manage LLDP configuration options.
+    type: dict
     suboptions:
       enabled:
         description:
@@ -180,15 +181,17 @@ options:
           - Specifies the interval that devices use to send LLDP information from each of their interfaces.
           - The valid value range is 0 - 65535.
         type: int
-    type: dict
   self_allow:
     description:
       - Manage Self Allow global configuration options.
+    type: dict
     suboptions:
       defaults:
         description:
           - The default set of protocols and ports allowed by a self IP if the self IP allow-service setting is
             B(default).
+        type: list
+        elements: dict
         suboptions:
           protocol:
             description:
@@ -199,7 +202,6 @@ options:
               - The port number to be set.
               - The valid value range is 0 - 65535.
             type: int
-        type: list
       all:
         description:
           - Sets B(all) or B(none) ports and protocols as a system wide C(self_allow) setting.
@@ -208,7 +210,6 @@ options:
           - When C(no) the self_allow allows no protocols and ports, this is the equivalent of setting B(none) option
             in C(TMSH).
         type: bool
-    type: dict
     version_added: "f5_modules 1.1"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:

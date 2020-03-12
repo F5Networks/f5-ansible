@@ -33,6 +33,7 @@ options:
         as well as specific protocols. This list should contain C(protocol):C(port)
         values.
     type: list
+    elements: str
   name:
     description:
       - The self IP to create.
@@ -889,7 +890,10 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             address=dict(),
-            allow_service=dict(type='list'),
+            allow_service=dict(
+                elements='str',
+                type='list',
+            ),
             name=dict(required=True),
             netmask=dict(),
             traffic_group=dict(),

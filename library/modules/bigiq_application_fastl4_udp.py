@@ -36,6 +36,8 @@ options:
       - If you are familiar with other BIG-IP setting, you might also refer to this
         list as the list of pool members.
       - When creating a new application, at least one server is required.
+    type: list
+    elements: dict
     suboptions:
       address:
         description:
@@ -49,7 +51,6 @@ options:
             is not provided, the default of C(8000) will be used.
         type: str
         default: 8000
-    type: list
   inbound_virtual:
     description:
       - Settings to configure the virtual which will receive the inbound connection.
@@ -652,6 +653,7 @@ class ArgumentSpec(object):
             description=dict(),
             servers=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     address=dict(required=True),
                     port=dict(default=8000)

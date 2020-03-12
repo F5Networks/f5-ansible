@@ -44,6 +44,7 @@ options:
       - Specifies pools to contribute to the ha score.
       - The pools must exist on the BIG-IP otherwise the operation will fail.
     type: list
+    elements: dict
     suboptions:
       pool_name:
         description:
@@ -84,6 +85,7 @@ options:
       - Specifies trunks to contribute to the ha score.
       - The trunks must exist on the BIG-IP otherwise the operation will fail.
     type: list
+    elements: dict
     suboptions:
       trunk_name:
         description:

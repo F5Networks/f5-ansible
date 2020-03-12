@@ -51,6 +51,7 @@ options:
       - Device names will be prepended by a partition by the module, so you can provide either the full path format
         name C(/Common/bigip1) or just the name string C(bigip1).
     type: list
+    elements: str
     version_added: 2.8
   ha_group:
     description:
@@ -634,7 +635,8 @@ class ArgumentSpec(object):
             name=dict(required=True),
             mac_address=dict(),
             ha_order=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             ha_group=dict(),
             ha_load_factor=dict(

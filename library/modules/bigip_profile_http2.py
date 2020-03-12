@@ -68,6 +68,7 @@ options:
       - The C(alpn) and C(always) are mutually exclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: list
+    elements: str
     choices:
       - alpn
       - always
@@ -632,10 +633,11 @@ class ArgumentSpec(object):
             parent=dict(),
             activation_modes=dict(
                 type='list',
+                elements='str',
                 choices=[
                     'alpn', 'always'
                 ],
-                mutually_exclusive=['always', 'alpn'],
+                mutually_exclusive=[['always', 'alpn']],
             ),
             description=dict(),
             enforce_tls_requirements=dict(type='bool'),

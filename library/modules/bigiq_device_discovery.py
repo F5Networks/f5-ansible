@@ -108,6 +108,7 @@ options:
       - The C(ltm) module must always be specified when performing discovery or re-discovery of the the device.
       - When C(asm) or C(afm) are specified C(shared_security) module needs to also be declared.
     type: list
+    elements: str
     choices:
       - ltm
       - asm
@@ -145,6 +146,7 @@ options:
         description:
           - Specifies for which modules the data is being collected.
         type: list
+        elements: str
         default: ['device', 'ltm']
         choices:
           - device
@@ -1167,6 +1169,7 @@ class ArgumentSpec(object):
             ),
             modules=dict(
                 type='list',
+                elements='str',
                 choices=[
                     'ltm', 'asm', 'afm', 'dns', 'websafe', 'security_shared', 'apm'
                 ]
@@ -1199,6 +1202,7 @@ class ArgumentSpec(object):
                     ),
                     stat_modules=dict(
                         type='list',
+                        elements='str',
                         choices=[
                             'device', 'ltm', 'dns'
                         ],

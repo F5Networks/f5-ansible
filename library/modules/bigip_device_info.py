@@ -29,6 +29,7 @@ options:
       - Values can also be used with an initial C(!) to specify that a specific subset
         should not be collected.
     type: list
+    elements: str
     required: True
     choices:
       - all
@@ -16409,6 +16410,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             gather_subset=dict(
                 type='list',
+                elements='str',
                 required=True,
                 aliases=['include'],
                 choices=[
