@@ -43,6 +43,7 @@ options:
         and therefore, this module's cannot guarantee that the correct device will be
         registered. The device returned is the device that will be used.
     type: str
+    required: True
   managed:
     description:
       - Whether the specified device is a managed or un-managed device.

@@ -33,6 +33,7 @@ options:
     description:
       - Specifies a list profiles for the outgoing connection to use to direct and manage traffic.
     type: list
+    elements: str
   src_addr_translation:
     description:
       - Specifies the type of source address translation enabled for the transport config and the pool
@@ -66,6 +67,7 @@ options:
       - The iRules you want run on this transport config. iRules help automate the intercepting, processing,
         and routing of application traffic.
     type: list
+    elements: str
   type:
     description:
       - Parameter used to specify the type of the transport-config object to manage.
@@ -621,7 +623,10 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             description=dict(),
-            profiles=dict(type='list'),
+            profiles=dict(
+                type='list',
+                elements='str',
+            ),
             src_port=dict(type='int'),
             src_addr_translation=dict(
                 type='dict',
@@ -635,7 +640,10 @@ class ArgumentSpec(object):
                     ['type', 'snat', ['pool']]
                 ]
             ),
-            rules=dict(type='list'),
+            rules=dict(
+                type='list',
+                elements='str',
+            ),
             type=dict(
                 choices=['generic'],
                 default='generic'

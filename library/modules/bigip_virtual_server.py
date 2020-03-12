@@ -165,6 +165,9 @@ options:
       - If you are unsure what correct profile combinations are, then have a BIG-IP
         available to you in which you can make changes and copy what the correct
         combinations are.
+    type: raw
+    aliases:
+      - all_profiles
     suboptions:
       name:
         description:
@@ -182,9 +185,6 @@ options:
           - server-side
           - client-side
         default: all
-    type: list
-    aliases:
-      - all_profiles
   irules:
     version_added: 2.2
     description:
@@ -198,6 +198,7 @@ options:
       - When C(type) is C(reject), this parameter will be ignored.
       - When C(type) is C(internal), this parameter will be ignored.
     type: list
+    elements: str
     aliases:
       - all_rules
   enabled_vlans:
@@ -208,6 +209,7 @@ options:
         then the C(partition) option of this module will be used.
       - This parameter is mutually exclusive with the C(disabled_vlans) parameter.
     type: list
+    elements: str
     version_added: 2.2
   disabled_vlans:
     description:
@@ -215,6 +217,7 @@ options:
         then the C(partition) option of this module will be used.
       - This parameter is mutually exclusive with the C(enabled_vlans) parameters.
     type: list
+    elements: str
     version_added: 2.5
   pool:
     description:
@@ -233,6 +236,7 @@ options:
       - When C(type) is C(reject), this parameter will be ignored.
       - When C(type) is C(internal), this parameter will be ignored.
     type: list
+    elements: str
     aliases:
       - all_policies
   snat:
@@ -398,6 +402,7 @@ options:
       - The C(Log all requests) and C(Log illegal requests) are mutually exclusive and
         therefore, this module will raise an error if the two are specified together.
     type: list
+    elements: str
     version_added: 2.6
   security_nat_policy:
     description:
@@ -479,6 +484,8 @@ options:
       - Specifies a pool or list of pools that the virtual server uses to replicate either client-side
         or server-side traffic.
       - Typically this option is used for intrusion detection.
+    type: list
+    elements: dict
     suboptions:
       pool_name:
         description:
@@ -492,10 +499,10 @@ options:
         description:
           - The context option for a clone pool to replicate either client-side or server-side traffic.
         type: str
+        required: True
         choices:
          - clientside
          - serverside
-    type: list
     version_added: 2.8
   check_profiles:
     description:
@@ -3587,26 +3594,30 @@ class ArgumentSpec(object):
             ),
             port=dict(),
             profiles=dict(
-                type='list',
-                aliases=['all_profiles'],
+                type='raw',
                 options=dict(
                     name=dict(),
                     context=dict(default='all', choices=['all', 'server-side', 'client-side'])
-                )
+                ),
+                aliases=['all_profiles'],
             ),
             policies=dict(
                 type='list',
+                elements='str',
                 aliases=['all_policies']
             ),
             irules=dict(
                 type='list',
+                elements='str',
                 aliases=['all_rules']
             ),
             enabled_vlans=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             disabled_vlans=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             pool=dict(),
             description=dict(),
@@ -3645,7 +3656,10 @@ class ArgumentSpec(object):
             firewall_staged_policy=dict(),
             firewall_enforced_policy=dict(),
             ip_intelligence_policy=dict(),
-            security_log_profiles=dict(type='list'),
+            security_log_profiles=dict(
+                type='list',
+                elements='str',
+            ),
             security_nat_policy=dict(
                 type='dict',
                 options=dict(
@@ -3670,6 +3684,7 @@ class ArgumentSpec(object):
             ),
             clone_pools=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     pool_name=dict(required=True),
                     context=dict(

@@ -35,6 +35,7 @@ options:
         Therefore you could specify C(/mickey/mouse/test.ucs) and this module
         would only look for C(test.ucs).
     type: str
+    required: True
   force:
     description:
       - If C(yes) will upload the file every time and replace the file on the

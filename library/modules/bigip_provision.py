@@ -1073,9 +1073,6 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
-        self.mutually_exclusive = [
-            ['parameters', 'parameters_src']
-        ]
 
 
 def main():
@@ -1084,7 +1081,7 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        mutually_exclusive=spec.mutually_exclusive
+
     )
 
     try:

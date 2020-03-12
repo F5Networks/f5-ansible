@@ -36,6 +36,7 @@ options:
         order the VLANs for you automatically. Therefore, if you deliberately re-order them
         in subsequent tasks, you will find that this module will B(not) register a change.
     type: list
+    elements: str
   initial_image:
     description:
       - Specifies the base software release ISO image file for installing the TMOS
@@ -162,6 +163,7 @@ options:
       - By default this list includes every available slot in the cluster. This means,
         by default, the guest may be assigned to any slot.
     type: list
+    elements: str
     version_added: 2.7
 notes:
   - This module can take a lot of time to deploy vCMP guests. This is an intrinsic
@@ -975,7 +977,10 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            vlans=dict(type='list'),
+            vlans=dict(
+                type='list',
+                elements='str',
+            ),
             mgmt_network=dict(choices=['bridged', 'isolated', 'host only']),
             mgmt_address=dict(),
             mgmt_route=dict(),
@@ -992,7 +997,10 @@ class ArgumentSpec(object):
             cores_per_slot=dict(type='int'),
             number_of_slots=dict(type='int'),
             min_number_of_slots=dict(type='int'),
-            allowed_slots=dict(type='list'),
+            allowed_slots=dict(
+                type='list',
+                elements='str',
+            ),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

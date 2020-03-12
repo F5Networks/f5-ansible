@@ -36,23 +36,26 @@ options:
       - If you are familiar with other BIG-IP setting, you might also refer to this
         list as the list of pool members.
       - When creating a new application, at least one server is required.
+    type: list
+    elements: dict
     suboptions:
       address:
         description:
           - The IP address of the server.
         type: str
+        required: True
       port:
         description:
           - The port of the server.
         type: str
         default: 80
-    type: list
   inbound_virtual:
     description:
       - Settings to configure the virtual which will receive the inbound connection.
       - This virtual will be used to host the HTTPS endpoint of the application.
       - Traffic destined to the C(redirect_virtual) will be offloaded to this
         parameter to ensure that proper redirection from insecure, to secure, occurs.
+    type: dict
     suboptions:
       address:
         description:
@@ -60,11 +63,13 @@ options:
             sends traffic.
           - This parameter is required when creating a new application.
         type: str
+        required: True
       netmask:
         description:
           - Specifies the netmask to associate with the given C(address).
           - This parameter is required when creating a new application.
         type: str
+        required: True
       port:
         description:
           - The port that the virtual listens for connections on.
@@ -72,7 +77,6 @@ options:
             default value of C(443) will be used.
         type: str
         default: 443
-    type: dict
   redirect_virtual:
     description:
       - Settings to configure the virtual which will receive the connection to be
@@ -81,6 +85,7 @@ options:
       - Traffic destined to this parameter will be offloaded to the
         C(inbound_virtual) parameter to ensure that proper redirection from insecure,
         to secure, occurs.
+    type: dict
     suboptions:
       address:
         description:
@@ -88,11 +93,13 @@ options:
             sends traffic.
           - This parameter is required when creating a new application.
         type: str
+        required: True
       netmask:
         description:
           - Specifies the netmask to associate with the given C(address).
           - This parameter is required when creating a new application.
         type: str
+        required: True
       port:
         description:
           - The port that the virtual listens for connections on.
@@ -100,16 +107,18 @@ options:
             default value of C(80) will be used.
         type: str
         default: 80
-    type: dict
   client_ssl_profile:
     description:
       - Specifies the SSL profile for managing client-side SSL traffic.
+    type: dict
     suboptions:
       name:
         description:
           - The name of the client SSL profile to created and used.
           - When creating a new application, if this value is not specified, the
             default value of C(clientssl) will be used.
+        type: str
+        default: clientssl
       cert_key_chain:
         description:
           - One or more certificates and keys to associate with the SSL profile.
@@ -123,17 +132,16 @@ options:
           - This list is a complex list that specifies a number of keys.
           - When creating a new profile, if this parameter is not specified, the
             default value of C(inherit) will be used.
+        type: raw
         suboptions:
           cert:
             description:
               - Specifies a cert name for use.
             type: str
-            required: True
           key:
             description:
               - Specifies a key name.
             type: str
-            required: True
           chain:
             description:
               - Specifies a certificate chain that is relevant to the certificate and
@@ -145,8 +153,6 @@ options:
               - Contains the passphrase of the key file, should it require one.
               - Passphrases are encrypted on the remote BIG-IP device.
             type: str
-        type: raw
-    type: dict
   service_environment:
     description:
       - Specifies the name of service environment or the hostname of the BIG-IP that
@@ -938,6 +944,7 @@ class ArgumentSpec(object):
             description=dict(),
             servers=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     address=dict(required=True),
                     port=dict(default=80)
@@ -966,14 +973,16 @@ class ArgumentSpec(object):
             ),
             client_ssl_profile=dict(
                 type='dict',
-                name=dict(default='clientssl'),
-                cert_key_chain=dict(
-                    type='raw',
-                    options=dict(
-                        cert=dict(),
-                        key=dict(),
-                        chain=dict(),
-                        passphrase=dict()
+                options=dict(
+                    name=dict(default='clientssl'),
+                    cert_key_chain=dict(
+                        type='raw',
+                        options=dict(
+                            cert=dict(),
+                            key=dict(),
+                            chain=dict(),
+                            passphrase=dict()
+                        )
                     )
                 )
             ),
@@ -983,9 +992,6 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
-        self.mutually_exclusive = [
-            ['inherit_cert_key_chain', 'cert_key_chain']
-        ]
 
 
 def main():
@@ -994,7 +1000,6 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        mutually_exclusive=spec.mutually_exclusive
     )
 
     try:

@@ -47,6 +47,7 @@ options:
         specifying the (recommended) management IP address, use 'management-ip' in
         the address field.
     type: list
+    elements: str
   failover_multicast:
     description:
       - When C(yes), ensures that the Failover Multicast configuration is enabled
@@ -665,7 +666,8 @@ class ArgumentSpec(object):
                 type='bool'
             ),
             unicast_failover=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             mirror_primary_address=dict(),
             mirror_secondary_address=dict(),

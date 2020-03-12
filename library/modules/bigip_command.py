@@ -48,6 +48,7 @@ options:
         before moving forward. If the conditional is not true
         by the configured retries, the task fails. See examples.
     type: list
+    elements: str
     aliases: ['waitfor']
   match:
     description:
@@ -83,7 +84,6 @@ options:
       - Configures the transport connection to use when connecting to the
         remote device. The transport argument supports connectivity to the
         device over cli (ssh) or rest.
-    required: True
     type: str
     choices:
         - rest
@@ -673,6 +673,7 @@ class ArgumentSpec(object):
             ),
             wait_for=dict(
                 type='list',
+                elements='str',
                 aliases=['waitfor']
             ),
             match=dict(

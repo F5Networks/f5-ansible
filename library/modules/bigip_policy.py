@@ -74,6 +74,7 @@ options:
       - The C(bigip_policy_rule) module can be used to create and edit existing
         and new rules.
     type: list
+    elements: str
   partition:
     description:
       - Device partition to manage resources on.
@@ -1100,7 +1101,10 @@ class ArgumentSpec(object):
                 required=True
             ),
             description=dict(),
-            rules=dict(type='list'),
+            rules=dict(
+                type='list',
+                elements='str',
+            ),
             strategy=dict(
                 choices=['first', 'all', 'best']
             ),

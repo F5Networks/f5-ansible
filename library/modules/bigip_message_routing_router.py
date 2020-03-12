@@ -100,6 +100,7 @@ options:
       - Specifies a list of static routes for the router instance to use.
       - The route must be on the same partition as router profile.
     type: list
+    elements: str
   partition:
     description:
       - Device partition to create router profile on.
@@ -720,7 +721,10 @@ class ArgumentSpec(object):
             max_retries=dict(type='int'),
             mirror=dict(type='bool'),
             mirrored_msg_sweeper_interval=dict(type='int'),
-            routes=dict(type='list'),
+            routes=dict(
+                type='list',
+                elements='str',
+            ),
             traffic_group=dict(),
             type=dict(
                 choices=['generic'],

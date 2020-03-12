@@ -78,17 +78,18 @@ options:
   records:
     description:
       - Specifies the records that you want to add to a data group.
-      - If you have a large number of records, it is recommended that you use C(records_content)
+      - If you have a large number of records, it is recommended that you use C(records_src)
         instead of typing all those records here.
       - The technical limit of either 1. the number of records, or 2. the total size of all
         records, varies with the size of the total resources on your system; in particular,
         RAM.
       - When C(internal) is C(no), at least one record must be specified in either C(records)
-        or C(records_content).
+        or C(records_src).
       - "When C(type) is: C(ip), C(address), C(addr) if the addresses use non default route domain,
         they must be explicit about it that is they must contain a route domain notation C(%) eg. 10.10.1.1%11.
         This is true regardless if the data group resides in a partition or not."
     type: list
+    elements: dict
     suboptions:
       key:
         description:
@@ -117,12 +118,12 @@ options:
         examples of the different types of payload formats that are expected in your data
         group file.
       - When C(internal) is C(no), at least one record must be specified in either C(records)
-        or C(records_content).
+        or C(records_src).
     type: path
   separator:
     description:
-      - When specifying C(records_content), this is the string of characters that will
-        be used to break apart entries in the C(records_content) into key/value pairs.
+      - When specifying C(records_src), this is the string of characters that will
+        be used to break apart entries in the C(records_src) into key/value pairs.
       - By default, this parameter's value is C(:=).
       - This value cannot be changed once it is set.
       - This parameter is only relevant when C(internal) is C(no). It will be ignored
@@ -1408,7 +1409,8 @@ class ArgumentSpec(object):
             internal=dict(type='bool', default='no'),
             records=dict(
                 type='list',
-                suboptions=dict(
+                elements='dict',
+                options=dict(
                     key=dict(required=True),
                     value=dict(type='raw')
                 )
@@ -1427,7 +1429,7 @@ class ArgumentSpec(object):
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.mutually_exclusive = [
-            ['records', 'records_content', 'external_file_name']
+            ['records', 'records_src', 'external_file_name']
         ]
 
 

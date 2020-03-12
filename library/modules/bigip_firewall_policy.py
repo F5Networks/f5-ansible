@@ -52,6 +52,7 @@ options:
       - The C(bigip_firewall_rule) module can be used to also create, as well as
         edit, existing and new rules.
     type: list
+    elements: str
   partition:
     description:
       - Device partition to manage resources on.
@@ -507,7 +508,10 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             description=dict(),
-            rules=dict(type='list'),
+            rules=dict(
+                type='list',
+                elements='str',
+            ),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

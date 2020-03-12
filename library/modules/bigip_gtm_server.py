@@ -59,7 +59,7 @@ options:
       - Specifying duplicate C(name) fields is a supported means of providing device
         addresses. In this scenario, the addresses will be assigned to the C(name)'s list
         of addresses.
-    type: list
+    type: raw
   server_type:
     description:
       - Specifies the server type. The server type determines the metrics that the
@@ -142,18 +142,22 @@ options:
       - When C(availability_requirements.type) is C(require), you may only have a single monitor in the
         C(monitors) list.
     type: list
+    elements: str
     version_added: 2.8
   availability_requirements:
     description:
       - Specifies, if you activate more than one health monitor, the number of health
         monitors that must receive successful responses in order for the link to be
         considered available.
+    type: dict
+    version_added: 2.8
     suboptions:
       type:
         description:
           - Monitor rule type when C(monitors) is specified.
           - When creating a new pool, if this value is not specified, the default of 'all' will be used.
         type: str
+        required: True
         choices:
           - all
           - at_least
@@ -185,8 +189,6 @@ options:
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
-    type: dict
-    version_added: 2.8
   prober_preference:
     description:
       - Specifies the type of prober to use to monitor this server's resources.
@@ -1721,7 +1723,7 @@ class ArgumentSpec(object):
                 choices=['enabled', 'disabled', 'enabled-no-delete']
             ),
             devices=dict(
-                type='list'
+                type='raw',
             ),
             partition=dict(
                 default='Common',
@@ -1770,7 +1772,10 @@ class ArgumentSpec(object):
                     memory_limit=dict(type='int'),
                 )
             ),
-            monitors=dict(type='list'),
+            monitors=dict(
+                type='list',
+                elements='str',
+            ),
             prober_preference=dict(
                 choices=['inside-datacenter', 'outside-datacenter', 'inherit', 'pool']
             ),

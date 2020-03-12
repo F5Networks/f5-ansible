@@ -204,6 +204,7 @@ options:
       - When C(subscribe), configures the "SIP SUBSCRIBE Method" SIP Protocol Security vector.
       - When C(uri-limit), configures the "uri-limit" SIP Protocol Security vector.
     type: str
+    required: True
     choices:
       - bad-icmp-chksum
       - bad-icmp-frame
@@ -439,7 +440,6 @@ options:
       - detect-only
       - learn-only
       - disabled
-    required: True
   partition:
     description:
       - Device partition to manage resources on.

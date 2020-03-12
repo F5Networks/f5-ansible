@@ -81,6 +81,7 @@ options:
     description:
       - Specifies IPV6 address spaces for which traffic is not forced through the tunnel.
     type: list
+    elements: dict
     suboptions:
       subnet:
         description:
@@ -91,6 +92,7 @@ options:
     description:
       - Specifies IPV4 address spaces for which traffic is not forced through the tunnel.
     type: list
+    elements: dict
     suboptions:
       subnet:
         description:
@@ -101,15 +103,18 @@ options:
     description:
       - Specifies the DNS address spaces for which traffic is not forced through the tunnel.
     type: list
+    elements: str
   dns_address_space:
     description:
       - Specifies a list of domain names describing the target LAN DNS addresses.
     type: list
+    elements: str
   ipv4_address_space:
     description:
       - Specifies a list of IPv4 hosts or networks describing the target LAN.
       - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(yes).
     type: list
+    elements: dict
     suboptions:
       subnet:
         description:
@@ -121,6 +126,7 @@ options:
       - Specifies a list of IPv6 hosts or networks describing the target LAN.
       - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(yes).
     type: list
+    elements: dict
     suboptions:
       subnet:
         description:
@@ -974,30 +980,36 @@ class ArgumentSpec(object):
             ipv6_lease_pool=dict(),
             excluded_ipv6_adresses=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     subnet=dict(),
                 )
             ),
             excluded_ipv4_adresses=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     subnet=dict(),
                 )
             ),
             excluded_dns_addresses=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             dns_address_space=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             ipv4_address_space=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     subnet=dict(),
                 )
             ),
             ipv6_address_space=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     subnet=dict(),
                 )
