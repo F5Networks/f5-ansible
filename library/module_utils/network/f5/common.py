@@ -29,6 +29,7 @@ MANAGED_BY_ANNOTATION_MODIFIED = 'f5-ansible.last_modified'
 
 f5_provider_spec = {
     'server': dict(
+        required=True,
         fallback=(env_fallback, ['F5_SERVER'])
     ),
     'server_port': dict(
@@ -37,12 +38,14 @@ f5_provider_spec = {
         fallback=(env_fallback, ['F5_SERVER_PORT'])
     ),
     'user': dict(
+        required=True,
         fallback=(env_fallback, ['F5_USER', 'ANSIBLE_NET_USERNAME'])
     ),
     'password': dict(
+        required=True,
         no_log=True,
         aliases=['pass', 'pwd'],
-        fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD'])
+        fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD']),
     ),
     'ssh_keyfile': dict(
         type='path'

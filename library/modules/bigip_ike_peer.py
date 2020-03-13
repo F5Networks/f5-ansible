@@ -40,6 +40,7 @@ options:
         both versions, the IPsec initiator system determines which IKE version to use.
       - When creating a new IKE peer, this value is required.
     type: list
+    elements: str
     choices:
       - v1
       - v2
@@ -762,6 +763,7 @@ class ArgumentSpec(object):
             remote_address=dict(),
             version=dict(
                 type='list',
+                elements='str',
                 choices=['v1', 'v2']
             ),
             phase1_lifetime=dict(type='int'),

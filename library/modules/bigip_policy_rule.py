@@ -31,6 +31,8 @@ options:
         a C(type) be specified.
       - These conditions can be specified in any order. Despite them being a list, the
         BIG-IP does not treat their order as anything special.
+    type: list
+    elements: dict
     suboptions:
       type:
         description:
@@ -95,7 +97,6 @@ options:
           - This parameter is only valid with the C(persist) type.
         type: int
         version_added: "f5_modules 1.1"
-    type: list
   policy:
     description:
       - The name of the policy that you want to associate this rule with.
@@ -116,6 +117,8 @@ options:
         read the description for more details.
       - These conditions can be specified in any order. Despite them being a list, the
         BIG-IP does not treat their order as anything special.
+    type: list
+    elements: dict
     suboptions:
       type:
         description:
@@ -161,7 +164,6 @@ options:
         description:
           - Events on which conditions such as SSL Extension can be triggered.
         type: str
-    type: list
   state:
     description:
       - When C(present), ensures that the key is uploaded to the device. When
@@ -1217,6 +1219,7 @@ class ArgumentSpec(object):
             ),
             conditions=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     type=dict(
                         choices=[

@@ -33,7 +33,6 @@ options:
     description:
       - Pool member state.
     type: str
-    required: True
     choices:
       - present
       - absent
@@ -80,7 +79,6 @@ options:
       - Pool member port.
       - This value cannot be changed after it has been set.
     type: int
-    required: True
   connection_limit:
     description:
       - Pool member connection limit. Setting this to 0 disables the limit.
@@ -148,6 +146,7 @@ options:
       - Specifies the health monitors that the system currently uses to monitor
         this resource.
     type: list
+    elements: str
     version_added: 2.8
   availability_requirements:
     description:
@@ -156,6 +155,7 @@ options:
         considered available.
       - Specifying an empty string will remove the monitors and revert to inheriting from pool (default).
       - Specifying C(none) value will remove any health monitoring from the member completely.
+    type: dict
     suboptions:
       type:
         description:
@@ -163,6 +163,7 @@ options:
           - When creating a new pool, if this value is not specified, the default of
             'all' will be used.
         type: str
+        required: True
         choices:
           - all
           - at_least
@@ -173,7 +174,6 @@ options:
           - This parameter is only relevant when a C(type) of C(at_least) is used.
           - This parameter will be ignored if a type of C(all) is used.
         type: int
-    type: dict
     version_added: 2.8
   ip_encapsulation:
     description:
@@ -194,6 +194,7 @@ options:
       - The module also will not indicate what changes were made prior to failure, therefore it is strongly advised
         to run the module in check mode to make basic validation, prior to module execution.
     type: list
+    elements: dict
     aliases:
       - members
     version_added: 2.8
@@ -1623,7 +1624,10 @@ class ArgumentSpec(object):
                     ['type', 'at_least', ['at_least']],
                 ]
             ),
-            monitors=dict(type='list'),
+            monitors=dict(
+                type='list',
+                elements='str',
+            ),
             ip_encapsulation=dict(),
             partition=dict(
                 default='Common',

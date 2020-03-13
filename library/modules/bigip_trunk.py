@@ -30,6 +30,7 @@ options:
       - The interfaces that are part of the trunk.
       - To clear the list of interfaces, specify an empty list.
     type: list
+    elements: str
   description:
     description:
       - Description of the trunk.
@@ -573,7 +574,10 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            interfaces=dict(type='list'),
+            interfaces=dict(
+                type='list',
+                elements='str',
+            ),
             link_selection_policy=dict(
                 choices=['auto', 'maximum-bandwidth']
             ),

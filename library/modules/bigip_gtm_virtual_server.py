@@ -26,11 +26,13 @@ options:
     description:
       - Specifies the name of the virtual server.
     type: str
+    required: True
     version_added: 2.6
   server_name:
     description:
       - Specifies the name of the server that the virtual server is associated with.
     type: str
+    required: True
     version_added: 2.6
   address:
     description:
@@ -74,6 +76,7 @@ options:
           - Monitor rule type when C(monitors) is specified.
           - When creating a new virtual, if this value is not specified, the default of 'all' will be used.
         type: str
+        required: True
         choices:
           - all
           - at_least
@@ -112,12 +115,14 @@ options:
       - When C(availability_requirements.type) is C(require), you may only have a single monitor in the
         C(monitors) list.
     type: list
+    elements: str
     version_added: 2.6
   virtual_server_dependencies:
     description:
       - Specifies the virtual servers on which the current virtual server depends.
       - If any of the specified servers are unavailable, the current virtual server is also listed as unavailable.
     type: list
+    elements: dict
     suboptions:
       server:
         description:
@@ -1157,9 +1162,13 @@ class ArgumentSpec(object):
                     ['type', 'require', ['number_of_probes', 'number_of_probers']]
                 ]
             ),
-            monitors=dict(type='list'),
+            monitors=dict(
+                type='list',
+                elements='str',
+            ),
             virtual_server_dependencies=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     server=dict(required=True),
                     virtual_server=dict(required=True)

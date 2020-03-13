@@ -29,6 +29,7 @@ options:
         on the C(type) that you are configuring.
       - This module only supports a subset, at this time, of the total available auth types.
     type: str
+    required: True
     choices:
       - tacacs
       - local
@@ -64,7 +65,7 @@ options:
       - Specifies the name of the service that the user is requesting to be
         authorized to use.
       - Identifying what the user is asking to be authorized for, enables the
-        TACACS+ server to behave differently for different types of authorization
+        TACACS+ serverc to behave differently for different types of authorization
         requests.
       - When configuring this form of system authentication, this setting is required.
       - Note that the majority of TACACS+ implementations are of service type C(ppp),

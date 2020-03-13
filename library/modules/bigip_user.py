@@ -60,7 +60,7 @@ options:
         C(operator), C(resource-admin), C(user-manager), C(web-application-security-administrator),
         and C(web-application-security-editor).
       - Partition portion of tuple should be an existing partition or the value 'all'.
-    type: list
+    type: raw
   state:
     description:
       - Whether the account should exist or not, taking action if the state is
@@ -1084,7 +1084,7 @@ class ArgumentSpec(object):
                 no_log=True,
             ),
             partition_access=dict(
-                type='list'
+                type='raw',
             ),
             full_name=dict(),
             shell=dict(

@@ -42,12 +42,13 @@ options:
         description:
           - Specifies a FQDN for the forward zone.
         type: str
-        required: True
       nameservers:
         description:
           - Specifies the IP address and service port of a recursive
             nameserver that answers DNS queries for the zone when the
             response cannot be found in the DNS cache.
+        type: list
+        elements: dict
         suboptions:
           address:
             description:
@@ -59,7 +60,6 @@ options:
               - When specifying new nameservers, if this value is not provided, the
                 default is C(53).
             type: int
-        type: list
     type: raw
   route_domain:
     description:

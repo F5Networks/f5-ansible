@@ -69,6 +69,7 @@ options:
     description:
       - Dynamic routing protocols for the system to use in the route domain.
     type: list
+    elements: str
     choices:
       - none
       - BFD
@@ -99,6 +100,7 @@ options:
     description:
       - VLANs for the system to use in the route domain.
     type: list
+    elements: str
   fw_enforced_policy:
     description:
       - Specifies AFM policy to be attached to route domain.
@@ -693,9 +695,13 @@ class ArgumentSpec(object):
             description=dict(),
             strict=dict(type='bool'),
             parent=dict(),
-            vlans=dict(type='list'),
+            vlans=dict(
+                type='list',
+                elements='str',
+            ),
             routing_protocol=dict(
                 type='list',
+                elements='str',
                 choices=['BFD', 'BGP', 'IS-IS', 'OSPFv2', 'OSPFv3', 'PIM', 'RIP', 'RIPng', 'none']
             ),
             bwc_policy=dict(),

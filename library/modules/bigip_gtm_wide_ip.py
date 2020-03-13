@@ -26,7 +26,6 @@ options:
         IP. This setting is relevant only when multiple pools are configured
         for a wide IP.
     type: str
-    required: True
     aliases: ['lb_method']
     choices:
       - round-robin
@@ -84,6 +83,7 @@ options:
       - If C(ratio) is not provided when creating a new Wide IP, it will default
         to 1.
     type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -102,6 +102,7 @@ options:
       - If you want to remove all existing iRules, specify a single empty value; C("").
         See the documentation for an example.
     type: list
+    elements: str
     version_added: 2.6
   aliases:
     description:
@@ -110,6 +111,7 @@ options:
       - You can use the same wildcard characters for aliases as you can for actual
         wide IP names.
     type: list
+    elements: str
     version_added: 2.7
   last_resort_pool:
     description:
@@ -1044,9 +1046,10 @@ class ArgumentSpec(object):
             ),
             pools=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     name=dict(required=True),
-                    ratio=dict(type='int')
+                    ratio=dict(type='int'),
                 )
             ),
             partition=dict(
@@ -1055,9 +1058,11 @@ class ArgumentSpec(object):
             ),
             irules=dict(
                 type='list',
+                elements='str',
             ),
             aliases=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             last_resort_pool=dict(),
             persistence=dict(type='bool'),

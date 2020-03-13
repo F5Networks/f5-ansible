@@ -60,6 +60,7 @@ options:
     description:
       - Exclude various file from the qkview.
     type: list
+    elements: str
     choices:
       - all
       - audit
@@ -571,6 +572,7 @@ class ArgumentSpec(object):
             ),
             exclude=dict(
                 type='list',
+                elements='str',
                 choices=[
                     'all', 'audit', 'secure', 'bash_history'
                 ]

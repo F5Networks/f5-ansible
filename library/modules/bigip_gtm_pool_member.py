@@ -30,16 +30,15 @@ options:
       - Specifies the name of the GTM virtual server which is assigned to the specified
         C(server).
     type: str
-    required: True
   server_name:
     description:
       - Specifies the GTM server which contains the C(virtual_server).
     type: str
-    required: True
   type:
     description:
       - The type of GTM pool that the member is in.
     type: str
+    required: True
     choices:
       - a
       - aaaa
@@ -47,7 +46,6 @@ options:
       - mx
       - naptr
       - srv
-    required: True
   pool:
     description:
       - Name of the GTM pool.
@@ -97,6 +95,7 @@ options:
       - The module also will not indicate what changes were made prior to failure, therefore it is strongly advised
         to run the module in check mode to make basic validation, prior to module execution.
     type: list
+    elements: dict
     aliases:
       - members
     version_added: 2.8

@@ -31,7 +31,9 @@ options:
     type: str
   rules:
     description:
-      - Rules that you want assigned to the timer policy
+      - Rules that you want assigned to the timer policy.
+    type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -49,6 +51,7 @@ options:
           - When specifying rules, if this parameter is not specified, the default of
             C(all-other) will be used.
         type: str
+        default: all-other
         choices:
           - all-other
           - ah
@@ -77,6 +80,7 @@ options:
           - This field is only available if you have selected the C(sctp), C(tcp), or
             C(udp) protocol.
         type: list
+        elements: str
       idle_timeout:
         description:
           - Specifies an idle timeout, in seconds, for protocol and port pairs that
@@ -86,7 +90,7 @@ options:
           - When specifying rules, if this parameter is not specified, the default of
             C(unspecified) will be used.
         type: str
-    type: list
+        default: unspecified
   partition:
     description:
       - Device partition to manage resources on.
@@ -578,7 +582,8 @@ class ArgumentSpec(object):
             description=dict(),
             rules=dict(
                 type='list',
-                suboptions=dict(
+                elements='dict',
+                options=dict(
                     name=dict(required=True),
                     protocol=dict(
                         default='all-other',
@@ -604,10 +609,10 @@ class ArgumentSpec(object):
                             'udplite',
                         ]
                     ),
-                    description=dict(),
                     idle_timeout=dict(default='unspecified'),
                     destination_ports=dict(
-                        type='list'
+                        type='list',
+                        elements='str',
                     )
                 )
             ),

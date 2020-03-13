@@ -35,6 +35,7 @@ options:
       - Be sure to note the configuration command syntax as some commands
         are automatically modified by the device config parser.
     type: list
+    elements: str
     aliases: ['commands']
   parents:
     description:
@@ -43,6 +44,7 @@ options:
       - If the C(parents) argument is omitted, the commands are checked against
         the set of top level or global commands.
     type: list
+    elements: str
   src:
     description:
       - The I(src) argument provides a path to the configuration file
@@ -61,6 +63,7 @@ options:
         configuration commands prior to pushing any changes without
         affecting how the set of commands are matched against the system.
     type: list
+    elements: str
   after:
     description:
       - The ordered set of commands to append to the end of the command
@@ -68,6 +71,7 @@ options:
       - Just like with I(before) this allows the playbook designer to
         append a set of commands to be executed after the command set.
     type: list
+    elements: str
   match:
     description:
       - Instructs the module on the way to perform the matching of
@@ -168,6 +172,7 @@ options:
         updated by the system.
       - This argument takes a list of regular expressions or exact line matches.
     type: list
+    elements: str
   intended_config:
     description:
       - The C(intended_config) provides the master configuration that
@@ -784,25 +789,35 @@ class ArgumentSpec(object):
         argument_spec = dict(
             route_domain=dict(default=0),
             src=dict(type='path'),
-            lines=dict(aliases=['commands'], type='list'),
-            parents=dict(type='list'),
-
-            before=dict(type='list'),
-            after=dict(type='list'),
-
+            lines=dict(
+                type='list',
+                elements='str',
+                aliases=['commands'],
+            ),
+            parents=dict(
+                type='list',
+                elements='str',
+            ),
+            before=dict(
+                type='list',
+                elements='str',
+            ),
+            after=dict(
+                type='list',
+                elements='str',
+            ),
             match=dict(default='line', choices=['line', 'strict', 'exact', 'none']),
             replace=dict(default='line', choices=['line', 'block']),
-
             running_config=dict(aliases=['config']),
             intended_config=dict(),
-
             backup=dict(type='bool', default=False),
             backup_options=dict(type='dict', options=backup_spec),
-
             save_when=dict(choices=['always', 'never', 'modified', 'changed'], default='never'),
-
             diff_against=dict(choices=['running', 'startup', 'intended'], default='startup'),
-            diff_ignore_lines=dict(type='list'),
+            diff_ignore_lines=dict(
+                type='list',
+                elements='str',
+            ),
             allow_duplicates=dict(type='bool', default=False)
         )
         self.argument_spec = {}

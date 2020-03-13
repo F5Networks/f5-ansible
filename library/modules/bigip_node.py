@@ -72,6 +72,7 @@ options:
       - Specifies the health monitors that the system currently uses to
         monitor this node.
     type: list
+    elements: str
     version_added: 2.2
   address:
     description:
@@ -180,6 +181,7 @@ options:
       - Specifies, if you activate more than one health monitor, the number of health
         monitors that must receive successful responses in order for the link to be
         considered available.
+    type: dict
     suboptions:
       type:
         description:
@@ -187,6 +189,7 @@ options:
           - When creating a new pool, if this value is not specified, the default of
             'all' will be used.
         type: str
+        required: True
         choices:
           - all
           - at_least
@@ -197,7 +200,6 @@ options:
           - This parameter is only relevant when a C(type) of C(at_least) is used.
           - This parameter will be ignored if a type of C(all) is used.
         type: int
-    type: dict
     version_added: 2.8
   partition:
     description:
@@ -1158,7 +1160,10 @@ class ArgumentSpec(object):
                     ['type', 'at_least', ['at_least']],
                 ]
             ),
-            monitors=dict(type='list'),
+            monitors=dict(
+                type='list',
+                elements='str',
+            ),
 
 
             # Deprecated parameters

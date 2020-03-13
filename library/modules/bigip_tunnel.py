@@ -577,7 +577,7 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            name=dict(required='true'),
+            name=dict(required=True),
             profile=dict(),
             description=dict(),
             key=dict(type='int'),
