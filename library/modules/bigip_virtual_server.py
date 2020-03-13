@@ -1765,7 +1765,7 @@ class ModuleParameters(Parameters):
         tmp['context'] = tmp['context'].replace('client-side', 'clientside')
 
     def _handle_ssl_profile_nuances(self, profile):
-        if self._values['check_profiles']:
+        if self.check_profiles:
             if profile['name'] == 'serverssl' or self._is_server_ssl_profile(profile):
                 if profile['context'] != 'serverside':
                     profile['context'] = 'serverside'
@@ -1806,6 +1806,13 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(
                 'You must specify only one clone pool for each context.'
             )
+
+    @property
+    def check_profiles(self):
+        result = flatten_boolean(self._values['check_profiles'])
+        if result == 'yes':
+            return True
+        return False
 
     @property
     def source(self):
