@@ -44,6 +44,7 @@ options:
     description:
       - Name of the license offering to assign to the device.
     type: str
+    required: True
   device:
     description:
       - When C(managed) is C(no), specifies the address, or hostname, where the BIG-IQ
@@ -55,6 +56,7 @@ options:
         and therefore, this module's cannot guarantee that the correct device will be
         registered. The device returned is the device that will be used.
     type: str
+    required: True
   managed:
     description:
       - Whether the specified device is a managed or un-managed device.

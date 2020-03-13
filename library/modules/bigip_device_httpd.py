@@ -29,6 +29,7 @@ options:
       - IP address can be specified, such as 172.27.1.10.
       - IP ranges can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
     type: list
+    elements: str
   auth_name:
     description:
       - Sets the BIG-IP authentication realm name.
@@ -657,7 +658,8 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             allow=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             auth_name=dict(),
             auth_pam_idle_timeout=dict(

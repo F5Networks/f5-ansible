@@ -412,7 +412,9 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            name=dict(),
+            name=dict(
+                required=True,
+            ),
             description=dict(),
             timer_policy=dict(),
             port_misuse_policy=dict(),

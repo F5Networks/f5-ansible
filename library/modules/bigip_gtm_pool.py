@@ -147,6 +147,7 @@ options:
         type: str
         required: True
     type: list
+    elements: dict
     version_added: 2.6
   monitors:
     description:
@@ -154,6 +155,7 @@ options:
       - When C(availability_requirements.type) is C(require), you may only have a single monitor in the
         C(monitors) list.
     type: list
+    elements: str
     version_added: 2.6
   availability_requirements:
     description:
@@ -166,6 +168,7 @@ options:
           - Monitor rule type when C(monitors) is specified.
           - When creating a new pool, if this value is not specified, the default of 'all' will be used.
         type: str
+        required: True
         choices:
           - all
           - at_least
@@ -1245,6 +1248,7 @@ class ArgumentSpec(object):
             ),
             members=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     server=dict(required=True),
                     virtual_server=dict(required=True)
@@ -1270,7 +1274,10 @@ class ArgumentSpec(object):
                     ['type', 'require', ['number_of_probes', 'number_of_probers']]
                 ]
             ),
-            monitors=dict(type='list'),
+            monitors=dict(
+                type='list',
+                elements='str',
+            ),
             max_answers_returned=dict(type='int'),
             ttl=dict(type='int')
         )

@@ -32,6 +32,7 @@ options:
       - This parameter is mutually exclusive with the C(untagged_interfaces)
         and C(interfaces) parameters.
     type: list
+    elements: str
     aliases:
       - tagged_interface
   untagged_interfaces:
@@ -41,6 +42,7 @@ options:
       - This parameter is mutually exclusive with the C(tagged_interfaces)
         and C(interfaces) parameters.
     type: list
+    elements: str
     aliases:
       - untagged_interface
   name:
@@ -170,6 +172,8 @@ options:
         and untagged interfaces as the C(tagging) parameter specifies.
       - This parameter is mutually exclusive with the C(untagged_interfaces) and
         C(tagged_interfaces) parameters.
+    type: list
+    elements: dict
     suboptions:
       interface:
         description:
@@ -182,7 +186,6 @@ options:
         choices:
           - tagged
           - untagged
-    type: list
     version_added: 2.8
 notes:
   - Requires BIG-IP versions >= 12.0.0
@@ -899,14 +902,17 @@ class ArgumentSpec(object):
             ),
             tagged_interfaces=dict(
                 type='list',
+                elements='str',
                 aliases=['tagged_interface']
             ),
             untagged_interfaces=dict(
                 type='list',
+                elements='str',
                 aliases=['untagged_interface']
             ),
             interfaces=dict(
                 type='list',
+                elements='dict',
                 options=dict(
                     interface=dict(),
                     tagging=dict(

@@ -1709,7 +1709,7 @@ class ArgumentSpec(object):
             # Deprecated settings
             pool_settings=dict(
                 type='dict',
-                suboptions=dict(
+                options=dict(
                     pool=dict(),
                     protocol=dict(
                         choices=['tcp', 'udp']
@@ -1726,7 +1726,7 @@ class ArgumentSpec(object):
             ),
             syslog_settings=dict(
                 type='dict',
-                suboptions=dict(
+                options=dict(
                     syslog_format=dict(
                         choices=[
                             'bsd-syslog',

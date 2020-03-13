@@ -1004,7 +1004,7 @@ class TestManager(unittest.TestCase):
             partition="Common",
             port="443",
             state="present",
-            check_profiles=True,
+            check_profiles='yes',
             provider=dict(
                 server='localhost',
                 password='password',
@@ -1037,7 +1037,7 @@ class TestManager(unittest.TestCase):
             partition="Common",
             port="443",
             state="present",
-            check_profiles=False,
+            check_profiles='no',
             provider=dict(
                 server='localhost',
                 password='password',

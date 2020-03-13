@@ -30,6 +30,7 @@ options:
       - IP rangees can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
       - To remove SSH access specify an empty list or an empty string.
     type: list
+    elements: str
   banner:
     description:
       - Whether to enable the banner or not.
@@ -398,7 +399,8 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             allow=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             banner=dict(
                 choices=self.choices

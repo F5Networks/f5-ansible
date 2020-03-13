@@ -87,6 +87,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: list
+    elements: str
   encrypt_cookie_secret:
     description:
       - Passphrase for cookie encryption.
@@ -164,6 +165,7 @@ options:
       - Specifies alternative XFF headers instead of the default X-forwarded-for header.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: list
+    elements: str
     version_added: 2.9
   fallback_host:
     description:
@@ -180,6 +182,7 @@ options:
       - Mixing response code range across error types is invalid e.g. defining C(400-505) will raise an error.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: list
+    elements: str
     version_added: 2.9
   oneconnect_transformations:
     description:
@@ -321,6 +324,7 @@ options:
           - When creating a new profile, if this parameter is not specified, the default is provided
             by the parent profile.
         type: list
+        elements: str
     type: dict
     version_added: 2.9
   sflow:
@@ -1665,9 +1669,15 @@ class ArgumentSpec(object):
             parent=dict(),
             description=dict(),
             accept_xff=dict(type='bool'),
-            xff_alternative_names=dict(type='list'),
+            xff_alternative_names=dict(
+                type='list',
+                elements='str',
+            ),
             fallback_host=dict(),
-            fallback_status_codes=dict(type='list'),
+            fallback_status_codes=dict(
+                type='list',
+                elements='str',
+            ),
             oneconnect_transformations=dict(type='bool'),
             request_chunking=dict(choices=self.chunk),
             response_chunking=dict(choices=self.chunk),
@@ -1688,7 +1698,10 @@ class ArgumentSpec(object):
                     'nodes'
                 ]
             ),
-            encrypt_cookies=dict(type='list'),
+            encrypt_cookies=dict(
+                type='list',
+                elements='str',
+            ),
             encrypt_cookie_secret=dict(no_log=True),
             update_password=dict(
                 default='always',
@@ -1713,7 +1726,10 @@ class ArgumentSpec(object):
                     max_header_count=dict(),
                     max_header_size=dict(),
                     max_requests=dict(),
-                    known_methods=dict(type='list'),
+                    known_methods=dict(
+                        type='list',
+                        elements='str',
+                    ),
                 )
             ),
             sflow=dict(

@@ -26,6 +26,7 @@ options:
         provided, this parameter is required. Otherwise, it is optional.
       - The members can be either IP addresses, or names of the SNAT translation objects.
     type: list
+    elements: str
     aliases:
       - member
   description:
@@ -497,6 +498,7 @@ class ArgumentSpec(object):
             name=dict(required=True),
             members=dict(
                 type='list',
+                elements='str',
                 aliases=['member']
             ),
             description=dict(),

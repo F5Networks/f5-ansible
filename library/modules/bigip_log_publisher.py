@@ -33,6 +33,7 @@ options:
     description:
       - Specifies log destinations for this log publisher to use.
     type: list
+    elements: str
   partition:
     description:
       - Device partition to manage resources on.
@@ -400,7 +401,10 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             description=dict(),
-            destinations=dict(type='list'),
+            destinations=dict(
+                type='list',
+                elements='str',
+            ),
             state=dict(
                 default='present',
                 choices=['present', 'absent']

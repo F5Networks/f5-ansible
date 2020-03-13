@@ -36,11 +36,13 @@ options:
     description:
       - A list of name servers that the system uses to validate DNS lookups
     type: list
+    elements: str
   search:
     description:
       - A list of domains that the system searches for local domain lookups,
         to resolve local host names.
     type: list
+    elements: str
   ip_version:
     description:
       - Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.
@@ -497,10 +499,12 @@ class ArgumentSpec(object):
                 choices=['disabled', 'enabled', 'disable', 'enable']
             ),
             name_servers=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             search=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             ip_version=dict(
                 choices=[4, 6],

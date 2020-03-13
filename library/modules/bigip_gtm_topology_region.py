@@ -32,6 +32,8 @@ options:
         you must specify the entire list of members.
       - The list will override what is on the device if different.
       - If C(none) value is specified the region members list will be removed.
+    type: list
+    elements: dict
     suboptions:
       negate:
         description:
@@ -95,7 +97,6 @@ options:
         description:
           - Specifies a geolocation ISP
         type: str
-    type: list
   partition:
     description:
       - Device partition to manage resources on.

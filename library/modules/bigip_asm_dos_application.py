@@ -60,10 +60,12 @@ options:
         description:
           - A list of countries to be put on whitelist, must not have overlapping elements with C(blacklist).
         type: list
+        elements: str
       blacklist:
         description:
           - A list of countries to be put on blacklist, must not have overlapping elements with C(whitelist).
         type: list
+        elements: str
   heavy_urls:
     description:
       - Manages Heavy URL protection.
@@ -83,15 +85,18 @@ options:
         description:
           - Specifies a list of URLs or wildcards to exclude from the heavy URLs.
         type: list
+        elements: str
       include:
         description:
           - Configures additional URLs to include in the heavy URLs that were auto detected.
         type: list
+        elements: dict
         suboptions:
           url:
             description:
               - Specifies the URL to be added to the list of heavy URLs, in addition to the automatically detected ones.
             type: str
+            required: True
           threshold:
             description:
               - Specifies the threshold of requests per second, where the URL in question is considered under attack.
@@ -150,6 +155,7 @@ options:
           - Specifies the names of iOS packages to allow traffic on.
           - This option has no effect when C(allow_any_ios_package) is set to C(yes).
         type: list
+        elements: str
       android_publishers:
         description:
           - This option has no effect when C(allow_any_android_package) is set to C(yes).
@@ -158,6 +164,7 @@ options:
           - "The certificate name located on a different partition than the one specified
             in C(partition) parameter needs to be provided in C(full_path) format C(/Foo/cert.crt)."
         type: list
+        elements: str
   partition:
     description:
       - Device partition to manage resources on.
@@ -1244,8 +1251,14 @@ class ArgumentSpec(object):
             geolocations=dict(
                 type='dict',
                 options=dict(
-                    blacklist=dict(type='list'),
-                    whitelist=dict(type='list'),
+                    blacklist=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    whitelist=dict(
+                        type='list',
+                        elements='str',
+                    ),
                 ),
             ),
             heavy_urls=dict(
@@ -1253,7 +1266,10 @@ class ArgumentSpec(object):
                 options=dict(
                     auto_detect=dict(type='bool'),
                     latency_threshold=dict(type='int'),
-                    exclude=dict(type='list'),
+                    exclude=dict(
+                        type='list',
+                        elements='str',
+                    ),
                     include=dict(
                         type='list',
                         elements='dict',
@@ -1274,8 +1290,14 @@ class ArgumentSpec(object):
                     allow_jailbroken_devices=dict(type='bool'),
                     allow_emulators=dict(type='bool'),
                     client_side_challenge_mode=dict(choices=['cshui', 'pass']),
-                    ios_allowed_package_names=dict(type='list'),
-                    android_publishers=dict(type='list')
+                    ios_allowed_package_names=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    android_publishers=dict(
+                        type='list',
+                        elements='str',
+                    )
                 )
             ),
             rtbh_duration=dict(type='int'),

@@ -29,7 +29,6 @@ options:
     description:
       - Pool name
     type: str
-    required: True
     aliases:
       - pool
   lb_method:
@@ -89,6 +88,7 @@ options:
       - Monitor template name list. If the partition is not provided as part of
         the monitor name, then the C(partition) option will be used instead.
     type: list
+    elements: str
     version_added: 1.3
   slow_ramp_time:
     description:
@@ -168,6 +168,7 @@ options:
       - The module also will not indicate what changes were made prior to failure, therefore it is strongly advised
         to run the module in check mode to make basic validation, prior to module execution.
     type: list
+    elements: dict
     aliases:
       - pools
     version_added: 2.8
@@ -1198,7 +1199,8 @@ class ArgumentSpec(object):
                 type='int'
             ),
             monitors=dict(
-                type='list'
+                type='list',
+                elements='str',
             ),
             slow_ramp_time=dict(
                 type='int'

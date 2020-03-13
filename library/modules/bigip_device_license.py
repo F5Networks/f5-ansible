@@ -34,6 +34,7 @@ options:
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
     type: list
+    elements: str
     version_added: "f5_modules 1.2"
   license_server:
     description:
@@ -856,7 +857,10 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             license_key=dict(),
-            addon_keys=dict(type='list'),
+            addon_keys=dict(
+                type='list',
+                elements='str',
+            ),
             license_server=dict(
                 default='activate.f5.com'
             ),

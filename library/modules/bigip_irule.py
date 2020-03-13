@@ -45,7 +45,6 @@ options:
       - The iRule file to interpret and upload to the BIG-IP. Either one
         of C(src) or C(content) must be provided.
     type: path
-    required: True
   state:
     description:
       - Whether the iRule should exist or not.

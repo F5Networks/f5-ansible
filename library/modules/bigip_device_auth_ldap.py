@@ -26,6 +26,7 @@ options:
         authentication information. You must specify a server when you
         create an LDAP configuration object.
     type: list
+    elements: str
   port:
     description:
       - Specifies the port that the system uses for access to the remote host server.
@@ -791,7 +792,10 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            servers=dict(type='list'),
+            servers=dict(
+                type='list',
+                elements='str',
+            ),
             port=dict(type='int'),
             remote_directory_tree=dict(),
             scope=dict(

@@ -42,6 +42,7 @@ options:
   log_matches_accept_rule:
     description:
       - Modify log settings for ACL rules configured with an "accept" or "accept decisively" action.
+    type: dict
     suboptions:
       enabled:
         description:
@@ -54,10 +55,10 @@ options:
             configured with an "accept" or "accept decisively" action.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: dict
   log_matches_drop_rule:
     description:
       - Modify log settings for ACL rules configured with a drop action.
+    type: dict
     suboptions:
       enabled:
         description:
@@ -70,10 +71,10 @@ options:
             configured with a drop action.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: dict
   log_matches_reject_rule:
     description:
       - Modify log settings for ACL rules configured with a reject action.
+    type: dict
     suboptions:
       enabled:
         description:
@@ -86,10 +87,10 @@ options:
             configured with a reject action.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: dict
   log_ip_errors:
     description:
       - Modify log settings for logging of IP error packets.
+    type: dict
     suboptions:
       enabled:
         description:
@@ -100,10 +101,10 @@ options:
           - This option is used to set rate limits for the logging of IP error packets.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: dict
   log_tcp_errors:
     description:
       - Modify log settings for logging of TCP error packets.
+    type: dict
     suboptions:
       enabled:
         description:
@@ -114,10 +115,10 @@ options:
           - This option is used to set rate limits for the logging of TCP error packets.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: dict
   log_tcp_events:
     description:
       - Modify log settings for logging of TCP events on the client side.
+    type: dict
     suboptions:
       enabled:
         description:
@@ -129,7 +130,6 @@ options:
           - This option is used to set rate limits for the logging of TCP events on the client side.
           - This option is effective only if logging of this message type is enabled.
         type: int
-    type: dict
   log_translation_fields:
     description:
       - This option is used to enable or disable the logging of translated (i.e server side) fields in ACL
@@ -173,6 +173,7 @@ options:
       - The order of the list is important as the server displays the selected traffic items in the log
         sequentially according to it.
     type: list
+    elements: str
     choices:
       - acl_policy_name
       - acl_policy_type
@@ -1253,6 +1254,7 @@ class ArgumentSpec(object):
             log_format_delimiter=dict(),
             log_message_fields=dict(
                 type='list',
+                elements='str',
                 choices=self.choices
             ),
             partition=dict(

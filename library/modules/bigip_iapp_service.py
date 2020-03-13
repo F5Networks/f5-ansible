@@ -99,6 +99,7 @@ options:
         over any similar setting in the iApp Service payload that you provide in
         the C(parameters) field.
     type: list
+    elements: str
     version_added: 2.7
   description:
     description:
@@ -972,7 +973,10 @@ class ArgumentSpec(object):
                 type='bool',
                 default='yes'
             ),
-            metadata=dict(type='list'),
+            metadata=dict(
+                type='list',
+                elements='str',
+            ),
             traffic_group=dict(),
             partition=dict(
                 default='Common',

@@ -66,6 +66,7 @@ options:
           - Specifies the IP addresses from which the system accepts NOTIFY messages
             for this DNS Express zone.
         type: list
+        elements: str
       verify_tsig:
         description:
           - Specifies whether the system verifies the identity of the authoritative
@@ -79,6 +80,7 @@ options:
     description:
       - Specifies the DNS nameservers to which the system sends NOTIFY messages.
     type: list
+    elements: str
   tsig_server_key:
     description:
       - Specifies the TSIG key the system uses to authenticate the back-end DNS
@@ -666,12 +668,18 @@ class ArgumentSpec(object):
                     notify_action=dict(
                         choices=['consume', 'bypass', 'repeat']
                     ),
-                    allow_notify_from=dict(type='list'),
+                    allow_notify_from=dict(
+                        type='list',
+                        elements='str',
+                    ),
                     verify_tsig=dict(type='bool'),
                     response_policy=dict(type='bool')
                 )
             ),
-            nameservers=dict(type='list'),
+            nameservers=dict(
+                type='list',
+                elements='str',
+            ),
             tsig_server_key=dict(),
             partition=dict(
                 default='Common',

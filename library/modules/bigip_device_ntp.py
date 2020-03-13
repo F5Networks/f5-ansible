@@ -25,6 +25,7 @@ options:
       - A list of NTP servers to set on the device. At least one of C(ntp_servers)
         or C(timezone) is required.
     type: list
+    elements: str
   state:
     description:
       - The state of the NTP servers on the system. When C(present), guarantees
@@ -371,6 +372,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             ntp_servers=dict(
                 type='list',
+                elements='str',
             ),
             timezone=dict(),
             state=dict(

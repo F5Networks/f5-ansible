@@ -38,6 +38,8 @@ options:
   geo_locations:
     description:
       - List of geolocations specified by their C(country) and C(region).
+    type: list
+    elements: dict
     suboptions:
       country:
         description:
@@ -54,7 +56,6 @@ options:
         description:
           - Region name of the country to use.
         type: str
-    type: list
   addresses:
     description:
       - Individual addresses that you want to add to the list. These addresses differ
@@ -62,6 +63,7 @@ options:
         and C(address_lists) respectively.
       - This list can also include networks that have CIDR notation.
     type: list
+    elements: str
   address_ranges:
     description:
       - A list of address ranges where the range starts with a port number, is followed
@@ -70,6 +72,7 @@ options:
         reversed so-as to be properly formatted. ie, C(2.2.2.2-1.1.1). would become
         C(1.1.1.1-2.2.2.2).
     type: list
+    elements: str
   address_lists:
     description:
       - Simple list of existing address lists to add to this list. Address lists can be
@@ -77,6 +80,7 @@ options:
         name (foo). If a short name is used, the C(partition) argument will automatically
         be prepended to the short name.
     type: list
+    elements: str
   fqdns:
     description:
       - A list of fully qualified domain names (FQDNs).
@@ -87,6 +91,7 @@ options:
         firewall global-fqdn-policy FOO) where C(FOO) is a DNS resolver configured
         at C(tmsh create net dns-resolver FOO).
     type: list
+    elements: str
   state:
     description:
       - When C(present), ensures that the address list and entries exists.
@@ -940,9 +945,18 @@ class ArgumentSpec(object):
         argument_spec = dict(
             description=dict(),
             name=dict(required=True),
-            addresses=dict(type='list'),
-            address_ranges=dict(type='list'),
-            address_lists=dict(type='list'),
+            addresses=dict(
+                type='list',
+                elements='str',
+            ),
+            address_ranges=dict(
+                type='list',
+                elements='str',
+            ),
+            address_lists=dict(
+                type='list',
+                elements='str',
+            ),
             geo_locations=dict(
                 type='list',
                 elements='dict',
@@ -953,7 +967,10 @@ class ArgumentSpec(object):
                     region=dict()
                 )
             ),
-            fqdns=dict(type='list'),
+            fqdns=dict(
+                type='list',
+                elements='str',
+            ),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

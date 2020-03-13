@@ -65,6 +65,7 @@ options:
       - When not defined the default value of C(all) is used when creating a new schedule.
       - The C(all) value is mutually exclusive with other choices.
     type: list
+    elements: str
     choices:
       - sunday
       - monday
@@ -636,6 +637,7 @@ class ArgumentSpec(object):
             date_valid_start=dict(),
             days_of_week=dict(
                 type='list',
+                elements='str',
                 choices=[
                     'sunday',
                     'monday',
