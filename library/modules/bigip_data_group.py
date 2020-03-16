@@ -89,7 +89,7 @@ options:
         they must be explicit about it that is they must contain a route domain notation C(%) eg. 10.10.1.1%11.
         This is true regardless if the data group resides in a partition or not."
     type: list
-    elements: dict
+    elements: raw
     suboptions:
       key:
         description:
@@ -1409,7 +1409,7 @@ class ArgumentSpec(object):
             internal=dict(type='bool', default='no'),
             records=dict(
                 type='list',
-                elements='dict',
+                elements='raw',
                 options=dict(
                     key=dict(required=True),
                     value=dict(type='raw')
@@ -1429,7 +1429,7 @@ class ArgumentSpec(object):
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.mutually_exclusive = [
-            ['records', 'records_src', 'external_file_name']
+            ['records', 'records_src']
         ]
 
 
