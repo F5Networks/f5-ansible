@@ -747,6 +747,18 @@ class ApiParameters(Parameters):
         return result
 
     @property
+    def records(self):
+        cleaned_records_list = []
+        if self._values['records'] is None:
+            return None
+        for record in self._values['records']:
+            clean_record = {}
+            for k, v in record.items():
+                clean_record[k] = re.sub('\\\\', '', v)
+            cleaned_records_list.append(clean_record)
+        return cleaned_records_list
+
+    @property
     def records_list(self):
         return self._values['records']
 
