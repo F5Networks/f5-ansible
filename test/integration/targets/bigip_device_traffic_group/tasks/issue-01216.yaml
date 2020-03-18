@@ -1,4 +1,13 @@
 ---
+- name: Issue 01216 - Select device facts
+  bigip_device_info:
+    include:
+      - devices
+  register: f
+
+- name: Issue 01216 - Set Device hostname fact
+  set_fact:
+    device: "{{ f.devices | json_query('[?self==`yes`].name') | first }}"
 
 - name: Issue 01216 - Include issue variables
   include_vars:
