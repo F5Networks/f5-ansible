@@ -1,0 +1,156 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create MySQL Monitor with description
+  bigip_monitor_mysql:
+      name: "{{ monitor_name_2 }}"
+      description: "{{ text_1 }}"
+      ip: "{{ ip }}"
+      port: "{{ port }}"
+      update_password: "{{ update_password }}"
+      interval: "{{ interval }}"
+      send: "{{ send }}"
+      recv: "{{ recv }}"
+      count: "{{ count }}"
+      time_until_up: "{{ time_until_up }}"
+      up_interval: "{{ up_interval }}"
+      timeout: "{{ timeout }}"
+      database: "{{ database }}"
+      manual_resume: "{{ manual_resume }}"
+      recv_row: "{{ recv_row }}"
+      recv_column: "{{ recv_column }}"
+      target_username: "{{ target_username }}"
+      target_password: "{{ target_password }}"
+      state: present
+  register: result
+
+- name: Assert Create MySQL Monitor with description
+  assert:
+      that:
+          - result is changed
+          - result is success
+          - result.recv == recv
+          - result.send == send
+          - result.timeout == 60
+          - result.recv_column == "1"
+          - result.recv_row == "2"
+          - result.count == 999
+          - result.interval == 33
+          - result.up_interval == 36
+
+- name: Create MySQL Monitor with description - Idempotent check
+  bigip_monitor_mysql:
+      name: "{{ monitor_name_2 }}"
+      description: "{{ text_1 }}"
+      ip: "{{ ip }}"
+      port: "{{ port }}"
+      update_password: "{{ update_password }}"
+      interval: "{{ interval }}"
+      send: "{{ send }}"
+      recv: "{{ recv }}"
+      count: "{{ count }}"
+      time_until_up: "{{ time_until_up }}"
+      up_interval: "{{ up_interval }}"
+      timeout: "{{ timeout }}"
+      database: "{{ database }}"
+      manual_resume: "{{ manual_resume }}"
+      recv_row: "{{ recv_row }}"
+      recv_column: "{{ recv_column }}"
+      target_username: "{{ target_username }}"
+      target_password: "{{ target_password }}"
+      state: present
+  register: result
+
+- name: Assert Create MySQL Monitor with description - Idempotent check
+  assert:
+      that:
+          - result is not changed
+          - result is success
+
+- name: Modify MySQL Monitor
+  bigip_monitor_mysql:
+      name: "{{ monitor_name_2 }}"
+      description: "{{ text_2 }}"
+      ip: 7.7.7.7
+      port: '23232'
+      update_password: "{{ update_password }}"
+      interval: 121
+      count: 77
+      time_until_up: 1212
+      up_interval: 40
+      timeout: 4477
+      manual_resume: no
+      recv_row: '4'
+      recv_column: '3'
+      target_username: some_user_name_here
+      target_password: some_password_here
+      state: present
+  register: result
+
+- name: Assert Modify MySQL Monitor
+  assert:
+      that:
+          - result is changed
+          - result is success
+          - result.time_until_up == 1212
+          - result.timeout == 4477
+          - result.recv_column == "3"
+          - result.recv_row == "4"
+          - result.count == 77
+          - result.interval == 121
+          - result.up_interval == 40
+
+- name: Modify MySQL Monitor - Idempotent check
+  bigip_monitor_mysql:
+      name: "{{ monitor_name_2 }}"
+      description: "{{ text_2 }}"
+      ip: 7.7.7.7
+      port: '23232'
+      update_password: "{{ update_password }}"
+      interval: 121
+      count: 77
+      time_until_up: 1212
+      up_interval: 40
+      timeout: 4477
+      manual_resume: no
+      recv_row: '4'
+      recv_column: '3'
+      target_username: some_user_name_here
+      target_password: some_password_here
+      state: present
+  register: result
+
+- name: Assert Change MySQL Monitor with description  - Idempotent check
+  assert:
+      that:
+          - result is not changed
+          - result is success
+
+- name: Remove MySQL Monitor description
+  bigip_monitor_mysql:
+      name: "{{ monitor_name_2 }}"
+      description: ""
+      state: absent
+  register: result
+
+- name: Assert Remove MySQL Monitor description
+  assert:
+      that:
+          - result is changed
+          - result is success
+
+- name: Remove MySQL Monitor description - Idempotent check
+  bigip_monitor_mysql:
+      name: "{{ monitor_name_2 }}"
+      description: ""
+      state: absent
+  register: result
+
+- name: Assert Remove MySQL Monitor description - Idempotent check
+  assert:
+      that:
+          - result is not changed
+          - result is success
+
+- import_tasks: teardown.yaml
