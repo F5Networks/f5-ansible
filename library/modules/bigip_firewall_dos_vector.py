@@ -1190,11 +1190,9 @@ class DeviceConfigManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/security/dos/device-config/{2}".format(
@@ -1208,13 +1206,10 @@ class DeviceConfigManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        result = response.get('dosDeviceVector', [])
-        return result
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            result = response.get('dosDeviceVector', [])
+            return result
+        raise F5ModuleError(resp.content)
 
 
 class NetworkSecurityManager(BaseManager):
@@ -1254,11 +1249,9 @@ class NetworkSecurityManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/dos-network/{3}".format(
@@ -1273,12 +1266,9 @@ class NetworkSecurityManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response.get('networkAttackVector', [])
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response.get('networkAttackVector', [])
+        raise F5ModuleError(resp.content)
 
 
 class ProtocolDnsManager(BaseManager):
@@ -1318,11 +1308,9 @@ class ProtocolDnsManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/protocol-dns/{3}".format(
@@ -1337,12 +1325,9 @@ class ProtocolDnsManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response.get('dnsQueryVector', [])
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response.get('dnsQueryVector', [])
+        raise F5ModuleError(resp.content)
 
 
 class ProtocolSipManager(BaseManager):
@@ -1382,11 +1367,9 @@ class ProtocolSipManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/protocol-sip/{3}".format(
@@ -1401,12 +1384,9 @@ class ProtocolSipManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response.get('sipAttackVector', [])
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response.get('sipAttackVector', [])
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
