@@ -1,0 +1,127 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create an oracle monitor
+  bigip_monitor_oracle:
+    name: "{{ name1 }}"
+    ip: "{{ ip1 }}"
+    port: "{{ port1 }}"
+    send: "{{ send1 }}"
+    recv: "{{ recv1 }}"
+    recv_column: "2"
+    recv_row: "1"
+    database: "{{ db1 }}"
+    target_username: "{{ user }}"
+    target_password: "{{ pass1 }}"
+    interval: 60
+    up_interval: 10
+    timeout: 240
+    count: 10
+    update_password: on_create
+  register: result
+
+- name: Assert Create an oracle monitor
+  assert:
+    that:
+      - result is changed
+      - result.recv == recv1
+      - result.send == send1
+      - result.timeout == 240
+      - result.recv_column == "2"
+      - result.recv_row == "1"
+      - result.count == 10
+      - result.interval == 60
+      - result.up_interval == 10
+
+- name: Create an oracle monitor - Idempotent check
+  bigip_monitor_oracle:
+    name: "{{ name1 }}"
+    ip: "{{ ip1 }}"
+    port: "{{ port1 }}"
+    send: "{{ send1 }}"
+    recv: "{{ recv1 }}"
+    recv_column: "2"
+    recv_row: "1"
+    database: "{{ db1 }}"
+    target_username: "{{ user }}"
+    target_password: "{{ pass1 }}"
+    interval: 60
+    up_interval: 10
+    timeout: 240
+    count: 10
+    update_password: on_create
+  register: result
+
+- name: Assert Create an oracle monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify an oracle monitor
+  bigip_monitor_oracle:
+    name: "{{ name1 }}"
+    send: "{{ send2 }}"
+    recv: "{{ recv2 }}"
+    recv_column: "4"
+    recv_row: "3"
+    database: "{{ db2 }}"
+    count: 5
+    debug: yes
+  register: result
+
+- name: Assert Modify an oracle monitor
+  assert:
+    that:
+      - result is changed
+      - result.recv == recv2
+      - result.send == send2
+      - result.recv_column == "4"
+      - result.recv_row == "3"
+      - result.count == 5
+      - result.debug == "yes"
+
+- name: Modify an oracle monitor - Idempotent check
+  bigip_monitor_oracle:
+    name: "{{ name1 }}"
+    send: "{{ send2 }}"
+    recv: "{{ recv2 }}"
+    recv_column: "4"
+    recv_row: "3"
+    database: "{{ db2 }}"
+    count: 5
+    debug: yes
+  register: result
+
+- name: Assert Create an oracle monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove an oracle monitor
+  bigip_monitor_oracle:
+    name: "{{ name1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove an oracle monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove an oracle monitor - Idempotent check
+  bigip_monitor_oracle:
+    name: "{{ name1 }}"
+    state: absent
+  register: result
+
+- name: Assert Remove an oracle monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
