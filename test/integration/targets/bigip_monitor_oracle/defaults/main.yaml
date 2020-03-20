@@ -1,0 +1,16 @@
+send1: "SELECT status FROM v$instance"
+send2: "SELECT open_mode from v$database"
+
+recv1: "OPEN"
+recv2: "READ WRITE"
+
+name1: my_oracle_monitor_1
+
+ip1: 10.10.10.10
+port1: 10923
+
+db1: primary1
+db2: secondary1
+
+user: bigip
+pass1: secret
