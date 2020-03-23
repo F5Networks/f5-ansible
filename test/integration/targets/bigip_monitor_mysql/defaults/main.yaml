@@ -1,0 +1,23 @@
+---
+
+monitor_name: test_mysql_monitor
+monitor_name_2: test_mysql_monitor_2
+text_1: "Ansible set it"
+text_2: "Ansible changed it"
+ip: 1.1.1.1
+port: '30025'
+update_password: on_create
+interval: 33
+send: this is send string
+recv: this is recv string
+count: 999
+time_until_up: 55511
+up_interval: 36
+timeout: 60
+database: mysql_db_name
+manual_resume: no
+recv_row: '2'
+recv_column: '1'
+target_username: some_user
+target_password: some_password
+state: present
