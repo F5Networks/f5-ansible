@@ -35,5 +35,8 @@
 - import_tasks: issue-00821.yaml
   tags: issue-00821
 
+- import_tasks: issue-01597.yaml
+  tags: issue-01597
+
 - import_tasks: issue-persistence.yaml
   tags: issue-persistence

@@ -1,0 +1,157 @@
+---
+
+- name: Issue 01597 - Provision GTM on the device
+  bigip_provision:
+      module: gtm
+  tags:
+      - module-provisioning
+
+- name: Issue 01597 - Create wide pool1
+  bigip_gtm_pool:
+      name: pool1
+      type: a
+      state: present
+  register: result
+
+- name: Issue 01597 - Assert Create pool1
+  assert:
+      that:
+          - result is success
+
+- name: Issue 01597 -  Create wide pool2
+  bigip_gtm_pool:
+      name: pool2
+      type: a
+      state: present
+  register: result
+
+- name: Issue 01597 - Assert Create pool2
+  assert:
+      that:
+          - result is success
+
+- name: Issue 01597 - Create wide IP - Type A
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: present
+      type: a
+      pools:
+          - name: pool1
+            ratio: 1
+            order: 1
+          - name: pool2
+            ratio: 2
+            order: 0
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Create wide IP - Type A
+  assert:
+      that:
+          - result is changed
+
+- name: Issue 01597 - Create wide IP - Type A - Idempotent check
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: present
+      type: a
+      pools:
+          - name: pool1
+            ratio: 1
+            order: 1
+          - name: pool2
+            ratio: 2
+            order: 0
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Create wide IP - Type A - Idempotent check
+  assert:
+      that:
+          - result is not changed
+
+- name: Issue 01597 - Create wide IP - Type A - with default values - Idempotent check
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: present
+      type: a
+      pools:
+          - name: pool1
+            order: 1
+          - name: pool2
+            ratio: 2
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Modify wide IP - Type A - with default values - Idempotent check
+  assert:
+      that:
+          - result is not changed
+
+- name: Issue 01597 - Modify wide IP - Type A - order and ratio are not provided
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: present
+      type: a
+      pools:
+          - name: pool1
+            ratio: 1
+            order: 0
+          - name: pool2
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Modify wide IP - Type A - order and ratio are not provided
+  assert:
+      that:
+          - result is changed
+
+- name: Issue 01597 - Modify wide IP - Type A - order and ratio are not provided - Idempotent check
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: present
+      type: a
+      pools:
+          - name: pool1
+            ratio: 1
+            order: 0
+          - name: pool2
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Modify wide IP - Type A - order and ratio are not provided - Idempotent check
+  assert:
+      that:
+          - result is not changed
+
+- name: Issue 01597 - Delete wide IP - Type A
+  bigip_gtm_wide_ip:
+      state: absent
+      type: a
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Delete wide IP - Type A
+  assert:
+      that:
+          - result is changed
+
+- name: Issue 01597 - Delete wide IP - Type A - Idempotent check
+  bigip_gtm_wide_ip:
+      state: absent
+      type: a
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Delete wide IP - Type A - Idempotent check
+  assert:
+      that:
+          - result is not changed
+
+- name: Issue 01597 - Deprovision GTM
+  bigip_provision:
+      module: gtm
+      state: absent
+  tags:
+      - module-provisioning
+      - deprovision-module

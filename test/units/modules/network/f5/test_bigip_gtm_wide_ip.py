@@ -106,11 +106,19 @@ class TestParameters(unittest.TestCase):
     def test_api_pools(self):
         args = load_fixture('load_gtm_wide_ip_with_pools.json')
         p = ApiParameters(params=args)
-        assert len(p.pools) == 1
+        assert len(p.pools) == 3
         assert 'name' in p.pools[0]
         assert 'ratio' in p.pools[0]
+        assert 'order' in p.pools[0]
         assert p.pools[0]['name'] == '/Common/baz'
         assert p.pools[0]['ratio'] == 10
+        assert p.pools[0]['order'] == 0
+        assert p.pools[1]['name'] == '/Common/maz'
+        assert p.pools[1]['ratio'] == 10
+        assert p.pools[1]['order'] == 1
+        assert p.pools[2]['name'] == '/Common/vaz'
+        assert p.pools[2]['ratio'] == 11
+        assert p.pools[2]['order'] == 2
 
     def test_module_not_fqdn_name(self):
         args = dict(
@@ -232,8 +240,18 @@ class TestTypedManager(unittest.TestCase):
             type='a',
             pools=[
                 dict(
-                    name='foo',
-                    ratio=10
+                    name='baz',
+                    ratio=10,
+                ),
+                dict(
+                    name='maz',
+                    ratio=10,
+                    order=1
+                ),
+                dict(
+                    name='vaz',
+                    ratio=11,
+                    order=2
                 )
             ],
             provider=dict(
@@ -274,7 +292,17 @@ class TestTypedManager(unittest.TestCase):
             pools=[
                 dict(
                     name='baz',
-                    ratio=10
+                    ratio=10,
+                ),
+                dict(
+                    name='maz',
+                    ratio=10,
+                    order=1
+                ),
+                dict(
+                    name='vaz',
+                    ratio=11,
+                    order=2
                 )
             ],
             provider=dict(

@@ -25,6 +25,24 @@
           "nameReference": {
               "link": "https://localhost/mgmt/tm/gtm/pool/a/~Common~baz?ver=13.0.0"
           }
+      },
+      {
+        "name": "maz",
+        "partition": "Common",
+        "order": 1,
+        "ratio": 10,
+        "nameReference": {
+          "link": "https://localhost/mgmt/tm/gtm/pool/a/~Common~maz?ver=13.0.0"
+        }
+      },
+      {
+        "name": "vaz",
+        "partition": "Common",
+        "order": 2,
+        "ratio": 11,
+        "nameReference": {
+          "link": "https://localhost/mgmt/tm/gtm/pool/a/~Common~vaz?ver=13.0.0"
+        }
       }
   ]
 }
