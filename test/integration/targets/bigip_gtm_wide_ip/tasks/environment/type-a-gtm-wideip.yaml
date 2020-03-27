@@ -15,7 +15,7 @@
   assert:
     that:
       - result is success
-      - "'is a required key for items in the list of pools.' in result.msg"
+      - "'missing required arguments: name found in pools' in result.msg"
 
 - name: Attempt to create pool without name 2 - Expected failure
   bigip_gtm_wide_ip:
@@ -31,7 +31,8 @@
   assert:
     that:
       - result is success
-      - "'is a required key for items in the list of pools.' in result.msg"
+      - "'could not parse JSON or key=value' in result.msg"
+
 
 - name: Create wide IP - Type A
   bigip_gtm_wide_ip:
