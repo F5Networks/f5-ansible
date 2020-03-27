@@ -66,6 +66,7 @@ class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
             volume='HD1.2',
+            type='standard',
             image='BIGIP-13.0.0.0.0.1645.iso',
         )
 
