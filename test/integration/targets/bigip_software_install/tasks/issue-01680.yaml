@@ -1,0 +1,13 @@
+- name: Test that upgrade goes through
+  bigip_software_install:
+    block_device_image: "BIGIP-14.1.0.0.0.116.iso"
+    type: vcmp
+    state: installed
+    volume: HD1.4
+  register: result
+
+- name: Assert Test that upgrade goes through
+  assert:
+    that:
+      - result is changed
+      - result is success

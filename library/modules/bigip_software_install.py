@@ -24,6 +24,11 @@ options:
     description:
       - Image to install on the remote device.
     type: str
+  block_device_image:
+    description:
+      - Image to install on the remote device.
+    type: str
+    version_added: "f5_modules 1.2"
   volume:
     description:
       - The volume to install the software image to.
@@ -40,10 +45,21 @@ options:
       - activated
       - installed
     default: activated
+  type:
+    description:
+      - The type of the BIG-IP.
+      - Defaults to C(standard), the other choice is C(vcmp).
+    type: str
+    default: standard
+    choices:
+      - standard
+      - vcmp
+    version_added: "f5_modules 1.2"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
+  - Nitin Khanna (@nitinthewiz)
 '''
 EXAMPLES = r'''
 - name: Ensure an existing image is installed in specified volume
@@ -60,6 +76,18 @@ EXAMPLES = r'''
 - name: Ensure an existing image is activated in specified volume
   bigip_software_install:
     image: BIGIP-13.0.0.0.0.1645.iso
+    state: activated
+    volume: HD1.2
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Ensure an existing image is activated in specified volume in a VCMP guest
+  bigip_software_install:
+    block_device_image: BIGIP-13.0.0.0.0.1645.iso
+    type: vcmp
     state: activated
     volume: HD1.2
     provider:
@@ -85,11 +113,13 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import transform_name
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
 
 
 class Parameters(AnsibleF5Parameters):
@@ -140,6 +170,53 @@ class ApiParameters(Parameters):
             return []
         return [x['name'].split('/')[0] for x in response['items']]
 
+    @property
+    def block_device_image_names(self):
+        result = []
+        result += self.read_block_device_image_from_device()
+        result += self.read_block_device_hotfix_from_device()
+        return result
+
+    def read_block_device_image_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/block-device-image/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return []
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                return []
+            else:
+                return []
+        if 'items' not in response:
+            return []
+        return [x['name'] for x in response['items']]
+
+    def read_block_device_hotfix_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/block-device-hotfix/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError:
+            return []
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                return []
+            else:
+                return []
+        if 'items' not in response:
+            return []
+        return [x['name'] for x in response['items']]
+
 
 class ModuleParameters(Parameters):
     @property
@@ -147,7 +224,10 @@ class ModuleParameters(Parameters):
         if self._values['version']:
             return self._values['version']
 
-        self._values['version'] = self.image_info['version']
+        if self._values['type'] == "standard":
+            self._values['version'] = self.image_info['version']
+        elif self._values['type'] == "vcmp":
+            self._values['version'] = self.block_device_image_info['version']
         return self._values['version']
 
     @property
@@ -157,7 +237,12 @@ class ModuleParameters(Parameters):
             return self._values['build']
 
         # Otherwise, get copy from image info cache
-        self._values['build'] = self.image_info['build']
+        # self._values['build'] = self.image_info['build']
+
+        if self._values['type'] == "standard":
+            self._values['build'] = self.image_info['build']
+        elif self._values['type'] == "vcmp":
+            self._values['build'] = self.block_device_image_info['build']
         return self._values['build']
 
     @property
@@ -171,6 +256,16 @@ class ModuleParameters(Parameters):
         return image
 
     @property
+    def block_device_image_info(self):
+        if self._values['block_device_image_info']:
+            block_device_image = self._values['block_device_image_info']
+        else:
+            # Otherwise, get a new copy and store in cache
+            block_device_image = self.read_block_device_image()
+            self._values['block_device_image_info'] = block_device_image
+        return block_device_image
+
+    @property
     def image_type(self):
         if self._values['image_type']:
             return self._values['image_type']
@@ -179,6 +274,16 @@ class ModuleParameters(Parameters):
         else:
             self._values['image_type'] = 'hotfix'
         return self._values['image_type']
+
+    @property
+    def block_device_image_type(self):
+        if self._values['block_device_image_type']:
+            return self._values['block_device_image_type']
+        if 'software:block-device-image' in self.block_device_image_info['kind']:
+            self._values['block_device_image_type'] = 'block-device-image'
+        else:
+            self._values['block_device_image_type'] = 'block-device-hotfix'
+        return self._values['block_device_image_type']
 
     def read_image(self):
         image = self.read_image_from_device(type='image')
@@ -205,6 +310,49 @@ class ModuleParameters(Parameters):
         if 'items' in response:
             for item in response['items']:
                 if item['name'].startswith(self.image):
+                    return item
+
+    def read_block_device_image(self):
+        block_device_image = self.read_block_device_image_from_device()
+        if block_device_image:
+            return block_device_image
+        block_device_image = self.read_block_device_hotfix_from_device()
+        if block_device_image:
+            return block_device_image
+        return None
+
+    def read_block_device_image_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/block-device-image/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'items' in response:
+            for item in response['items']:
+                if item['name'].startswith(self.block_device_image):
+                    return item
+
+    def read_block_device_hotfix_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/block-device-hotfix/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'items' in response:
+            for item in response['items']:
+                if item['name'].startswith(self.block_device_image):
                     return item
 
 
@@ -410,10 +558,18 @@ class ModuleManager(object):
         if self.module.check_mode:
             return True
 
-        if self.want.image and self.want.image not in self.have.image_names:
-            raise F5ModuleError(
-                "The specified image was not found on the device."
-            )
+        if self.want.type == "standard":
+            if self.want.image and self.want.image not in self.have.image_names:
+                raise F5ModuleError(
+                    "The specified image was not found on the device."
+                )
+        elif self.want.type == "vcmp":
+            if self.want.block_device_image and not any(
+                [have_block_device_image.startswith(self.want.block_device_image)
+                    for have_block_device_image in self.have.block_device_image_names]):
+                raise F5ModuleError(
+                    "The specified block_device_image was not found on the device."
+                )
 
         options = list()
         if not self.volume_exists():
@@ -429,17 +585,28 @@ class ModuleManager(object):
         return True
 
     def update_on_device(self):
-        params = {
-            "command": "install",
-            "name": self.want.image,
-        }
-        params.update(self.want.api_params())
-
-        uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            self.want.image_type
-        )
+        if self.want.type == "standard":
+            params = {
+                "command": "install",
+                "name": self.want.image,
+            }
+            params.update(self.want.api_params())
+            uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                self.want.image_type
+            )
+        elif self.want.type == "vcmp":
+            params = {
+                "command": "install",
+                "name": transform_name(name=self.want.block_device_image),
+            }
+            params.update(self.want.api_params())
+            uri = "https://{0}:{1}/mgmt/tm/sys/software/{2}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(name=self.want.block_device_image_type)
+            )
         resp = self.client.api.post(uri, json=params)
         try:
             response = resp.json()
@@ -518,10 +685,15 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             image=dict(),
+            block_device_image=dict(),
             volume=dict(),
             state=dict(
                 default='activated',
                 choices=['activated', 'installed']
+            ),
+            type=dict(
+                choices=['standard', 'vcmp'],
+                default='standard'
             ),
         )
         self.argument_spec = {}
