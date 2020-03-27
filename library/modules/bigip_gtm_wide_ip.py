@@ -95,6 +95,11 @@ options:
           - Ratio for the pool.
           - The system uses this number with the Ratio load balancing method.
         type: int
+      order:
+        description:
+          - Order of the pool in relation to other pools attached to this Wide IP.
+          - Pool order is significant when the Global Availability load balancing method is utilized.
+        type: int
     version_added: 2.5
   irules:
     description:
@@ -208,6 +213,10 @@ EXAMPLES = r'''
     pools:
       - name: pool1
         ratio: 100
+        order: 2
+      - name: pool1
+        ratio: 100
+        order: 1
     provider:
       user: admin
       password: secret
@@ -372,7 +381,7 @@ class ApiParameters(Parameters):
     @property
     def pools(self):
         result = []
-        if self._values['pools'] is None:
+        if 'pools' not in self._values or self._values['pools'] is None:
             return []
         pools = sorted(self._values['pools'], key=lambda x: x['order'])
         for item in pools:
@@ -380,7 +389,6 @@ class ApiParameters(Parameters):
             pool.update(item)
             name = '/{0}/{1}'.format(item['partition'], item['name'])
             del pool['nameReference']
-            del pool['order']
             del pool['name']
             del pool['partition']
             pool['name'] = name
@@ -453,16 +461,24 @@ class ModuleParameters(Parameters):
     @property
     def pools(self):
         result = []
-        if self._values['pools'] is None:
-            return None
-        for item in self._values['pools']:
-            pool = dict()
-            if 'name' not in item:
+        if 'pools' not in self._values or self._values['pools'] is None:
+            return []
+        for pool in self._values['pools']:
+            if 'name' not in pool:
                 raise F5ModuleError(
                     "'name' is a required key for items in the list of pools."
                 )
-            if 'ratio' in item:
+            if 'order' not in pool or pool['order'] is None:
+                pool['order'] = 0
+        count = 0
+        pools = sorted(self._values['pools'], key=lambda x: x['order'])
+        for item in pools:
+            pool = dict()
+            if 'ratio' in item and item['ratio'] is not None:
                 pool['ratio'] = item['ratio']
+            if 'order' in item and item['order'] is not None:
+                pool['order'] = count
+                count = count + 1
             pool['name'] = fq_name(self.partition, item['name'])
             result.append(pool)
         return result
@@ -602,18 +618,6 @@ class Difference(object):
             result += tmp
         return result
 
-    def _diff_complex_items(self, want, have):
-        if want == [] and have is None:
-            return None
-        if want is None:
-            return None
-        w = self.to_tuple(want)
-        h = self.to_tuple(have)
-        if set(w).issubset(set(h)):
-            return None
-        else:
-            return want
-
     @property
     def last_resort_pool(self):
         if self.want.last_resort_pool is None:
@@ -632,8 +636,18 @@ class Difference(object):
 
     @property
     def pools(self):
-        result = self._diff_complex_items(self.want.pools, self.have.pools)
-        return result
+        if len(self.want.pools) != len(self.have.pools):
+            return self.want.pools
+        for want_pool in self.want.pools:
+            for have_pool in self.have.pools:
+                if have_pool['name'] == want_pool['name']:
+                    for key in want_pool:
+                        if key in have_pool and have_pool[key] is not None:
+                            if want_pool[key] != have_pool[key]:
+                                return self.want.pools
+                        else:
+                            return self.want.pools
+        return None
 
     @property
     def irules(self):
@@ -1050,6 +1064,7 @@ class ArgumentSpec(object):
                 options=dict(
                     name=dict(required=True),
                     ratio=dict(type='int'),
+                    order=dict(type='int')
                 )
             ),
             partition=dict(
