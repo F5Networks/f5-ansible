@@ -61,19 +61,13 @@ def get_all_module_files():
     result = []
     for filename in glob.glob('{0}/library/modules/*.py'.format(BASE_DIR)):
         f = os.path.basename(filename)
-        if f == '__init__.py':
-            continue
-        if 'iworkflow' in f:
-            continue
-        if os.path.islink(filename):
-            continue
         result.append(f)
     return result
 
 
 def should_upstream_module(module):
     # - read in the yaml playbook for the module
-    yfile = '{0}/test/integration/{1}.yaml'.format(BASE_DIR, module)
+    yfile = '{0}/test/integration/{1}.yaml'.format(BASE_DIR, module.lstrip('_'))
     if not os.path.exists(yfile):
         return False
     with open(yfile, 'r') as fh:

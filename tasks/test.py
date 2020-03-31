@@ -7,11 +7,11 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-import glob
 import sys
 import os
 
 from .lib.common import BASE_DIR
+from .lib.common import copy_ignores
 from invoke import task
 
 
@@ -45,13 +45,6 @@ def style(c):
     c.run("pycodestyle {0}".format(BASE_DIR))
 
 
-def copy_ignores(c, collection_dir):
-    ignores_dir = '{0}/tests/sanity'.format(collection_dir)
-    if not os.path.exists(ignores_dir):
-        c.run('mkdir -p {0}'.format(ignores_dir))
-    if len(list(glob.glob('{0}/*.txt'.format(ignores_dir)))) == 0:
-        c.run('cp {0}/devtools/sanity/* {1}'.format(BASE_DIR, ignores_dir))
-        print('Ignore files copied.')
 
 
 @task(name='ansible-sanity')

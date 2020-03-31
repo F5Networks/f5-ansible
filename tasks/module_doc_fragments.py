@@ -10,7 +10,9 @@ __metaclass__ = type
 import os
 
 from .lib.common import BASE_DIR
+from .lib.common import cmp_dir
 
+from invoke.exceptions import Exit
 from invoke import task
 
 HELP1 = dict(
@@ -29,6 +31,15 @@ def purge_upstreamed_files(c, root_dest, collection):
             c.run('rm -rf *')
 
 
+def files_upstream(c, src_doc, dst_doc):
+    cmd = [
+        'cp', '{0}/*.py'.format(src_doc),
+        '{0}'.format(dst_doc)
+    ]
+    c.run(' '.join(cmd))
+    print("Copy complete")
+
+
 @task(optional=['collection'], help=HELP1)
 def upstream(c, collection='f5_modules'):
     """Upstream module_doc_fragments to Ansible collection.
@@ -39,19 +50,23 @@ def upstream(c, collection='f5_modules'):
 
     """
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-    root_dest = '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
+    dst_doc = '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
+    src_doc = '{0}/library/plugins/doc_fragments/'.format(BASE_DIR)
 
-    purge_upstreamed_files(c, root_dest, coll_dest)
+    purge_upstreamed_files(c, dst_doc, coll_dest)
 
-    if not os.path.exists(root_dest):
+    if not os.path.exists(dst_doc):
         print("The required upstream directory does not exist, creating...")
-        c.run('mkdir -p {0}'.format(root_dest))
+        c.run('mkdir -p {0}'.format(dst_doc))
         print("Doc fragments directory created.")
 
-    # - upstream doc fragments
-    cmd = [
-        'cp', '{0}/library/plugins/doc_fragments/*.py'.format(BASE_DIR),
-        '{0}'.format(root_dest)
-    ]
-    c.run(' '.join(cmd))
-    print("Copy complete")
+    retries = 0
+    while not cmp_dir(src_doc, dst_doc):
+        purge_upstreamed_files(c, dst_doc, coll_dest)
+        files_upstream(c, src_doc,dst_doc)
+        retries = retries + 1
+
+    if retries > 2:
+        raise Exit('Failed to upstream doc fragments file, exiting.')
+    print("Copy of doc fragments file complete!")
+
