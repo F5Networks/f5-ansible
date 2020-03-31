@@ -14,7 +14,7 @@
 #
 # Examples:
 #
-#    Run all tests on the bigiq_device_facts module
+#    Run all tests on the bigiq_device_info module
 #
 #    ansible-playbook -i notahost, test/integration/bigiq_device_info.yaml
 #

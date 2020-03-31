@@ -10,7 +10,10 @@ __metaclass__ = type
 import os
 import sys
 
+
 from .lib.common import BASE_DIR
+from .lib.common import copy_ignores
+from .lib.common import cmp_dir
 
 from .lib.upstream import module_name
 from .lib.upstream import get_fixtures
@@ -31,7 +34,7 @@ from .lib.stubber import unstub_library_file
 from .lib.stubber import unstub_unit_test_file
 
 from invoke import task
-from tasks.test import copy_ignores
+from invoke.exceptions import Exit
 
 
 @task
@@ -75,7 +78,7 @@ HELP1 = dict(
 )
 
 
-def purge_upstreamed_module_files(c, collection, test, modules):
+def purge_upstreamed_module_files(c, collection, modules, test):
     if not os.path.exists(collection):
         return
     if os.path.exists(test) and len(os.listdir(test)) > 0:
@@ -94,17 +97,7 @@ def copy_ignore_files(c, collection='f5_modules'):
     copy_ignores(c, coll_dest)
 
 
-@task(iterable=['module'], optional=['collection'], help=HELP1)
-def upstream(c, module, collection='f5_modules'):
-    """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
-    """
-    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-    test_dir = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/'.format(BASE_DIR, collection)
-    fixtures_dir = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/fixtures/'.format(BASE_DIR, collection)
-    modules_dir = '{0}/local/ansible_collections/f5networks/{1}/plugins/modules/'.format(BASE_DIR, collection)
-
-    purge_upstreamed_module_files(c, coll_dest, test_dir, modules_dir)
-
+def create_directories(c, coll_dest, modules_dir, test_dir, fixtures_dir):
     if not os.path.exists(coll_dest):
         print("The required collection directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(coll_dest))
@@ -125,6 +118,8 @@ def upstream(c, module, collection='f5_modules'):
         c.run('mkdir -p {0}'.format(test_dir))
         print("Test directory created.")
 
+
+def files_upstream(c, module, modules_dir, test_dir, fixtures_dir):
     if len(module) == 1 and module[0] == 'all':
         modules = get_all_module_names()
     else:
@@ -168,9 +163,38 @@ def upstream(c, module, collection='f5_modules'):
             ]
             c.run(' '.join(cmd))
 
-    copy_ignore_files(c)
+        if not should_upstream_module(module):
+            print("This module {0} is not marked for upstreaming in the YAML playbook metadata.".format(module))
+        else:
+            print("Copy of {0} complete.".format(module))
 
-    if not should_upstream_module(module):
-        print("This module is not marked for upstreaming in the YAML playbook metadata.")
-    else:
-        print("Copy complete")
+
+@task(iterable=['module'], optional=['collection'], help=HELP1)
+def upstream(c, module, collection='f5_modules'):
+    """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
+    """
+    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
+    dst_test = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/'.format(BASE_DIR, collection)
+    dst_fixture = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/fixtures/'.format(BASE_DIR, collection)
+    dst_module = '{0}/local/ansible_collections/f5networks/{1}/plugins/modules/'.format(BASE_DIR, collection)
+
+    src_module = '{0}/library/modules/'.format(BASE_DIR)
+
+    purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test)
+    create_directories(c, coll_dest, dst_module, dst_test, dst_fixture)
+    files_upstream(c, module, dst_module, dst_test, dst_fixture)
+
+    retries = 1
+    while not cmp_dir(src_module, dst_module):
+        print("Retry file upstreaming, attempt {0} of 3".format(retries))
+        purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test)
+        create_directories(c, coll_dest, dst_module, dst_test, dst_fixture)
+        files_upstream(c, module, dst_module, dst_test, dst_fixture)
+
+        retries = retries + 1
+
+        if retries > 3:
+            raise Exit('Failed to upstream modules, exiting.')
+
+    copy_ignore_files(c)
+    print("Module files upstreamed successfully.")

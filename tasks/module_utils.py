@@ -10,8 +10,10 @@ __metaclass__ = type
 import os
 
 from .lib.common import BASE_DIR
+from .lib.common import cmp_dir
 
 from invoke import task
+from invoke.exceptions import Exit
 
 
 HELP1 = dict(
@@ -30,29 +32,46 @@ def purge_upstreamed_files(c, module_utils, collection):
             c.run('rm -rf *')
 
 
-@task(optional=['collection'], help=HELP1)
-def upstream(c, collection='f5_modules'):
-    """Copy all module utils, to the local/ansible_collections/f5networks/collection_name directory.
-    """
-    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-    module_utils = '{0}/local/ansible_collections/f5networks/{1}/plugins/module_utils/'.format(BASE_DIR, collection)
+def files_upstream(c, module_utils_src, module_utils_dst):
+    cmd = [
+        'cp', '{0}/*.py'.format(module_utils_src),
+        '{0}'.format(module_utils_dst)
+    ]
+    c.run(' '.join(cmd))
 
-    purge_upstreamed_files(c, module_utils, coll_dest)
 
+def create_directories(c, coll_dest, module_utils_dst):
     if not os.path.exists(coll_dest):
         print("The required collection directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(coll_dest))
         print("Collection directory created.")
 
-    if not os.path.exists(module_utils):
+    if not os.path.exists(module_utils_dst):
         print("The required module_utils directory does not exist, creating...")
-        c.run('mkdir -p {0}'.format(module_utils))
+        c.run('mkdir -p {0}'.format(module_utils_dst))
         print("Module utils directory created.")
 
-    # - upstream module utils files
-    cmd = [
-        'cp', '{0}/library/module_utils/network/f5/*.py'.format(BASE_DIR),
-        '{0}'.format(module_utils)
-    ]
-    c.run(' '.join(cmd))
-    print("Copy complete")
+
+@task(optional=['collection'], help=HELP1)
+def upstream(c, collection='f5_modules'):
+    """Copy all module utils, to the local/ansible_collections/f5networks/collection_name directory.
+    """
+    coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
+    module_utils_dst = '{0}/local/ansible_collections/f5networks/{1}/plugins/module_utils/'.format(BASE_DIR, collection)
+    module_utils_src = '{0}/library/module_utils/network/f5/'.format(BASE_DIR)
+
+    purge_upstreamed_files(c, module_utils_dst, coll_dest)
+    create_directories(c, coll_dest, module_utils_dst)
+    files_upstream(c, module_utils_src, module_utils_dst)
+
+    retries = 0
+    while not cmp_dir(module_utils_src, module_utils_dst):
+        purge_upstreamed_files(c, module_utils_dst, coll_dest)
+        create_directories(c, coll_dest, module_utils_dst)
+        files_upstream(c, module_utils_src, module_utils_dst)
+        retries = retries + 1
+
+    if retries > 2:
+        raise Exit('Failed to upstream module utils, exiting.')
+
+    print("Module utils files upstreamed successfully.")
