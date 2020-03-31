@@ -1,7 +1,7 @@
 ---
 
 - name: Select applications facts
-  bigiq_device_facts:
+  bigiq_device_info:
     gather_subset:
       - applications
   register: result

@@ -1,7 +1,7 @@
 ---
 
 - name: Select managed-devices facts
-  bigiq_device_facts:
+  bigiq_device_info:
     gather_subset:
       - managed-devices
   register: result
