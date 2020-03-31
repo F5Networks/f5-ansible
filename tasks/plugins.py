@@ -11,7 +11,9 @@ import os
 import glob
 
 from .lib.common import BASE_DIR
+from .lib.common import cmp_dir
 
+from invoke.exceptions import Exit
 from invoke import task
 
 
@@ -31,6 +33,16 @@ def purge_upstreamed_files(c, target_dir, collection):
             c.run('rm -f *')
 
 
+def files_upstream(c, plugin_dir, target_dir):
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    cmd = [
+        'cp', '{0}/*.py'.format(plugin_dir),
+        target_dir
+    ]
+    c.run(' '.join(cmd))
+
+
 def upstream_plugin(c, plugin, collection='f5_modules'):
     plugin_dir = '{0}/library/plugins/{1}/'.format(BASE_DIR, plugin)
     target_dir = '{0}/local/ansible_collections/f5networks/{1}/plugins/{2}/'.format(BASE_DIR, collection, plugin)
@@ -43,15 +55,18 @@ def upstream_plugin(c, plugin, collection='f5_modules'):
         return
 
     purge_upstreamed_files(c, target_dir, coll_dest)
+    files_upstream(c, plugin_dir, target_dir)
 
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-    cmd = [
-        'cp', '{0}/*.py'.format(plugin_dir),
-        target_dir
-    ]
-    c.run(' '.join(cmd))
-    print("Copy of {0} type plugins complete!".format(plugin))
+    retries = 0
+    while not cmp_dir(plugin_dir, target_dir):
+        purge_upstreamed_files(c, target_dir, coll_dest)
+        files_upstream(c, plugin_dir, target_dir)
+        retries = retries + 1
+
+    if retries > 2:
+        raise Exit('Failed to upstream plugin type: {0}, exiting.'.format(plugin))
+
+    print("Copy of plugin type {0} complete!".format(plugin))
 
 
 @task(optional=['collection'], help=HELP1)
@@ -70,4 +85,5 @@ def upstream(c, collection='f5_modules'):
     upstream_plugin(c, 'httpapi')
     upstream_plugin(c, 'lookup')
     upstream_plugin(c, 'terminal')
+
     print("Plugins copy complete.")

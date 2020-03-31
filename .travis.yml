@@ -30,9 +30,5 @@ jobs:
       python: "3.6"
     - name: Ansible Sanity Tests
       script:
-        - inv module.upstream -m all
-        - inv module-utils.upstream
-        - inv module-doc-fragments.upstream
-        - inv plugins.upstream
-        - inv test.ansible-sanity -r -p 3.6
+        - inv module.upstream -m all && inv module-utils.upstream && inv module-doc-fragments.upstream && inv plugins.upstream && inv test.ansible-sanity -r -p 3.6
       python: "3.6"
