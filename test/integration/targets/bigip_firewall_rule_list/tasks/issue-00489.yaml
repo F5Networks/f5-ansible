@@ -2,7 +2,7 @@
 
 - import_tasks: setup.yaml
 
-- name: Create address lists
+- name: Issue 00489 - Create address lists
   bigip_firewall_address_list:
     name: "{{ item.name }}"
     addresses: "{{ item.addresses }}"
@@ -20,7 +20,7 @@
         - 5.5.5.5
         - 6.6.6.6
 
-- name: Create port list
+- name: Issue 00489 - Create port list
   bigip_firewall_port_list:
     name: "{{ item }}"
     ports:
@@ -29,7 +29,7 @@
   loop:
     - SFTP-TCP
 
-- name: Create rule lists
+- name: Issue 00489 - Create rule lists
   bigip_firewall_rule_list:
     name: "{{ item.name }}"
     rules: "{{ item.rules }}"
@@ -49,7 +49,7 @@
         - ALLOW-UDR-TCP
         - DEFAULT-DROP
 
-- name: Set rule ALLOW-FOREIGNNET-ICMP properties
+- name: Issue 00489 - Set rule ALLOW-FOREIGNNET-ICMP properties
   bigip_firewall_rule:
     name: ALLOW-FOREIGNNET-ICMP
     parent_rule_list: DIAMETER-NODES-RL-IPV4
@@ -66,7 +66,7 @@
     source:
       - address_list: DIAMETER-NODES-FOREIGNNET
 
-- name: Set rule ALLOW-PARTNERNETWORK-ICMP properties
+- name: Issue 00489 - Set rule ALLOW-PARTNERNETWORK-ICMP properties
   bigip_firewall_rule:
     name: ALLOW-PARTNERNETWORK-ICMP
     parent_rule_list: PARTNERNETWORK-RL-IPV4
@@ -83,7 +83,7 @@
     source:
       - address_list: DIAMETER-NODES-PARTNERNETWORK-BILLING-DRA
 
-- name: Set rule ALLOW-PARTNERNETWORK-ICMP properties
+- name: Issue 00489 - Set rule ALLOW-PARTNERNETWORK-ICMP properties
   bigip_firewall_rule:
     name: ALLOW-UDR-TCP
     parent_rule_list: DIAMETER-NODES-RL-UDR-IPV4
@@ -97,7 +97,7 @@
     source:
       - address_list: DIAMETER-NODES-FOREIGNNET
 
-- name: Set default drop rule
+- name: Issue 00489 - Set default drop rule
   bigip_firewall_rule:
     name: DEFAULT-DROP
     parent_rule_list: "{{ item }}"
@@ -109,16 +109,16 @@
     - PARTNERNETWORK-RL-IPV4
     - DIAMETER-NODES-RL-UDR-IPV4
 
-- name: Remove rule lists
+- name: Issue 00489 - Remove rule lists
   bigip_firewall_rule_list:
-    name: "{{ item.name }}"
+    name: "{{ item }}"
     state: absent
   loop:
     - DIAMETER-NODES-RL-IPV4
     - PARTNERNETWORK-RL-IPV4
     - DIAMETER-NODES-RL-UDR-IPV4
 
-- name: Remove address lists
+- name: Issue 00489 - Remove address lists
   bigip_firewall_address_list:
     name: "{{ item }}"
     state: absent
@@ -127,7 +127,7 @@
     - DIAMETER-NODES-PARTNERNETWORK-BILLING-UDR
     - DIAMETER-NODES-FOREIGNNET
 
-- name: Remove port list
+- name: Issue 00489 - Remove port list
   bigip_firewall_port_list:
     name: "{{ item }}"
     state: absent

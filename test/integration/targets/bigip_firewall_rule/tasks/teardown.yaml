@@ -10,6 +10,16 @@
     commands:
       - tmsh delete security firewall schedule sched1
 
+- name: Remove simple port list
+  bigip_firewall_port_list:
+    name: portlist1
+    state: absent
+
+- name: Remove VLAN
+  bigip_vlan:
+    name: vlan1
+    state: absent
+
 - name: De-provision modules
   bigip_provision:
     name: afm
@@ -17,13 +27,3 @@
   tags:
     - module-provisioning
     - deprovision-module
-
-- name: Remove VLAN
-  bigip_vlan:
-    name: vlan1
-    state: absent
-
-- name: Remove simple port list
-  bigip_firewall_port_list:
-    name: portlist1
-    state: absent
