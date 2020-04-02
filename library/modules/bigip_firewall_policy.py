@@ -336,14 +336,11 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        if self.want.rules:
-            self._upsert_policy_rules_on_device()
-        return response['selfLink']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if self.want.rules:
+                self._upsert_policy_rules_on_device()
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -359,12 +356,10 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
-            return response['selfLink']
+            if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+                return True
+            raise F5ModuleError(resp.content)
+
         if self.changes.rules is not None:
             self._upsert_policy_rules_on_device()
 
@@ -396,12 +391,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def rule_exists(self, rule):
         uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}/rules/{3}".format(
@@ -413,11 +405,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_default_rule_on_device(self, rule):
         params = dict(
@@ -438,12 +440,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['selfLink']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_rule_from_device(self, rule):
         uri = "https://{0}:{1}/mgmt/tm/security/firewall/policy/{2}/rules/{3}".format(
@@ -454,7 +453,7 @@ class ModuleManager(object):
         )
         # this response returns no payload
         resp = self.client.api.delete(uri)
-        if resp.status in [400, 403]:
+        if resp.status not in [200, 201]:
             raise F5ModuleError(resp.content)
 
     def move_rule_to_front(self, rule):
@@ -473,12 +472,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['selfLink']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def _upsert_policy_rules_on_device(self):
         rules = self.changes.rules
