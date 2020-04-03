@@ -60,7 +60,8 @@ options:
         C(operator), C(resource-admin), C(user-manager), C(web-application-security-administrator),
         and C(web-application-security-editor).
       - Partition portion of tuple should be an existing partition or the value 'all'.
-    type: raw
+    type: list
+    elements: str
   state:
     description:
       - Whether the account should exist or not, taking action if the state is
@@ -100,7 +101,8 @@ EXAMPLES = r'''
     username_credential: johnd
     password_credential: password
     full_name: John Doe
-    partition_access: all:admin
+    partition_access:
+      - all:admin
     update_password: on_create
     state: present
     provider:
@@ -112,7 +114,8 @@ EXAMPLES = r'''
 - name: Change the user "johnd's" role and shell
   bigip_user:
     username_credential: johnd
-    partition_access: NewPartition:manager
+    partition_access:
+      - NewPartition:manager
     shell: tmsh
     state: present
     provider:
@@ -124,7 +127,8 @@ EXAMPLES = r'''
 - name: Make the user 'johnd' an admin and set to advanced shell
   bigip_user:
     name: johnd
-    partition_access: all:admin
+    partition_access:
+      - all:admin
     shell: bash
     state: present
     provider:
@@ -224,6 +228,7 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_empty_list
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import upload_file
 except ImportError:
@@ -231,6 +236,7 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_empty_list
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import upload_file
 
@@ -293,51 +299,6 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     @property
-    def partition_access(self):
-        """Partition access values will require some transformation.
-
-        This operates on both user and device returned values.
-        Check if the element is a string from user input in the format of
-        name:role, if it is split  it and create dictionary out of it.
-
-        If the access value is a dictionary (returned from device,
-        or already processed) and contains nameReference
-        key, delete it and append the remaining dictionary element into
-        a list.
-
-        If the nameReference key is removed just append the dictionary
-        into the list.
-
-        Returns:
-            List of dictionaries. Each item in the list is a dictionary
-            which contains the ``name`` of the partition and the ``role`` to
-            allow on that partition.
-        """
-        if self._values['partition_access'] is None:
-            return
-        result = []
-        part_access = self._values['partition_access']
-        for access in part_access:
-            if isinstance(access, dict):
-                if 'nameReference' in access:
-                    del access['nameReference']
-
-                    result.append(access)
-                else:
-                    result.append(access)
-            if isinstance(access, string_types):
-                acl = access.split(':')
-                if acl[0].lower() == 'all':
-                    acl[0] = 'all-partitions'
-                value = dict(
-                    name=acl[0],
-                    role=acl[1]
-                )
-
-                result.append(value)
-        return result
-
-    @property
     def temp_upload_file(self):
         if self._values['temp_upload_file'] is None:
             f = tempfile.NamedTemporaryFile()
@@ -348,18 +309,41 @@ class Parameters(AnsibleF5Parameters):
 
 class ApiParameters(Parameters):
     @property
-    def shell(self):
-        if self._values['shell'] in [None, 'none']:
+    def partition_access(self):
+        if self._values['partition_access'] is None:
             return None
-        return self._values['shell']
+        result = []
+        part_access = self._values['partition_access']
+        for access in part_access:
+            if isinstance(access, dict):
+                if 'nameReference' in access:
+                    del access['nameReference']
+                    result.append(access)
+                else:
+                    result.append(access)
+        return result
 
 
 class ModuleParameters(Parameters):
     @property
-    def shell(self):
-        if self._values['shell'] in [None, 'none']:
+    def partition_access(self):
+        if self._values['partition_access'] is None:
             return None
-        return self._values['shell']
+        if is_empty_list(self._values['partition_access']):
+            return []
+        result = []
+        part_access = self._values['partition_access']
+        for access in part_access:
+            if isinstance(access, string_types):
+                acl = access.split(':')
+                if acl[0].lower() == 'all':
+                    acl[0] = 'all-partitions'
+                value = dict(
+                    name=acl[0],
+                    role=acl[1]
+                )
+                result.append(value)
+        return result
 
 
 class Changes(Parameters):
@@ -383,7 +367,20 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def partition_access(self):
+        if self._values['partition_access'] is None:
+            return None
+        result = []
+        part_access = self._values['partition_access']
+        for access in part_access:
+            if access['name'] == 'all-partitions':
+                name = 'all'
+            else:
+                name = access['name']
+            role = access['role']
+            result.append(('{0}:{1}'.format(name, role)))
+        return result
 
 
 class Difference(object):
@@ -417,11 +414,8 @@ class Difference(object):
 
     @property
     def shell(self):
-        if self.want.shell is None:
-            if self.have.shell is not None:
-                return 'none'
-            else:
-                return None
+        if self.want.shell == 'none' and self.have.shell is None:
+            return None
         if self.want.shell == 'bash':
             self._validate_shell_parameter()
             if self.want.shell == self.have.shell:
@@ -1084,7 +1078,8 @@ class ArgumentSpec(object):
                 no_log=True,
             ),
             partition_access=dict(
-                type='raw',
+                type='list',
+                elements='str',
             ),
             full_name=dict(),
             shell=dict(

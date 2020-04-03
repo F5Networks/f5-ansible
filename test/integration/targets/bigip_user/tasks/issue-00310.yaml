@@ -22,3 +22,8 @@
   assert:
     that:
       - result is changed
+
+- name: Issue 00310 - Revert change root user password
+  bigip_user:
+    username_credential: root
+    password_credential: root
