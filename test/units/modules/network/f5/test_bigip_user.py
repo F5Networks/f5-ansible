@@ -108,11 +108,10 @@ class TestManager(unittest.TestCase):
         self.spec = ArgumentSpec()
 
     def test_create_user(self, *args):
-        access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
             username_credential='someuser',
             password_credential='testpass',
-            partition_access=access,
+            partition_access=['Common:guest'],
             update_password='on_create',
             provider=dict(
                 server='localhost',
@@ -138,13 +137,12 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['partition_access'] == access
+        assert results['partition_access'] == ['Common:guest']
 
     def test_create_user_no_password(self, *args):
-        access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
             username_credential='someuser',
-            partition_access=access,
+            partition_access=['Common:guest'],
             provider=dict(
                 server='localhost',
                 password='password',
@@ -169,7 +167,7 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['partition_access'] == access
+        assert results['partition_access'] == ['Common:guest']
 
     def test_create_user_partition_access_raises(self, *args):
         set_module_args(dict(
@@ -203,11 +201,10 @@ class TestManager(unittest.TestCase):
         assert str(ex.value) == msg
 
     def test_create_user_shell_bash(self, *args):
-        access = [{'name': 'all', 'role': 'admin'}]
         set_module_args(dict(
             username_credential='someuser',
             password_credential='testpass',
-            partition_access=access,
+            partition_access=['all:admin'],
             update_password='on_create',
             shell='bash',
             provider=dict(
@@ -234,14 +231,13 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['partition_access'] == access
+        assert results['partition_access'] == ['all:admin']
 
     def test_create_user_shell_not_permitted_raises(self, *args):
-        access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
             username_credential='someuser',
             password_credential='testpass',
-            partition_access=access,
+            partition_access=['Common:guest'],
             update_password='on_create',
             shell='bash',
             provider=dict(
@@ -517,11 +513,10 @@ class TestLegacyManager(unittest.TestCase):
         self.spec = ArgumentSpec()
 
     def test_create_user(self, *args):
-        access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
             username_credential='someuser',
             password_credential='testpass',
-            partition_access=access,
+            partition_access=['Common:guest'],
             update_password='on_create',
             provider=dict(
                 server='localhost',
@@ -547,13 +542,12 @@ class TestLegacyManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['partition_access'] == access
+        assert results['partition_access'] == ['Common:guest']
 
     def test_create_user_no_password(self, *args):
-        access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
             username_credential='someuser',
-            partition_access=access,
+            partition_access=['Common:guest'],
             provider=dict(
                 server='localhost',
                 password='password',
@@ -578,7 +572,7 @@ class TestLegacyManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['partition_access'] == access
+        assert results['partition_access'] == ['Common:guest']
 
     def test_create_user_partition_access_raises(self, *args):
         set_module_args(dict(
@@ -612,11 +606,10 @@ class TestLegacyManager(unittest.TestCase):
         assert str(ex.value) == msg
 
     def test_create_user_shell_bash(self, *args):
-        access = [{'name': 'all', 'role': 'admin'}]
         set_module_args(dict(
             username_credential='someuser',
             password_credential='testpass',
-            partition_access=access,
+            partition_access=['all:admin'],
             update_password='on_create',
             shell='bash',
             provider=dict(
@@ -643,14 +636,13 @@ class TestLegacyManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['partition_access'] == access
+        assert results['partition_access'] == ['all:admin']
 
     def test_create_user_shell_not_permitted_raises(self, *args):
-        access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
             username_credential='someuser',
             password_credential='testpass',
-            partition_access=access,
+            partition_access=['Common:guest'],
             update_password='on_create',
             shell='bash',
             provider=dict(
