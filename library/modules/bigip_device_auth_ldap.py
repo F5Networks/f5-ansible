@@ -128,6 +128,9 @@ options:
     description:
       - When C(present), ensures the device authentication method exists.
       - When C(absent), ensures the device authentication method does not exist.
+      - When C(state) equal to (absent), before you can delete the LDAP configuration, the system must set auth to
+        some alternative. The system ships with a system auth called C(local), therefore the system authentication type
+        will be set to that value on the device upon removal of LDAP configuration.
     type: str
     choices:
       - present
@@ -143,6 +146,14 @@ options:
       - always
       - on_create
     default: always
+  use_for_auth:
+    description:
+      - Specifies whether or not this auth source is put in use on the system.
+      - If C(yes) the module sets the current system auth type to the value of C(ldap).
+      - If C(no) the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
+        without removing the configured LDAP resource.
+    type: bool
+    version_added: "f5_modules 1.3"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -321,6 +332,7 @@ class Parameters(AnsibleF5Parameters):
         'client_cert',
         'client_key',
         'user_template',
+        'auth_source',
     ]
 
     @property
@@ -352,10 +364,6 @@ class Parameters(AnsibleF5Parameters):
         return flatten_boolean(self._values['validate_certs'])
 
     @property
-    def fallback_to_local(self):
-        return flatten_boolean(self._values['fallback_to_local'])
-
-    @property
     def check_member_attr(self):
         return flatten_boolean(self._values['check_member_attr'])
 
@@ -383,13 +391,28 @@ class Parameters(AnsibleF5Parameters):
             return 'start-tls'
         return flatten_boolean(self._values['ssl'])
 
+    @property
+    def fallback_to_local(self):
+        return flatten_boolean(self._values['fallback_to_local'])
+
 
 class ApiParameters(Parameters):
     pass
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def use_for_auth(self):
+        return flatten_boolean(self._values['use_for_auth'])
+
+    @property
+    def auth_source(self):
+        if self._values['use_for_auth'] is None:
+            return None
+        if self.use_for_auth == 'yes':
+            return 'ldap'
+        if self.use_for_auth == 'no':
+            return 'local'
 
 
 class Changes(Parameters):
@@ -564,7 +587,7 @@ class ModuleManager(object):
         * The ``use_for_auth`` parameter is set to ``no``
         * The ``state`` parameter is set to ``absent``
 
-        When ``state`` equal to ``absent``, before you can delete the TACACS+ configuration,
+        When ``state`` equal to ``absent``, before you can delete the LDAP configuration,
         you must set the system auth to "something else". The system ships with a system
         auth called "local", so this is the logical "something else" to use.
 
@@ -572,7 +595,7 @@ class ModuleManager(object):
         to ``absent`` is done above.
 
         When ``use_for_auth`` is ``yes``, this method will set the current system auth
-        state to TACACS+.
+        state to the value of source_type.
 
         Arguments:
             source (string): The source that you want to set on the device.
@@ -659,6 +682,8 @@ class ModuleManager(object):
             self.update_fallback_on_device('true')
         elif self.want.fallback_to_local == 'no':
             self.update_fallback_on_device('false')
+        if self.want.use_for_auth and self.changes.auth_source:
+            self.update_auth_source_on_device(self.changes.auth_source)
         return True
 
     def remove(self):
@@ -679,6 +704,8 @@ class ModuleManager(object):
             self.update_fallback_on_device('true')
         elif self.want.fallback_to_local == 'no':
             self.update_fallback_on_device('false')
+        if self.want.use_for_auth:
+            self.update_auth_source_on_device(self.want.auth_source)
         return True
 
     def exists(self):
@@ -766,26 +793,29 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
-            raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response.update(self.read_current_auth_source_from_device())
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
-        result = ApiParameters(params=response)
-
-        uri = 'https://{0}:{1}/mgmt/tm/auth/source/'.format(
+    def read_current_auth_source_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/auth/source".format(
             self.client.provider['server'],
-            self.client.provider['server_port']
+            self.client.provider['server_port'],
         )
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
-        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
-            raise F5ModuleError(resp.content)
-        if 'fallback' in response:
-            result.update({'fallback': response['fallback']})
-        return result
+        result = {}
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if 'fallback' in response:
+                result['fallback'] = response['fallback']
+            if 'type' in response:
+                result['auth_source'] = response['type']
+            return result
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
@@ -814,6 +844,7 @@ class ArgumentSpec(object):
             validate_certs=dict(type='bool', aliases=['ssl_check_peer']),
             login_ldap_attr=dict(),
             fallback_to_local=dict(type='bool'),
+            use_for_auth=dict(type='bool'),
             update_password=dict(
                 default='always',
                 choices=['always', 'on_create']

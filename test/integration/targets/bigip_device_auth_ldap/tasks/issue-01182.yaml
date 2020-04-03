@@ -1,0 +1,55 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Issue 01182 - Create an LDAP device configuration, use for auth - yes
+  bigip_device_auth_ldap:
+    servers:
+      - 1.1.1.1
+    use_for_auth: yes
+  register: result
+
+- name: Issue 01182 - Assert Create an LDAP device configuration, use for auth - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01182 - Create an LDAP device configuration, use for auth - yes - Idempotent check
+  bigip_device_auth_ldap:
+    servers:
+      - 1.1.1.1
+    use_for_auth: yes
+  register: result
+
+- name: Issue 01182 - Assert Create an LDAP device configuration, use for auth - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01182 - Change LDAP configuration, use for auth - no
+  bigip_device_auth_ldap:
+    use_for_auth: no
+  register: result
+
+- name: Issue 01182 - Assert Change LDAP configuration, use for auth - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 01182 - Change LDAP configuration, use for auth - no - Idempotent check
+  bigip_device_auth_ldap:
+    use_for_auth: no
+  register: result
+
+- name: Issue 01182 - Assert Change LDAP configuration, use for auth - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 01182 - Remove LDAP configuration
+  bigip_device_auth_ldap:
+    state: absent
