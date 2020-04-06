@@ -106,8 +106,8 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
-            pass
+        except Exception as ex:
+            raise
         return result
 
 

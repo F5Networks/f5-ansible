@@ -17,5 +17,3 @@ plugins/modules/bigip_pool_member.py validate-modules:doc-missing-type
 plugins/modules/bigip_pool_member.py validate-modules:missing-suboption-docs
 plugins/action/bigip.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
 plugins/action/bigiq.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
-plugins/modules/_bigip_appsvcs_extension.py ansible-doc!skip
-plugins/modules/_bigip_appsvcs_extension.py validate-modules!skip
