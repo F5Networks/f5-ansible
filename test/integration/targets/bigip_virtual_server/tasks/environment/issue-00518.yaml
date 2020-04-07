@@ -13,7 +13,8 @@
     name: issue-00518
     destination: 1.1.1.1
     port: 80
-    profiles: ""
+    profiles:
+     - ""
   register: result
 
 - name: Issue 00518 - Assert Remove profiles
@@ -26,7 +27,8 @@
     name: issue-00518
     destination: 1.1.1.1
     port: 80
-    profiles: ""
+    profiles:
+     - ""
   register: result
 
 - name: Issue 00518 - Assert Remove profiles - Idempotent check

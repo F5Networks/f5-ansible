@@ -1025,7 +1025,6 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['check_profiles'] is True
 
     def test_create_virtual_server_with_check_profiles_bool_false(self, *args):
         set_module_args(dict(
@@ -1058,4 +1057,3 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['check_profiles'] is False

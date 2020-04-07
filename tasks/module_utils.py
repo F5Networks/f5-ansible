@@ -29,7 +29,7 @@ def purge_upstreamed_files(c, module_utils, collection):
     if len(os.listdir(module_utils)) > 0:
         print("Purging contents from {0}.".format(module_utils))
         with c.cd(module_utils):
-            c.run('rm -rf *')
+            c.run('rm -rf *', pty=True)
 
 
 def files_upstream(c, module_utils_src, module_utils_dst):
@@ -37,7 +37,7 @@ def files_upstream(c, module_utils_src, module_utils_dst):
         'cp', '{0}/*.py'.format(module_utils_src),
         '{0}'.format(module_utils_dst)
     ]
-    c.run(' '.join(cmd))
+    c.run(' '.join(cmd), pty=True)
 
 
 def create_directories(c, coll_dest, module_utils_dst):

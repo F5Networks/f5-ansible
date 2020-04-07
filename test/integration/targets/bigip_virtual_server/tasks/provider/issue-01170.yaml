@@ -5,7 +5,8 @@
     name: vs_issue_1170
     destination: "10.10.10.10"
     port: 8080
-    policies: ""
+    policies:
+      - ""
     provider: "{{ provider }}"
   register: result
 
@@ -20,7 +21,8 @@
     name: vs_issue_1170
     destination: "10.10.10.10"
     port: 8080
-    policies: ""
+    policies:
+      - ""
     provider: "{{ provider }}"
   register: result
 
@@ -34,7 +36,8 @@
   bigip_virtual_server:
     name: vs_issue_1170
     description: "blank one"
-    irules: ""
+    irules:
+      - ""
     provider: "{{ provider }}"
   register: result
 
@@ -48,7 +51,8 @@
   bigip_virtual_server:
     name: vs_issue_1170
     description: "blank one"
-    irules: ""
+    irules:
+      - ""
     provider: "{{ provider }}"
   register: result
 
