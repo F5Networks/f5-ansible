@@ -1,8 +1,14 @@
 ---
 
+- name: Collect BIG-IP facts
+  bigip_device_info:
+      include: system-info
+  register: f
+
 - name: Issue 01546 - Create published policy
   bigip_policy:
     name: issue-01546
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01546 - Create published rule with actions
   bigip_policy_rule:
@@ -12,12 +18,14 @@
       - type: reset
         event: ssl_client_hello
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01546 - Assert Create published rule with actions
   assert:
     that:
       - result is changed
       - result is success
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01546 - Create published rule with actions - Idempotent check
   bigip_policy_rule:
@@ -27,12 +35,14 @@
       - type: reset
         event: ssl_client_hello
   register: result
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01546 - Assert Create published rule with actions - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01546 - Remove policy
   bigip_policy:
