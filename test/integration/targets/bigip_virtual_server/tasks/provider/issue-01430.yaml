@@ -1,12 +1,12 @@
 ---
-- name: Issue 01430 - Create pool
+- name: Issue 01430 - Create pool - Provider
   bigip_pool:
     lb_method: round-robin
     name: web-pool
     state: present
     provider: "{{ provider }}"
 
-- name: Issue 01430 - Create iRules
+- name: Issue 01430 - Create iRules - Provider
   bigip_irule:
     content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}"
     module: ltm
@@ -18,7 +18,7 @@
     - irule3
     - irule4
 
-- name: Issue 01430 - Create VLANs
+- name: Issue 01430 - Create VLANs - Provider
   bigip_vlan:
     name: "{{ item }}"
     provider: "{{ provider }}"
@@ -26,7 +26,7 @@
     - External
     - Internal
 
-- name: Issue 01430 - Add VS on BIG-IP
+- name: Issue 01430 - Add VS on BIG-IP - Provider
   bigip_virtual_server:
     name: httpvs2
     destination: 10.168.90.92
@@ -37,17 +37,18 @@
     disabled_vlans: Internal
     pool: web-pool
     snat: automap
-    profiles: http
+    profiles:
+      - http
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 01430 - Assert Add VS on BIG-IP
+- name: Issue 01430 - Assert Add VS on BIG-IP - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 01430 - Add VS on BIG-IP - Idempotent check
+- name: Issue 01430 - Add VS on BIG-IP - Idempotent check - Provider
   bigip_virtual_server:
     name: httpvs2
     destination: 10.168.90.92
@@ -58,17 +59,18 @@
     disabled_vlans: Internal
     pool: web-pool
     snat: automap
-    profiles: http
+    profiles:
+      - http
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 01430 - Assert Add VS on BIG-IP - Idempotent check
+- name: Issue 01430 - Assert Add VS on BIG-IP - Idempotent check - Provider
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 01430 - Reorder iRules on VS
+- name: Issue 01430 - Reorder iRules on VS - Provider
   bigip_virtual_server:
     name: httpvs2
     irules:
@@ -77,13 +79,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 01430 - Assert Reorder iRules on VS
+- name: Issue 01430 - Assert Reorder iRules on VS - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 01430 - Reorder iRules on VS - Idempotent check
+- name: Issue 01430 - Reorder iRules on VS - Idempotent check - Provider
   bigip_virtual_server:
     name: httpvs2
     irules:
@@ -92,13 +94,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 01430 - Assert Reorder iRules on VS - Idempotent check
+- name: Issue 01430 - Assert Reorder iRules on VS - Idempotent check - Provider
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 01430 - Change iRules on VS
+- name: Issue 01430 - Change iRules on VS - Provider
   bigip_virtual_server:
     name: httpvs2
     irules:
@@ -107,13 +109,13 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 01430 - Assert Change iRules on VS
+- name: Issue 01430 - Assert Change iRules on VS - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 01430 - Change iRules on VS - Idempotent check
+- name: Issue 01430 - Change iRules on VS - Idempotent check - Provider
   bigip_virtual_server:
     name: httpvs2
     irules:
@@ -122,45 +124,47 @@
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 01430 - Assert Change iRules on VS - Idempotent check
+- name: Issue 01430 - Assert Change iRules on VS - Idempotent check - Provider
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 01430 - Remove iRules from VS
+- name: Issue 01430 - Remove iRules from VS - Provider
   bigip_virtual_server:
     name: httpvs2
-    irules: ""
+    irules:
+      - ""
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 01430 - Assert Remove iRules from VS
+- name: Issue 01430 - Assert Remove iRules from VS - Provider
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 01430 - Remove iRules from VS - Idempotent check
+- name: Issue 01430 - Remove iRules from VS - Idempotent check - Provider
   bigip_virtual_server:
     name: httpvs2
-    irules: ""
+    irules:
+      - ""
     provider: "{{ provider }}"
   register: result
 
-- name: Issue 01430 - Assert Remove iRules from VS - Idempotent check
+- name: Issue 01430 - Assert Remove iRules from VS - Idempotent check - Provider
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 01430 - Remove VS
+- name: Issue 01430 - Remove VS - Provider
   bigip_virtual_server:
     name: httpvs2
     state: absent
     provider: "{{ provider }}"
 
-- name: Issue 01430 - Remove VLANs
+- name: Issue 01430 - Remove VLANs - Provider
   bigip_vlan:
     name: "{{ item }}"
     state: absent
@@ -169,7 +173,7 @@
     - External
     - Internal
 
-- name: Issue 01430 - Remove iRules
+- name: Issue 01430 - Remove iRules - Provider
   bigip_irule:
     name: "{{ item }}"
     module: ltm
@@ -181,7 +185,7 @@
     - irule3
     - irule4
 
-- name: Issue 01430 - Remove pool
+- name: Issue 01430 - Remove pool - Provider
   bigip_pool:
     lb_method: round-robin
     name: web-pool

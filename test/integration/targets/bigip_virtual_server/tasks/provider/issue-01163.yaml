@@ -86,7 +86,7 @@
 - name: Issue 01163 - Remove VS clone pool - Provider
   bigip_virtual_server:
     name: "{{ vs1 }}"
-    clone_pools: ""
+    clone_pools: []
     provider: "{{ provider }}"
   register: result
 
@@ -99,7 +99,7 @@
 - name: Issue 01163 - Remove VS clone pool - Provider - Idempotent check
   bigip_virtual_server:
     name: "{{ vs1 }}"
-    clone_pools: ""
+    clone_pools: []
     provider: "{{ provider }}"
   register: result
 

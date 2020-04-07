@@ -31,10 +31,12 @@
     irules:
       - irule1
       - irule2
-    enabled_vlans: all
+    enabled_vlans:
+      - all
     pool: web-pool
     snat: automap
-    profiles: http
+    profiles:
+      - http
 
 - name: Issue 00460 - Add policy to virtual server
   bigip_virtual_server:
@@ -44,11 +46,14 @@
     irules:
       - irule1
       - irule2
-    enabled_vlans: all
+    enabled_vlans:
+      - all
     pool: web-pool
     snat: automap
-    profiles: http
-    policies: PolicyAnsible
+    profiles:
+      - http
+    policies:
+      - PolicyAnsible
   register: result
 
 - name: Issue 00460 - Assert Add policy to virtual server
@@ -64,11 +69,14 @@
     irules:
       - irule1
       - irule2
-    enabled_vlans: all
+    enabled_vlans:
+      - all
     pool: web-pool
     snat: automap
-    profiles: http
-    policies: PolicyAnsible
+    profiles:
+      - http
+    policies:
+      - PolicyAnsible
   register: result
 
 - name: Issue 00460 - Assert Add policy to virtual server - Idempotent check

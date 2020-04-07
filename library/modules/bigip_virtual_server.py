@@ -507,12 +507,25 @@ options:
   check_profiles:
     description:
       - Specifies whether the client and server ssl profiles specified by the user should be verified to be
-      - correct against the existing profiles. Useful in cases where a large number of profiles are being
-      - added in one go. Not recommended for common use. In case of duplicate profiles, or erroneous profiles,
-        the BIGIP will throw an error.
+        correct against the existing profiles. Useful in cases where a large number of profiles are being
+        added in one go.
+      - Not recommended for common use. In case of duplicate profiles, or erroneous profiles,
+        the BIG-IP will throw an error.
     type: bool
     default: yes
     version_added: "f5_modules 1.2"
+  bypass_module_checks:
+    description:
+      - Disables all built in module verification checks that require BIG-IP device calls. Using this option will cut
+        down on the amount of REST calls made by this module, the trade off is that most parameters will sent as is,
+        which requires this means extra care when defining them.
+      - The device will be the final source of truth for such configurations, usable in cases where speed is
+        preferred over accuracy.
+      - If set to C(yes) module will ignore the value op C(check_profiles) parameter.
+      - This parameter can be used when creating new or updating existing resources.
+    type: bool
+    default: no
+    version_added: "f5_modules 1.3"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -1080,7 +1093,6 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_src_mask',
         'rate_limit_dst_mask',
         'clone_pools',
-        'check_profiles',
     ]
 
     profiles_mutex = [
@@ -1119,16 +1131,6 @@ class Parameters(AnsibleF5Parameters):
         ('udp', 17),
         ('udplite', 136),
     ]
-
-    def to_return(self):
-        result = {}
-        for returnable in self.returnables:
-            try:
-                result[returnable] = getattr(self, returnable)
-            except Exception:
-                pass
-        result = self._filter_params(result)
-        return result
 
     def _format_port_for_destination(self, ip, port):
         if validate_ip_v6_address(ip):
@@ -1779,7 +1781,6 @@ class ModuleParameters(Parameters):
             if profile['name'] == 'clientssl':
                 if profile['context'] != 'clientside':
                     profile['context'] = 'clientside'
-        return
 
     def _check_port(self):
         try:
@@ -1810,6 +1811,13 @@ class ModuleParameters(Parameters):
     @property
     def check_profiles(self):
         result = flatten_boolean(self._values['check_profiles'])
+        if result == 'yes':
+            return True
+        return False
+
+    @property
+    def bypass_module_checks(self):
+        result = flatten_boolean(self._values['bypass_module_checks'])
         if result == 'yes':
             return True
         return False
@@ -1969,7 +1977,7 @@ class ModuleParameters(Parameters):
     def profiles(self):
         if self._values['profiles'] is None:
             return None
-        if len(self._values['profiles']) == 1 and self._values['profiles'][0] == '':
+        if is_empty_list(self._values['profiles']):
             return ''
         result = []
         for profile in self._values['profiles']:
@@ -1980,13 +1988,15 @@ class ModuleParameters(Parameters):
                 if 'name' not in profile:
                     tmp['name'] = profile
                 tmp['fullPath'] = fq_name(self.partition, tmp['name'])
-                self._handle_ssl_profile_nuances(tmp)
+                if not self.bypass_module_checks:
+                    self._handle_ssl_profile_nuances(tmp)
             else:
                 full_path = fq_name(self.partition, profile)
                 tmp['name'] = os.path.basename(profile)
                 tmp['context'] = 'all'
                 tmp['fullPath'] = full_path
-                self._handle_ssl_profile_nuances(tmp)
+                if not self.bypass_module_checks:
+                    self._handle_ssl_profile_nuances(tmp)
             result.append(tmp)
         mutually_exclusive = [x['name'] for x in result if x in self.profiles_mutex]
         if len(mutually_exclusive) > 1:
@@ -2001,7 +2011,7 @@ class ModuleParameters(Parameters):
     def policies(self):
         if self._values['policies'] is None:
             return None
-        if len(self._values['policies']) == 1 and self._values['policies'][0] == '':
+        if is_empty_list(self._values['policies']):
             return ''
         result = []
         policies = [fq_name(self.partition, p) for p in self._values['policies']]
@@ -2289,7 +2299,7 @@ class ModuleParameters(Parameters):
     def clone_pools(self):
         if self._values['clone_pools'] is None:
             return None
-        if len(self._values['clone_pools']) == 1 and self._values['clone_pools'][0] in ['', []]:
+        if not self._values['clone_pools']:
             return []
         self._check_clone_pool_contexts()
         result = []
@@ -2305,7 +2315,15 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
-    pass
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            try:
+                result[returnable] = getattr(self, returnable)
+            except Exception:
+                raise
+        result = self._filter_params(result)
+        return result
 
 
 class UsableChanges(Changes):
@@ -2464,6 +2482,8 @@ class ReportableChanges(Changes):
 
     @property
     def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return None
         if len(self._values['default_persistence_profile']) == 0:
             return []
         profile = self._values['default_persistence_profile'][0]
@@ -2472,6 +2492,8 @@ class ReportableChanges(Changes):
 
     @property
     def policies(self):
+        if self._values['policies'] is None:
+            return None
         if len(self._values['policies']) == 0:
             return []
         if len(self._values['policies']) == 1 and self._values['policies'][0] == '':
@@ -2481,6 +2503,8 @@ class ReportableChanges(Changes):
 
     @property
     def irules(self):
+        if self._values['irules'] is None:
+            return None
         if len(self._values['irules']) == 0:
             return []
         if len(self._values['irules']) == 1 and self._values['irules'][0] == '':
@@ -2489,6 +2513,8 @@ class ReportableChanges(Changes):
 
     @property
     def enabled_vlans(self):
+        if self._values['vlans'] is None:
+            return None
         if len(self._values['vlans']) == 0 and self._values['vlans_disabled'] is True:
             return 'all'
         elif len(self._values['vlans']) > 0 and self._values['vlans_enabled'] is True:
@@ -2496,17 +2522,23 @@ class ReportableChanges(Changes):
 
     @property
     def disabled_vlans(self):
+        if self._values['vlans'] is None:
+            return None
         if len(self._values['vlans']) > 0 and self._values['vlans_disabled'] is True:
             return self._values['vlans']
 
     @property
     def address_translation(self):
+        if self._values['address_translation'] is None:
+            return None
         if self._values['address_translation'] == 'enabled':
             return True
         return False
 
     @property
     def port_translation(self):
+        if self._values['port_translation'] is None:
+            return None
         if self._values['port_translation'] == 'enabled':
             return True
         return False
@@ -3397,16 +3429,17 @@ class ModuleManager(object):
 
     def update(self):
         self.have = self.read_current_from_device()
-        validator = VirtualServerValidator(
-            module=self.module, client=self.client, have=self.have, want=self.want
-        )
-        validator.check_update()
+        if not self.want.bypass_module_checks:
+            validator = VirtualServerValidator(
+                module=self.module, client=self.client, have=self.have, want=self.want
+            )
+            validator.check_update()
 
-        if self.want.ip_intelligence_policy is not None:
-            if not any(x for x in self.provisioned_modules if x in ['afm', 'asm']):
-                raise F5ModuleError(
-                    "AFM must be provisioned to configure an IP Intelligence policy."
-                )
+            if self.want.ip_intelligence_policy is not None:
+                if not any(x for x in self.provisioned_modules if x in ['afm', 'asm']):
+                    raise F5ModuleError(
+                        "AFM must be provisioned to configure an IP Intelligence policy."
+                    )
 
         if not self.should_update():
             return False
@@ -3485,17 +3518,17 @@ class ModuleManager(object):
                 raise F5ModuleError(resp.content)
 
     def create(self):
-        validator = VirtualServerValidator(
-            module=self.module, client=self.client, have=self.have, want=self.want
-        )
-        validator.check_create()
+        if not self.want.bypass_module_checks:
+            validator = VirtualServerValidator(
+                module=self.module, client=self.client, have=self.have, want=self.want
+            )
+            validator.check_create()
 
-        if self.want.ip_intelligence_policy is not None:
-            if not any(x for x in self.provisioned_modules if x in ['afm', 'asm']):
-                raise F5ModuleError(
-                    "AFM must be provisioned to configure an IP Intelligence policy."
-                )
-
+            if self.want.ip_intelligence_policy is not None:
+                if not any(x for x in self.provisioned_modules if x in ['afm', 'asm']):
+                    raise F5ModuleError(
+                        "AFM must be provisioned to configure an IP Intelligence policy."
+                    )
         self._set_changed_options()
         if self.module.check_mode:
             return True
@@ -3520,11 +3553,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 404]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/virtual/{2}?expandSubcollections=true".format(
@@ -3538,13 +3569,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-
-        return ApiParameters(params=response, client=self.client)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response, client=self.client)
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -3553,7 +3580,6 @@ class ModuleManager(object):
         if self.want.insert_metadata:
             # Mark the resource as managed by Ansible, this is default behavior
             params = mark_managed_by(self.module.ansible_version, params)
-
         uri = "https://{0}:{1}/mgmt/tm/ltm/virtual/".format(
             self.client.provider['server'],
             self.client.provider['server_port']
@@ -3564,13 +3590,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        # Code 404 can occur when you specify a fallback profile that does
-        # not exist
-        if 'code' in response and response['code'] in [400, 403, 404]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/virtual/{2}".format(
@@ -3705,6 +3727,10 @@ class ArgumentSpec(object):
             check_profiles=dict(
                 type='bool',
                 default='yes'
+            ),
+            bypass_module_checks=dict(
+                type='bool',
+                default='no'
             )
         )
         self.argument_spec = {}

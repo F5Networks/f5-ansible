@@ -562,8 +562,8 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception as ex:
-            raise F5ModuleError(str(ex))
+        except Exception:
+            raise
         return result
 
 
