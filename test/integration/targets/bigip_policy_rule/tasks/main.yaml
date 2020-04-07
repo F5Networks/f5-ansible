@@ -397,4 +397,7 @@
 - import_tasks: issue-01521.yaml
   tags: issue-01521
 
+- import_tasks: issue-01678.yaml
+  tags: issue-01678
+
 - import_tasks: teardown.yaml

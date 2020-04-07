@@ -46,6 +46,7 @@ options:
           - When C(type) is C(redirect), will redirect an HTTP request to a different URL.
           - When C(type) is C(reset), will reset the connection upon C(event).
           - When C(type) is C(persist), will associate C(cookie_insert) and C(cookie_expiry) with this rule.
+          - When C(type) is C(set_variable), will set variable based on evaluated Tcl C(expression) based on C(event).
         type: str
         required: true
         choices:
@@ -55,6 +56,7 @@ options:
           - redirect
           - reset
           - persist
+          - set_variable
       pool:
         description:
           - Pool that you want to forward traffic to.
@@ -84,6 +86,15 @@ options:
       event:
         description:
           - Events on which actions such as reset can be triggered.
+          - With C(set_variable) action, it is used for specifying action event such as request or response.
+        type: str
+      expression:
+        description:
+          - A tcl expression used with C(set_variable) action.
+        type: str
+      variable_name:
+        description:
+           - Variable name used with C(set_variable) action.
         type: str
       cookie_insert:
         description:
@@ -187,6 +198,7 @@ author:
   - Wojciech Wypior (@wojtek0806)
   - Greg Crosby (@crosbygw)
   - Nitin Khanna (@nitinthewiz)
+  - Andrey Kashcheev (@andreykashcheev)
 '''
 
 EXAMPLES = r'''
@@ -239,6 +251,15 @@ EXAMPLES = r'''
       actions:
         - type: forward
           pool: pool-svrs
+      conditions:
+        - type: http_uri
+          path_begins_with_any: /HomePage/
+    - name: rule3
+      actions:
+        - type: set_variable
+          variable_name: user-agent
+          expression: tcl:[HTTP::header User-Agent]
+          event: request
       conditions:
         - type: http_uri
           path_begins_with_any: /HomePage/
@@ -335,8 +356,10 @@ class Parameters(AnsibleF5Parameters):
         'description',
     ]
 
-    returnable = [
+    returnables = [
         'description',
+        'action',
+        'conditions'
     ]
 
     @property
@@ -385,6 +408,17 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'redirect'
                 del action['redirect']
+            elif 'setVariable' in item:
+                action.update(item)
+                action['type'] = 'set_variable'
+                del action['fullPath']
+                del action['code']
+                del action['expirySecs']
+                del action['length']
+                del action['port']
+                del action['status']
+                del action['vlanId']
+                del action['timeout']
             elif 'shutdown' in item:
                 action.update(item)
                 action['type'] = 'reset'
@@ -448,6 +482,8 @@ class ModuleParameters(Parameters):
                 action['name'] = str(idx)
             if item['type'] == 'forward':
                 self._handle_forward_action(action, item)
+            elif item['type'] == 'set_variable':
+                self._handle_set_variable_action(action, item)
             elif item['type'] == 'enable':
                 self._handle_enable_action(action, item)
             elif item['type'] == 'ignore':
@@ -488,7 +524,7 @@ class ModuleParameters(Parameters):
 
     def _handle_http_host_condition(self, action, item):
         action['type'] = 'http_host'
-        if 'host_begins_with_any' in item:
+        if 'host_begins_with_any' in item and item['host_begins_with_any'] is not None:
             if isinstance(item['host_begins_with_any'], list):
                 values = item['host_begins_with_any']
             else:
@@ -498,7 +534,7 @@ class ModuleParameters(Parameters):
                 startsWith=True,
                 values=values
             ))
-        elif 'host_is_any' in item:
+        elif 'host_is_any' in item and item['host_is_any'] is not None:
             if isinstance(item['host_is_any'], list):
                 values = item['host_is_any']
             else:
@@ -508,7 +544,7 @@ class ModuleParameters(Parameters):
                 host=True,
                 values=values
             ))
-        elif 'host_is_not_any' in item:
+        elif 'host_is_not_any' in item and item['host_is_not_any'] is not None:
             if isinstance(item['host_is_not_any'], list):
                 values = item['host_is_not_any']
             else:
@@ -594,6 +630,30 @@ class ModuleParameters(Parameters):
         elif item.get('node', None):
             action['node'] = item['node']
 
+    def _handle_set_variable_action(self, action, item):
+        """Handle the nuances of the set_variable type
+
+        :param action:
+        :param item:
+        :return:
+        """
+        if 'expression' not in item and 'variable_name' not in item:
+            raise F5ModuleError(
+                "A 'variable_name' and 'expression' must be specified when the 'set_variable' type is used."
+            )
+
+        if 'event' in item and item['event'] is not None:
+            action[item['event']] = True
+        else:
+            action['request'] = True
+        action.update(dict(
+            type='set_variable',
+            expression=item['expression'],
+            tmName=item['variable_name'],
+            setVariable=True,
+            tcl=True
+        ))
+
     def _handle_enable_action(self, action, item):
         """Handle the nuances of the enable type
 
@@ -675,12 +735,12 @@ class ModuleParameters(Parameters):
 class Changes(Parameters):
     def to_return(self):
         result = {}
-        try:
-            for returnable in self.returnables:
+        for returnable in self.returnables:
+            try:
                 result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            pass
+                result = self._filter_params(result)
+            except Exception:
+                raise
         return result
 
 
@@ -700,6 +760,10 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'forward'
                 del action['forward']
+            elif 'set_variable' in item:
+                action.update(item)
+                action['type'] = 'set_variable'
+                del action['set_variable']
             elif 'enable' in item:
                 action.update(item)
                 action['type'] = 'enable'
@@ -767,6 +831,10 @@ class UsableChanges(Changes):
                 del action['type']
             elif action['type'] == 'enable':
                 action['enable'] = True
+                del action['type']
+            elif action['type'] == 'set_variable':
+                action['setVariable'] = True
+                action['tcl'] = True
                 del action['type']
             elif action['type'] == 'ignore':
                 result = []
@@ -924,7 +992,6 @@ class ModuleManager(object):
             changed = self.present()
         elif state == "absent":
             changed = self.absent()
-
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
@@ -1200,7 +1267,8 @@ class ArgumentSpec(object):
                             'ignore',
                             'redirect',
                             'reset',
-                            'persist'
+                            'persist',
+                            'set_variable'
                         ],
                         required=True
                     ),
@@ -1211,7 +1279,9 @@ class ArgumentSpec(object):
                     location=dict(),
                     event=dict(),
                     cookie_insert=dict(),
-                    cookie_expiry=dict(type='int')
+                    cookie_expiry=dict(type='int'),
+                    expression=dict(),
+                    variable_name=dict()
                 ),
                 mutually_exclusive=[
                     ['pool', 'asm_policy', 'virtual', 'location', 'cookie_insert', 'node']
@@ -1235,7 +1305,7 @@ class ArgumentSpec(object):
                     host_is_any=dict(),
                     host_is_not_any=dict(),
                     server_name_is_any=dict(),
-                    event=dict(),
+                    event=dict()
                 ),
             ),
             name=dict(required=True),
