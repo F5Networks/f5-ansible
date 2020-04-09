@@ -1,0 +1,6 @@
+- name: Create partitions
+  bigip_partition:
+    name: "{{ item }}"
+  with_items:
+    - test
+    - foo

@@ -17,19 +17,19 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_device_auth_radius import ApiParameters
-    from library.modules.bigip_device_auth_radius import ModuleParameters
-    from library.modules.bigip_device_auth_radius import ModuleManager
-    from library.modules.bigip_device_auth_radius import ArgumentSpec
+    from library.modules.bigip_device_auth_radius_server import ApiParameters
+    from library.modules.bigip_device_auth_radius_server import ModuleParameters
+    from library.modules.bigip_device_auth_radius_server import ModuleManager
+    from library.modules.bigip_device_auth_radius_server import ArgumentSpec
     from test.units.compat import unittest
     from test.units.compat.mock import Mock
     from test.units.compat.mock import patch
     from test.units.compat.utils import set_module_args
 except ImportError:
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth_radius import ApiParameters
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth_radius import ModuleParameters
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth_radius import ModuleManager
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth_radius import ArgumentSpec
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth_radius_server import ApiParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth_radius_server import ModuleParameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth_radius_server import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_auth_radius_server import ArgumentSpec
     from ansible_collections.f5networks.f5_modules.tests.units.compat import unittest
     from ansible_collections.f5networks.f5_modules.tests.units.compat import Mock
     from ansible_collections.f5networks.f5_modules.tests.units.compat import patch
@@ -61,45 +61,46 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            servers=['foo1', 'foo2'],
-            retries=5,
-            service_type='login',
-            accounting_bug=False,
-            fallback_to_local=True,
-            use_for_auth=True,
+            name='foo',
+            ip='10.10.10.10',
+            description='foobar',
+            port=1812,
+            timeout=5,
+            secret='secret1',
         )
+
         p = ModuleParameters(params=args)
 
-        assert '/Common/foo1' and '/Common/foo2' in p.servers
-        assert p.retries == 5
-        assert p.use_for_auth == 'yes'
-        assert p.accounting_bug == 'disabled'
-        assert p.service_type == "login"
-        assert p.fallback_to_local == 'yes'
+        assert p.name == 'foo'
+        assert p.ip == '10.10.10.10'
+        assert p.description == 'foobar'
+        assert p.port == 1812
+        assert p.timeout == 5
+        assert p.secret == 'secret1'
 
     def test_api_parameters(self):
-        args = load_fixture('load_radius_config.json')
+        args = load_fixture('load_radius_server.json')
 
         p = ApiParameters(params=args)
-        assert p.retries == 3
-        assert p.service_type == 'authenticate-only'
-        assert p.accounting_bug == 'disabled'
-        assert p.servers == ['/Common/system_auth_name1']
+
+        assert p.ip == '1.1.1.1'
+        assert p.port == 1812
+        assert p.timeout == 3
+        assert p.name == 'test'
 
 
 class TestManager(unittest.TestCase):
-
     def setUp(self):
         self.spec = ArgumentSpec()
 
     def test_create(self, *args):
         set_module_args(dict(
-            servers=['foo1', 'foo2'],
-            retries=5,
-            service_type='login',
-            accounting_bug=False,
-            fallback_to_local=True,
-            use_for_auth=True,
+            name='foo',
+            ip='10.10.10.10',
+            description='foobar',
+            port=1812,
+            timeout=5,
+            secret='secret1',
             state='present',
             provider=dict(
                 password='admin',
@@ -117,13 +118,10 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
         mm.create_on_device = Mock(return_value=True)
-        mm.update_auth_source_on_device = Mock(return_value=True)
-        mm.update_fallback_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
         assert results['changed'] is True
-        assert '/Common/foo1' and '/Common/foo2' in results['servers']
-        assert results['retries'] == 5
-        assert results['accounting_bug'] == 'disabled'
-        assert results['service_type'] == 'login'
-        assert results['fallback_to_local'] == 'yes'
+        assert results['ip'] == '10.10.10.10'
+        assert results['port'] == 1812
+        assert results['timeout'] == 5
+        assert results['description'] == 'foobar'

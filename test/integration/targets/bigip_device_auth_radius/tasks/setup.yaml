@@ -1,0 +1,24 @@
+- name: Collect BIG-IP facts
+  bigip_device_info:
+    include: system-info
+  register: f
+
+- name: Create first RADIUS server configuration
+  bigip_device_auth_radius_server:
+    name: "ansible_test1"
+    ip: "1.1.1.1"
+    port: 1812
+    secret: "secret"
+    timeout: 5
+    update_secret: on_create
+    state: present
+
+- name: Create second RADIUS server configuration
+  bigip_device_auth_radius_server:
+    name: "ansible_test2"
+    ip: "1.1.1.2"
+    port: 1812
+    secret: "secret"
+    timeout: 5
+    update_secret: on_create
+    state: present

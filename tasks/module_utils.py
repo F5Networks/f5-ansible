@@ -17,19 +17,21 @@ from invoke.exceptions import Exit
 
 
 HELP1 = dict(
-    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'."
+    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'.",
+    debug="Enables verbose message output."
 )
 
 
-def purge_upstreamed_files(c, module_utils, collection):
+def purge_upstreamed_files(c, module_utils, collection, debug):
     if not os.path.exists(collection):
         return
     if not os.path.exists(module_utils):
         return
     if len(os.listdir(module_utils)) > 0:
-        print("Purging contents from {0}.".format(module_utils))
+        if debug:
+            print("Purging contents from {0}.".format(module_utils))
         with c.cd(module_utils):
-            c.run('rm -rf *', pty=True)
+            c.run('rm -rf *')
 
 
 def files_upstream(c, module_utils_src, module_utils_dst):
@@ -37,7 +39,7 @@ def files_upstream(c, module_utils_src, module_utils_dst):
         'cp', '{0}/*.py'.format(module_utils_src),
         '{0}'.format(module_utils_dst)
     ]
-    c.run(' '.join(cmd), pty=True)
+    c.run(' '.join(cmd))
 
 
 def create_directories(c, coll_dest, module_utils_dst):
@@ -52,15 +54,15 @@ def create_directories(c, coll_dest, module_utils_dst):
         print("Module utils directory created.")
 
 
-@task(optional=['collection'], help=HELP1)
-def upstream(c, collection='f5_modules'):
+@task(optional=['collection', 'debug'], help=HELP1)
+def upstream(c, collection='f5_modules', debug=False):
     """Copy all module utils, to the local/ansible_collections/f5networks/collection_name directory.
     """
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
     module_utils_dst = '{0}/local/ansible_collections/f5networks/{1}/plugins/module_utils/'.format(BASE_DIR, collection)
     module_utils_src = '{0}/library/module_utils/network/f5/'.format(BASE_DIR)
 
-    purge_upstreamed_files(c, module_utils_dst, coll_dest)
+    purge_upstreamed_files(c, module_utils_dst, coll_dest, debug)
     create_directories(c, coll_dest, module_utils_dst)
     files_upstream(c, module_utils_src, module_utils_dst)
 

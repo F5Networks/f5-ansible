@@ -74,19 +74,22 @@ def unstub(c, module=None):
 HELP1 = dict(
     module="A module name or list of module names separated by commas to be upstreamed. "
            "If all modules are required specify 'all' instead of a module name.",
-    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'."
+    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'.",
+    debug="Enables verbose message output."
 )
 
 
-def purge_upstreamed_module_files(c, collection, modules, test):
+def purge_upstreamed_module_files(c, collection, modules, test, debug):
     if not os.path.exists(collection):
         return
     if os.path.exists(test) and len(os.listdir(test)) > 0:
-        print("Purging contents from {0}.".format(test))
+        if debug:
+            print("Purging contents from {0}.".format(test))
         with c.cd(test):
             c.run('rm -rf *')
     if os.path.exists(modules) and len(os.listdir(modules)) > 0:
-        print("Purging contents from {0}.".format(modules))
+        if debug:
+            print("Purging contents from {0}.".format(modules))
         with c.cd(modules):
             c.run('rm -f *')
 
@@ -97,29 +100,37 @@ def copy_ignore_files(c, collection='f5_modules'):
     copy_ignores(c, coll_dest)
 
 
-def create_directories(c, coll_dest, modules_dir, test_dir, fixtures_dir):
+def create_directories(c, coll_dest, modules_dir, test_dir, fixtures_dir, debug):
     if not os.path.exists(coll_dest):
-        print("The required collection directory does not exist, creating...")
+        if debug:
+            print("The required collection directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(coll_dest))
-        print("Collection directory created.")
+        if debug:
+            print("Collection directory created.")
 
     if not os.path.exists(modules_dir):
-        print("The required module directory does not exist, creating...")
+        if debug:
+            print("The required module directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(modules_dir))
-        print("Module directory created.")
+        if debug:
+            print("Module directory created.")
 
     if not os.path.exists(fixtures_dir):
-        print("The required test fixtures directory does not exist, creating...")
+        if debug:
+            print("The required test fixtures directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(fixtures_dir))
-        print("Test fixtures directory created.")
+        if debug:
+            print("Test fixtures directory created.")
 
     if not os.path.exists(test_dir):
-        print("The required test directory does not exist, creating...")
+        if debug:
+            print("The required test directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(test_dir))
-        print("Test directory created.")
+        if debug:
+            print("Test directory created.")
 
 
-def files_upstream(c, module, modules_dir, test_dir, fixtures_dir):
+def files_upstream(c, module, modules_dir, test_dir, fixtures_dir, debug):
     if len(module) == 1 and module[0] == 'all':
         modules = get_all_module_names()
     else:
@@ -131,10 +142,18 @@ def files_upstream(c, module, modules_dir, test_dir, fixtures_dir):
         if not deprecated and not should_upstream_module(module):
             continue
 
-        if deprecated:
+        if deprecated and debug:
             print("Warning: Upstreaming deprecated module: {0}".format(module))
-        else:
+        if debug:
             print("Upstreaming {0}".format(module))
+
+        if os.path.exists('{0}/library/modules/{1}.py'.format(BASE_DIR, module)):
+            # - upstream module file
+            cmd = [
+                'cp', '{0}/library/modules/{1}.py'.format(BASE_DIR, module),
+                '{0}/{1}.py'.format(modules_dir, module)
+            ]
+            c.run(' '.join(cmd))
 
         if os.path.exists('{0}/test/units/modules/network/f5/test_{1}.py'.format(
                 BASE_DIR, module.lstrip('_'))) and not deprecated:
@@ -155,22 +174,14 @@ def files_upstream(c, module, modules_dir, test_dir, fixtures_dir):
                 ]
                 c.run(' '.join(cmd))
 
-        if os.path.exists('{0}/library/modules/{1}.py'.format(BASE_DIR, module)):
-            # - upstream module file
-            cmd = [
-                'cp', '{0}/library/modules/{1}.py'.format(BASE_DIR, module),
-                '{0}/{1}.py'.format(modules_dir, module)
-            ]
-            c.run(' '.join(cmd))
-
         if not should_upstream_module(module):
             print("This module {0} is not marked for upstreaming in the YAML playbook metadata.".format(module))
         else:
             print("Copy of {0} complete.".format(module))
 
 
-@task(iterable=['module'], optional=['collection'], help=HELP1)
-def upstream(c, module, collection='f5_modules'):
+@task(iterable=['module'], optional=['collection', 'debug'], help=HELP1)
+def upstream(c, module, collection='f5_modules', debug=False):
     """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
     """
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
@@ -180,16 +191,16 @@ def upstream(c, module, collection='f5_modules'):
 
     src_module = '{0}/library/modules/'.format(BASE_DIR)
 
-    purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test)
-    create_directories(c, coll_dest, dst_module, dst_test, dst_fixture)
-    files_upstream(c, module, dst_module, dst_test, dst_fixture)
+    purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test, debug)
+    create_directories(c, coll_dest, dst_module, dst_test, dst_fixture, debug)
+    files_upstream(c, module, dst_module, dst_test, dst_fixture, debug)
 
     retries = 1
     while not cmp_dir(src_module, dst_module):
         print("Retry file upstreaming, attempt {0} of 3".format(retries))
-        purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test)
-        create_directories(c, coll_dest, dst_module, dst_test, dst_fixture)
-        files_upstream(c, module, dst_module, dst_test, dst_fixture)
+        purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test, debug)
+        create_directories(c, coll_dest, dst_module, dst_test, dst_fixture, debug)
+        files_upstream(c, module, dst_module, dst_test, dst_fixture, debug)
 
         retries = retries + 1
 

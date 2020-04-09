@@ -123,6 +123,7 @@ options:
     description:
       - Specifies that the system uses the Local authentication method if the remote
         authentication method is not available.
+      - Option only available on C(TMOS 13.0.0) and above.
     type: bool
   state:
     description:
