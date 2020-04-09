@@ -618,10 +618,6 @@
       - result is success
       - result is not changed
 
-
-
-
-
 - name: Change fallback_to_local - yes
   bigip_device_auth_ldap:
     fallback_to_local: yes
@@ -648,9 +644,6 @@
       - result is not changed
   when: f.system_info.product_version >= "13.0.0"
 
-
-
-
 - name: Change fallback_to_local - no
   bigip_device_auth_ldap:
     fallback_to_local: no
@@ -676,7 +669,6 @@
       - result is success
       - result is not changed
   when: f.system_info.product_version >= "13.0.0"
-
 
 - name: Remove LDAP device auth
   bigip_device_auth_ldap:

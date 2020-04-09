@@ -17,37 +17,14 @@ DOCUMENTATION = r'''
 module: bigip_device_auth_radius
 short_description: Manages RADIUS auth configuration on BIGIP device
 description:
-  - Module creates RADIUS servers and creates RADISU configuration.
-  - Module allows to configure two RADIUS servers (i.e. primary and secondary)
-version_added: "f5_modules 1.2"
+  - Module creates RADIUS RADIUS configuration.
+version_added: "f5_modules 1.3"
 options:
   servers:
     description:
-      - Specifies RADIUS servers configurations for use with RADIUS authentication profiles.
+      - Specifies RADIUS servers names for use with RADIUS authentication profiles.
     type: list
-    elements: dict
-    suboptions:
-      server:
-        description:
-          - The IP address of the server.
-            In that case, the simple list can specify server IPs. See examples for
-            more clarification.
-        type: str
-        required: True
-      port:
-        description:
-          - The port of the server.
-          - If no port number is specified, the default port C(1812) is used.
-        type: int
-      secret:
-        description:
-          - Specifies secret used for accessing RADIUS server.
-        type: str
-      timeout:
-        description:
-          - Specifies the timeout value in seconds.
-          - The default timeout value is C(3) seconds.
-        type: int
+    elements: str
   accounting_bug:
     description:
       - Enables or disables validation of the accounting response vector.
@@ -55,8 +32,8 @@ options:
     type: bool
   retries:
     description:
-      - Specifies the number of authentication retries that the BIG-IP local traffic management system allows before authentication fails.
-      - The default value is C(3).
+      - Specifies the number of authentication retries that the BIG-IP local traffic management system allows before
+        authentication fails.
     type: int
   service_type:
     description:
@@ -75,91 +52,66 @@ options:
       - callback-nas-prompt
       - call-check
       - callback-administrative
+  fallback_to_local:
+    description:
+      - Specifies that the system uses the Local authentication method if the remote
+        authentication method is not available.
+      - Option only available on C(TMOS 13.0.0) and above.
+    type: bool
   use_for_auth:
     description:
       - Specifies whether or not this auth source is put in use on the system.
+      - If C(yes) the module sets the current system auth type to the value of C(radius).
+      - If C(no) the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
+        without removing the configured RADIUS resource.
     type: bool
   state:
     description:
-      - The state of the authentication configuration on the system.
-      - When C(present), guarantees that the system is configured for the specified C(type).
-      - When C(absent), sets the system auth source back to C(local).
+      - When C(state) is C(present), ensures that the RADIUS server exists.
+      - When C(state) is C(absent), ensures that the RADIUS server is removed.
     type: str
     choices:
-      - absent
       - present
-  update_secret:
-    description:
-      - C(always) will allow to update secrets if the user chooses to do so.
-      - C(on_create) will only set the secret when a C(use_auth_source) is C(yes)
-        and Radius+ is not currently the auth source.
-    type: str
-    choices:
-      - always
-      - on_create
+      - absent
+    default: present
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Andrey Kashcheev (@andreykashcheev)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
-- name: Create RADIUS auth configurations with two (primary/secondary) RADIUS servers
+- name: Create an RADIUS device configuration
   bigip_device_auth_radius:
     servers:
-      - server: 10.10.10.10
-        port: 1812
-        timeout: 5
-        secret: secret1
-      - server: 11.10.10.11
-        port: 1813
-        timeout: 10
-        secret: secret2
+      - "ansible_test1"
+      - "ansible_test2"
     retries: 3
     service_type: authenticate-only
     accounting_bug: no
     use_for_auth: yes
+    fallback_to_local: yes
     state: present
     provider:
       password: secret
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
-- name: Update RADIUS auth configurations with new
+
+- name: Update an RADIUS device configuration
   bigip_device_auth_radius:
-    servers:
-      - server: 10.10.10.10
-        port: 1813
-        timeout: 3
-        secret: secret2
-      - server: 11.10.10.11
-        port: 1814
-        timeout: 10
-        secret: secret3
-    retries: 3
-    service_type: authenticate-only
-    accounting_bug: no
-    use_for_auth: yes
+    retries: 5
+    service_type: administrative
+    accounting_bug: yes
     state: present
     provider:
       password: secret
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
-- name: Delete RADIUS auth configurations with new
+
+- name: Delete RADIUS auth configuration
   bigip_device_auth_radius:
-    servers:
-      - server: 10.10.10.10
-        port: 1813
-        timeout: 3
-        secret: secret2
-      - server: 11.10.10.11
-        port: 1814
-        timeout: 10
-        secret: secret3
-    retries: 3
-    service_type: authenticate-only
-    accounting_bug: no
-    use_for_auth: yes
     state: absent
     provider:
       password: secret
@@ -172,28 +124,15 @@ RETURN = r'''
 servers:
   description: The servers value of the resource.
   returned: changed
-  type: complex
-  contains:
-    server:
-      description: ip address of RADIUS Server
-      type: str
-      sample: 1.1.1.1
-    port:
-      description: RADIUS service port
-      type: int
-      sample: 1812
-    timeout:
-      description: timeout value
-      type: int
-      sample: 3
+  type: list
   sample: hash/dictionary of values
 service_type:
-  description: type of service requested from the RADIUS server.
+  description: Type of service requested from the RADIUS server.
   returned: changed
   type: str
   sample: login
 retries:
-  description: number of authentication retries before authentication fails
+  description: Number of authentication retries before authentication fails
   type: int
   returned: changed
   sample: 10
@@ -201,11 +140,10 @@ accounting_bug:
   description: Enables or disables validation of the accounting response vector
   type: bool
   returned: changed
-  sample: enabled
+  sample: yes
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
@@ -214,6 +152,8 @@ try:
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.common import is_empty_list
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
@@ -221,34 +161,44 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_empty_list
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'serviceType': 'service_type',
-        'accountingBug': 'accounting_bug'
+        'accountingBug': 'accounting_bug',
+        'fallback': 'fallback_to_local',
     }
 
     api_attributes = [
         'accountingBug',
         'serviceType',
         'servers',
-        'retries'
+        'retries',
     ]
 
     returnables = [
         'accounting_bug',
         'servers',
         'service_type',
-        'retries'
+        'retries',
+        'fallback_to_local',
     ]
 
     updatables = [
         'accounting_bug',
         'servers',
         'service_type',
-        'retries'
+        'retries',
+        'auth_source',
+        'fallback_to_local',
     ]
+
+    @property
+    def fallback_to_local(self):
+        return flatten_boolean(self._values['fallback_to_local'])
 
 
 class ApiParameters(Parameters):
@@ -258,46 +208,35 @@ class ApiParameters(Parameters):
 class ModuleParameters(Parameters):
     @property
     def accounting_bug(self):
-        if self._values['accounting_bug'] is None:
-            return 'disabled'
-        if self._values['accounting_bug']:
+        result = flatten_boolean(self._values['accounting_bug'])
+        if result == 'yes':
             return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
+    @property
+    def use_for_auth(self):
+        return flatten_boolean(self._values['use_for_auth'])
+
+    @property
+    def auth_source(self):
+        if self._values['use_for_auth'] is None:
+            return None
+        if self.use_for_auth == 'yes':
+            return 'radius'
+        if self.use_for_auth == 'no':
+            return 'local'
 
     @property
     def servers(self):
         if self._values['servers'] is None:
             return None
-        result = []
-        for server in self._values['servers']:
-            if isinstance(server, dict):
-                item = dict()
-                if 'server' not in server:
-                    raise F5ModuleError(
-                        "A 'server' field must be provided when specifying separate fields to the 'servers' parameter."
-                    )
-                else:
-                    item['server'] = server['server']
-                if 'secret' not in server:
-                    raise F5ModuleError(
-                        "A 'secret' field must be provided when specifying separate fields to the 'servers' parameter."
-                    )
-                else:
-                    item['secret'] = server['secret']
-                if 'timeout' in server and server['timeout'] is not None:
-                    item['timeout'] = server['timeout']
-                if 'port' in server and server['port'] is not None:
-                    item['port'] = server['port']
-
-                result.append(item)
-            else:
-                raise F5ModuleError(
-                    "Servers list requires providing dict of server(s)"
-                )
+        if is_empty_list(self._values['servers']):
+            return []
+        result = list()
+        for item in self._values['servers']:
+            result.append(fq_name('Common', item))
         return result
-
-    @property
-    def auth_source(self):
-        return 'radius'
 
 
 class Changes(Parameters):
@@ -308,12 +247,18 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def fallback_to_local(self):
+        if self._values['fallback_to_local'] is None:
+            return None
+        elif self._values['fallback_to_local'] == 'yes':
+            return 'true'
+        return 'false'
 
 
 class ReportableChanges(Changes):
@@ -340,21 +285,6 @@ class Difference(object):
                 return want
         except AttributeError:
             return want
-
-    @property
-    def servers(self):
-        if self.want.update_secret == 'on_create':
-            count = 0
-            for server in self.want.servers:
-                if server['server'] != self.have.servers[count]['server']:
-                    return self.want.servers
-                if 'port' in server and server['port'] != self.have.servers[count]['port']:
-                    return self.want.servers
-                if 'timeout' in server and server['timeout'] != self.have.servers[count]['timeout']:
-                    return self.want.servers
-                count = count + 1
-        else:
-            return self.want.servers
 
 
 class ModuleManager(object):
@@ -433,6 +363,170 @@ class ModuleManager(object):
             return True
         return False
 
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
+            return True
+        self.update_on_device()
+        if self.want.fallback_to_local == 'yes':
+            self.update_fallback_on_device('true')
+        elif self.want.fallback_to_local == 'no':
+            self.update_fallback_on_device('false')
+        if self.want.use_for_auth and self.changes.auth_source:
+            self.update_auth_source_on_device(self.changes.auth_source)
+        return True
+
+    def remove(self):
+        if self.module.check_mode:
+            return True
+        self.update_auth_source_on_device('local')
+        self.remove_from_device()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the resource.")
+        return True
+
+    def create(self):
+        self._set_changed_options()
+        if self.module.check_mode:
+            return True
+        self.create_on_device()
+        if self.want.fallback_to_local == 'yes':
+            self.update_fallback_on_device('true')
+        elif self.want.fallback_to_local == 'no':
+            self.update_fallback_on_device('false')
+        if self.want.use_for_auth:
+            self.update_auth_source_on_device(self.want.auth_source)
+        return True
+
+    def update_fallback_on_device(self, fallback):
+        params = dict(
+            fallback=fallback
+        )
+        uri = 'https://{0}:{1}/mgmt/tm/auth/source/'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
+
+    def exists(self):
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+    def create_on_device(self):
+        params = self.changes.api_params()
+        params['name'] = 'system-auth'
+        params['partition'] = 'Common'
+        uri = 'https://{0}:{1}/mgmt/tm/auth/radius'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
+
+    def update_on_device(self):
+        params = self.changes.api_params()
+        if not params:
+            return
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name('Common', 'system-auth')
+        )
+        resp = self.client.api.patch(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
+
+    def remove_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name('Common', 'system-auth')
+        )
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
+            return True
+        raise F5ModuleError(response.content)
+
+    def read_current_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name('Common', 'system-auth')
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response.update(self.read_current_auth_source_from_device())
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
+
+    def read_current_auth_source_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/auth/source".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        result = {}
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if 'fallback' in response:
+                result['fallback'] = response['fallback']
+            if 'type' in response:
+                result['auth_source'] = response['type']
+            return result
+        raise F5ModuleError(resp.content)
+
     def update_auth_source_on_device(self, source):
         """Set the system auth source.
 
@@ -476,268 +570,6 @@ class ModuleManager(object):
             return True
         raise F5ModuleError(resp.content)
 
-    def read_current_auth_source_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/auth/source".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
-
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
-            return False
-        if self.module.check_mode:
-            return True
-        result = False
-        if self.update_on_device():
-            result = True
-        if self.want.use_for_auth and self.changes.auth_source == 'radius':
-            self.update_auth_source_on_device('radius')
-            result = True
-        return result
-
-    def remove(self):
-        if self.module.check_mode:
-            return True
-        self.update_auth_source_on_device('local')
-        self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the resource.")
-        return True
-
-    def create(self):
-        self._set_changed_options()
-        if self.module.check_mode:
-            return True
-        self.create_on_device()
-        if self.want.use_for_auth:
-            self.update_auth_source_on_device('radius')
-        return True
-
-    def exists(self):
-        uri = "https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status == 404 or 'code' in response and response['code'] == 404:
-            return False
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-
-        errors = [401, 403, 409, 500, 501, 502, 503, 504]
-
-        if resp.status in errors or 'code' in response and response['code'] in errors:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-
-    def create_on_device(self):
-        params = self.changes.api_params()
-        count = 1
-
-        for server in params['servers']:
-            if count < 3:
-                server['name'] = 'system_auth_name{0}'.format(str(count))
-                self.create_radius_serves_on_device(server)
-            count = count + 1
-
-        if count > 2:
-            params['servers'] = ['system_auth_name1', 'system_auth_name2']
-        else:
-            params['servers'] = ['system_auth_name1']
-
-        self.create_radius_config_on_device(params)
-        return True
-
-    def create_radius_config_on_device(self, params):
-        params['name'] = 'system-auth'
-        uri = 'https://{0}:{1}/mgmt/tm/auth/radius'.format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-
-        resp = self.client.api.post(uri, json=params)
-
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
-
-    def create_radius_serves_on_device(self, params):
-        uri_radius_server = "https://{0}:{1}/mgmt/tm/auth/radius-server".format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-
-        resp = self.client.api.post(uri_radius_server, json=params)
-
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
-
-    def update_radius_servers_on_device(self, params, count):
-        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            'system_auth_name' + str(count)
-        )
-        resp = self.client.api.patch(uri, json=params)
-
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
-
-    def update_radius_config_on_device(self, params):
-        if not params:
-            return True
-
-        uri = 'https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth'.format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-        resp = self.client.api.patch(uri, json=params)
-
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
-
-    def update_on_device(self):
-        params = self.changes.api_params()
-        if not params:
-            return False
-
-        if 'servers' in params:
-            count = 1
-            for server in params['servers']:
-                if count == 2 and len(params['servers']) > len(self.have.api_params()['servers']):
-                    server['name'] = 'system_auth_name{0}'.format(str(count))
-                    self.create_radius_serves_on_device(server)
-                else:
-                    self.update_radius_servers_on_device(server, count)
-                count = count + 1
-            params.pop('servers')
-
-        return self.update_radius_config_on_device(params)
-
-    def remove_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth".format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-        resp = self.client.api.delete(uri)
-
-        if resp.status not in [200, 404]:
-            raise F5ModuleError(resp.content)
-
-        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~system_auth_name1".format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-        resp = self.client.api.delete(uri)
-
-        if resp.status not in [200, 404]:
-            raise F5ModuleError(resp.content)
-
-        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~system_auth_name2".format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-        resp = self.client.api.delete(uri)
-
-        if resp.status not in [200, 404]:
-            raise F5ModuleError(resp.content)
-
-        return True
-
-    def read_current_radius_config(self):
-        uri = "https://{0}:{1}/mgmt/tm/auth/radius/~Common~system-auth".format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-
-        resp = self.client.api.get(uri)
-
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return response
-        raise F5ModuleError(resp.content)
-
-    def read_current_radius_servers(self):
-        servers = list()
-        for name in ['system_auth_name1', 'system_auth_name2']:
-            uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/~Common~{2}".format(
-                self.client.provider['server'],
-                self.client.provider['server_port'],
-                name
-            )
-            resp = self.client.api.get(uri)
-            try:
-                response = resp.json()
-            except ValueError as ex:
-                raise F5ModuleError(str(ex))
-
-            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
-                if (resp.status in [404] or 'code' in response and response['code'] not in [404]) and name == 'system_auth_name1':
-                    raise F5ModuleError(str(ex))
-            else:
-                servers.append(response)
-
-        return servers
-
-    def read_current_from_device(self):
-        result = dict()
-        curr_config = self.read_current_radius_config()
-
-        if 'serviceType' in curr_config:
-            result['service_type'] = curr_config['serviceType']
-        if 'retries' in curr_config:
-            result['retries'] = curr_config['retries']
-        if 'accountingBug' in curr_config:
-            result['accounting_bug'] = curr_config['accountingBug']
-
-        result['servers'] = self.read_current_radius_servers()
-        result['auth_source'] = self.read_current_auth_source_from_device()
-        return ApiParameters(params=result)
-
 
 class ArgumentSpec(object):
     def __init__(self):
@@ -767,30 +599,14 @@ class ArgumentSpec(object):
             ),
             servers=dict(
                 type='list',
-                elements='dict',
-                options=dict(
-                    server=dict(
-                        required=True
-                    ),
-                    port=dict(
-                        type='int'
-                    ),
-                    timeout=dict(
-                        type='int'
-                    ),
-                    secret=dict(
-                        no_log=True
-                    )
-                )
+                elements='str',
             ),
+            fallback_to_local=dict(type='bool'),
             use_for_auth=dict(type='bool'),
-            update_secret=dict(
-                choices=['always', 'on_create']
-            ),
             state=dict(
-                choices=['present', 'absent']
+                default='present',
+                choices=['absent', 'present']
             ),
-
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

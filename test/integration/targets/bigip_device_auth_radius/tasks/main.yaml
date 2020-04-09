@@ -4,164 +4,162 @@
 
 - name: Create an RADIUS device configuration
   bigip_device_auth_radius:
-      servers:
-          - server: 1.1.1.1
-            port: 1812
-            secret: secret
-            timeout: 5
-      retries: 3
-      service_type: authenticate-only
-      accounting_bug: no
-      update_secret: on_create
-      use_for_auth: yes
-      state: present
-
+    servers:
+      - "ansible_test1"
+      - "ansible_test2"
+    retries: 3
+    service_type: authenticate-only
+    accounting_bug: no
+    use_for_auth: yes
+    state: present
   register: result
 
 - name: Assert Create an RADIUS device configuration
   assert:
-      that:
-          - result is success
-          - result is changed
+    that:
+      - result is success
+      - result is changed
 
 - name: Create an RADIUS device configuration - Idempotent check
   bigip_device_auth_radius:
-      servers:
-          - server: 1.1.1.1
-            port: 1812
-            secret: secret
-            timeout: 5
-      retries: 3
-      service_type: authenticate-only
-      accounting_bug: no
-      update_secret: on_create
-      use_for_auth: yes
-      state: present
+    servers:
+      - "ansible_test1"
+      - "ansible_test2"
+    retries: 3
+    service_type: authenticate-only
+    accounting_bug: no
+    use_for_auth: yes
+    state: present
   register: result
-
-- debug:
-      var: result
-      verbosity: 3
 
 - name: Assert Create an RADIUS device configuration - Idempotent check
   assert:
-      that:
-          - result is success
-          - result is not changed
-
+    that:
+      - result is success
+      - result is not changed
+      -
 - name: Update an RADIUS device configuration
   bigip_device_auth_radius:
-      servers:
-          - server: 2.2.2.2
-            port: 1812
-            secret: secret
-            timeout: 5
-      retries: 3
-      service_type: authenticate-only
-      update_secret: on_create
-      accounting_bug: no
-      use_for_auth: yes
-      state: present
+    retries: 5
+    service_type: administrative
+    accounting_bug: yes
+    state: present
   register: result
 
 - name: Assert update an RADIUS device configuration
   assert:
-      that:
-          - result is success
-          - result is changed
+    that:
+      - result is success
+      - result is changed
 
 - name: Update an RADIUS device configuration - Idempotent check
   bigip_device_auth_radius:
-      servers:
-          - server: 2.2.2.2
-            port: 1812
-            secret: secret
-            timeout: 5
-      retries: 3
-      service_type: authenticate-only
-      update_secret: on_create
-      accounting_bug: no
-      use_for_auth: yes
-      state: present
+    retries: 5
+    service_type: administrative
+    accounting_bug: yes
+    state: present
   register: result
 
-- name: Assert update an RADIUS device configuration
+- name: Assert update an RADIUS device configuration - Idempotent check
   assert:
-      that:
-          - result is success
-          - result is not changed
+    that:
+      - result is success
+      - result is not changed
 
-- name: Creare primary and secondary hosts
+- name: Change Radius configuration, use for auth - no
   bigip_device_auth_radius:
-      servers:
-          - server: 10.10.10.10
-            port: 1812
-            timeout: 5
-            secret: secret1
-          - server: 11.10.10.11
-            port: 1813
-            timeout: 10
-            secret: secret2
-      retries: 3
-      service_type: authenticate-only
-      update_secret: on_create
-      accounting_bug: no
-      use_for_auth: yes
-      state: present
+    use_for_auth: no
   register: result
 
-- name: Assert primary and secondary hosts creation
+- name: Assert Change Radius configuration, use for auth - no
   assert:
-      that:
-          - result is success
-          - result is changed
+    that:
+      - result is success
+      - result is changed
 
-- name: Creare primary and secondary hosts - Idempotent check
+- name: Change Radius configuration, use for auth - no - Idempotent check
   bigip_device_auth_radius:
-      servers:
-          - server: 10.10.10.10
-            port: 1812
-            timeout: 5
-            secret: secret1
-          - server: 11.10.10.11
-            port: 1813
-            timeout: 10
-            secret: secret2
-      retries: 3
-      service_type: authenticate-only
-      update_secret: on_create
-      accounting_bug: no
-      use_for_auth: yes
-      state: present
+    use_for_auth: no
   register: result
 
-- name: Assert primary and secondary hosts creation
+- name: Assert Change Radius configuration, use for auth - no - Idempotent check
   assert:
-      that:
-          - result is success
-          - result is not changed
+    that:
+      - result is success
+      - result is not changed
+
+- name: Change fallback_to_local - yes
+  bigip_device_auth_radius:
+    fallback_to_local: yes
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Change fallback_to_local - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Change fallback_to_local - yes - Idempotent check
+  bigip_device_auth_radius:
+    fallback_to_local: yes
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Change fallback_to_local - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Change fallback_to_local - no
+  bigip_device_auth_radius:
+    fallback_to_local: no
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Change fallback_to_local - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Change fallback_to_local - no - Idempotent check
+  bigip_device_auth_radius:
+    fallback_to_local: no
+  register: result
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Assert Change fallback_to_local - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+  when: f.system_info.product_version >= "13.0.0"
 
 - name: Disable/Remove RADIUS auth
   bigip_device_auth_radius:
-      servers:
-          - server: 10.10.10.10
-            port: 1812
-            timeout: 5
-            secret: secret1
-          - server: 11.10.10.11
-            port: 1813
-            timeout: 10
-            secret: secret2
-      retries: 3
-      service_type: authenticate-only
-      accounting_bug: no
-      use_for_auth: yes
-      state: absent
+    state: absent
   register: result
 
 - name: Assert disable/remove RADIUS auth
   assert:
-      that:
-          - result is success
+    that:
+      - result is success
+      - result is changed
+
+- name: Disable/Remove RADIUS auth - Idempotent check
+  bigip_device_auth_radius:
+    state: absent
+  register: result
+
+- name: Assert disable/remove RADIUS auth - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
 
 - import_tasks: teardown.yaml

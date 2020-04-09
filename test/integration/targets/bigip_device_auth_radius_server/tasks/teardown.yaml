@@ -1,0 +1,7 @@
+- name: Remove partitions
+  bigip_partition:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - test
+    - foo
