@@ -1,0 +1,7 @@
+- name: Remove RADIUS servers configuration
+  bigip_device_auth_radius_server:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "ansible_test1"
+    - "ansible_test2"

@@ -16,17 +16,19 @@ from invoke.exceptions import Exit
 from invoke import task
 
 HELP1 = dict(
-    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'."
+    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'.",
+    debug="Enables verbose message output."
 )
 
 
-def purge_upstreamed_files(c, root_dest, collection):
+def purge_upstreamed_files(c, root_dest, collection, debug):
     if not os.path.exists(collection):
         return
     if not os.path.exists(root_dest):
         return
     if len(os.listdir(root_dest)) > 0:
-        print("Purging contents from {0}.".format(root_dest))
+        if debug:
+            print("Purging contents from {0}.".format(root_dest))
         with c.cd(root_dest):
             c.run('rm -rf *')
 
@@ -40,8 +42,8 @@ def files_upstream(c, src_doc, dst_doc):
     print("Copy complete")
 
 
-@task(optional=['collection'], help=HELP1)
-def upstream(c, collection='f5_modules'):
+@task(optional=['collection', 'debug'], help=HELP1)
+def upstream(c, collection='f5_modules', debug=False):
     """Upstream module_doc_fragments to Ansible collection.
 
     Module doc fragments are documentation blobs that apply to **all** F5
@@ -53,16 +55,18 @@ def upstream(c, collection='f5_modules'):
     dst_doc = '{0}/local/ansible_collections/f5networks/{1}/plugins/doc_fragments'.format(BASE_DIR, collection)
     src_doc = '{0}/library/plugins/doc_fragments/'.format(BASE_DIR)
 
-    purge_upstreamed_files(c, dst_doc, coll_dest)
+    purge_upstreamed_files(c, dst_doc, coll_dest, debug)
 
     if not os.path.exists(dst_doc):
-        print("The required upstream directory does not exist, creating...")
+        if debug:
+            print("The required upstream directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(dst_doc))
-        print("Doc fragments directory created.")
+        if debug:
+            print("Doc fragments directory created.")
 
     retries = 0
     while not cmp_dir(src_doc, dst_doc):
-        purge_upstreamed_files(c, dst_doc, coll_dest)
+        purge_upstreamed_files(c, dst_doc, coll_dest, debug)
         files_upstream(c, src_doc,dst_doc)
         retries = retries + 1
 

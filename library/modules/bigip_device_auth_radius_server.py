@@ -14,26 +14,104 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: {{ module }}
-short_description: __SHORT_DESCRIPTION__
+module: bigip_device_auth_radius_server
+short_description: Manages device's radius server configuration
 description:
-  - __LONG DESCRIPTION__.
+  - Manages device's radius server configuration.
+  - Used in tandem with C(bigip_device_auth_radius) module.
 version_added: "f5_modules 1.3"
 options:
   name:
     description:
-      - Specifies the name of the ... .
+      - Specifies the name of the radius server to manage.
     type: str
     required: True
+  description:
+    description:
+      - The description of the radius server.
+    type: str
+  ip:
+    description:
+      - The IP address of the server.
+      - This parameter is mandatory when creating a new resource.
+    type: str
+  port:
+    description:
+      - The port of the server.
+      - Valid range of values is between C(0) and C(65535) inclusive.
+    type: int
+  secret:
+    description:
+      - Specifies secret used for accessing RADIUS server.
+      - This parameter is mandatory when creating a new resource.
+    type: str
+  timeout:
+    description:
+      - Specifies the timeout value in seconds.
+      - Valid range of values is between C(1) and C(60) inclusive.
+    type: int
+  partition:
+    description:
+      - Device partition to manage resources on.
+    type: str
+    default: Common
+  state:
+    description:
+      - When C(state) is C(present), ensures that the RADIUS server exists.
+      - When C(state) is C(absent), ensures that the RADIUS server is removed.
+    type: str
+    choices:
+      - present
+      - absent
+    default: present
+  update_secret:
+    description:
+      - C(always) will update passwords if the C(secret) is specified.
+      - C(on_create) will only set the password for newly created servers.
+    type: str
+    choices:
+      - always
+      - on_create
+    default: always
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
-  - Author Name (@github_handle)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
-  {{ module }}:
-    name: foo
+- name: Create a RADIUS server configuration
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    ip: "1.1.1.1"
+    port: 1812
+    secret: "secret"
+    timeout: 5
+    update_secret: on_create
+    state: present
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Update RADIUS server configuration
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    ip: "10.10.10.1"
+    description: "this is a test"
+    port: 1813
+    timeout: 10
+    state: present
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Remove RADIUS server configuration
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    state: absent
     provider:
       password: secret
       server: lb.mydomain.com
@@ -42,16 +120,26 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+ip:
+  description: IP address of RADIUS Server.
   returned: changed
   type: str
-  sample: Foo is bar
+  sample: 1.1.1.1
+port:
+  description: RADIUS service port.
+  returned: changed
+  type: int
+  sample: 1812
+timeout:
+  description: Timeout value.
+  returned: changed
+  type: int
+  sample: 3
+description:
+  description: User defined description of Radius server.
+  returned: changed
+  type: str
+  sample: "this is my server"
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -64,6 +152,8 @@ try:
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.ipaddress import is_valid_ip
+    from library.module_utils.network.f5.compare import cmp_str_with_none
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
@@ -71,23 +161,37 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.ipaddress import is_valid_ip
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.compare import cmp_str_with_none
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'server': 'ip',
     }
 
     api_attributes = [
-
+        'secret',
+        'server',
+        'port',
+        'timeout',
+        'description',
     ]
 
     returnables = [
-
+        'ip',
+        'port',
+        'timeout',
+        'secret',
+        'description',
     ]
 
     updatables = [
-
+        'secret',
+        'ip',
+        'port',
+        'timeout',
+        'description',
     ]
 
 
@@ -96,7 +200,44 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def timeout(self):
+        if self._values['timeout'] is None:
+            return None
+        if 1 > self._values['timeout'] > 60:
+            raise F5ModuleError(
+                "Timeout value must be between 1 and 60."
+            )
+        return self._values['timeout']
+
+    @property
+    def ip(self):
+        if self._values['ip'] is None:
+            return None
+        elif is_valid_ip(self._values['ip']):
+            return self._values['ip']
+        else:
+            raise F5ModuleError(
+                "The provided 'ip' parameter is not an IP address."
+            )
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        if 0 <= self._values['port'] <= 65535:
+            return self._values['port']
+        raise F5ModuleError(
+            "Valid ports must be in range 0 - 65535"
+        )
+
+    @property
+    def description(self):
+        if self._values['description'] is None:
+            return None
+        elif self._values['description'] in ['none', '']:
+            return ''
+        return self._values['description']
 
 
 class Changes(Parameters):
@@ -116,7 +257,12 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    returnables = [
+        'ip',
+        'port',
+        'timeout',
+        'description',
+    ]
 
 
 class Difference(object):
@@ -139,6 +285,17 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def secret(self):
+        if self.want.secret != self.have.secret:
+            if self.want.update_secret == 'always':
+                result = self.want.secret
+                return result
+
+    @property
+    def description(self):
+        return cmp_str_with_none(self.want.description, self.have.description)
 
 
 class ModuleManager(object):
@@ -242,7 +399,7 @@ class ModuleManager(object):
         return True
 
     def exists(self):
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -270,7 +427,7 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/".format(
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
@@ -286,7 +443,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -302,7 +459,7 @@ class ModuleManager(object):
         raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -314,7 +471,7 @@ class ModuleManager(object):
         raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/auth/radius-server/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
@@ -334,7 +491,32 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            name=dict(
+                required=True
+            ),
+            description=dict(),
+            ip=dict(),
+            port=dict(
+                type='int'
+            ),
+            timeout=dict(
+                type='int'
+            ),
+            secret=dict(
+                no_log=True,
+            ),
+            update_secret=dict(
+                default='always',
+                choices=['always', 'on_create']
+            ),
+            state=dict(
+                default='present',
+                choices=['absent', 'present']
+            ),
+            partition=dict(
+                default='Common',
+                fallback=(env_fallback, ['F5_PARTITION'])
+            )
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

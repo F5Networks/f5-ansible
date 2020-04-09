@@ -1,0 +1,177 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a RADIUS server configuration
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    ip: "1.1.1.1"
+    port: 1812
+    secret: "secret"
+    timeout: 5
+    update_secret: on_create
+    state: present
+  register: result
+
+- name: Assert Create a RADIUS server configuration
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create a RADIUS server configuration - Idempotent check
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    ip: "1.1.1.1"
+    port: 1812
+    secret: "secret"
+    timeout: 5
+    update_secret: on_create
+    state: present
+  register: result
+
+- name: Assert Create a RADIUS server configuration - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Update RADIUS server configuration
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    ip: "10.10.10.1"
+    description: "this is a test"
+    port: 1813
+    timeout: 10
+    state: present
+  register: result
+
+- name: Assert Update RADIUS server configuration
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Update RADIUS server configuration - Idempotent check
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    ip: "10.10.10.1"
+    description: "this is a test"
+    port: 1813
+    timeout: 10
+    state: present
+  register: result
+
+- name: Assert Update RADIUS server configuration - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove RADIUS server description
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    description: ""
+    state: present
+  register: result
+
+- name: Assert Remove RADIUS server description
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove RADIUS server description - Idempotent check
+  bigip_device_auth_radius_server:
+    name: "ansible_test"
+    description: ""
+    state: present
+  register: result
+
+- name: Assert Remove RADIUS server description - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Create additional RADIUS servers on different partitions
+  bigip_device_auth_radius_server:
+    name: "{{ item.name }}"
+    ip: "{{ item.ip }}"
+    port: "{{ item.port }}"
+    secret: "{{ item.secret }}"
+    timeout: "{{ item.timeout }}"
+    partition: "{{ item.partition }}"
+    update_secret: on_create
+    state: present
+  register: result
+  with_items:
+    - { name: "first", partition: "Common", port: 1921, timeout: 13, secret: "sekrit1", ip: 10.10.10.2 }
+    - { name: "second", partition: "test", port: 1922, timeout: 10, secret: "sekrit2", ip: 10.10.10.3 }
+    - { name: "third", partition: "foo", port: 1923, timeout: 5, secret: "sekrit3", ip: 10.10.10.4 }
+
+- name: Assert Create additional RADIUS servers on different partitions
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Create additional RADIUS servers on different partitions - Idempotent check
+  bigip_device_auth_radius_server:
+    name: "{{ item.name }}"
+    ip: "{{ item.ip }}"
+    port: "{{ item.port }}"
+    secret: "{{ item.secret }}"
+    timeout: "{{ item.timeout }}"
+    partition: "{{ item.partition }}"
+    update_secret: on_create
+    state: present
+  register: result
+  with_items:
+    - { name: "first", partition: "Common", port: 1921, timeout: 13, secret: "sekrit1", ip: 10.10.10.2 }
+    - { name: "second", partition: "test", port: 1922, timeout: 10, secret: "sekrit2", ip: 10.10.10.3 }
+    - { name: "third", partition: "foo", port: 1923, timeout: 5, secret: "sekrit3", ip: 10.10.10.4 }
+
+- name: Assert Create additional RADIUS servers on different partitions - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove all Radius Servers on different partitions
+  bigip_device_auth_radius_server:
+    name: "{{ item.name }}"
+    partition: "{{ item.partition }}"
+    state: absent
+  register: result
+  with_items:
+    - { name: "first", partition: "Common"}
+    - { name: "second", partition: "test"}
+    - { name: "third", partition: "foo"}
+    - { name: "ansible_test", partition: "Common"}
+
+- name: Assert Remove all Radius Servers on different partitions
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove all Radius Servers on different partitions - Idempotent check
+  bigip_device_auth_radius_server:
+    name: "{{ item.name }}"
+    partition: "{{ item.partition }}"
+    state: absent
+  register: result
+  with_items:
+    - { name: "first", partition: "Common"}
+    - { name: "second", partition: "test"}
+    - { name: "third", partition: "foo"}
+    - { name: "ansible_test", partition: "Common"}
+
+- name: Assert Remove all Radius Servers on different partitions - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- import_tasks: teardown.yaml
