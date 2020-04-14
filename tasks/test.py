@@ -45,8 +45,6 @@ def style(c):
     c.run("pycodestyle {0}".format(BASE_DIR))
 
 
-
-
 @task(name='ansible-sanity')
 def ansible_sanity(c, collection='f5_modules', python_version='3.7', requirements=False):
     """ This test is only used during CI/CD."""
