@@ -1,0 +1,6 @@
+---
+
+- name: Ensure csr file is absent before testing
+  file:
+      path: "{{ csr_path_local }}"
+      state: absent
