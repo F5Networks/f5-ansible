@@ -1,0 +1,85 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a CSR file using an existing key, save it locally
+  bigip_ssl_csr:
+    name: bigip_ssl_csr1
+    common_name: b4
+    key_name: default.key
+    dest: "{{ csr_path_local }}"
+    state: present
+  register: result
+
+- name: Assert Create a CSR file using an existing key, save it locally
+  assert:
+    that:
+      - result is changed
+
+- name: Check for csr file existence
+  stat:
+    path: "{{ csr_path_local }}"
+  register: csr_local_file
+
+- name: Assert Check for csr file existence
+  assert:
+    that:
+      - csr_local_file.stat.exists|bool
+
+- name: Create a CSR file using an existing key, save it locally - Idempotent check
+  bigip_ssl_csr:
+    name: bigip_ssl_csr1
+    common_name: b4
+    key_name: default.key
+    dest: "{{ csr_path_local }}"
+    state: present
+  register: result
+
+- name: Assert Create a CSR file using an existing key, save it locally - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Updating CSR file is not available
+  bigip_ssl_csr:
+    name: bigip_ssl_csr1
+    common_name: b4
+    key_name: ca-bundle.key
+    dest: "{{ csr_path_local }}"
+    state: present
+  register: result
+
+- name: Assert Updating CSR file is not available
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete a csr
+  bigip_ssl_csr:
+    name: bigip_ssl_csr1
+    dest: "{{ csr_path_local }}"
+    state: absent
+  register: result
+
+- name: Assert Delete a csr
+  assert:
+    that:
+      - result is changed
+
+- name: Delete a csr - Idempotent check
+  bigip_ssl_csr:
+    name: bigip_ssl_csr1
+    dest: "{{ csr_path_local }}"
+    state: absent
+  register: result
+
+- name: Assert Delete a csr - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove local csr file
+  file:
+    path: "{{ csr_path_local }}"
+    state: absent
