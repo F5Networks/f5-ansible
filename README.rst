@@ -59,6 +59,10 @@ Support
 -------
 F5 supports the F5 modules delivered in |ansible_distro|. Please refer to the |support_policy| for details.
 
+Community Support
+~~~~~~~~~~~~~~~~~
+We encourage you to use our |slacklink| for discussion and assistance on F5 Ansible Modules (click the **ansible** channel). There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should not be considered a substitute for F5 Technical Support.
+
 Bugs, Issues
 ------------
 
@@ -141,5 +145,10 @@ See `License`_.
 .. |ansiblegethelp| raw:: html
 
    <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/support.html" target="_blank">Get Help</a>
+
+.. |slacklink| raw:: html
+
+   <a href="https://f5cloudsolutions.herokuapp.com/" target="_blank">Slack channel</a>
+
 
 
