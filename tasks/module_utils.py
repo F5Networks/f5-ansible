@@ -18,17 +18,17 @@ from invoke.exceptions import Exit
 
 HELP1 = dict(
     collection="The collection name to which the modules are upstreamed, default: 'f5_modules'.",
-    debug="Enables verbose message output."
+    verbose="Enables verbose message output."
 )
 
 
-def purge_upstreamed_files(c, module_utils, collection, debug):
+def purge_upstreamed_files(c, module_utils, collection, verbose):
     if not os.path.exists(collection):
         return
     if not os.path.exists(module_utils):
         return
     if len(os.listdir(module_utils)) > 0:
-        if debug:
+        if verbose:
             print("Purging contents from {0}.".format(module_utils))
         with c.cd(module_utils):
             c.run('rm -rf *')
@@ -42,34 +42,38 @@ def files_upstream(c, module_utils_src, module_utils_dst):
     c.run(' '.join(cmd))
 
 
-def create_directories(c, coll_dest, module_utils_dst):
+def create_directories(c, coll_dest, module_utils_dst, verbose):
     if not os.path.exists(coll_dest):
-        print("The required collection directory does not exist, creating...")
+        if verbose:
+            print("The required collection directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(coll_dest))
-        print("Collection directory created.")
+        if verbose:
+            print("Collection directory created.")
 
     if not os.path.exists(module_utils_dst):
-        print("The required module_utils directory does not exist, creating...")
+        if verbose:
+            print("The required module_utils directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(module_utils_dst))
-        print("Module utils directory created.")
+        if verbose:
+            print("Module utils directory created.")
 
 
-@task(optional=['collection', 'debug'], help=HELP1)
-def upstream(c, collection='f5_modules', debug=False):
+@task(optional=['collection', 'verbose'], help=HELP1)
+def upstream(c, collection='f5_modules', verbose=False):
     """Copy all module utils, to the local/ansible_collections/f5networks/collection_name directory.
     """
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
     module_utils_dst = '{0}/local/ansible_collections/f5networks/{1}/plugins/module_utils/'.format(BASE_DIR, collection)
     module_utils_src = '{0}/library/module_utils/network/f5/'.format(BASE_DIR)
 
-    purge_upstreamed_files(c, module_utils_dst, coll_dest, debug)
-    create_directories(c, coll_dest, module_utils_dst)
+    purge_upstreamed_files(c, module_utils_dst, coll_dest, verbose)
+    create_directories(c, coll_dest, module_utils_dst, verbose)
     files_upstream(c, module_utils_src, module_utils_dst)
 
     retries = 0
     while not cmp_dir(module_utils_src, module_utils_dst):
-        purge_upstreamed_files(c, module_utils_dst, coll_dest)
-        create_directories(c, coll_dest, module_utils_dst)
+        purge_upstreamed_files(c, module_utils_dst, coll_dest, verbose)
+        create_directories(c, coll_dest, module_utils_dst, verbose)
         files_upstream(c, module_utils_src, module_utils_dst)
         retries = retries + 1
 
