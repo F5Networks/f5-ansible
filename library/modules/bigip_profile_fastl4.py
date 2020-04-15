@@ -140,6 +140,7 @@ options:
     description:
       - Enables intelligent selection of a back-end server or pool, using an
         iRule to make the selection.
+      - "Enabling C(late_binding) on BIG-IP running TMOS 12.x branch, requires software syn cookie to be enabled."
     type: bool
   link_qos_to_client:
     description:
@@ -220,6 +221,7 @@ options:
       - Specifies a value that overrides the SYN cookie maximum segment size (MSS)
         value in the SYN-ACK packet that is returned to the client.
       - Valid values are 0, and values from 256 through 9162.
+      - Parameter only available on TMOS 13.0.0 and higher.
     type: int
   tcp_close_timeout:
     description:
@@ -251,6 +253,7 @@ options:
     description:
       - Specifies the number of milliseconds that a connection is in the TIME-WAIT
         state before closing.
+      - Parameter only available on TMOS 13.0.0 and higher.
     type: int
   tcp_timestamp_mode:
     description:
@@ -284,6 +287,16 @@ options:
     description:
       - Enables or disables hardware SYN cookie support when PVA10 is present on the system.
     type: bool
+  pva_acceleration:
+    description:
+      - Specifies the Packet Velocity ASIC acceleration policy.
+    type: str
+    choices:
+      - full
+      - dedicated
+      - partial
+      - none
+    version_added: "f5_modules 1.3"
   partition:
     description:
       - Device partition to manage resources on.
@@ -486,6 +499,11 @@ hardware_syn_cookie:
   returned: changed
   type: bool
   sample: no
+pva_acceleration:
+  description: Specifies the Packet Velocity ASIC acceleration policy.
+  returned: changed
+  type: str
+  sample: full
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -545,6 +563,7 @@ class Parameters(AnsibleF5Parameters):
         'tcpWscaleMode': 'tcp_wscale_mode',
         'timeoutRecovery': 'timeout_recovery',
         'hardwareSynCookie': 'hardware_syn_cookie',
+        'pvaAcceleration': 'pva_acceleration',
     }
 
     api_attributes = [
@@ -583,6 +602,7 @@ class Parameters(AnsibleF5Parameters):
         'tcpWscaleMode',
         'timeoutRecovery',
         'hardwareSynCookie',
+        'pvaAcceleration',
     ]
 
     returnables = [
@@ -621,6 +641,7 @@ class Parameters(AnsibleF5Parameters):
         'tcp_wscale_mode',
         'timeout_recovery',
         'hardware_syn_cookie',
+        'pva_acceleration',
     ]
 
     updatables = [
@@ -659,6 +680,7 @@ class Parameters(AnsibleF5Parameters):
         'tcp_wscale_mode',
         'timeout_recovery',
         'hardware_syn_cookie',
+        'pva_acceleration',
     ]
 
     @property
@@ -924,7 +946,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -1280,11 +1302,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403, 404]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1299,11 +1319,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 404]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def absent(self):
         if self.exists():
@@ -1333,12 +1351,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
@@ -1391,6 +1406,9 @@ class ArgumentSpec(object):
                 choices=['fallback', 'disconnect']
             ),
             hardware_syn_cookie=dict(type='bool'),
+            pva_acceleration=dict(
+                choices=['full', 'dedicated', 'partial', 'none']
+            ),
             state=dict(
                 default='present',
                 choices=['present', 'absent']

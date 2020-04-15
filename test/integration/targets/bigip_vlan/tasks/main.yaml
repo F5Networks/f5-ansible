@@ -91,7 +91,7 @@
 
 - name: Set VLAN tagged interfaces
   bigip_vlan:
-    tagged_interfaces: "{{ vlan_interfaces1 }}"
+    tagged_interfaces: "{{ vlan_interfaces }}"
     name: "{{ vlan_name }}"
   register: result
 
@@ -102,7 +102,7 @@
 
 - name: Set VLAN tagged interfaces - Idempotent check
   bigip_vlan:
-    tagged_interfaces: "{{ vlan_interfaces1 }}"
+    tagged_interfaces: "{{ vlan_interfaces }}"
     name: "{{ vlan_name }}"
   register: result
 
@@ -113,7 +113,7 @@
 
 - name: Set VLAN untagged interfaces
   bigip_vlan:
-    untagged_interfaces: "{{ vlan_interfaces1 }}"
+    untagged_interfaces: "{{ vlan_interfaces }}"
     name: "{{ vlan_name }}"
   register: result
 
@@ -124,7 +124,7 @@
 
 - name: Set VLAN untagged interfaces - Idempotent check
   bigip_vlan:
-    untagged_interfaces: "{{ vlan_interfaces1 }}"
+    untagged_interfaces: "{{ vlan_interfaces }}"
     name: "{{ vlan_name }}"
   register: result
 
@@ -259,7 +259,10 @@
       - result is changed
 
 - import_tasks: issue-00304.yaml
-  tags: issue-00304
+  tags:
+    - issue-00304
+    - f5-metal
+  when: f.system_info.marketing_name != "BIG-IP Virtual Edition"
 
 - import_tasks: issue-00371.yaml
   tags: issue-00371
@@ -279,3 +282,8 @@
 
 - import_tasks: issue-00800.yaml
   tags: issue-00800
+
+- import_tasks: issue-01554.yaml
+  tags: issue-01554
+  when:
+    - f.system_info.product_version >= "13.0.0"

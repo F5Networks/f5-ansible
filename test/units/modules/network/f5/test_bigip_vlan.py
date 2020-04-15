@@ -74,6 +74,7 @@ class TestParameters(unittest.TestCase):
             tag=213,
             description='fakevlan',
             untagged_interfaces=['1.1'],
+            hw_syn_cookie=True,
         )
         p = ModuleParameters(params=args)
 
@@ -81,6 +82,7 @@ class TestParameters(unittest.TestCase):
         assert p.tag == 213
         assert p.description == 'fakevlan'
         assert p.untagged_interfaces == ['1.1']
+        assert p.hw_syn_cookie == 'enabled'
 
     def test_api_parameters(self):
         args = dict(

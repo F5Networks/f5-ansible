@@ -6,8 +6,6 @@ vlan_interfaces:
   - 1.1
 vlan_tag: 4000
 vlan_description1: new description
-vlan_interfaces1:
-  - 1.2
 vlan_tag1: 1234
 vlan_tag2: 2345
 

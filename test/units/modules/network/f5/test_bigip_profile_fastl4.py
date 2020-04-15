@@ -100,6 +100,7 @@ class TestParameters(unittest.TestCase):
             tcp_timestamp_mode='rewrite',
             tcp_wscale_mode='strip',
             timeout_recovery='fallback',
+            hardware_syn_cookie=True,
         )
 
         p = ModuleParameters(params=args)
@@ -138,6 +139,7 @@ class TestParameters(unittest.TestCase):
         assert p.tcp_timestamp_mode == 'rewrite'
         assert p.tcp_wscale_mode == 'strip'
         assert p.timeout_recovery == 'fallback'
+        assert p.hardware_syn_cookie == 'enabled'
 
     def test_api_parameters(self):
         args = load_fixture('load_ltm_fastl4_profile_1.json')
