@@ -134,7 +134,7 @@ options:
       - The valid number range is from 0 to 600000 milliseconds.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
-    version_added: "f5_modules 1.0"
+    version_added: "f5_modules 1.3"
   partition:
     description:
       - Device partition to manage resources on.
@@ -226,7 +226,7 @@ ip_tos_to_client:
   returned: changed
   type: str
   sample: mimic
-ip_tos_to_client:
+time_wait_timeout:
   description: Specifies the number of milliseconds that a connection is in the TIME-WAIT state before closing.
   returned: changed
   type: str
@@ -499,6 +499,14 @@ class ReportableChanges(Changes):
     def proxy_options(self):
         result = flatten_boolean(self._values['proxy_options'])
         return result
+
+    @property
+    def time_wait_timeout(self):
+        if self._values['time_wait_timeout'] is None:
+            return None
+        if self._values['time_wait_timeout'] == '0':
+            return 'immediate'
+        return self._values['time_wait_timeout']
 
 
 class Difference(object):

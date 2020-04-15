@@ -67,19 +67,22 @@ class TestParameters(unittest.TestCase):
         args = dict(
             name='foo',
             parent='bar',
-            idle_timeout='500'
+            idle_timeout='500',
+            time_wait_timeout='immediate'
         )
 
         p = ModuleParameters(params=args)
         assert p.name == 'foo'
         assert p.parent == '/Common/bar'
         assert p.idle_timeout == 500
+        assert p.time_wait_timeout == 'immediate'
 
     def test_api_parameters(self):
         args = load_fixture('load_ltm_profile_tcp_1.json')
         p = ApiParameters(params=args)
         assert p.name == 'foo'
         assert p.idle_timeout == 300
+        assert p.time_wait_timeout == '2000'
 
 
 class TestManager(unittest.TestCase):
@@ -93,6 +96,7 @@ class TestManager(unittest.TestCase):
             name='foo',
             parent='bar',
             idle_timeout=500,
+            time_wait_timeout='immediate',
             provider=dict(
                 server='localhost',
                 password='password',
@@ -114,3 +118,4 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['idle_timeout'] == 500
+        assert results['time_wait_timeout'] == 'immediate'
