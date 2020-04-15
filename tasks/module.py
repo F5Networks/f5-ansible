@@ -75,20 +75,20 @@ HELP1 = dict(
     module="A module name or list of module names separated by commas to be upstreamed. "
            "If all modules are required specify 'all' instead of a module name.",
     collection="The collection name to which the modules are upstreamed, default: 'f5_modules'.",
-    debug="Enables verbose message output."
+    verbose="Enables verbose message output."
 )
 
 
-def purge_upstreamed_module_files(c, collection, modules, test, debug):
+def purge_upstreamed_module_files(c, collection, modules, test, verbose):
     if not os.path.exists(collection):
         return
     if os.path.exists(test) and len(os.listdir(test)) > 0:
-        if debug:
+        if verbose:
             print("Purging contents from {0}.".format(test))
         with c.cd(test):
             c.run('rm -rf *')
     if os.path.exists(modules) and len(os.listdir(modules)) > 0:
-        if debug:
+        if verbose:
             print("Purging contents from {0}.".format(modules))
         with c.cd(modules):
             c.run('rm -f *')
@@ -100,37 +100,37 @@ def copy_ignore_files(c, collection='f5_modules'):
     copy_ignores(c, coll_dest)
 
 
-def create_directories(c, coll_dest, modules_dir, test_dir, fixtures_dir, debug):
+def create_directories(c, coll_dest, modules_dir, test_dir, fixtures_dir, verbose):
     if not os.path.exists(coll_dest):
-        if debug:
+        if verbose:
             print("The required collection directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(coll_dest))
-        if debug:
+        if verbose:
             print("Collection directory created.")
 
     if not os.path.exists(modules_dir):
-        if debug:
+        if verbose:
             print("The required module directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(modules_dir))
-        if debug:
+        if verbose:
             print("Module directory created.")
 
     if not os.path.exists(fixtures_dir):
-        if debug:
+        if verbose:
             print("The required test fixtures directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(fixtures_dir))
-        if debug:
+        if verbose:
             print("Test fixtures directory created.")
 
     if not os.path.exists(test_dir):
-        if debug:
+        if verbose:
             print("The required test directory does not exist, creating...")
         c.run('mkdir -p {0}'.format(test_dir))
-        if debug:
+        if verbose:
             print("Test directory created.")
 
 
-def files_upstream(c, module, modules_dir, test_dir, fixtures_dir, debug):
+def files_upstream(c, module, modules_dir, test_dir, fixtures_dir, verbose):
     if len(module) == 1 and module[0] == 'all':
         modules = get_all_module_names()
     else:
@@ -142,9 +142,9 @@ def files_upstream(c, module, modules_dir, test_dir, fixtures_dir, debug):
         if not deprecated and not should_upstream_module(module):
             continue
 
-        if deprecated and debug:
+        if deprecated and verbose:
             print("Warning: Upstreaming deprecated module: {0}".format(module))
-        if debug:
+        if verbose:
             print("Upstreaming {0}".format(module))
 
         if os.path.exists('{0}/library/modules/{1}.py'.format(BASE_DIR, module)):
@@ -174,14 +174,14 @@ def files_upstream(c, module, modules_dir, test_dir, fixtures_dir, debug):
                 ]
                 c.run(' '.join(cmd))
 
-        if not should_upstream_module(module):
+        if not should_upstream_module(module) and verbose:
             print("This module {0} is not marked for upstreaming in the YAML playbook metadata.".format(module))
-        else:
+        if verbose:
             print("Copy of {0} complete.".format(module))
 
 
-@task(iterable=['module'], optional=['collection', 'debug'], help=HELP1)
-def upstream(c, module, collection='f5_modules', debug=False):
+@task(iterable=['module'], optional=['collection', 'verbose'], help=HELP1)
+def upstream(c, module, collection='f5_modules', verbose=False):
     """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
     """
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
@@ -191,16 +191,16 @@ def upstream(c, module, collection='f5_modules', debug=False):
 
     src_module = '{0}/library/modules/'.format(BASE_DIR)
 
-    purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test, debug)
-    create_directories(c, coll_dest, dst_module, dst_test, dst_fixture, debug)
-    files_upstream(c, module, dst_module, dst_test, dst_fixture, debug)
+    purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test, verbose)
+    create_directories(c, coll_dest, dst_module, dst_test, dst_fixture, verbose)
+    files_upstream(c, module, dst_module, dst_test, dst_fixture, verbose)
 
     retries = 1
     while not cmp_dir(src_module, dst_module):
         print("Retry file upstreaming, attempt {0} of 3".format(retries))
-        purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test, debug)
-        create_directories(c, coll_dest, dst_module, dst_test, dst_fixture, debug)
-        files_upstream(c, module, dst_module, dst_test, dst_fixture, debug)
+        purge_upstreamed_module_files(c, coll_dest, dst_module, dst_test, verbose)
+        create_directories(c, coll_dest, dst_module, dst_test, dst_fixture, verbose)
+        files_upstream(c, module, dst_module, dst_test, dst_fixture, verbose)
 
         retries = retries + 1
 
