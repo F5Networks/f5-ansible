@@ -683,48 +683,64 @@
     name: fast1
     late_binding: yes
   register: result
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change late_binding - yes
   assert:
     that:
       - result is changed
       - result is success
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Change late_binding - yes - Idempotent check
   bigip_profile_fastl4:
     name: fast1
     late_binding: yes
   register: result
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change late_binding - yes - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Change late_binding - no
   bigip_profile_fastl4:
     name: fast1
     late_binding: no
   register: result
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change late_binding - no
   assert:
     that:
       - result is changed
       - result is success
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Change late_binding - no - Idempotent check
   bigip_profile_fastl4:
     name: fast1
     late_binding: no
   register: result
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change late_binding - no - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Change link_qos_to_client - number
   bigip_profile_fastl4:
@@ -1259,24 +1275,32 @@
     name: fast1
     syn_cookie_mss: 400
   register: result
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change syn_cookie_mss
   assert:
     that:
       - result is changed
       - result is success
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Change syn_cookie_mss - Idempotent check
   bigip_profile_fastl4:
     name: fast1
     syn_cookie_mss: 400
   register: result
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change syn_cookie_mss - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Change tcp_close_timeout - number
   bigip_profile_fastl4:
@@ -1523,24 +1547,32 @@
     name: fast1
     tcp_time_wait_timeout: 1024
   register: result
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change tcp_time_wait_timeout
   assert:
     that:
       - result is changed
       - result is success
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Change tcp_time_wait_timeout - Idempotent check
   bigip_profile_fastl4:
     name: fast1
     tcp_time_wait_timeout: 1024
   register: result
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Assert Change tcp_time_wait_timeout - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - name: Change tcp_timestamp_mode - rewrite
   bigip_profile_fastl4:
@@ -1861,3 +1893,6 @@
 
 - import_tasks: issue-01532.yaml
   tags: issue-01532
+
+- import_tasks: issue-01657.yaml
+  tags: issue-01657
