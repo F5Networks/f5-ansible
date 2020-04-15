@@ -125,6 +125,16 @@ options:
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
     version_added: "f5_modules 1.0"
+  time_wait_timeout:
+    description:
+      - Specifies the number of milliseconds that a connection is in the TIME-WAIT state before closing.
+      - When C(immediate) the system closes the connection immediately after the connection enters the TIME-WAIT state.
+      - When C(indefinite) or C(0) the system does not close TCP connections regardless of how long they remain in the
+        TIME-WAIT state.
+      - The valid number range is from 0 to 600000 milliseconds.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: str
+    version_added: "f5_modules 1.0"
   partition:
     description:
       - Device partition to manage resources on.
@@ -216,6 +226,11 @@ ip_tos_to_client:
   returned: changed
   type: str
   sample: mimic
+ip_tos_to_client:
+  description: Specifies the number of milliseconds that a connection is in the TIME-WAIT state before closing.
+  returned: changed
+  type: str
+  sample: immediate
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -251,6 +266,7 @@ class Parameters(AnsibleF5Parameters):
         'synRtoBase': 'syn_rto_base',
         'delayedAcks': 'delayed_acks',
         'ipTosToClient': 'ip_tos_to_client',
+        'timeWaitTimeout': 'time_wait_timeout'
     }
 
     api_attributes = [
@@ -265,6 +281,7 @@ class Parameters(AnsibleF5Parameters):
         'synRtoBase',
         'delayedAcks',
         'ipTosToClient',
+        'timeWaitTimeout',
     ]
 
     returnables = [
@@ -279,6 +296,7 @@ class Parameters(AnsibleF5Parameters):
         'syn_rto_base',
         'delayed_acks',
         'ip_tos_to_client',
+        'time_wait_timeout',
     ]
 
     updatables = [
@@ -293,6 +311,7 @@ class Parameters(AnsibleF5Parameters):
         'syn_rto_base',
         'delayed_acks',
         'ip_tos_to_client',
+        'time_wait_timeout',
     ]
 
 
@@ -305,8 +324,30 @@ class ApiParameters(Parameters):
             return self._values['ip_tos_to_client']
         return int(self._values['ip_tos_to_client'])
 
+    @property
+    def time_wait_timeout(self):
+        if self._values['time_wait_timeout'] is None:
+            return None
+        if self._values['time_wait_timeout'] == '0':
+            return 'immediate'
+        return self._values['time_wait_timeout']
+
 
 class ModuleParameters(Parameters):
+    @property
+    def time_wait_timeout(self):
+        if self._values['time_wait_timeout'] is None:
+            return None
+        if self._values['time_wait_timeout'] == '0':
+            return 'immediate'
+        if self._values['time_wait_timeout'] in ['indefinite', 'immediate']:
+            return self._values['time_wait_timeout']
+        if 0 <= int(self._values['time_wait_timeout']) <= 600000:
+            return self._values['time_wait_timeout']
+        raise F5ModuleError(
+            "Valid 'time_wait_timeout' must be in range 0 - 600000 milliseconds or 'immediate', 'indefinite'."
+        )
+
     @property
     def parent(self):
         if self._values['parent'] is None:
@@ -376,7 +417,7 @@ class ModuleParameters(Parameters):
         if 0 <= self._values['syn_rto_base'] <= 5000:
             return self._values['syn_rto_base']
         raise F5ModuleError(
-            "Valid 'syn_rto_base' must be in range 0 - 5000 miliseconds."
+            "Valid 'syn_rto_base' must be in range 0 - 5000 milliseconds."
         )
 
     @property
@@ -408,7 +449,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -422,6 +463,14 @@ class UsableChanges(Changes):
         raise F5ModuleError(
             "Valid 'idle_timeout' must be in range 1 - 4294967295, or 'indefinite'."
         )
+
+    @property
+    def time_wait_timeout(self):
+        if self._values['time_wait_timeout'] is None:
+            return None
+        if self._values['time_wait_timeout'] == 'immediate':
+            return '0'
+        return self._values['time_wait_timeout']
 
 
 class ReportableChanges(Changes):
@@ -623,12 +672,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403, 404]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['selfLink']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -643,11 +689,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 404]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def absent(self):
         if self.exists():
@@ -677,12 +721,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
@@ -707,6 +748,7 @@ class ArgumentSpec(object):
             syn_rto_base=dict(type='int'),
             delayed_acks=dict(type='bool'),
             ip_tos_to_client=dict(),
+            time_wait_timeout=dict(),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

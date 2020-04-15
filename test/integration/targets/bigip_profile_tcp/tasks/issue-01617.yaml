@@ -1,0 +1,77 @@
+---
+- name: Issue 01617 - Create a TCP profile with indefinite time_wait_timeout
+  bigip_profile_tcp:
+    name: issue_01617
+    time_wait_timeout: indefinite
+  register: result
+
+- name: Issue 01617 - Assert Create a TCP profile with indefinite time_wait_timeout
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01617 - Create a TCP profile with indefinite time_wait_timeout - Idempotent check
+  bigip_profile_tcp:
+    name: issue_01617
+    time_wait_timeout: indefinite
+  register: result
+
+- name: Issue 01617 - Assert Create a TCP profile with indefinite time_wait_timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01617 - Modify a TCP profile with immediate time_wait_timeout
+  bigip_profile_tcp:
+    name: issue_01617
+    time_wait_timeout: immediate
+  register: result
+
+- name: Issue 01617 - Assert Modify a TCP profile with immediate time_wait_timeout
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01617 - Modify a TCP profile with immediate time_wait_timeout - Idempotent check
+  bigip_profile_tcp:
+    name: issue_01617
+    time_wait_timeout: immediate
+  register: result
+
+- name: Issue 01617 - Assert Modify a TCP profile with immediate time_wait_timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01617 - Modify a TCP profile with 2000 time_wait_timeout
+  bigip_profile_tcp:
+    name: issue_01617
+    time_wait_timeout: 2000
+  register: result
+
+- name: Issue 01617 - Assert Modify a TCP profile with 2000 time_wait_timeout
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01617 - Modify a TCP profile with 2000 time_wait_timeout - Idempotent check
+  bigip_profile_tcp:
+    name: issue_01617
+    time_wait_timeout: 2000
+  register: result
+
+- name: Issue 01617 - Assert Modify a TCP profile with 2000 time_wait_timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01617 - Remove a TCP profile
+  bigip_profile_tcp:
+    name: issue_01617
+    state: absent
