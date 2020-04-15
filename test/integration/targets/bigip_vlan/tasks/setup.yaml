@@ -18,3 +18,8 @@
     - net1
     - net2
     - vlan1
+
+- name: Collect BIG-IP facts
+  bigip_device_info:
+    include: system-info
+  register: f

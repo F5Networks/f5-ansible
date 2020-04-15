@@ -1,0 +1,102 @@
+---
+
+- name: Issue 01657 - Create fastl4 profile, dedicated acceleration
+  bigip_profile_fastl4:
+    name: fast1
+    pva_acceleration: dedicated
+  register: result
+
+- name: Issue 01657 - Assert Create fastl4 profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01657 - Create fastl4 profile, dedicated acceleration - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    pva_acceleration: dedicated
+  register: result
+
+- name: Issue 01657 - Assert Create fastl4 profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01657 - Modify fastl4 profile, none acceleration
+  bigip_profile_fastl4:
+    name: fast1
+    pva_acceleration: none
+  register: result
+
+- name: Issue 01657 - Assert Modify fastl4 profile, none acceleration
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01657 - Modify fastl4 profile, none acceleration - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    pva_acceleration: none
+  register: result
+
+- name: Issue 01657 - Assert Modify fastl4 profile, none acceleration - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01657 - Modify fastl4 profile, partial acceleration
+  bigip_profile_fastl4:
+    name: fast1
+    pva_acceleration: partial
+  register: result
+
+- name: Issue 01657 - Assert Modify fastl4 profile, partial acceleration
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01657 - Modify fastl4 profile, partial acceleration - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    pva_acceleration: partial
+  register: result
+
+- name: Issue 01657 - Assert Modify fastl4 profile, partial acceleration - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01657 - Modify fastl4 profile, full acceleration
+  bigip_profile_fastl4:
+    name: fast1
+    pva_acceleration: full
+  register: result
+
+- name: Issue 01657 - Assert Modify fastl4 profile, full acceleration
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01657 - Modify fastl4 profile, full acceleration - Idempotent check
+  bigip_profile_fastl4:
+    name: fast1
+    pva_acceleration: full
+  register: result
+
+- name: Issue 01657 - Assert Modify fastl4 profile, full acceleration - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01657 - Remove fastl4 profile
+  bigip_profile_fastl4:
+    name: fast1
+    state: absent

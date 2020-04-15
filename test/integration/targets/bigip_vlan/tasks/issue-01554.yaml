@@ -1,0 +1,53 @@
+---
+- name: Issue 01554 - Create VLAN hw_syn_cookie - yes
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    hw_syn_cookie: yes
+  register: result
+
+- name: Issue 01554 - Assert Create VLAN hw_syn_cookie - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01554 - Create VLAN hw_syn_cookie - yes - Idempotent check
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    hw_syn_cookie: yes
+  register: result
+
+- name: Issue 01554 - Assert Create VLAN hw_syn_cookie - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01554 - Create VLAN hw_syn_cookie - no
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    hw_syn_cookie: no
+  register: result
+
+- name: Issue 01554 - Assert Create VLAN hw_syn_cookie - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01554 - Create VLAN hw_syn_cookie - no - Idempotent check
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    hw_syn_cookie: no
+  register: result
+
+- name: Issue 01554 - Assert Create VLAN hw_syn_cookie - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01554 - Remove VLAN
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    state: absent

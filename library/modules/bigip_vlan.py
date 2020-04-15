@@ -187,6 +187,13 @@ options:
           - tagged
           - untagged
     version_added: 2.8
+  hw_syn_cookie:
+    description:
+      - Enables hardware syncookie mode on a VLAN.
+      - When C(yes), the hardware per-VLAN SYN cookie protection will be triggered when the certain traffic threshold
+        is reached on supported platforms.
+    type: bool
+    version_added: "f5_modules 1.3"
 notes:
   - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -301,6 +308,11 @@ sflow_sampling_rate:
   returned: changed
   type: int
   sample: 20
+hw_syn_cookie:
+  description: Enables hardware syncookie mode on a VLAN.
+  returned: changed
+  type: bool
+  sample: no
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -334,6 +346,7 @@ class Parameters(AnsibleF5Parameters):
         'failsafe': 'fail_safe',
         'failsafeAction': 'fail_safe_action',
         'failsafeTimeout': 'fail_safe_timeout',
+        'hardwareSyncookie': 'hw_syn_cookie',
     }
 
     api_attributes = [
@@ -349,6 +362,7 @@ class Parameters(AnsibleF5Parameters):
         'failsafeAction',
         'failsafeTimeout',
         'sflow',
+        'hardwareSyncookie',
     ]
 
     updatables = [
@@ -368,6 +382,7 @@ class Parameters(AnsibleF5Parameters):
         'sflow_poll_interval',
         'sflow_sampling_rate',
         'sflow',
+        'hw_syn_cookie',
     ]
 
     returnables = [
@@ -388,6 +403,7 @@ class Parameters(AnsibleF5Parameters):
         'sflow_poll_interval',
         'sflow_sampling_rate',
         'sflow',
+        'hw_syn_cookie',
     ]
 
     @property
@@ -526,6 +542,14 @@ class ModuleParameters(Parameters):
         else:
             return 'disabled'
 
+    @property
+    def hw_syn_cookie(self):
+        result = flatten_boolean(self._values['hw_syn_cookie'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -535,7 +559,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -599,6 +623,10 @@ class ReportableChanges(Changes):
             return self._values['sflow']['samplingRate']
         except (KeyError, TypeError):
             return None
+
+    @property
+    def hw_syn_cookie(self):
+        return flatten_boolean(self._values['hw_syn_cookie'])
 
 
 class Difference(object):
@@ -831,11 +859,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/net/vlan/{2}".format(
@@ -885,12 +911,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
@@ -944,6 +967,7 @@ class ArgumentSpec(object):
             ),
             sflow_poll_interval=dict(type='int'),
             sflow_sampling_rate=dict(type='int'),
+            hw_syn_cookie=dict(type='bool'),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
