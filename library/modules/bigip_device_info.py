@@ -4949,6 +4949,13 @@ ssl_certs:
       returned: queried
       type: str
       sample: "2018-05-15T21:11:15Z"
+    subject_alternative_name:
+      description:
+        - Displays the Subject Alternative Name for the certificate.
+        - The X509v3 Subject Alternative Name is embedded in the certificate for X509 extension purposes.
+      returned: queried
+      type: str
+      sample: "DNS:www.example.com, DNS:www.example.internal.net"
   sample: hash/dictionary of values
 ssl_keys:
   description: SSL certificate related information.
@@ -13294,7 +13301,8 @@ class SslCertificatesParameters(BaseParameters):
         'isBundle': 'is_bundle',
         'expirationString': 'expiration_date',
         'expirationDate': 'expiration_timestamp',
-        'createTime': 'create_time'
+        'createTime': 'create_time',
+        'subjectAlternativeName': 'subject_alternative_name',
     }
 
     returnables = [
@@ -13312,6 +13320,7 @@ class SslCertificatesParameters(BaseParameters):
         'expiration_date',
         'expiration_timestamp',
         'create_time',
+        'subject_alternative_name',
     ]
 
     @property
@@ -13386,7 +13395,7 @@ class SslKeysParameters(BaseParameters):
         'keySize': 'key_size',
         'securityType': 'security_type',
         'systemPath': 'system_path',
-        'checksum': 'sha1_checksum'
+        'checksum': 'sha1_checksum',
     }
 
     returnables = [
@@ -13396,7 +13405,7 @@ class SslKeysParameters(BaseParameters):
         'key_size',
         'security_type',
         'system_path',
-        'sha1_checksum'
+        'sha1_checksum',
     ]
 
     @property
@@ -16570,8 +16579,6 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if module._name == 'bigip_device_facts':
-        module.deprecate("The 'bigip_device_facts' module has been renamed to 'bigip_device_info'", version='2.13')
 
     try:
         mm = ModuleManager(module=module)

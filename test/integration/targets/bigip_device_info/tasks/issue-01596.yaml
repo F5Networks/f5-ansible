@@ -1,0 +1,23 @@
+---
+- name: Issue 01596 - Create key and certificate with subject-alternative-name
+  bigip_command:
+    commands:
+      - create /sys crypto key issue01596 gen-certificate common-name "Example Inc." country "US" lifetime 3650 subject-alternative-name "DNS:www.exchange.example.com, DNS:www.example.com"
+
+- name: Issue 01596 - Select ssl-cert facts
+  bigip_device_info:
+    include:
+      - ssl-certs
+  register: result
+
+- name: Issue 01596 - Assert Select ssl-cert facts
+  assert:
+    that:
+      - result is success
+      - result.ssl_certs | json_query("[?name=='issue01596.crt'].subject_alternative_name") | first == "DNS:www.example.com, DNS:www.exchange.example.com"
+
+- name: Issue 01596 - Delete created certificate and key
+  bigip_command:
+    commands:
+      - delete /sys crypto cert issue01596.crt
+      - delete /sys crypto key issue01596.key

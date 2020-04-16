@@ -235,13 +235,17 @@
 
 - import_tasks: issue-00826.yaml
   tags: issue-00826
+  when:
+    - f.system_info.product_version >= "13.0.0"
 
 - import_tasks: issue-00835.yaml
   tags: issue-00835
 
 - import_tasks: issue-01074.yaml
-  tags:
-    - issue-01074
+  tags: issue-01074
 
 - import_tasks: issue-01377.yaml
   tags: issue-01377
+
+- import_tasks: issue-01620.yaml
+  tags: issue-01620
