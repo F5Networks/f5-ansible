@@ -116,6 +116,12 @@ options:
         use when checking the health of a resource that is up.
     type: int
     version_added: 2.8
+  cipher_list:
+    description:
+      - Specifies the list of ciphers for this monitor.
+      - The items in the cipher list are separated with the colon C(:) symbol.
+    type: str
+    version_added: "f5_modules 1.3"
   partition:
     description:
       - Device partition to manage resources on.
@@ -198,6 +204,11 @@ up_interval:
   returned: changed
   type: int
   sample: 0
+cipher_list:
+  description: The new value for the cipher list.
+  returned: changed
+  type: str
+  sample: +3DES:+kEDH
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -233,6 +244,7 @@ class Parameters(AnsibleF5Parameters):
         'recvDisable': 'receive_disable',
         'sslProfile': 'ssl_profile',
         'upInterval': 'up_interval',
+        'cipherlist': 'cipher_list',
     }
 
     api_attributes = [
@@ -249,6 +261,7 @@ class Parameters(AnsibleF5Parameters):
         'description',
         'sslProfile',
         'upInterval',
+        'cipherlist',
     ]
 
     returnables = [
@@ -264,6 +277,7 @@ class Parameters(AnsibleF5Parameters):
         'description',
         'ssl_profile',
         'up_interval',
+        'cipher_list',
     ]
 
     updatables = [
@@ -279,6 +293,7 @@ class Parameters(AnsibleF5Parameters):
         'description',
         'ssl_profile',
         'up_interval',
+        'cipher_list',
     ]
 
     @property
@@ -394,7 +409,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -643,11 +658,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -662,11 +675,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def absent(self):
         if self.exists():
@@ -695,12 +706,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
@@ -722,6 +730,7 @@ class ArgumentSpec(object):
             target_username=dict(),
             target_password=dict(no_log=True),
             ssl_profile=dict(),
+            cipher_list=dict(),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
