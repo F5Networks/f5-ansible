@@ -1,0 +1,58 @@
+---
+
+- name: Issue 01620 - Create HTTPS Monitor with cipher_list
+  bigip_monitor_https:
+    name: issue01620
+    cipher_list: "+3DES:+kEDH"
+    state: present
+  register: result
+
+- name: Issue 01620 - Assert Create HTTPS Monitor with cipher_list
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.cipher_list == "+3DES:+kEDH"
+
+- name: Issue 01620 - Create HTTPS Monitor with cipher_list - Idempotent check
+  bigip_monitor_https:
+    name: issue01620
+    cipher_list: "+3DES:+kEDH"
+    state: present
+  register: result
+
+- name: Issue 01620 - Assert Create HTTPS Monitor with cipher_list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01620 - Modify HTTPS Monitor cipher_list
+  bigip_monitor_https:
+    name: issue01620
+    cipher_list: "DEFAULT:+SHA:+3DES:+kEDH"
+    state: present
+  register: result
+
+- name: Issue 01620 - Assert Modify HTTPS Monitor cipher_list
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.cipher_list == "DEFAULT:+SHA:+3DES:+kEDH"
+
+- name: Issue 01620 - Modify HTTPS Monitor cipher_list - Idempotent check
+  bigip_monitor_https:
+    name: issue01620
+    cipher_list: "DEFAULT:+SHA:+3DES:+kEDH"
+    state: present
+  register: result
+
+- name: Issue 01620 - Assert Modify HTTPS Monitor cipher_list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01620 - Remove HTTPS Monitor
+  bigip_monitor_https:
+    name: issue01620
+    state: absent

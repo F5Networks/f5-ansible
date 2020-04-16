@@ -1,73 +1,73 @@
 ---
 
-- name: Create HTTPS Monitor
+- name: Issue 00826 - Create HTTPS Monitor
   bigip_monitor_https:
     name: monitor1
     receive: hi
     send: there
   register: result
 
-- name: Assign SSL profile to monitor
+- name: Issue 00826 - Assign SSL profile to monitor
   bigip_monitor_https:
     name: monitor1
     ssl_profile: serverssl
   register: result
 
-- name: Assert Assign SSL profile to monitor
+- name: Issue 00826 - Assert Assign SSL profile to monitor
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Assign SSL profile to monitor - Idempotent check
+- name: Issue 00826 - Assign SSL profile to monitor - Idempotent check
   bigip_monitor_https:
     name: monitor1
     ssl_profile: serverssl
   register: result
 
-- name: Assert Assign SSL profile to monitor - Idempotent check
+- name: Issue 00826 - Assert Assign SSL profile to monitor - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change SSL profile - none
+- name: Issue 00826 - Change SSL profile - none
   bigip_monitor_https:
     name: monitor1
     ssl_profile: none
   register: result
 
-- name: Assert Change SSL profile - none
+- name: Issue 00826 - Assert Change SSL profile - none
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Change SSL profile - none - Idempotent check
+- name: Issue 00826 - Change SSL profile - none - Idempotent check
   bigip_monitor_https:
     name: monitor1
     ssl_profile: none
   register: result
 
-- name: Assert Change SSL profile - none - Idempotent check
+- name: Issue 00826 - Assert Change SSL profile - none - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Change SSL profile - empty - Idempotent check
+- name: Issue 00826 - Change SSL profile - empty - Idempotent check
   bigip_monitor_https:
     name: monitor1
     ssl_profile: ''
   register: result
 
-- name: Assert Change SSL profile - empty - Idempotent check
+- name: Issue 00826 - Assert Change SSL profile - empty - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Remove HTTPS Monitor
+- name: Issue 00826 - Remove HTTPS Monitor
   bigip_monitor_https:
     name: monitor1
     state: absent

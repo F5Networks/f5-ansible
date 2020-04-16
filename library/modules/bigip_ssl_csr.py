@@ -91,7 +91,6 @@ common_name:
 import os
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 from distutils.version import LooseVersion
 
 try:
