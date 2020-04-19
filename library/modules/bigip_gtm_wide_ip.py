@@ -94,11 +94,13 @@ options:
         description:
           - Ratio for the pool.
           - The system uses this number with the Ratio load balancing method.
+          - When C(ratio) is not provided the module assigns it value of C(0)
         type: int
       order:
         description:
           - Order of the pool in relation to other pools attached to this Wide IP.
           - Pool order is significant when the Global Availability load balancing method is utilized.
+          - When C(order) is not provided the module assigns it value of C(0)
         type: int
     version_added: 2.5
   irules:
@@ -152,7 +154,7 @@ options:
         that match within this mask.
     type: int
 notes:
-  - Support for TMOS versions below v12.x has been deprecated for this module, and will be removed in Ansible 2.12.
+  - Support for TMOS versions below v12.x has been deprecated for this module, and will be removed in f5_modules 1.4.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -381,8 +383,8 @@ class ApiParameters(Parameters):
     @property
     def pools(self):
         result = []
-        if 'pools' not in self._values or self._values['pools'] is None:
-            return []
+        if self._values['pools'] is None:
+            return None
         pools = sorted(self._values['pools'], key=lambda x: x['order'])
         for item in pools:
             pool = dict()
@@ -461,27 +463,27 @@ class ModuleParameters(Parameters):
     @property
     def pools(self):
         result = []
-        if 'pools' not in self._values or self._values['pools'] is None:
-            return []
-        for pool in self._values['pools']:
-            if 'name' not in pool:
+        if self._values['pools'] is None:
+            return None
+        for item in self._values['pools']:
+            pool = dict()
+            if 'name' not in item:
                 raise F5ModuleError(
                     "'name' is a required key for items in the list of pools."
                 )
-            if 'order' not in pool or pool['order'] is None:
-                pool['order'] = 0
-        count = 0
-        pools = sorted(self._values['pools'], key=lambda x: x['order'])
-        for item in pools:
-            pool = dict()
-            if 'ratio' in item and item['ratio'] is not None:
+            if 'ratio' not in item or item['ratio'] is None:
+                pool['ratio'] = 0
+            else:
                 pool['ratio'] = item['ratio']
-            if 'order' in item and item['order'] is not None:
-                pool['order'] = count
-                count = count + 1
+            if 'order' not in item or item['order'] is None:
+                pool['order'] = 0
+            else:
+                pool['order'] = item['order']
             pool['name'] = fq_name(self.partition, item['name'])
             result.append(pool)
-        return result
+        if result:
+            pools = sorted(result, key=lambda x: x['order'])
+            return pools
 
     @property
     def irules(self):
@@ -558,7 +560,7 @@ class Changes(Parameters):
                     result[returnable] = change
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -618,6 +620,18 @@ class Difference(object):
             result += tmp
         return result
 
+    def _diff_complex_items(self, want, have):
+        if want == [] and have is None:
+            return None
+        if want is None:
+            return None
+        w = self.to_tuple(want)
+        h = self.to_tuple(have)
+        if set(w).issubset(set(h)):
+            return None
+        else:
+            return want
+
     @property
     def last_resort_pool(self):
         if self.want.last_resort_pool is None:
@@ -636,18 +650,8 @@ class Difference(object):
 
     @property
     def pools(self):
-        if len(self.want.pools) != len(self.have.pools):
-            return self.want.pools
-        for want_pool in self.want.pools:
-            for have_pool in self.have.pools:
-                if have_pool['name'] == want_pool['name']:
-                    for key in want_pool:
-                        if key in have_pool and have_pool[key] is not None:
-                            if want_pool[key] != have_pool[key]:
-                                return self.want.pools
-                        else:
-                            return self.want.pools
-        return None
+        result = self._diff_complex_items(self.want.pools, self.have.pools)
+        return result
 
     @property
     def irules(self):
@@ -777,7 +781,7 @@ class BaseManager(object):
         result.append(
             dict(
                 msg='The support for this TMOS version is deprecated.',
-                version='2.12'
+                version='f5_modules 1.4'
             )
         )
 
@@ -973,11 +977,9 @@ class TypedManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/{2}/{3}".format(
@@ -992,12 +994,9 @@ class TypedManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -1014,12 +1013,9 @@ class TypedManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['selfLink']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/{2}/{3}".format(

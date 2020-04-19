@@ -135,15 +135,27 @@ class Parameters(AnsibleF5Parameters):
     api_map = {}
 
     updatables = [
-        'location', 'description', 'contact', 'state',
+        'location',
+        'description',
+        'contact',
+        'state',
     ]
 
     returnables = [
-        'location', 'description', 'contact', 'state', 'enabled', 'disabled',
+        'location',
+        'description',
+        'contact',
+        'state',
+        'enabled',
+        'disabled',
     ]
 
     api_attributes = [
-        'enabled', 'location', 'description', 'contact', 'disabled',
+        'enabled',
+        'location',
+        'description',
+        'contact',
+        'disabled',
     ]
 
 

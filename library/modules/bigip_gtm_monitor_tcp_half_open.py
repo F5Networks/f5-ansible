@@ -357,9 +357,9 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-            return result
         except Exception:
-            return result
+            raise
+        return result
 
 
 class UsableChanges(Changes):
@@ -569,25 +569,6 @@ class ModuleManager(object):
             raise F5ModuleError("Failed to delete the monitor.")
         return True
 
-    def read_current_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/gtm/monitor/tcp-half-open/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name),
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
-
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/monitor/tcp-half-open/{2}".format(
             self.client.provider['server'],
@@ -626,11 +607,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -646,12 +625,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['selfLink']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/monitor/tcp-half-open/{2}".format(
@@ -663,6 +639,22 @@ class ModuleManager(object):
         if response.status == 200:
             return True
         raise F5ModuleError(response.content)
+
+    def read_current_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/monitor/tcp-half-open/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.name),
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):

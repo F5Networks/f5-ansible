@@ -179,7 +179,7 @@
 - name: Zero region members
   bigip_gtm_topology_region:
     name: "{{ name1 }}"
-    region_members: ""
+    region_members: []
   register: result
 
 - name: Assert Zero region members
@@ -191,7 +191,7 @@
 - name: Zero region members - Idempotent check
   bigip_gtm_topology_region:
     name: "{{ name1 }}"
-    region_members: ""
+    region_members: []
   register: result
 
 - name: Assert Zero region members - Idempotent check
@@ -210,14 +210,6 @@
         negate: yes
   register: result
   failed_when: "'You cannot specify negate and more than one option together.' not in result['msg']"
-
-- name: Invalid region members value - Expect Failure
-  bigip_gtm_topology_region:
-    name: "{{ name1 }}"
-    region_members:
-      country: "{{ country_2 }}"
-  register: result
-  failed_when: "'Region members must be either type of string or list.' not in result['msg']"
 
 - name: Remove topology regions
   bigip_gtm_topology_region:
