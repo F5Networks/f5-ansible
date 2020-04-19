@@ -382,7 +382,8 @@
   bigip_gtm_pool:
     name: "{{ pool_name }}"
     type: a
-    monitors: ""
+    monitors:
+      - ""
   register: result
 
 - name: Issue 00142 - Assert Remove monitors
@@ -394,7 +395,8 @@
   bigip_gtm_pool:
     name: "{{ pool_name }}"
     type: a
-    monitors: ""
+    monitors:
+      - ""
   register: result
 
 - name: Issue 00142 - Assert Remove monitors - Idempotent check

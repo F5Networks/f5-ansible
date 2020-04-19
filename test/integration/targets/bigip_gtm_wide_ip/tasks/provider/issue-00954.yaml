@@ -3,6 +3,7 @@
 - name: Issue 00954 - Provision GTM
   bigip_provision:
     module: gtm
+    provider: "{{ provider }}"
   tags:
     - module-provisioning
 
