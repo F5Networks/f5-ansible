@@ -214,7 +214,7 @@ options:
     type: int
     version_added: 2.8
 notes:
-  - Support for TMOS versions below v12.x has been deprecated for this module, and will be removed in Ansible 2.12.
+  - Support for TMOS versions below v12.x has been deprecated for this module, and will be removed in f5_modules 1.4.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -551,7 +551,7 @@ class ModuleParameters(Parameters):
     def members(self):
         if self._values['members'] is None:
             return None
-        if len(self._values['members']) == 1 and self._values['members'][0] == '':
+        if not self._values['members']:
             return []
         result = []
         for member in self._values['members']:
@@ -630,9 +630,12 @@ class ModuleParameters(Parameters):
 class Changes(Parameters):
     def to_return(self):
         result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            raise
         return result
 
 
@@ -668,6 +671,8 @@ class ReportableChanges(Changes):
         results = []
         if self._values['members'] is None:
             return None
+        if not self._values['members']:
+            return []
         for member in self._values['members']:
             parts = member.split(':')
             results.append(dict(
@@ -915,7 +920,7 @@ class BaseManager(object):
         result.append(
             dict(
                 msg='The support for this TMOS version is deprecated.',
-                version='2.12'
+                version='f5_modules 1.4'
             )
         )
 
@@ -1039,11 +1044,9 @@ class TypedManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}/{3}".format(
@@ -1061,12 +1064,9 @@ class TypedManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -1083,12 +1083,9 @@ class TypedManager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['selfLink']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}/{3}".format(

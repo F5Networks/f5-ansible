@@ -223,17 +223,29 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'defaultsFrom', 'interval', 'timeout', 'destination', 'ignoreDownResponse',
+        'defaultsFrom',
+        'interval',
+        'timeout',
+        'destination',
+        'ignoreDownResponse',
         'aggregateDynamicRatios',
     ]
 
     returnables = [
-        'parent', 'ip', 'port', 'interval', 'timeout', 'ignore_down_response',
+        'parent',
+        'ip',
+        'port',
+        'interval',
+        'timeout',
+        'ignore_down_response',
         'aggregate_dynamic_ratios',
     ]
 
     updatables = [
-        'destination', 'interval', 'timeout', 'ignore_down_response',
+        'destination',
+        'interval',
+        'timeout',
+        'ignore_down_response',
         'aggregate_dynamic_ratios',
     ]
 
@@ -299,7 +311,7 @@ class ModuleParameters(Parameters):
         return result
 
     @property
-    def ip(self):  # lgtm [py/similar-function]
+    def ip(self):
         if self._values['ip'] is None:
             return None
         if self._values['ip'] in ['*', '0.0.0.0']:
@@ -327,9 +339,9 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-            return result
         except Exception:
-            return result
+            raise
+        return result
 
 
 class UsableChanges(Changes):
@@ -427,7 +439,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _update_changed_options(self):  # lgtm [py/similar-function]
+    def _update_changed_options(self):
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -566,11 +578,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -585,11 +595,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/monitor/bigip/{2}".format(
@@ -613,12 +621,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):

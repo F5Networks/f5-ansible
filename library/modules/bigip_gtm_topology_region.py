@@ -31,7 +31,7 @@ options:
       - This list of members is all or nothing, in order to add or remove a member,
         you must specify the entire list of members.
       - The list will override what is on the device if different.
-      - If C(none) value is specified the region members list will be removed.
+      - If an empty list is specified the region members list will be removed.
     type: list
     elements: dict
     suboptions:
@@ -162,7 +162,6 @@ region_members:
 import copy
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.six import string_types
 from ansible.module_utils.six import iteritems
 
 try:
@@ -493,12 +492,8 @@ class ModuleParameters(Parameters):
         negate = None
         if self._values['region_members'] is None:
             return None
-        if isinstance(self._values['region_members'], string_types):
-            return self._values['region_members']
-        if not isinstance(self._values['region_members'], list):
-            raise F5ModuleError(
-                'Region members must be either type of string or list.'
-            )
+        if not self._values['region_members']:
+            return 'none'
         members = copy.deepcopy(self._values['region_members'])
         for item in members:
             member = self._filter_params(item)
@@ -562,7 +557,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -572,8 +567,8 @@ class UsableChanges(Changes):
         members = self._values['region_members']
         if members is None:
             return None
-        if not members:
-            return 'none'
+        if members == 'none':
+            return members
         return ' '.join(members)
 
 
@@ -757,12 +752,10 @@ class ModuleManager(object):
                 raise F5ModuleError(response['commandResult'])
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return True
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         param = self.changes.region_members
@@ -798,11 +791,10 @@ class ModuleManager(object):
                 raise F5ModuleError(response['commandResult'])
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/region/{2}".format(
@@ -827,12 +819,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):

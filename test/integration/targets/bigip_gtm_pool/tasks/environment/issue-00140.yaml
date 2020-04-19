@@ -170,7 +170,7 @@
     preferred_lb_method: "{{ pool_lb_method }}"
     name: "{{ pool_name }}"
     type: a
-    members: ""
+    members: []
   register: result
 
 - name: Issue 00140 - Assert Remove all members
@@ -183,7 +183,7 @@
     preferred_lb_method: "{{ pool_lb_method }}"
     name: "{{ pool_name }}"
     type: a
-    members: ""
+    members: []
   register: result
 
 - name: Issue 00140 - Assert Remove all members - Idempotent check

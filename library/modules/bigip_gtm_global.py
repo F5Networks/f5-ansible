@@ -100,15 +100,21 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'synchronizeZoneFiles', 'synchronizationGroupName', 'synchronization',
+        'synchronizeZoneFiles',
+        'synchronizationGroupName',
+        'synchronization',
     ]
 
     returnables = [
-        'synchronization', 'synchronization_group_name', 'synchronize_zone_files',
+        'synchronization',
+        'synchronization_group_name',
+        'synchronize_zone_files',
     ]
 
     updatables = [
-        'synchronization', 'synchronization_group_name', 'synchronize_zone_files',
+        'synchronization',
+        'synchronization_group_name',
+        'synchronize_zone_files',
     ]
 
 
