@@ -551,7 +551,7 @@ class ModuleParameters(Parameters):
             return name + '.crt'
 
     def _get_chain_value(self, item, true_name):
-        if 'chain' not in item or item['chain'] == 'none':
+        if 'chain' not in item or item['chain'] == 'none' or item['chain'] is None:
             result = 'none'
         else:
             result = self._cert_filename(fq_name(self.partition, item['chain']), true_name)
