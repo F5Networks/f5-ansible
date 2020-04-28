@@ -1,8 +1,17 @@
 ---
 
+# Due to ID742057  on TMOS 13 and up, it is not possible to change event type for the ssl_extension condition after it has actions attached
+# this is true for TMSH and GUI. A workaround is to manipulate ordinals in the policy, but this is something module could not do reliably with idempotency.
+
 - name: Issue 01545 - Create published policy
   bigip_policy:
     name: issue-01545
+
+- name: Issue 01545 - Create VS
+  bigip_virtual_server:
+    name: issue-01545-vs
+    destination: 1.1.1.1
+    port: 80
 
 - name: Issue 01545 - Change condition is_any
   bigip_policy_rule:
@@ -14,6 +23,9 @@
           - foo.bar.com
           - cat.dog.com
         event: ssl_client_hello
+    actions:
+      - type: forward
+        virtual: "/Common/issue-01545-vs"
   register: result
 
 - name: Issue 01545 - Assert Change condition is_any
@@ -32,6 +44,9 @@
           - foo.bar.com
           - cat.dog.com
         event: ssl_client_hello
+    actions:
+      - type: forward
+        virtual: "/Common/issue-01545-vs"
   register: result
 
 - name: Issue 01545 - Assert Change condition is_any - Idempotent check
@@ -114,7 +129,20 @@
       - result is not changed
       - result is success
 
-- name: Issue 01545 - Change Event to ssl_server_hello
+- name: Issue 01545 - Remove published policy - first time
+  bigip_policy:
+    name: issue-01545
+    state: absent
+
+# Due to ID742057  on TMOS 13 and up, it is not possible to change event type for the ssl_extension condition after it has actions attached
+# this is true for TMSH and GUI. The same error also occurs when trying to create or modify published policy with event ssl_server_hello
+# and action forward.
+
+- name: Issue 01545 - Create published policy - second time
+  bigip_policy:
+    name: issue-01545
+
+- name: Issue 01545 - Create rule with event ssl_server_hello
   bigip_policy_rule:
     policy: issue-01545
     name: rule1
@@ -124,13 +152,13 @@
         event: ssl_server_hello
   register: result
 
-- name: Issue 01545 - Assert Change Event to ssl_server_hello
+- name: Issue 01545 - Create rule with event ssl_server_hello
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 01545 - Change Event to ssl_server_hello - Idempotent check
+- name: Issue 01545 - Create rule with event ssl_server_hello - Idempotent check
   bigip_policy_rule:
     policy: issue-01545
     name: rule1
@@ -140,13 +168,18 @@
         event: ssl_server_hello
   register: result
 
-- name: Issue 01545 - Change Event to ssl_server_hello - Idempotent check
+- name: Issue 01545 - Create rule with event ssl_server_hello - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 01545 - Remove published policy
+- name: Issue 01545 - Remove published policy - second time
   bigip_policy:
     name: issue-01545
+    state: absent
+
+- name: Issue 01545 - Remove VS
+  bigip_virtual_server:
+    name: issue-01545-vs
     state: absent
