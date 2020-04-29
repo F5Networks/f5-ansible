@@ -387,7 +387,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -605,11 +605,10 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def upload_file_to_device(self, content, name):
         url = 'https://{0}:{1}/mgmt/shared/file-transfer/uploads'.format(
@@ -638,16 +637,15 @@ class ModuleManager(object):
         resp = self.client.api.post(uri, json=params)
         try:
             response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             if 'commandResult' in response:
                 if 'Dynamic routing is not enabled' in response['commandResult']:
                     raise F5ModuleError(response['commandResult'])
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         command = 'imish -r {0} -e \\\"show running-config\\\"'.format(self.want.route_domain)
@@ -663,17 +661,15 @@ class ModuleManager(object):
         resp = self.client.api.post(uri, json=params)
         try:
             response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             if 'commandResult' in response:
                 if 'Dynamic routing is not enabled' in response['commandResult']:
                     raise F5ModuleError(response['commandResult'])
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['commandResult']
+            return response['commandResult']
+        raise F5ModuleError(resp.content)
 
     def save_on_device(self):
         command = 'imish -r {0} -e write'.format(self.want.route_domain)
@@ -690,11 +686,10 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def get_diff(self, candidate=None, running=None, diff_match='line',
                  diff_ignore_lines=None, path=None, diff_replace='line'):
@@ -754,17 +749,17 @@ class ModuleManager(object):
             resp = self.client.api.post(uri, json=params)
             try:
                 response = resp.json()
-                if 'commandResult' in response:
-                    if 'Dynamic routing is not enabled' in response['commandResult']:
-                        raise F5ModuleError(response['commandResult'])
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
-            if 'code' in response and response['code'] in [400, 403]:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
-            body.append(response['commandResult'])
+
+            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                raise F5ModuleError(resp.content)
+
+            if 'commandResult' in response:
+                if 'Dynamic routing is not enabled' in response['commandResult']:
+                    raise F5ModuleError(response['commandResult'])
+                body.append(response['commandResult'])
+
         return body
 
     def save_config(self, result):

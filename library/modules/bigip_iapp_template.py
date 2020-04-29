@@ -228,7 +228,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -358,13 +358,16 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError:
             return False
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
 
-        for item in response['items']:
-            if item['template'] == name:
-                return True
-        return False
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            for item in response['items']:
+                if item['template'] == name:
+                    return True
+            return False
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         self._generate_template_checksum_on_device()
@@ -381,12 +384,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def _remove_iapp_checksum(self):
         """Removes the iApp tmplChecksum
@@ -411,11 +411,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def templates_differ(self):
         # BIG-IP can generate checksums of iApps, but the iApp needs to be
@@ -474,11 +472,10 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def upload_file_to_device(self, content, name):
         url = 'https://{0}:{1}/mgmt/shared/file-transfer/uploads'.format(
@@ -512,19 +509,17 @@ class ModuleManager(object):
 
         try:
             response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             if 'commandResult' in response:
                 if 'Syntax Error' in response['commandResult']:
                     raise F5ModuleError(response['commandResult'])
                 if 'ERROR' in response['commandResult']:
                     raise F5ModuleError(response['commandResult'])
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return True
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/application/template/{2}".format(

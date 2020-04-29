@@ -31,7 +31,7 @@
 - name: Configure top level configuration - create backup
   bigip_imish_config:
     lines:
-      - description My nterface
+      - description Changed this interface
     parents: interface DMZ
     backup: yes
   register: result
@@ -46,7 +46,7 @@
 - name: Configure top level configuration - create backup - Idempotent check
   bigip_imish_config:
     lines:
-      - description My nterface
+      - description Changed this interface
     parents: interface DMZ
     backup: yes
   register: result

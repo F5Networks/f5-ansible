@@ -430,7 +430,7 @@ class V1Changes(V1Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -522,7 +522,7 @@ class V2Changes(V2Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -648,7 +648,7 @@ class V3Changes(V3Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -884,11 +884,9 @@ class V1Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -903,11 +901,9 @@ class V1Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/remote-syslog/{2}".format(
@@ -915,9 +911,11 @@ class V1Manager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/remote-syslog/{2}".format(
@@ -931,13 +929,10 @@ class V1Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        response['type'] = 'remote-syslog'
-        return V1ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response['type'] = 'remote-syslog'
+            return V1ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class V2Manager(BaseManager):
@@ -1015,11 +1010,9 @@ class V2Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1034,11 +1027,9 @@ class V2Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/remote-high-speed-log/{2}".format(
@@ -1046,9 +1037,11 @@ class V2Manager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/remote-high-speed-log/{2}".format(
@@ -1062,13 +1055,10 @@ class V2Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        response['type'] = 'remote-high-speed-log'
-        return V2ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response['type'] = 'remote-high-speed-log'
+            return V2ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class V3Manager(BaseManager):
@@ -1112,6 +1102,7 @@ class V3Manager(BaseManager):
         return V3ApiParameters()
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/arcsight/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1120,11 +1111,19 @@ class V3Manager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -1140,11 +1139,9 @@ class V3Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1159,11 +1156,9 @@ class V3Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/arcsight/{2}".format(
@@ -1171,9 +1166,11 @@ class V3Manager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/arcsight/{2}".format(
@@ -1187,13 +1184,10 @@ class V3Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        response['type'] = 'arcsight'
-        return V3ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response['type'] = 'arcsight'
+            return V3ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class V4Manager(BaseManager):
@@ -1247,6 +1241,7 @@ class V4Manager(BaseManager):
         return V3ApiParameters()
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/splunk/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1255,11 +1250,19 @@ class V4Manager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -1275,11 +1278,9 @@ class V4Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1294,11 +1295,9 @@ class V4Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/splunk/{2}".format(
@@ -1306,9 +1305,11 @@ class V4Manager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/splunk/{2}".format(
@@ -1322,13 +1323,10 @@ class V4Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        response['type'] = 'splunk'
-        return V3ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response['type'] = 'splunk'
+            return V3ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class V5Manager(BaseManager):
@@ -1386,6 +1384,7 @@ class V5Manager(BaseManager):
         return V3ApiParameters()
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/management-port/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1394,11 +1393,19 @@ class V5Manager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -1414,11 +1421,9 @@ class V5Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1433,11 +1438,9 @@ class V5Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/management-port/{2}".format(
@@ -1445,9 +1448,11 @@ class V5Manager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/management-port/{2}".format(
@@ -1461,13 +1466,10 @@ class V5Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        response['type'] = 'management-port'
-        return V3ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response['type'] = 'management-port'
+            return V3ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class V6Manager(BaseManager):
@@ -1529,6 +1531,7 @@ class V6Manager(BaseManager):
         return V3ApiParameters()
 
     def exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/ipfix/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1537,11 +1540,19 @@ class V6Manager(BaseManager):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -1557,11 +1568,9 @@ class V6Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1576,11 +1585,9 @@ class V6Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/ipfix/{2}".format(
@@ -1588,9 +1595,11 @@ class V6Manager(BaseManager):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.delete(uri)
-        if resp.status == 200:
+        response = self.client.api.delete(uri)
+
+        if response.status in [200, 201]:
             return True
+        raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/ipfix/{2}".format(
@@ -1604,13 +1613,10 @@ class V6Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        response['type'] = 'ipfix'
-        return V3ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            response['type'] = 'ipfix'
+            return V3ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ModuleManager(object):
