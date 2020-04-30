@@ -43,7 +43,7 @@
 - name: Create a client SSL profile
   bigip_profile_client_ssl:
     name: foo
-    ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
+    ciphers: "!SSLv3:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
     parent: clientssl
   register: result
 
@@ -55,7 +55,7 @@
 - name: Create a client SSL profile - Idempotent check
   bigip_profile_client_ssl:
     name: foo
-    ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
+    ciphers: "!SSLv3:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
     parent: clientssl
   register: result
 
@@ -70,6 +70,7 @@
     cert_key_chain:
       - cert: cert1
         key: key1
+        true_names: false
   register: result
 
 - name: Assert Assign cert/key/chain
@@ -83,6 +84,7 @@
     cert_key_chain:
       - cert: cert1
         key: key1
+        true_names: false
   register: result
 
 - name: Assert Assign cert/key/chain - Idempotent check
@@ -181,6 +183,8 @@
     - cert1
     - cert2
     - 2048b-dsa-example-cert
+    - ocsp.example.com
+    - ocsp.intermediate
 
 - name: Remove keys
   bigip_ssl_key:
@@ -190,6 +194,7 @@
     - key1
     - key2
     - 2048b-dsa-example-keypair
+    - ocsp.example.com
 
 - name: Remove chains
   bigip_ssl_certificate:
@@ -243,3 +248,6 @@
 
 - import_tasks: issue-01483.yaml
   tags: issue-01483
+
+- import_tasks: issue-01721.yaml
+  tags: issue-01721
