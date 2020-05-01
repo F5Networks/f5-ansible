@@ -98,6 +98,7 @@ def update_galaxy(c, version, collection='f5_modules'):
     update_galaxy_file(version, collection)
     print("File galaxy.yml updated.")
 
+
 @task
 def make_local(c):
     """Creates local collection structure, used in local testing and debugging."""

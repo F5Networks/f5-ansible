@@ -28,7 +28,7 @@
     state: absent
   register: result
   failed_when:
-    - not result|success
+    - result is success
     - "'referenced by one or more applications' not in result.msg"
 
 - name: Issue 00354 - Remove web_frontends service
