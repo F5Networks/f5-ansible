@@ -80,7 +80,6 @@ options:
         over any similar setting in the iApp Service payload that you provide in
         the C(parameters) field.
     type: bool
-    default: yes
     version_added: 2.5
   traffic_group:
     description:
@@ -99,7 +98,7 @@ options:
         over any similar setting in the iApp Service payload that you provide in
         the C(parameters) field.
     type: list
-    elements: str
+    elements: raw
     version_added: 2.7
   description:
     description:
@@ -265,6 +264,7 @@ EXAMPLES = r'''
 RETURN = r'''
 # only common fields returned
 '''
+
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
@@ -813,11 +813,8 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                raise F5ModuleError(resp.content)
 
         if self.changes.metadata:
             params = dict(metadata=self.changes.metadata)
@@ -834,11 +831,10 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                raise F5ModuleError(resp.content)
+
+        return True
 
     def read_current_from_device(self):
         base_uri = "https://{0}:{1}/mgmt/tm/sys/application/service/".format(
@@ -853,12 +849,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def template_exists(self):
         name = fq_name(self.want.partition, self.want.template)
@@ -871,11 +864,21 @@ class ModuleManager(object):
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
-        except ValueError:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -892,11 +895,8 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         if self.changes.metadata:
             payload = dict(metadata=self.changes.metadata)
@@ -911,11 +911,10 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
-                if 'message' in response:
-                    raise F5ModuleError(response['message'])
-                else:
-                    raise F5ModuleError(resp.content)
+            if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                raise F5ModuleError(resp.content)
+
+        return True
 
     def remove_from_device(self):
         base_uri = "https://{0}:{1}/mgmt/tm/sys/application/service/".format(
@@ -937,17 +936,14 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
-        resp = self.client.api.delete(uri)
+        response = self.client.api.delete(uri)
 
-        if resp.status == 200:
+        if response.status in [200, 201]:
             return True
-        raise F5ModuleError(resp.content)
+        raise F5ModuleError(response.content)
 
 
 class ArgumentSpec(object):
@@ -971,11 +967,10 @@ class ArgumentSpec(object):
             ),
             strict_updates=dict(
                 type='bool',
-                default='yes'
             ),
             metadata=dict(
                 type='list',
-                elements='str',
+                elements='raw',
             ),
             traffic_group=dict(),
             partition=dict(

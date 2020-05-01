@@ -1,6 +1,6 @@
 ---
 
-- name: Create VLANs
+- name: Remove VLANs
   bigip_vlan:
     name: "{{ item }}"
     state: absent

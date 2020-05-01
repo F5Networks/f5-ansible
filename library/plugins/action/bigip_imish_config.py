@@ -24,13 +24,13 @@ import re
 import time
 import glob
 
-from ansible.plugins.action.normal import ActionModule as _ActionModule
+from ansible.plugins.action.network import ActionModule as ActionNetworkModule
 from ansible.module_utils._text import to_text
 from ansible.module_utils.six.moves.urllib.parse import urlsplit
 
 try:
     from library.module_utils.network.f5.common import f5_provider_spec
-except Exception:
+except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_provider_spec
 
 from ansible.utils.display import Display
@@ -40,7 +40,7 @@ display = Display()
 PRIVATE_KEYS_RE = re.compile('__.+__')
 
 
-class ActionModule(_ActionModule):
+class ActionModule(ActionNetworkModule):
 
     def run(self, tmp=None, task_vars=None):
         if self._task.args.get('src'):
@@ -49,7 +49,7 @@ class ActionModule(_ActionModule):
             except ValueError as exc:
                 return dict(failed=True, msg=to_text(exc))
 
-        result = super(ActionModule, self).run(tmp, task_vars)
+        result = super(ActionModule, self).run(task_vars=task_vars)
         del tmp  # tmp no longer has any effect
 
         if self._task.args.get('backup') and result.get('__backup__'):
@@ -63,7 +63,6 @@ class ActionModule(_ActionModule):
         for key in list(result.keys()):
             if PRIVATE_KEYS_RE.match(key):
                 del result[key]
-
         return result
 
     def _write_backup(self, host, contents):
@@ -74,7 +73,10 @@ class ActionModule(_ActionModule):
             os.remove(fn)
         tstamp = time.strftime("%Y-%m-%d@%H:%M:%S", time.localtime(time.time()))
         filename = '%s/%s_config.%s' % (backup_path, host, tstamp)
-        open(filename, 'w').write(contents)
+        fh = open(filename, 'w')
+        fh.write(contents)
+        fh.close()
+        return filename
 
     def _handle_template(self):
         src = self._task.args.get('src')
