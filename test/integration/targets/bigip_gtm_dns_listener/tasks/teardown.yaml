@@ -1,0 +1,38 @@
+---
+
+- name: Delete Pool
+  bigip_pool:
+    lb_method: round-robin
+    name: web-pool
+    state: absent
+  register: result
+
+- name: Delete vlans
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - external
+    - internal
+  register: result
+
+- name: Delete irule
+  bigip_irule:
+    content: "when DNS_REQUEST {}"
+    module: ltm
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - irule1
+    - irule2
+    - irule3
+    - irule4
+  register: result
+
+- name: De-provision GTM
+  bigip_provision:
+    name: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

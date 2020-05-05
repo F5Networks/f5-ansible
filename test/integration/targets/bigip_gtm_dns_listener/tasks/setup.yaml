@@ -1,0 +1,34 @@
+---
+
+- name: Provision GTM
+  bigip_provision:
+    name: gtm
+  tags:
+    - module-provisioning
+
+- name: Create Pool
+  bigip_pool:
+    lb_method: round-robin
+    name: web-pool
+    state: present
+  register: result
+
+- name: Create vlans
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - external
+    - internal
+  register: result
+
+- name: Create irules
+  bigip_irule:
+    content: "when DNS_REQUEST {}"
+    module: ltm
+    name: "{{ item }}"
+  loop:
+    - irule1
+    - irule2
+    - irule3
+    - irule4
+  register: result
