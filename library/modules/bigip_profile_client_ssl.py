@@ -551,7 +551,7 @@ class ModuleParameters(Parameters):
             return name + '.crt'
 
     def _get_chain_value(self, item, true_name):
-        if 'chain' not in item or item['chain'] == 'none':
+        if 'chain' not in item or item['chain'] in ('none', None, 'None'):
             result = 'none'
         else:
             result = self._cert_filename(fq_name(self.partition, item['chain']), true_name)
@@ -601,10 +601,8 @@ class ModuleParameters(Parameters):
                 'key': fq_name(self.partition, key),
                 'chain': chain
             }
-            if 'passphrase' in item:
+            if 'passphrase' in item and item['passphrase'] not in ('None', None, 'none'):
                 tmp['passphrase'] = item['passphrase']
-            if 'true_names' in item:
-                tmp['true_names'] = item['true_names']
             result.append(tmp)
         result = sorted(result, key=lambda x: x['name'])
         return result
