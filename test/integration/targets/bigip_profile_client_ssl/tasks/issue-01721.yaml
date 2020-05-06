@@ -1,0 +1,139 @@
+---
+
+- name: Import certs
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', item.file) }}"
+    name: "{{ item.name }}"
+  loop:
+    - name: cert1
+      file: cert1.crt
+    - name: cert2
+      file: cert1.crt
+
+- name: Import keys
+  bigip_ssl_key:
+    content: "{{ lookup('file', item.file) }}"
+    name: "{{ item.name }}"
+  loop:
+    - name: cert1
+      file: cert1.key
+    - name: cert2
+      file: cert1.key
+
+- name: Create a client SSL profile
+  bigip_profile_client_ssl:
+    name: foo
+    ciphers: "SSLv3"
+    parent: clientssl
+  register: result
+
+- name: Assert Create a client SSL profile
+  assert:
+    that:
+      - result is changed
+
+- name: Create a client SSL profile - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    ciphers: "SSLv3"
+    parent: clientssl
+  register: result
+
+- name: Assert Create a client SSL profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Assign cert/key/chain
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert1.crt
+        key: cert1.key
+        true_names: true
+  register: result
+
+- name: Assert Assign cert/key/chain
+  assert:
+    that:
+      - result is changed
+
+- name: Assign cert/key/chain - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert1.crt
+        key: cert1.key
+        true_names: true
+  register: result
+
+- name: Assert Assign cert/key/chain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Add a cert cert/key/chain
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert2
+        key: cert2
+        true_names: false
+  register: result
+
+- name: Assert Add a cert/key/chain
+  assert:
+    that:
+      - result is changed
+
+- name: Add a cert/key/chain - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert2
+        key: cert2
+        true_names: false
+  register: result
+
+- name: Assert Add a cert/key/chain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove client SSL profile
+  bigip_profile_client_ssl:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove client SSL profile
+  assert:
+    that:
+      - result is changed
+
+- name: Remove client SSL profile - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove client SSL profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove certs
+  bigip_ssl_certificate:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - cert1
+    - cert2
+
+- name: Remove keys
+  bigip_ssl_key:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - cert1
+    - cert2

@@ -7,6 +7,8 @@
 - name: Issue 00846 - Create a client SSL profile with options
   bigip_profile_client_ssl:
     name: "{{ profile }}"
+    ciphers: "none"
+    cipher_group: "/Common/f5-secure"
     options: "{{ opt_1 }}"
   register: result
 
@@ -19,6 +21,8 @@
 - name: Issue 00846 - Create a client SSL profile with options  - Idempotent check
   bigip_profile_client_ssl:
     name: "{{ profile }}"
+    ciphers: "none"
+    cipher_group: "/Common/f5-secure"
     options: "{{ opt_1 }}"
   register: result
 
@@ -92,6 +96,8 @@
     allow_non_ssl: yes
     secure_renegotiation: "{{ renegotiate_1 }}"
     options: "{{ opt_1 }}"
+    ciphers: "none"
+    cipher_group: "/Common/f5-secure"
   register: result
 
 - name: Issue 00846 - Assert Create a client SSL profile with renegotiation, non ssl and options
@@ -108,6 +114,8 @@
     allow_non_ssl: yes
     secure_renegotiation: "{{ renegotiate_1 }}"
     options: "{{ opt_1 }}"
+    ciphers: "none"
+    cipher_group: "/Common/f5-secure"
   register: result
 
 - name: Issue 00846 - Assert Create a client SSL profile with renegotiation, non ssl and options - Idempotent check
