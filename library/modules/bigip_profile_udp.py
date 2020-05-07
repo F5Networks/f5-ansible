@@ -153,7 +153,7 @@ class Parameters(AnsibleF5Parameters):
     def idle_timeout(self):
         if self._values['idle_timeout'] is None:
             return None
-        if self._values['idle_timeout'] is 'indefinite':
+        if self._values['idle_timeout'] == 'indefinite':
             return self._values['idle_timeout']
         if self._values['idle_timeout'] in ['0', 'immediate']:
             return 'immediate'
