@@ -17,7 +17,7 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigip_asm_policy_manage import V1Parameters
+    from library.modules.bigip_asm_policy_manage import V1ModuleParameters
     from library.modules.bigip_asm_policy_manage import ModuleManager
     from library.modules.bigip_asm_policy_manage import V1Manager
     from library.modules.bigip_asm_policy_manage import ArgumentSpec
@@ -31,7 +31,7 @@ try:
 
     from test.units.modules.utils import set_module_args
 except ImportError:
-    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import V1Parameters
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import V1ModuleParameters
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import ModuleManager
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import V1Manager
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_manage import ArgumentSpec
@@ -76,7 +76,7 @@ class TestParameters(unittest.TestCase):
             template='LotusDomino 6.5 (http)'
         )
 
-        p = V1Parameters(params=args)
+        p = V1ModuleParameters(params=args)
         assert p.name == 'fake_policy'
         assert p.state == 'present'
         assert p.template == 'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTP'
@@ -115,7 +115,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_inactive.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_inactive.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -140,7 +140,7 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
         assert results['template'] == 'OWA Exchange 2007 (https)'
-        assert results['active'] is True
+        assert results['active'] == 'yes'
 
     def test_activate_create_by_name(self, *args):
         set_module_args(dict(
@@ -154,7 +154,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_inactive.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_inactive.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -179,7 +179,7 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
-        assert results['active'] is True
+        assert results['active'] == 'yes'
 
     def test_activate_policy_exists_inactive(self, *args):
         set_module_args(dict(
@@ -193,7 +193,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_inactive.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_inactive.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -214,7 +214,7 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['active'] is True
+        assert results['active'] == 'yes'
 
     def test_activate_policy_exists_active(self, *args):
         set_module_args(dict(
@@ -228,7 +228,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_active.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_active.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -260,7 +260,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_active.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_active.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -280,7 +280,6 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['active'] is False
 
     def test_deactivate_policy_exists_inactive(self, *args):
         set_module_args(dict(
@@ -294,7 +293,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_inactive.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_inactive.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -326,7 +325,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_inactive.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_inactive.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -350,7 +349,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
         assert results['template'] == 'LotusDomino 6.5 (http)'
-        assert results['active'] is False
 
     def test_create_by_name(self, *args):
         set_module_args(dict(
@@ -363,7 +361,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_inactive.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_inactive.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
@@ -388,7 +386,6 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
-        assert results['active'] is False
 
     def test_delete_policy(self, *args):
         set_module_args(dict(
@@ -432,7 +429,7 @@ class TestManager(unittest.TestCase):
             )
         ))
 
-        current = V1Parameters(params=load_fixture('load_asm_policy_inactive.json'))
+        current = V1ModuleParameters(params=load_fixture('load_asm_policy_inactive.json'))
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
