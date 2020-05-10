@@ -1,0 +1,68 @@
+---
+- name: Issue 01730 - Import ASM policy
+  bigip_asm_policy_import:
+    name: test_policy_01730
+    source: "{{ role_path }}/files/test_policy.xml"
+
+- name: Issue 01730 - Activate imported ASM policy
+  bigip_asm_policy_manage:
+    name: test_policy_01730
+    active: yes
+    state: present
+  register: result
+
+- name: Issue 01730 - Assert Activate imported ASM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01730 - Activate imported ASM policy - Idempotent check
+  bigip_asm_policy_manage:
+    name: test_policy_01730
+    active: yes
+    state: present
+  register: result
+
+- name: Issue 01730 - Assert Activate imported ASM policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01730 - Import changed version of ASM policy
+  bigip_asm_policy_import:
+    name: test_policy_01730
+    source: "{{ role_path }}/files/test_policy-changed.xml"
+    force: yes
+
+- name: Issue 01730 - Apply changes on ASM policy
+  bigip_asm_policy_manage:
+    name: test_policy_01730
+    apply: yes
+    state: present
+  register: result
+
+- name: Issue 01730 - Assert Apply changes on ASM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01730 - Apply changes on ASM policy - Idempotent check
+  bigip_asm_policy_manage:
+    name: test_policy_01730
+    apply: yes
+    state: present
+  register: result
+
+- name: Issue 01730 - Assert Apply changes on ASM policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01730 - Remove ASM policy
+  bigip_asm_policy_manage:
+    name: test_policy_01730
+    state: absent
