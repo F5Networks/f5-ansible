@@ -25,8 +25,15 @@ options:
       - If C(yes) will apply and activate existing inactive policy. If C(no), it will
         deactivate existing active policy. Generally should be C(yes) only in cases where
         you want to activate new or existing policy.
-    default: no
+      - In TMOS v14 and above deactivating policy will cause it to be detached from any other associated objects,
+        hence the default option of C(no) has been removed in order to prevent accidental disassociation.
     type: bool
+  apply:
+    description:
+      - If C(yes) will apply the policy if the policy has pending changes.
+      - Parameter supported on TMOS C(v14.x) and above.
+    type: bool
+    version_added: "f5_modules 1.4"
   name:
     description:
       - The ASM policy to manage or create.
@@ -160,6 +167,11 @@ active:
   returned: changed
   type: bool
   sample: yes
+apply:
+  description: Set when applying pending changes to ASM policy
+  returned: changed when target policy has changes pending
+  type: bool
+  sample: yes
 state:
   description: Action performed on the target device.
   returned: changed
@@ -188,6 +200,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import flatten_boolean
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import module_provisioned
 except ImportError:
@@ -196,6 +209,7 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import module_provisioned
 
@@ -203,19 +217,19 @@ except ImportError:
 class Parameters(AnsibleF5Parameters):
     updatables = [
         'active',
+        'apply',
     ]
 
     returnables = [
         'name',
         'template',
         'active',
+        'apply',
     ]
 
-    api_attributes = [
-        'name',
-        'active',
-    ]
+    api_attributes = []
     api_map = {
+        'isModified': 'apply'
     }
 
     @property
@@ -246,15 +260,17 @@ class Parameters(AnsibleF5Parameters):
 
         return result
 
-    def to_return(self):
-        result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
-        return result
+    @property
+    def active(self):
+        result = flatten_boolean(self._values['active'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return True
+        return False
 
 
-class V1Parameters(Parameters):
+class V1ModuleParameters(Parameters):
     @property
     def template(self):
         if self._values['template'] is None:
@@ -297,8 +313,17 @@ class V1Parameters(Parameters):
                 "The specified template is not valid for this version of BIG-IP."
             )
 
+    @property
+    def apply(self):
+        result = flatten_boolean(self._values['apply'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return True
+        return False
 
-class V2Parameters(Parameters):
+
+class V2ModuleParameters(Parameters):
     @property
     def template(self):
         if self._values['template'] is None:
@@ -342,8 +367,33 @@ class V2Parameters(Parameters):
         }
         return template_map[self._values['template']]
 
+    @property
+    def apply(self):
+        result = flatten_boolean(self._values['apply'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return True
+        return False
+
 
 class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            raise
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
     @property
     def template(self):
         if self._values['template'] is None:
@@ -387,6 +437,16 @@ class Changes(Parameters):
         }
         return template_map[self._values['template']]
 
+    @property
+    def apply(self):
+        result = flatten_boolean(self._values['apply'])
+        return result
+
+    @property
+    def active(self):
+        result = flatten_boolean(self._values['active'])
+        return result
+
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -411,10 +471,17 @@ class Difference(object):
 
     @property
     def active(self):
+        if self.want.active is None:
+            return None
         if self.want.active is True and self.have.active is False:
             return True
         if self.want.active is False and self.have.active is True:
             return False
+
+    @property
+    def apply(self):
+        if self.want.apply is True and self.have.apply is True:
+            return True
 
 
 class BaseManager(object):
@@ -422,7 +489,7 @@ class BaseManager(object):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         self.have = None
-        self.changes = Changes()
+        self.changes = UsableChanges()
 
     def exec_module(self):
         changed = False
@@ -434,10 +501,20 @@ class BaseManager(object):
         elif state == "absent":
             changed = self.absent()
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def _set_changed_options(self):
         changed = {}
@@ -445,7 +522,7 @@ class BaseManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
 
     def should_update(self):
         result = self._update_changed_options()
@@ -467,7 +544,7 @@ class BaseManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -484,12 +561,9 @@ class BaseManager(object):
             return self.remove()
 
     def create(self):
-        if self.want.active is None:
-            self.want.update(dict(active=False))
         self._set_changed_options()
         if self.module.check_mode:
             return True
-
         if self.want.template is not None:
             self.create_from_template()
         if self.want.template is None:
@@ -507,14 +581,16 @@ class BaseManager(object):
         if self.module.check_mode:
             return True
         self.update_on_device()
-        if self.changes.active:
+        if self.changes.active or self.changes.apply:
             self.activate()
         return True
 
     def activate(self):
-        self.have = self.read_current_from_device()
+        if not self.have:
+            self.have = self.read_current_from_device()
         task_id = self.apply_on_device()
         if self.wait_for_task(task_id):
+            self.wait_for_policy_apply()
             return True
         else:
             raise F5ModuleError('Apply policy task failed.')
@@ -537,12 +613,6 @@ class BaseManager(object):
                 'Failed to delete ASM policy: {0}'.format(self.want.name)
             )
         return True
-
-    def is_activated(self):
-        if self.want.active is True:
-            return True
-        else:
-            return False
 
     def exists(self):
         uri = 'https://{0}:{1}/mgmt/tm/asm/policies/'.format(
@@ -571,6 +641,23 @@ class BaseManager(object):
         if 'items' in response and response['items'] != []:
             return True
         return False
+
+    def wait_for_policy_apply(self):
+        """
+        As the API is quite buggy and unstable there are cases where the policy still indicates pending changes
+        even after the apply-policy task has finished. Such state usually goes away after few seconds,
+        this function waits for the policy to achieve such a state for
+        maximum of 60 seconds.
+
+        """
+        # timer is required so that the api updates isModified state to a correct value.
+        time.sleep(3)
+        for x in range(0, 30):
+            self.have = self.read_current_from_device()
+            if self.have.apply is False:
+                break
+            time.sleep(2)
+        return True
 
     def wait_for_task(self, task_id):
         uri = "https://{0}:{1}/mgmt/tm/asm/tasks/apply-policy/{2}".format(
@@ -626,13 +713,19 @@ class BaseManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        policy_id = self._get_policy_id()
-        uri = "https://{0}:{1}/mgmt/tm/asm/policies/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            policy_id
-        )
-        if not params['active']:
+        # we need to remove active or apply from params as API will raise an error if the active or apply is set to yes,
+        # policies can only be activated or applied via apply-policy task endpoint.
+
+        params.pop('active', None)
+        params.pop('isModified', None)
+
+        if params:
+            policy_id = self._get_policy_id()
+            uri = "https://{0}:{1}/mgmt/tm/asm/policies/{2}".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                policy_id
+            )
             resp = self.client.api.patch(uri, json=params)
 
             try:
@@ -657,7 +750,6 @@ class BaseManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             response.update((dict(self_link=response['selfLink'])))
             return Parameters(params=response)
@@ -709,9 +801,10 @@ class BaseManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
-        # we need to remove active from params as API will raise an error if the active is set to True,
-        # policies can only be activated via apply-policy task endpoint.
-        params.pop('active')
+        # we need to remove active or apply from params as API will raise an error if the active or apply is set to yes,
+        # policies can only be activated or applied via apply-policy task endpoint.
+        params.pop('active', None)
+        params.pop('isModified', None)
         uri = "https://{0}:{1}/mgmt/tm/asm/policies/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -777,7 +870,7 @@ class V1Manager(BaseManager):
         module = kwargs.get('module', None)
         client = F5RestClient(**module.params)
         super(V1Manager, self).__init__(client=client, module=module)
-        self.want = V1Parameters(params=module.params, client=client)
+        self.want = V1ModuleParameters(params=module.params, client=client)
 
     def create_from_template(self):
         self.create_from_template_on_device()
@@ -788,7 +881,7 @@ class V2Manager(BaseManager):
         module = kwargs.get('module', None)
         client = F5RestClient(**module.params)
         super(V2Manager, self).__init__(client=client, module=module)
-        self.want = V2Parameters(params=module.params, client=client)
+        self.want = V2ModuleParameters(params=module.params, client=client)
 
     # TODO Include creating ASM policies from custom templates in v13
 
@@ -845,8 +938,10 @@ class ArgumentSpec(object):
                 choices=self.template_map
             ),
             active=dict(
+                type='bool'
+            ),
+            apply=dict(
                 type='bool',
-                default='no'
             ),
             state=dict(
                 default='present',

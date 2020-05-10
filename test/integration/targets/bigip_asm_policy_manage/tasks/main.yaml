@@ -162,5 +162,8 @@
     - "{{ policy_3 }}"
     - "{{ policy_4 }}"
 
+- import_tasks: issue-01730.yaml
+  tags: issue-01730
+  when: f.system_info.product_version >= "14.0.0"
 
 - import_tasks: teardown.yaml
