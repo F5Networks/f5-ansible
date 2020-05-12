@@ -14,80 +14,110 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: {{ module }}
-short_description: __SHORT_DESCRIPTION__
+module: bigip_asm_advanced_settings
+short_description: Manage BIG-IP system ASM advanced settings
 description:
-  - __LONG DESCRIPTION__.
+  - Manage BIG-IP system ASM advanced settings.
 version_added: "f5_modules 1.4"
 options:
   name:
     description:
-      - Specifies the name of the ... .
+      - The ASM setting to manipulate.
     type: str
     required: True
+  state:
+    description:
+      - The state of the setting on the system. When C(present), guarantees
+        that an existing setting is set to C(value). When C(reset) sets the
+        setting back to the default value. At least one of value and state
+        C(reset) are required.
+    type: str
+    choices:
+      - present
+      - reset
+    default: present
+  value:
+    description:
+      - The value to set the key to. At least one of value and state C(reset)
+        are required.
+    type: str
+notes:
+  - Requires BIG-IP version 12.0.0 or greater
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
-  - Author Name (@github_handle)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
-  {{ module }}:
-    name: foo
+- name: Set the long_request_buffer_size asm setting
+  bigip_asm_advanced_settings:
+    name: long_request_buffer_size
+    value: 20000000
     provider:
+      user: admin
       password: secret
       server: lb.mydomain.com
+  delegate_to: localhost
+
+- name: Reset the long_request_buffer_size to default value
+  bigip_asm_advanced_settings:
+    name: long_request_buffer_size
+    state: reset
+    provider:
       user: admin
+      password: secret
+      server: lb.mydomain.com
   delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
-  returned: changed
+name:
+  description: The name of the asm setting that was specified
+  returned: changed and success
   type: str
-  sample: Foo is bar
+  sample: long_request_buffer_size
+default_value:
+  description: The default value of the specified asm setting
+  returned: changed and success
+  type: str
+  sample: '10000000'
+value:
+  description: The value that you set the asm setting to
+  returned: changed and success
+  type: str
+  sample: '20000000'
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import fq_name
-    from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.icontrol import module_provisioned
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
-    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import fq_name
-    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import transform_name
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import module_provisioned
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'defaultValue': 'default_value',
     }
-
     api_attributes = [
-
+        'value',
     ]
-
-    returnables = [
-
-    ]
-
     updatables = [
-
+        'value',
+    ]
+    returnables = [
+        'name',
+        'value',
+        'default_value',
     ]
 
 
@@ -96,7 +126,15 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    pass
+
+    @property
+    def value(self):
+        if self._values['value'] is None:
+            return None
+        try:
+            return int(self._values['value'])
+        except ValueError:
+            return self._values['value']
 
 
 class Changes(Parameters):
@@ -116,7 +154,17 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def value(self):
+        if self._values['value'] is None:
+            return None
+        return str(self._values['value'])
+
+    @property
+    def default_value(self):
+        if self._values['default_value'] is None:
+            return None
+        return str(self._values['default_value'])
 
 
 class Difference(object):
@@ -140,22 +188,31 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    @property
+    def value(self):
+        if self.want.state == 'reset':
+            if str(self.have.value) != str(self.have.default_value):
+                return self.have.default_value
+        if self.want.value != self.have.value:
+            return self.want.value
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
-        self.module = kwargs.get('module', None)
+        self.module = kwargs.pop('module', None)
         self.client = F5RestClient(**self.module.params)
         self.want = ModuleParameters(params=self.module.params)
         self.have = ApiParameters()
         self.changes = UsableChanges()
+        self.setting_id = None
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = UsableChanges(params=changed)
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -171,27 +228,25 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
+            changed['name'] = self.want.name
+            changed['default_value'] = self.have.default_value
             self.changes = UsableChanges(params=changed)
             return True
         return False
 
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
-        for warning in warnings:
-            self.client.module.deprecate(
-                msg=warning['msg'],
-                version=warning['version']
-            )
-
     def exec_module(self):
+        if not module_provisioned(self.client, 'asm'):
+            raise F5ModuleError(
+                "ASM must be provisioned to use this module."
+            )
         changed = False
         result = dict()
         state = self.want.state
 
         if state == "present":
             changed = self.present()
-        elif state == "absent":
-            changed = self.absent()
+        elif state == "reset":
+            changed = self.reset()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
@@ -202,22 +257,32 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return self.update()
+            return False
         else:
-            return self.create()
+            return self.update()
 
-    def absent(self):
-        if self.exists():
-            return self.remove()
-        return False
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
+    def reset(self):
+        self._get_setting_id()
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
             return True
-        return False
+        self.reset_on_device()
+        self.want.update({'name': self.want.name})
+        self.want.update({'value': self.have.default_value})
+        if self.exists():
+            return True
+        else:
+            raise F5ModuleError(
+                "Failed to reset the: {0} asm setting.".format(self.want.key)
+            )
 
     def update(self):
+        if self.want.value is None:
+            raise F5ModuleError(
+                "When setting a key, a value must be supplied"
+            )
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
@@ -226,37 +291,23 @@ class ModuleManager(object):
         self.update_on_device()
         return True
 
-    def remove(self):
-        if self.module.check_mode:
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
             return True
-        self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the resource.")
-        return True
+        return False
 
-    def create(self):
-        self._set_changed_options()
-        if self.module.check_mode:
-            return True
-        self.create_on_device()
-        return True
-
-    def exists(self):
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
+    def _get_setting_id(self):
+        uri = "https://{0}:{1}/mgmt/tm/asm/advanced-settings/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
         )
-        resp = self.client.api.get(uri)
+        query = "?$filter=name+eq+'{0}'&$select=id".format(self.want.name)
+        resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
-        if resp.status == 404 or 'code' in response and response['code'] == 404:
-            return False
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
 
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
 
@@ -265,59 +316,18 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' in response and response['items'] != []:
+            self.setting_id = response['items'][0]['id']
 
-    def create_on_device(self):
-        params = self.changes.api_params()
-        params['name'] = self.want.name
-        params['partition'] = self.want.partition
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/".format(
+        if not self.setting_id:
+            raise F5ModuleError("The setting: {0} was not found.".format(self.want.name))
+
+    def exists(self):
+        self._get_setting_id()
+        uri = "https://{0}:{1}/mgmt/tm/asm/advanced-settings/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-        )
-        resp = self.client.api.post(uri, json=params)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
-
-    def update_on_device(self):
-        params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
-        )
-        resp = self.client.api.patch(uri, json=params)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
-
-    def remove_from_device(self):
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
-        )
-        response = self.client.api.delete(uri)
-
-        if response.status in [200, 201]:
-            return True
-        raise F5ModuleError(response.content)
-
-    def read_current_from_device(self):
-        uri = "https://{0}:{1}/mgmt/PATH/TO/RESOURCE/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
+            self.setting_id
         )
         resp = self.client.api.get(uri)
         try:
@@ -325,8 +335,70 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if str(response['value']) == str(self.want.value):
+            return True
+        return False
+
+    def read_current_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/asm/advanced-settings/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.setting_id
+        )
+
+        resp = self.client.api.get(uri)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        return ApiParameters(params=response)
+
+    def update_on_device(self):
+        params = self.changes.api_params()
+        uri = "https://{0}:{1}/mgmt/tm/asm/advanced-settings/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.setting_id
+        )
+
+        resp = self.client.api.patch(uri, json=params)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return ApiParameters(params=response)
+            return True
+        raise F5ModuleError(resp.content)
+
+    def reset_on_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/asm/advanced-settings/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.setting_id
+        )
+        params = dict(
+            value=self.have.default_value
+        )
+
+        resp = self.client.api.patch(uri, json=params)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
         raise F5ModuleError(resp.content)
 
 
@@ -334,7 +406,12 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            name=dict(required=True),
+            state=dict(
+                default='present',
+                choices=['present', 'reset']
+            ),
+            value=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
@@ -346,7 +423,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode,
+        supports_check_mode=spec.supports_check_mode
     )
 
     try:

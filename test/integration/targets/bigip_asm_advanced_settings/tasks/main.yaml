@@ -1,0 +1,93 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Set the long_request_buffer_size asm setting
+  bigip_asm_advanced_settings:
+    name: long_request_buffer_size
+    value: '20000000'
+  register: result
+
+- name: Assert Set the long_request_buffer_size asm setting
+  assert:
+    that:
+      - result is changed
+
+- name: Set the long_request_buffer_size asm setting - Idempotent check
+  bigip_asm_advanced_settings:
+    name: long_request_buffer_size
+    value: '20000000'
+  register: result
+
+- name: Assert Set the long_request_buffer_size asm setting - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set the long_request_mem_percentage asm setting
+  bigip_asm_advanced_settings:
+    name: long_request_mem_percentage
+    value: '30'
+  register: result
+
+- name: Assert Set the long_request_mem_percentage asm setting
+  assert:
+    that:
+      - result is changed
+
+- name: Set the long_request_mem_percentage asm setting - Idempotent check
+  bigip_asm_advanced_settings:
+    name: long_request_mem_percentage
+    value: '30'
+  register: result
+
+- name: Assert Set the long_request_mem_percentage asm setting - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Reset long_request_mem_percentage asm setting
+  bigip_asm_advanced_settings:
+    name: long_request_mem_percentage
+    state: reset
+  register: result
+
+- name: Assert Reset long_request_mem_percentage asm setting
+  assert:
+    that:
+      - result is changed
+
+- name: Reset long_request_mem_percentage asm setting - Idempotent check
+  bigip_asm_advanced_settings:
+    name: long_request_mem_percentage
+    state: reset
+  register: result
+
+- name: Assert Reset long_request_mem_percentage asm setting - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Reset long_request_buffer_size asm setting
+  bigip_asm_advanced_settings:
+    name: long_request_buffer_size
+    state: reset
+  register: result
+
+- name: Assert Reset long_request_buffer_size asm setting
+  assert:
+    that:
+      - result is changed
+
+- name: Reset long_request_buffer_size asm setting - Idempotent check
+  bigip_asm_advanced_settings:
+    name: long_request_buffer_size
+    state: reset
+  register: result
+
+- name: Assert Reset long_request_buffer_size asm setting - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- import_tasks: teardown.yaml
