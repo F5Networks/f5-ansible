@@ -9,8 +9,7 @@ Vagrantfile
 vault.txt
 **.cache/
 cache/
-local/ansible
-local/ansible_collections
+output
 test/integration/targets/bigip_imish_config/backup
 assets/
 

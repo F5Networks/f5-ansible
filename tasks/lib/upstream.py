@@ -28,7 +28,7 @@ def get_fixtures(c, module):
     pattern3 = r"fixture_path\,\s+\'(?P<fixture>[^']+)"
 
     cmd = [
-        'egrep', '"(load_fixture|fixtures|fixture_path)" {0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module),
+        'egrep', '"(load_fixture|fixtures|fixture_path)" {0}/test/unit/modules/network/f5/test_{1}.py'.format(BASE_DIR, module),
         '|', 'egrep -v "(def load_fixture|fixture_path\,\s+name)"'
     ]
     stdout = c.run(' ' .join(cmd), hide='out', warn=True)

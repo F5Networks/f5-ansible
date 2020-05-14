@@ -21,7 +21,7 @@ jobs:
       name: F5 Unit Tests
       script:
         - travis_retry pip install pytest --upgrade
-        - pytest -x -s $TRAVIS_BUILD_DIR/test/units/modules/network/f5/
+        - pytest -x -s $TRAVIS_BUILD_DIR/test/unit/modules/network/f5/
       python: "3.6"
     - name: F5 Style and F5 Sanity Tests
       script:

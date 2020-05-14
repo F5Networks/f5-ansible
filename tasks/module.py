@@ -155,11 +155,11 @@ def files_upstream(c, module, modules_dir, test_dir, fixtures_dir, verbose):
             ]
             c.run(' '.join(cmd))
 
-        if os.path.exists('{0}/test/units/modules/network/f5/test_{1}.py'.format(
+        if os.path.exists('{0}/test/unit/modules/network/f5/test_{1}.py'.format(
                 BASE_DIR, module.lstrip('_'))) and not deprecated:
             # - upstream unit test file for non deprecated modules
             cmd = [
-                'cp', '{0}/test/units/modules/network/f5/test_{1}.py'.format(BASE_DIR, module.lstrip('_')),
+                'cp', '{0}/test/unit/modules/network/f5/test_{1}.py'.format(BASE_DIR, module.lstrip('_')),
                 '{0}/test_{1}.py'.format(test_dir, module.lstrip('_'))
             ]
             c.run(' '.join(cmd))
@@ -169,7 +169,7 @@ def files_upstream(c, module, modules_dir, test_dir, fixtures_dir, verbose):
             fixtures = get_fixtures(c, module)
             for fixture in fixtures:
                 cmd = [
-                    'cp', '{0}/test/units/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture),
+                    'cp', '{0}/test/unit/modules/network/f5/fixtures/{1}'.format(BASE_DIR, fixture),
                     '{0}/{1}'.format(fixtures_dir, fixture)
                 ]
                 c.run(' '.join(cmd))
@@ -185,8 +185,8 @@ def upstream(c, module, collection='f5_modules', verbose=False):
     """Copy specified module and its dependencies to the local/ansible_collections/f5networks/collection_name directory.
     """
     coll_dest = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-    dst_test = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/'.format(BASE_DIR, collection)
-    dst_fixture = '{0}/local/ansible_collections/f5networks/{1}/tests/units/modules/network/f5/fixtures/'.format(BASE_DIR, collection)
+    dst_test = '{0}/local/ansible_collections/f5networks/{1}/tests/unit/modules/network/f5/'.format(BASE_DIR, collection)
+    dst_fixture = '{0}/local/ansible_collections/f5networks/{1}/tests/unit/modules/network/f5/fixtures/'.format(BASE_DIR, collection)
     dst_module = '{0}/local/ansible_collections/f5networks/{1}/plugins/modules/'.format(BASE_DIR, collection)
 
     src_module = '{0}/library/modules/'.format(BASE_DIR)

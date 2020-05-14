@@ -95,10 +95,10 @@ def touch(name, times=None):
 
 
 def stub_unit_test_file(module, extension):
-    test_dir_path = '{0}/test/units/modules/network/f5/'.format(BASE_DIR)
+    test_dir_path = '{0}/test/unit/modules/network/f5/'.format(BASE_DIR)
     if not os.path.exists(test_dir_path):
         os.makedirs(test_dir_path)
-    test_file = '{0}/test/units/modules/network/f5/test_{1}{2}'.format(
+    test_file = '{0}/test/unit/modules/network/f5/test_{1}{2}'.format(
         BASE_DIR, module, extension
     )
 
@@ -146,10 +146,10 @@ def unstub_library_file(module, extension):
 
 
 def unstub_unit_test_file(module, extension):
-    test_dir_path = '{0}/test/units/modules/network/f5/'.format(BASE_DIR)
+    test_dir_path = '{0}/test/unit/modules/network/f5/'.format(BASE_DIR)
     if not os.path.exists(test_dir_path):
         os.makedirs(test_dir_path)
-    test_file = '{0}/test/units/modules/network/f5/test_{1}{2}'.format(
+    test_file = '{0}/test/unit/modules/network/f5/test_{1}{2}'.format(
         BASE_DIR, module, extension
     )
     if os.path.exists(test_file):
