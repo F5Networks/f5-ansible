@@ -55,12 +55,18 @@ options:
             for either connecting or sending commands.  If the timeout is
             exceeded before the operation is completed, the module will error.
         type: int
+      ssh_keyfile:
+        description:
+          - Specifies the SSH keyfile to use to authenticate the connection to
+            the remote device.  This argument is only used for I(cli) transports.
+          - You may omit this option by setting the environment variable C(ANSIBLE_NET_SSH_KEYFILE).
+        type: path
       transport:
         description:
           - Configures the transport connection to use when connecting to the
             remote device.
         type: str
-        choices: [ rest ]
+        choices: [ cli, rest ]
         default: rest
       auth_provider:
         description:
