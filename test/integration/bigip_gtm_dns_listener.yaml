@@ -1,0 +1,52 @@
+---
+
+# Test the bigip_gtm_dns_listener module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_gtm_dns_listener module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, test/integration/bigip_gtm_dns_listener.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_gtm_dns_listener module
+#
+#    ansible-playbook -i notahost, test/integration/bigip_gtm_dns_listener.yaml
+#
+
+- name: Metadata of bigip_gtm_dns_listener
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    __metadata__:
+      upstream: yes
+      version: 1.2
+      tested_versions:
+        - NA
+      tested_platforms:
+        - NA
+
+- name: Test the bigip_gtm_dns_listener module
+  hosts: "f5-test"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+
+  environment:
+    F5_SERVER: "{{ ansible_host }}"
+    F5_USER: "ak-admin"
+    F5_PASSWORD: "Seattle2010+"
+    F5_SERVER_PORT: "443"
+    F5_VALIDATE_CERTS: "no"
+
+  roles:
+    - bigip_gtm_dns_listener

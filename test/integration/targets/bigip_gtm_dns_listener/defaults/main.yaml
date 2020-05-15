@@ -1,0 +1,19 @@
+---
+
+listener_name: test-dns-listener
+address: 10.0.1.1
+subnet: 10.0.1.0
+mask: 255.255.255.0
+port: 53
+ip_protocol: tcp
+translate_address: yes
+translate_port: yes
+auto_lasthop: default
+source_port: preserve
+enabled_vlans:
+    - /Common/external
+irules:
+    - /Common/irule1
+advertise: yes
+last_hop_pool: /Common/web-pool
+description: This is test only
