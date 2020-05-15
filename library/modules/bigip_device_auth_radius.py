@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_device_auth_radius
 short_description: Manages RADIUS auth configuration on BIGIP device
 description:
-  - Module creates RADIUS RADIUS configuration.
+  - Module creates RADIUS configuration.
 version_added: "f5_modules 1.3"
 options:
   servers:
