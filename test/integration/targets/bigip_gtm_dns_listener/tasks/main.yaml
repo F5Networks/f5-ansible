@@ -1,0 +1,195 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create GTM DNS Listener
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: "{{ subnet }}"
+    port: "{{ port }}"
+    mask: "{{ mask }}"
+    advertise: "{{ advertise }}"
+    translate_address: "{{ translate_address }}"
+    translate_port: "{{ translate_port }}"
+    ip_protocol: "{{ ip_protocol }}"
+    pool: "{{ last_hop_pool }}"
+    enabled_vlans: "{{ enabled_vlans }}"
+    last_hop_pool: "{{ last_hop_pool }}"
+    source_port: "{{ source_port }}"
+    auto_lasthop: "{{ auto_lasthop }}"
+    description: "{{ description }}"
+    irules:
+        - /Common/irule1
+    state: present
+  register: result
+
+
+- name: Assert Create GTM DNS Listener
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.address == "10.0.1.0"
+      - result.port == 53
+      - result.ip_protocol == "tcp"
+      - result.pool == "/Common/web-pool"
+      - result.last_hop_pool == "/Common/web-pool"
+      - result.enabled_vlans[0] == "/Common/external"
+      - result.irules[0] == "/Common/irule1"
+
+
+- name: Create GTM DNS Listener - Idempotent check
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: "{{ subnet }}"
+    port: "{{ port }}"
+    mask: "{{ mask }}"
+    advertise: "{{ advertise }}"
+    translate_address: "{{ translate_address }}"
+    translate_port: "{{ translate_port }}"
+    ip_protocol: "{{ ip_protocol }}"
+    pool: "{{ last_hop_pool }}"
+    enabled_vlans: "{{ enabled_vlans }}"
+    last_hop_pool: "{{ last_hop_pool }}"
+    source_port: "{{ source_port }}"
+    auto_lasthop: "{{ auto_lasthop }}"
+    description: "{{ description }}"
+    irules:
+      - /Common/irule1
+    state: present
+  register: result
+
+- name: Assert Create GTM DNS Listener - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update GTM DNS Listener
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: 10.0.0.0
+    mask: "{{ mask }}"
+    port: "{{ port }}"
+    advertise: "{{ advertise }}"
+    translate_address: "{{ translate_address }}"
+    translate_port: "{{ translate_port }}"
+    ip_protocol: "{{ ip_protocol }}"
+    last_hop_pool: "{{ last_hop_pool }}"
+    source_port: "{{ source_port }}"
+    auto_lasthop: "{{ auto_lasthop }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Assert Create GTM DNS Listener
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.address == "10.0.0.0"
+
+- name: Update GTM DNS Listener - Idempotent check
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: 10.0.0.0
+    mask: "{{ mask }}"
+    port: "{{ port }}"
+    advertise: "{{ advertise }}"
+    translate_address: "{{ translate_address }}"
+    translate_port: "{{ translate_port }}"
+    ip_protocol: "{{ ip_protocol }}"
+    last_hop_pool: "{{ last_hop_pool }}"
+    source_port: "{{ source_port }}"
+    auto_lasthop: "{{ auto_lasthop }}"
+    description: "{{ description }}"
+    state: present
+  register: result
+
+- name: Assert Create GTM DNS Listener - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Disable GTM DNS Listener
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: 10.0.0.0
+    state: disabled
+  register: result
+
+- name: Assert Disable GTM DNS Listener
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.disabled
+
+- name: Disable GTM DNS Listener  - Idempotent check
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: 10.0.0.0
+    state: disabled
+  register: result
+
+- name: Assert Disable GTM DNS Listener  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Enable GTM DNS Listener
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: 10.0.0.0
+    state: enabled
+  register: result
+
+- name: Assert Enable GTM DNS Listener
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.enabled == True
+
+- name: Enable GTM DNS Listener  - Idempotent check
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: 10.0.0.0
+    state: enabled
+  register: result
+
+- name: Assert Enable GTM DNS Listener  - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove GTM DNS Listener
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: 10.0.0.0
+    state: absent
+  register: result
+
+- name: Assert Remove GTM DNS Listener
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove GTM DNS Listener - Idempotent check
+  bigip_gtm_dns_listener:
+    name: "{{ listener_name }}"
+    address: 10.0.0.0
+    state: absent
+  register: result
+
+- name: Assert Remove GTM DNS Listener - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml
