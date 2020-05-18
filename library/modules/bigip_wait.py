@@ -57,17 +57,7 @@ options:
     description:
       - This overrides the normal error message from a failure to meet the required conditions.
     type: str
-  transport:
-    description:
-      - Configures the transport connection to use when connecting to the
-        remote device. The transport argument supports connectivity to the
-        device over cli (ssh) or rest.
-    type: str
-    choices:
-        - rest
-        - cli
-    default: rest
-extends_documentation_fragment: f5networks.f5_modules.f5cli
+extends_documentation_fragment: f5networks.f5_modules.f5_rest_cli
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -105,6 +95,7 @@ RETURN = r'''
 # only common fields returned
 '''
 
+import copy
 import datetime
 import signal
 import time
@@ -503,14 +494,23 @@ class ArgumentSpec(object):
             delay=dict(default=0, type='int'),
             sleep=dict(default=1, type='int'),
             msg=dict(),
+        )
+        # required to add CLI to choices and ssh_keyfile as per documentation
+        provider_update = dict(
             transport=dict(
                 type='str',
                 default='rest',
                 choices=['cli', 'rest']
             ),
+            ssh_keyfile=dict(
+                type='path'
+            ),
+
         )
+        new_spec = copy.deepcopy(f5_argument_spec)
         self.argument_spec = {}
-        self.argument_spec.update(f5_argument_spec)
+        self.argument_spec.update(new_spec)
+        self.argument_spec['provider']['options'].update(provider_update)
         self.argument_spec.update(argument_spec)
 
 
