@@ -2,14 +2,14 @@
 
 - import_tasks: setup.yaml
 
-- name: Wait for BIG-IP to be ready, expected pass
+- name: Wait for BIG-IP to be ready, expected pass - environment
   bigip_wait:
     timeout: 300
     type: vcmp
   register: result
   ignore_errors: true
 
-- name: assert pass
+- name: assert pass - environment
   assert:
     that:
       - result is not changed

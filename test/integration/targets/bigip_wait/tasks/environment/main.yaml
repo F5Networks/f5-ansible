@@ -2,12 +2,12 @@
 
 - import_tasks: setup.yaml
 
-- name: Wait for BIG-IP to be ready for configuration
+- name: Wait for BIG-IP to be ready for configuration - environment
   bigip_wait:
     timeout: 10
   ignore_errors: true
 
-- name: Attempt to make a change, expected failure
+- name: Attempt to make a change, expected failure - environment
   bigip_pool:
     lb_method: round-robin
     name: foo-pool
@@ -15,22 +15,22 @@
   register: result
   ignore_errors: true
 
-- name: Assert Attempt to make a change, expected failure
+- name: Assert Attempt to make a change, expected failure - environment
   assert:
     that:
       - result is not changed
 
-- name: Wait for BIG-IP to actually be ready
+- name: Wait for BIG-IP to actually be ready - environment
   bigip_wait:
   register: result
 
-- name: Assert Wait for BIG-IP to actually be ready
+- name: Assert Wait for BIG-IP to actually be ready - environment
   assert:
     that:
       - result is not changed
       - "'elapsed' in result"
 
-- name: Attempt to make a change, no failure
+- name: Attempt to make a change, no failure - environment
   bigip_pool:
     lb_method: round-robin
     name: foo-pool
@@ -38,7 +38,7 @@
   register: result
   ignore_errors: true
 
-- name: Assert Attempt to make a change, no failure
+- name: Assert Attempt to make a change, no failure - environment
   assert:
     that:
       - result is changed

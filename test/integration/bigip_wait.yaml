@@ -33,13 +33,10 @@
       tested_platforms:
         - NA
 
-- name: Test the bigip_wait module
+- name: Test the bigip_wait module - Environment
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
-
-  vars:
-    limit_to: '*'
 
   environment:
     F5_SERVER: "{{ ansible_host }}"
@@ -48,5 +45,38 @@
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
-  roles:
-    - bigip_wait
+  tasks:
+    - name: Include role - Environment
+      import_role:
+        name: bigip_wait
+        tasks_from: environment.yaml
+      tags:
+        - environment
+
+- name: Test the bigip_wait module - Provider-cli
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Provider-cli
+      import_role:
+        name: bigip_wait
+        tasks_from: provider-cli.yaml
+      tags:
+        - provider
+        - provider-cli
+
+- name: Test the bigip_wait module - Provider-rest
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Provider-rest
+      import_role:
+        name: bigip_wait
+        tasks_from: provider-rest.yaml
+      tags:
+        - provider
+        - provider-rest

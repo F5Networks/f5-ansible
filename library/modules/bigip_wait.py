@@ -57,9 +57,20 @@ options:
     description:
       - This overrides the normal error message from a failure to meet the required conditions.
     type: str
-extends_documentation_fragment: f5networks.f5_modules.f5
+  transport:
+    description:
+      - Configures the transport connection to use when connecting to the
+        remote device. The transport argument supports connectivity to the
+        device over cli (ssh) or rest.
+    type: str
+    choices:
+        - rest
+        - cli
+    default: rest
+extends_documentation_fragment: f5networks.f5_modules.f5cli
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -99,17 +110,26 @@ import signal
 import time
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.connection import exec_command
 
 try:
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import is_cli
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import AnsibleF5Parameters
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_cli
+
+try:
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import run_commands
+    HAS_CLI_TRANSPORT = True
+except ImportError:
+    HAS_CLI_TRANSPORT = False
 
 
 def hard_timeout(module, want, start):
@@ -131,7 +151,7 @@ class Parameters(AnsibleF5Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
     @property
@@ -157,7 +177,7 @@ class Changes(Parameters):
     pass
 
 
-class ModuleManager(object):
+class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = F5RestClient(**self.module.params)
@@ -184,9 +204,6 @@ class ModuleManager(object):
                 version=warning['version']
             )
 
-    def _get_client_connection(self):
-        return F5RestClient(**self.module.params)
-
     def execute(self):
         if self.want.delay >= self.want.timeout:
             raise F5ModuleError(
@@ -208,6 +225,108 @@ class ModuleManager(object):
         if self.want.delay:
             time.sleep(float(self.want.delay))
         end = start + datetime.timedelta(seconds=int(self.want.timeout))
+
+        self.wait_for_device(start, end)
+
+        elapsed = datetime.datetime.utcnow() - start
+        self.changes.update({'elapsed': elapsed.seconds})
+        return False
+
+    def _wait_for_module_provisioning(self):
+        # To prevent things from running forever, the hack is to check
+        # for mprov's status twice. If mprov is finished, then in most
+        # cases (not ASM) the provisioning is probably ready.
+        nops = 0
+        # Sleep a little to let provisioning settle and begin properly
+        time.sleep(5)
+        while nops < 4:
+            try:
+                if not self._is_mprov_running_on_device():
+                    nops += 1
+                else:
+                    nops = 0
+            except Exception:
+                # This can be caused by restjavad restarting.
+                pass
+            time.sleep(10)
+
+    def _wait_for_rest_interface(self):
+        nops = 0
+        # Sleep a little to let daemons settle and begin checking if REST interface is available.
+        time.sleep(5)
+        while nops < 4:
+            if not self._rest_endpoints_ready():
+                nops += 1
+            else:
+                break
+        time.sleep(10)
+
+
+class V1Manager(BaseManager):
+    def wait_for_device(self, start, end):
+        while datetime.datetime.utcnow() < end:
+            time.sleep(int(self.want.sleep))
+            # First we check if SSH connection is ready by repeatedly attempting to run a simple command
+            rc, out, err = exec_command(self.module, 'date')
+            if rc != 0:
+                continue
+            if self._device_is_rebooting():
+                # Wait for the reboot to happen and then start from the beginning
+                # of the waiting.
+                continue
+            if self.want.type == "standard":
+                if self._is_mprov_running_on_device():
+                    self._wait_for_module_provisioning()
+            elif self.want.type == "vcmp":
+                self._is_vcmpd_running_on_device()
+            if not self._rest_endpoints_ready():
+                self._wait_for_rest_interface()
+            break
+        else:
+            elapsed = datetime.datetime.utcnow() - start
+            self.module.fail_json(
+                msg=self.want.msg or "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
+            )
+
+    def _is_mprov_running_on_device(self):
+        cmd = "ps aux | grep '[m]prov'"
+        rc, out, err = exec_command(self.module, cmd)
+        if rc != 0:
+            raise F5ModuleError(err)
+        if out:
+            return True
+        return False
+
+    def _is_vcmpd_running_on_device(self):
+        cmd = "ps aux | grep '[v]cmpd'"
+        rc, out, err = exec_command(self.module, cmd)
+        if rc != 0:
+            raise F5ModuleError(err)
+        if out:
+            return True
+        return False
+
+    def _rest_endpoints_ready(self):
+        cmd = "curl -o /dev/null -s -w\'%{http_code}\\n\' -u admin: http://localhost:8100/mgmt/tm/sys/available"
+        rc, out, err = exec_command(self.module, cmd)
+        if rc != 0:
+            raise F5ModuleError(err)
+        if out == '200':
+            return True
+        return False
+
+    def _device_is_rebooting(self):
+        cmd = 'runlevel'
+        rc, out, err = exec_command(self.module, cmd)
+        if rc != 0:
+            raise F5ModuleError(err)
+        if out.split(' ')[1] == '6':
+            return True
+        return False
+
+
+class V2Manager(BaseManager):
+    def wait_for_device(self, start, end):
         while datetime.datetime.utcnow() < end:
             time.sleep(int(self.want.sleep))
             try:
@@ -227,6 +346,8 @@ class ModuleManager(object):
                         self._wait_for_module_provisioning()
                 elif self.want.type == "vcmp":
                     self._is_vcmpd_running_on_device()
+                if not self._rest_endpoints_ready():
+                    self._wait_for_rest_interface()
                 break
             except Exception as ex:
                 if 'Failed to validate the SSL' in str(ex):
@@ -264,9 +385,9 @@ class ModuleManager(object):
             self.module.fail_json(
                 msg=self.want.msg or "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
             )
-        elapsed = datetime.datetime.utcnow() - start
-        self.changes.update({'elapsed': elapsed.seconds})
-        return False
+
+    def _get_client_connection(self):
+        return F5RestClient(**self.module.params)
 
     def _device_is_rebooting(self):
         params = {
@@ -282,33 +403,13 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         if 'commandResult' in response and '6' in response['commandResult']:
             return True
         return False
-
-    def _wait_for_module_provisioning(self):
-        # To prevent things from running forever, the hack is to check
-        # for mprov's status twice. If mprov is finished, then in most
-        # cases (not ASM) the provisioning is probably ready.
-        nops = 0
-        # Sleep a little to let provisioning settle and begin properly
-        time.sleep(5)
-        while nops < 4:
-            try:
-                if not self._is_mprov_running_on_device():
-                    nops += 1
-                else:
-                    nops = 0
-            except Exception:
-                # This can be caused by restjavad restarting.
-                pass
-            time.sleep(10)
 
     def _is_mprov_running_on_device(self):
         params = {
@@ -324,11 +425,9 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         if 'commandResult' in response:
             return True
@@ -348,15 +447,48 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         if 'commandResult' in response:
             return True
         return False
+
+    def _rest_endpoints_ready(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/available".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        return False
+
+
+class ModuleManager(object):
+    def __init__(self, *args, **kwargs):
+        self.kwargs = kwargs
+        self.module = kwargs.get('module', None)
+
+    def exec_module(self):
+        if is_cli(self.module) and HAS_CLI_TRANSPORT:
+            manager = self.get_manager('v1')
+        else:
+            manager = self.get_manager('v2')
+        result = manager.exec_module()
+        return result
+
+    def get_manager(self, type):
+        if type == 'v1':
+            return V1Manager(**self.kwargs)
+        elif type == 'v2':
+            return V2Manager(**self.kwargs)
 
 
 class ArgumentSpec(object):
@@ -370,7 +502,12 @@ class ArgumentSpec(object):
             timeout=dict(default=7200, type='int'),
             delay=dict(default=0, type='int'),
             sleep=dict(default=1, type='int'),
-            msg=dict()
+            msg=dict(),
+            transport=dict(
+                type='str',
+                default='rest',
+                choices=['cli', 'rest']
+            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

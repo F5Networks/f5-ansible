@@ -1,6 +1,6 @@
 ---
 
-- name: Remove pool
+- name: Remove pool - environment
   bigip_pool:
     name: foo-pool
     state: absent

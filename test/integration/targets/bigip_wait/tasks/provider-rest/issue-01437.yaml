@@ -1,0 +1,60 @@
+---
+
+- name: Wait for BIG-IP to be ready, expected failure - provider - rest
+  bigip_wait:
+    timeout: 10
+    delay: 10
+    sleep: 5
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: assert failure - provider - rest
+  assert:
+    that:
+      - result is not changed
+      - "'greater than' in result.msg"
+
+- name: Wait for BIG-IP to be ready, expected failure - provider - rest
+  bigip_wait:
+    timeout: 15
+    delay: 10
+    sleep: 5
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: assert failure - provider - rest
+  assert:
+    that:
+      - result is not changed
+      - "'greater than' in result.msg"
+
+- name: Wait for BIG-IP to be ready, expected pass - provider - rest
+  bigip_wait:
+    timeout: 25
+    delay: 10
+    sleep: 5
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: assert pass - provider - rest
+  assert:
+    that:
+      - result is not changed
