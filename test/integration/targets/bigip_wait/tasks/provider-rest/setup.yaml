@@ -1,0 +1,16 @@
+---
+
+- name: Reboot BIG-IP - provider - rest
+  bigip_command:
+    commands: tmsh reboot
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  ignore_errors: true
+
+- name: Wait for shutdown to happen - provider - rest
+  pause:
+    seconds: 90

@@ -1,0 +1,13 @@
+---
+
+- name: Remove pool - provider - rest
+  bigip_pool:
+    name: foo-pool
+    state: absent
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result

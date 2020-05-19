@@ -79,17 +79,6 @@ options:
         trying the command again.
     type: int
     default: 1
-  transport:
-    description:
-      - Configures the transport connection to use when connecting to the
-        remote device. The transport argument supports connectivity to the
-        device over cli (ssh) or rest.
-    type: str
-    choices:
-        - rest
-        - cli
-    default: rest
-    version_added: 2.5
   warn:
     description:
       - Whether the module should raise warnings related to command idempotency
@@ -105,7 +94,7 @@ options:
       - Change into this directory before running the command.
     type: str
     version_added: 2.6
-extends_documentation_fragment: f5networks.f5_modules.f5cli
+extends_documentation_fragment: f5networks.f5_modules.f5_rest_cli
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
@@ -204,6 +193,7 @@ warn:
   sample: True
 '''
 
+import copy
 import re
 import time
 
@@ -688,19 +678,28 @@ class ArgumentSpec(object):
                 default=1,
                 type='int'
             ),
-            transport=dict(
-                type='str',
-                default='rest',
-                choices=['cli', 'rest']
-            ),
             warn=dict(
                 type='bool',
                 default='yes'
             ),
             chdir=dict()
         )
+        # required to add CLI to choices and ssh_keyfile as per documentation
+        provider_update = dict(
+            transport=dict(
+                type='str',
+                default='rest',
+                choices=['cli', 'rest']
+            ),
+            ssh_keyfile=dict(
+                type='path'
+            ),
+
+        )
+        new_spec = copy.deepcopy(f5_argument_spec)
         self.argument_spec = {}
-        self.argument_spec.update(f5_argument_spec)
+        self.argument_spec.update(new_spec)
+        self.argument_spec['provider']['options'].update(provider_update)
         self.argument_spec.update(argument_spec)
 
 

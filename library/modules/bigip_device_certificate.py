@@ -103,16 +103,7 @@ options:
       - This option is also needed when generating new certificate to replace non expired one.
     type: bool
     default: no
-  transport:
-    description:
-      - Configures the transport connection to use when connecting to the
-        remote device.
-      - This module currently supports only connectivity to the device over cli (ssh).
-    type: str
-    choices:
-        - cli
-    default: cli
-extends_documentation_fragment: f5networks.f5_modules.f5cli
+extends_documentation_fragment: f5networks.f5_modules.f5ssh
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -253,6 +244,7 @@ key_size:
   type: int
   sample: 2048
 '''
+import copy
 import os
 import ssl
 from datetime import datetime
@@ -328,7 +320,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -592,14 +584,23 @@ class ArgumentSpec(object):
                 type='bool',
                 default='no'
             ),
+        )
+        # required to remove REST option from choices and set default to CLI to be in line with docs
+        provider_update = dict(
             transport=dict(
                 type='str',
                 default='cli',
                 choices=['cli']
             ),
+            ssh_keyfile=dict(
+                type='path'
+            ),
+
         )
+        new_spec = copy.deepcopy(f5_argument_spec)
         self.argument_spec = {}
-        self.argument_spec.update(f5_argument_spec)
+        self.argument_spec.update(new_spec)
+        self.argument_spec['provider']['options'].update(provider_update)
         self.argument_spec.update(argument_spec)
         self.required_if = [
             ['new_cert', 'yes', ['days_valid', 'issuer', 'key_size']]

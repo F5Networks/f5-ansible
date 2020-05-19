@@ -47,16 +47,13 @@ f5_provider_spec = {
         aliases=['pass', 'pwd'],
         fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD']),
     ),
-    'ssh_keyfile': dict(
-        type='path'
-    ),
     'validate_certs': dict(
         type='bool',
         default='yes',
         fallback=(env_fallback, ['F5_VALIDATE_CERTS'])
     ),
     'transport': dict(
-        choices=['cli', 'rest'],
+        choices=['rest'],
         default='rest'
     ),
     'timeout': dict(type='int'),
@@ -187,7 +184,7 @@ def flatten_boolean(value):
 
 
 def is_cli(module):
-    transport = module.params['transport']
+    transport = module.params.get('transport', None)
     provider_transport = (module.params['provider'] or {}).get('transport')
     result = 'cli' in (transport, provider_transport)
     return result

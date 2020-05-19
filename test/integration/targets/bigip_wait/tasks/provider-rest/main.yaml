@@ -1,0 +1,76 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Wait for BIG-IP to be ready for configuration - provider - rest
+  bigip_wait:
+    timeout: 10
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  ignore_errors: true
+
+- name: Attempt to make a change, expected failure - provider - rest
+  bigip_pool:
+    lb_method: round-robin
+    name: foo-pool
+    state: present
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Attempt to make a change, expected failure - provider - rest
+  assert:
+    that:
+      - result is not changed
+
+- name: Wait for BIG-IP to actually be ready - provider - rest
+  bigip_wait:
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Wait for BIG-IP to actually be ready - provider - rest
+  assert:
+    that:
+      - result is not changed
+      - "'elapsed' in result"
+
+- name: Attempt to make a change, no failure - provider - rest
+  bigip_pool:
+    lb_method: round-robin
+    name: foo-pool
+    state: present
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Attempt to make a change, no failure - provider - rest
+  assert:
+    that:
+      - result is changed
+
+- import_tasks: teardown.yaml
+
+- import_tasks: issue-01437.yaml
+  tags: issue-01437
+
+- import_tasks: issue_vcmp_wait.yaml
+  tags: issue_vcmp_wait

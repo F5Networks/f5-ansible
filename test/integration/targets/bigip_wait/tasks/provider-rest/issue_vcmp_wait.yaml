@@ -1,0 +1,21 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Wait for BIG-IP to be ready, expected pass - provider - rest
+  bigip_wait:
+    timeout: 300
+    type: vcmp
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: assert pass - provider - rest
+  assert:
+    that:
+      - result is not changed

@@ -1,6 +1,7 @@
 ---
+- import_tasks: setup.yaml
 
-- name: Wait for BIG-IP to be ready, expected failure
+- name: Wait for BIG-IP to be ready, expected failure - environment
   bigip_wait:
     timeout: 10
     delay: 10
@@ -8,13 +9,13 @@
   register: result
   ignore_errors: true
 
-- name: assert failure
+- name: assert failure - environment
   assert:
     that:
       - result is not changed
       - "'greater than' in result.msg"
 
-- name: Wait for BIG-IP to be ready, expected failure
+- name: Wait for BIG-IP to be ready, expected failure - environment
   bigip_wait:
     timeout: 15
     delay: 10
@@ -22,13 +23,13 @@
   register: result
   ignore_errors: true
 
-- name: assert failure
+- name: assert failure - environment
   assert:
     that:
       - result is not changed
       - "'greater than' in result.msg"
 
-- name: Wait for BIG-IP to be ready, expected pass
+- name: Wait for BIG-IP to be ready, expected pass - environment
   bigip_wait:
     timeout: 25
     delay: 10
@@ -36,7 +37,7 @@
   register: result
   ignore_errors: true
 
-- name: assert pass
+- name: assert pass - environment
   assert:
     that:
       - result is not changed
