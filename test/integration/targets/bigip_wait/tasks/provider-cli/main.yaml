@@ -1,0 +1,62 @@
+---
+- import_tasks: setup.yaml
+
+- name: Wait for BIG-IP to be ready for configuration - tramsport cli
+  bigip_wait:
+    timeout: 10
+    provider: "{{ cli_provider }}"
+  ignore_errors: true
+
+- name: Attempt to make a change, expected failure - tramsport cli
+  bigip_pool:
+    lb_method: round-robin
+    name: foo-pool
+    state: present
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Attempt to make a change, expected failure - tramsport cli
+  assert:
+    that:
+      - result is not changed
+
+- name: Wait for BIG-IP to actually be ready - tramsport cli
+  bigip_wait:
+    provider: "{{ cli_provider }}"
+  register: result
+
+- name: Assert Wait for BIG-IP to actually be ready - tramsport cli
+  assert:
+    that:
+      - result is not changed
+      - "'elapsed' in result"
+
+- name: Attempt to make a change, no failure - tramsport cli
+  bigip_pool:
+    lb_method: round-robin
+    name: foo-pool
+    state: present
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Attempt to make a change, no failure - tramsport cli
+  assert:
+    that:
+      - result is changed
+
+- import_tasks: teardown.yaml
+
+- import_tasks: issue-00842.yaml
+  tags: issue-00842

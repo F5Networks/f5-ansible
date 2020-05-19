@@ -19,6 +19,8 @@ from ansible.module_utils.basic import AnsibleModule
 try:
     from library.modules.bigip_wait import Parameters
     from library.modules.bigip_wait import ModuleManager
+    from library.modules.bigip_wait import V1Manager
+    from library.modules.bigip_wait import V2Manager
     from library.modules.bigip_wait import ArgumentSpec
 
     # In Ansible 2.8, Ansible changed import paths.
@@ -30,6 +32,8 @@ try:
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_wait import Parameters
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_wait import ModuleManager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_wait import V1Manager
+    from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_wait import V2Manager
     from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_wait import ArgumentSpec
 
     # Ansible 2.8 imports
@@ -108,7 +112,7 @@ class TestManager(unittest.TestCase):
             provider=dict(
                 server='localhost',
                 password='password',
-                user='admin'
+                user='admin',
             )
         ))
 
@@ -118,11 +122,15 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
+        m1 = V2Manager(module=module)
         mm = ModuleManager(module=module)
-        mm._connect_to_device = Mock(return_value=True)
-        mm._device_is_rebooting = Mock(return_value=False)
-        mm._is_mprov_running_on_device = Mock(return_value=False)
-        mm._get_client_connection = Mock(return_value=True)
+        mm.get_manager = Mock(return_value=m1)
+
+        m1._connect_to_device = Mock(return_value=True)
+        m1._device_is_rebooting = Mock(return_value=False)
+        m1._is_mprov_running_on_device = Mock(return_value=False)
+        m1._get_client_connection = Mock(return_value=True)
+        m1._rest_endpoints_ready = Mock(side_effect=[False, False, True])
 
         results = mm.exec_module()
 

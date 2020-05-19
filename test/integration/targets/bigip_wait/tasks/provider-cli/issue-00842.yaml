@@ -1,0 +1,66 @@
+---
+- name: Issue 00842 - Reboot BIG-IP - ssh key auth, tramsport cli
+  bigip_command:
+    commands: tmsh reboot
+    provider: "{{ ssh_key_auth }}"
+  ignore_errors: true
+
+- name: Issue 00842 - Wait for shutdown to happen - tramsport cli
+  pause:
+    seconds: 90
+
+- name: Issue 00842 - Wait for BIG-IP to be ready for configuration, ssh key auth - tramsport cli
+  bigip_wait:
+    timeout: 10
+    provider: "{{ ssh_key_auth }}"
+  ignore_errors: true
+
+- name: Issue 00842 - Attempt to make a change, expected failure - tramsport cli
+  bigip_pool:
+    lb_method: round-robin
+    name: foo-pool
+    state: present
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: Issue 00842 - Assert Attempt to make a change, expected failure - tramsport cli
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00842 - Wait for BIG-IP to actually be ready, ssh key auth - tramsport cli
+  bigip_wait:
+    provider: "{{ ssh_key_auth }}"
+  register: result
+
+- name: Issue 00842 - Assert Wait for BIG-IP to actually be ready, ssh key auth - tramsport cli
+  assert:
+    that:
+      - result is not changed
+      - "'elapsed' in result"
+
+- name: Issue 00842 - Attempt to make a change, no failure- tramsport cli
+  bigip_pool:
+    lb_method: round-robin
+    name: foo-pool
+    state: present
+    provider:
+      user: "{{ bigip_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 00842 - Assert Attempt to make a change, no failure - tramsport cli
+  assert:
+    that:
+      - result is changed
+
+- import_tasks: teardown.yaml

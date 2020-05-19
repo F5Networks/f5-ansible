@@ -1,0 +1,11 @@
+---
+
+- name: Reboot BIG-IP - tramsport cli
+  bigip_command:
+    commands: tmsh reboot
+    provider: "{{ cli_provider }}"
+  ignore_errors: true
+
+- name: Wait for shutdown to happen - tramsport cli
+  pause:
+    seconds: 90
