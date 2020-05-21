@@ -475,12 +475,6 @@ class ModuleParameters(Parameters):
             return 'disabled'
 
     @property
-    def time_until_up(self):
-        if self._values['time_until_up'] is None:
-            return None
-        return int(self._values['time_until_up'])
-
-    @property
     def debug(self):
         return flatten_boolean(self._values['debug'])
 
@@ -548,19 +542,6 @@ class ModuleParameters(Parameters):
             )
         return self._values['time_until_up']
 
-    @property
-    def manual_resume(self):
-        result = flatten_boolean(self._values['manual_resume'])
-        if result == 'yes':
-            return 'enabled'
-        if result == 'no':
-            return 'disabled'
-
-    @property
-    def debug(self):
-        result = flatten_boolean(self._values['debug'])
-        return result
-
 
 class Changes(Parameters):
     def to_return(self):
@@ -570,7 +551,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 

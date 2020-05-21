@@ -509,14 +509,6 @@ class ModuleParameters(Parameters):
             )
 
     @property
-    def port(self):
-        if self._values['port'] is None:
-            return None
-        elif self._values['port'] == '*':
-            return '*'
-        return int(self._values['port'])
-
-    @property
     def destination(self):
         if self.ip is None and self.port is None:
             return None
