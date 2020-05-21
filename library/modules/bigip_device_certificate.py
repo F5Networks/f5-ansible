@@ -250,6 +250,7 @@ import ssl
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.connection import exec_command
 
 
@@ -595,7 +596,11 @@ class ArgumentSpec(object):
             ssh_keyfile=dict(
                 type='path'
             ),
-
+            server_port=dict(
+                type='int',
+                default=22,
+                fallback=(env_fallback, ['F5_SERVER_PORT'])
+            ),
         )
         new_spec = copy.deepcopy(f5_argument_spec)
         self.argument_spec = {}

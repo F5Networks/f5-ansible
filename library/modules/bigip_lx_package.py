@@ -175,7 +175,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -283,11 +283,8 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201, 202] or 'code' in response and response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(resp.content)
 
         path = urlparse(response["selfLink"]).path
         task = self._wait_for_task(path)
@@ -320,12 +317,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response
+        if resp.status in [200, 201, 202] or 'code' in response and response['code'] in [200, 201, 202]:
+            return response
+        raise F5ModuleError(resp.content)
 
     def upload_to_device(self):
         url = 'https://{0}:{1}/mgmt/shared/file-transfer/uploads'.format(
@@ -353,11 +347,10 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201, 202] or 'code' in response and response['code'] in [200, 201, 202]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         remote_path = "/var/config/rest/downloads/{0}".format(self.want.package_file)
@@ -376,11 +369,8 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201, 202] or 'code' in response and response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(resp.content)
 
         path = urlparse(response["selfLink"]).path
         task = self._wait_for_task(path)
@@ -407,11 +397,8 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201, 202] or 'code' in response and response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(resp.content)
 
         path = urlparse(response["selfLink"]).path
         task = self._wait_for_task(path)
@@ -434,11 +421,10 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201, 202] or 'code' in response and response['code'] in [200, 201, 202]:
+            return True
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
