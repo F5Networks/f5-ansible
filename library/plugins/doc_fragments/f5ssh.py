@@ -34,7 +34,7 @@ options:
           - The BIG-IP server port.
           - You may omit this option by setting the environment variable C(F5_SERVER_PORT).
         type: int
-        default: 443
+        default: 22
       user:
         description:
           - The username to connect to the BIG-IP with. This user must have

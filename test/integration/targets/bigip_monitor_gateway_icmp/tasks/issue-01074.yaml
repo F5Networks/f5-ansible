@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 01074 - Create GW ICMP monitor
-  bigip_monitor_icmp:
+  bigip_monitor_gateway_icmp:
     name: "{{ monitor_name }}"
     ip: '*'
     port: '*'
@@ -14,7 +14,7 @@
       - result is success
 
 - name: Issue 01074 - Create GW ICMP monitor - Idempotent check
-  bigip_monitor_icmp:
+  bigip_monitor_gateway_icmp:
     name: "{{ monitor_name }}"
     ip: '*'
     port: '*'
@@ -27,7 +27,7 @@
       - result is success
 
 - name: Issue 01074 - Remove GW ICMP monitor
-  bigip_monitor_icmp:
+  bigip_monitor_gateway_icmp:
     name: "{{ monitor_name }}"
     state: absent
   register: result

@@ -1247,11 +1247,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device_mcast(self, params):
         uri = "https://{0}:{1}/mgmt/tm/net/multicast-globals/".format(
@@ -1265,11 +1263,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device_dag(self, params):
         uri = "https://{0}:{1}/mgmt/tm/net/dag-globals/".format(
@@ -1283,11 +1279,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device_lldp(self, params):
         uri = "https://{0}:{1}/mgmt/tm/net/lldp-globals/".format(
@@ -1301,11 +1295,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device_self(self, params):
         uri = "https://{0}:{1}/mgmt/tm/net/self-allow/".format(
@@ -1319,11 +1311,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         response = dict(
@@ -1356,12 +1346,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device_mcast(self):
         uri = "https://{0}:{1}/mgmt/tm/net/multicast-globals/".format(
@@ -1374,12 +1361,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device_dag(self):
         uri = "https://{0}:{1}/mgmt/tm/net/dag-globals/".format(
@@ -1392,12 +1376,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device_lldp(self):
         uri = "https://{0}:{1}/mgmt/tm/net/lldp-globals/".format(
@@ -1410,12 +1391,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device_self(self):
         uri = "https://{0}:{1}/mgmt/tm/net/self-allow/".format(
@@ -1428,12 +1406,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):
