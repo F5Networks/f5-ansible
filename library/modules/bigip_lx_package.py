@@ -247,7 +247,8 @@ class ModuleManager(object):
                 raise F5ModuleError(
                     "The specified LX package was not found in {0}.".format(os.getcwd())
                 )
-        self.upload_to_device()
+        if not self.check_file_exists_on_device():
+            self.upload_to_device()
         self.create_on_device()
         self.enable_iapplx_on_device()
         self.remove_package_file_from_device()
@@ -332,6 +333,31 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "Failed to upload the file."
             )
+
+    def check_file_exists_on_device(self):
+        params = dict(
+            command="run",
+            utilCmdArgs="/var/config/rest/downloads/{0}".format(self.want.package_file)
+        )
+        uri = "https://{0}:{1}/mgmt/tm/util/unix-ls".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError:
+            return False
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            return False
+
+        try:
+            if "No such file or directory" in response['commandResult']:
+                return False
+            if self.want.package_file in response['commandResult']:
+                return True
+        except KeyError:
+            return False
 
     def remove_package_file_from_device(self):
         params = dict(
