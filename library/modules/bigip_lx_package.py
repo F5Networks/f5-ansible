@@ -38,6 +38,12 @@ options:
     choices:
       - present
       - absent
+  retain_package_file:
+    description:
+      - Should the install file be deleted on successful installation of the package
+    type: bool
+    default: no
+    version_added: "f5_modules 1.4"
 notes:
   - Requires the rpm tool be installed on the host. This can be accomplished through
     different ways on each platform. On Debian based systems with C(apt);
@@ -83,6 +89,16 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
+
+- name: Install AS3 and don't delete package file
+  bigip_lx_package:
+    package: f5-appsvcs-3.5.0-3.noarch.rpm
+    retain_package_file: yes
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -103,6 +119,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.icontrol import tmos_version
     from library.module_utils.network.f5.icontrol import upload_file
+    from library.module_utils.network.f5.common import flatten_boolean
 except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
@@ -110,6 +127,7 @@ except ImportError:
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import f5_argument_spec
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import tmos_version
     from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import upload_file
+    from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import flatten_boolean
 
 
 class Parameters(AnsibleF5Parameters):
@@ -157,6 +175,10 @@ class Parameters(AnsibleF5Parameters):
         base = os.path.basename(self._values['package'])
         result = os.path.splitext(base)
         return result[0]
+
+    @property
+    def retain_package_file(self):
+        return flatten_boolean(self._values['retain_package_file'])
 
 
 class ApiParameters(Parameters):
@@ -251,7 +273,8 @@ class ModuleManager(object):
             self.upload_to_device()
         self.create_on_device()
         self.enable_iapplx_on_device()
-        self.remove_package_file_from_device()
+        if self.want.retain_package_file == 'no':
+            self.remove_package_file_from_device()
         if self.exists():
             return True
         else:
@@ -346,18 +369,14 @@ class ModuleManager(object):
         resp = self.client.api.post(uri, json=params)
         try:
             response = resp.json()
-        except ValueError:
-            return False
-        if resp.status == 404 or 'code' in response and response['code'] == 404:
-            return False
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
 
-        try:
-            if "No such file or directory" in response['commandResult']:
-                return False
-            if self.want.package_file in response['commandResult']:
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if 'commandResult' in response and self.want.package_file in response['commandResult']:
                 return True
-        except KeyError:
             return False
+        raise F5ModuleError(resp.content)
 
     def remove_package_file_from_device(self):
         params = dict(
@@ -461,7 +480,11 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['present', 'absent']
             ),
-            package=dict(type='path')
+            package=dict(type='path'),
+            retain_package_file=dict(
+                default='no',
+                type='bool'
+            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

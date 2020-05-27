@@ -1,0 +1,24 @@
+---
+
+- name: Issue 01717 - Grab RPM package from github
+  get_url:
+    url: https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.5.0/f5-appsvcs-3.5.0-3.noarch.rpm
+    dest: /var/tmp
+    validate_certs: False
+
+- name: Issue 01717 - Upload and Install AS3 package and retain install file
+  bigip_lx_package:
+    package: /var/tmp/f5-appsvcs-3.5.0-3.noarch.rpm
+    retain_package_file: True
+    state: present
+
+- name: Delete AS3 package
+  bigip_lx_package:
+    package: /var/tmp/f5-appsvcs-3.5.0-3.noarch.rpm
+    state: absent
+  register: result
+
+- name: Issue 01717 - Upload and Install AS3 package and don't retain file
+  bigip_lx_package:
+    package: /var/tmp/f5-appsvcs-3.5.0-3.noarch.rpm
+    state: present
