@@ -127,6 +127,7 @@ options:
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Nitin Khanna (@nitinthewiz)
 '''
 
 EXAMPLES = r'''
@@ -429,7 +430,6 @@ class ModuleManager(object):
             return True
         self._clear_changes()
         self.import_file_to_device()
-        self.remove_temp_policy_from_device()
         return True
 
     def exists(self):
@@ -452,7 +452,7 @@ class ModuleManager(object):
         return False
 
     def upload_file_to_device(self, content, name):
-        url = 'https://{0}:{1}/mgmt/shared/file-transfer/uploads'.format(
+        url = 'https://{0}:{1}/mgmt/tm/asm/file-transfer/uploads'.format(
             self.client.provider['server'],
             self.client.provider['server_port']
         )
@@ -485,6 +485,8 @@ class ModuleManager(object):
     def inline_import(self):
         params = self.changes.api_params()
         params['name'] = fq_name(self.want.partition, self.want.name)
+        if self.want.source:
+            params['filename'] = os.path.split(self.want.source)[1]
         uri = "https://{0}:{1}/mgmt/tm/asm/tasks/import-policy/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -538,55 +540,9 @@ class ModuleManager(object):
         self.upload_file_to_device(self.want.source, name)
         time.sleep(2)
 
-        full_name = fq_name(self.want.partition, self.want.name)
-
-        if self.want.force:
-            cmd = 'tmsh load asm policy {0} file /var/config/rest/downloads/{1} overwrite'.format(full_name, name)
-        else:
-            cmd = 'tmsh load asm policy {0} file /var/config/rest/downloads/{1}'.format(full_name, name)
-
-        uri = "https://{0}:{1}/mgmt/tm/util/bash/".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        args = dict(
-            command='run',
-            utilCmdArgs='-c "{0}"'.format(cmd)
-        )
-        resp = self.client.api.post(uri, json=args)
-
-        try:
-            response = resp.json()
-            if 'commandResult' in response:
-                if 'Error' in response['commandResult'] or 'error' in response['commandResult']:
-                    raise F5ModuleError(response['commandResult'])
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
-
-    def remove_temp_policy_from_device(self):
-        name = os.path.split(self.want.source)[1]
-        tpath_name = '/var/config/rest/downloads/{0}'.format(name)
-        uri = "https://{0}:{1}/mgmt/tm/util/unix-rm/".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        args = dict(
-            command='run',
-            utilCmdArgs=tpath_name
-        )
-        resp = self.client.api.post(uri, json=args)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
+        task = self.inline_import()
+        self.wait_for_task(task)
+        return True
 
 
 class ArgumentSpec(object):
