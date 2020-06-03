@@ -109,3 +109,5 @@ ansible.cfg
 ansible_py3/
 # ansible galaxy-roles
 *f5devcentral*
+# other collections
+ansible
