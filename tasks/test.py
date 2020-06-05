@@ -44,9 +44,10 @@ def style(c):
     c.run("pycodestyle {0}/ansible_collections/f5networks/f5_modules/plugins/".format(BASE_DIR))
 
 
+@task(name='install-dep')
 def install_dependency(c):
     """Install netcommon collection if missing."""
-    c.run("ansible-galaxy collection install ansible.netcommon")
+    c.run("ansible-galaxy collection install ansible.netcommon -p {0}".format(BASE_DIR))
 
 
 @task(name='ansible-test')
@@ -64,3 +65,4 @@ def ansible_test(c, python_version='3.7', requirements=False):
         if result.failed:
             sys.exit(1)
         c.run('rm -rf {0}/tests/output'.format(collection))
+

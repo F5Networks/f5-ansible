@@ -59,11 +59,3 @@ def unstub(c, module=None):
     unstub_playbook_file(module)
     unstub_library_file(module, extension)
     unstub_unit_test_file(module, extension)
-
-
-HELP1 = dict(
-    module="A module name or list of module names separated by commas to be upstreamed. "
-           "If all modules are required specify 'all' instead of a module name.",
-    collection="The collection name to which the modules are upstreamed, default: 'f5_modules'.",
-    verbose="Enables verbose message output."
-)

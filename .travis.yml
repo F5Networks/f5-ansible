@@ -20,6 +20,8 @@ jobs:
     - stage: Tests
       name: F5 Unit Tests
       script:
+        - export PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
+        - inv test.install-dep
         - travis_retry pip install pytest --upgrade
         - pytest -x -s $TRAVIS_BUILD_DIR/ansible_collections/f5networks/f5_modules/tests/unit/modules/network/f5/
       python: "3.6"
