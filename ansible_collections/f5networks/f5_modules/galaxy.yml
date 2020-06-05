@@ -1,0 +1,21 @@
+authors:
+  - Wojciech Wypior (@wojtek0806)
+  - Greg Crosby (@crosbygw)
+  - Nitin Khanna (@nitinthewiz)
+dependencies:
+  ansible.netcommon: '*'
+description: F5 Modules for Ansible
+documentation: https://clouddocs.f5.com/products/orchestration/ansible/devel/modules/module_index.html
+homepage: https://clouddocs.f5.com/products/orchestration/ansible/devel/
+issues: https://github.com/F5Networks/f5-ansible/issues
+license: GPL-3.0-only
+name: f5_modules
+namespace: f5networks
+readme: README.md
+repository: https://github.com/F5Networks/f5-ansible
+tags:
+  - f5
+  - networking
+  - bigip
+  - bigiq
+version: 1.4.0

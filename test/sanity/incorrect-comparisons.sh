@@ -6,7 +6,7 @@
 
 found=''
 
-findings=$(egrep "if self.(\w+).(\w+) (!=|==|>=|=<) self.\1.\2" library/ -R)
+findings=$(egrep "if self.(\w+).(\w+) (!=|==|>=|=<) self.\1.\2" ansible_collections/f5networks/f5_modules/ -R)
 if [ "$findings" ]; then
     echo "${findings}"
     found=1

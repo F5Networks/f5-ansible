@@ -6,7 +6,7 @@
 
 found=''
 
-findings=$(egrep "self.client.module.deprecate(" library/ -R)
+findings=$(egrep "self.client.module.deprecate(" ansible_collections/f5networks/f5_modules/ -R)
 if [ "$findings" ]; then
     echo "${findings}"
     found=1
