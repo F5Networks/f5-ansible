@@ -11,7 +11,6 @@ import sys
 import os
 
 from .lib.common import BASE_DIR
-from .lib.common import copy_ignores
 from invoke import task
 
 
@@ -36,28 +35,27 @@ def f5_sanity(c):
 @task
 def unit(c):
     """Unit tests on F5 Ansible modules."""
-    c.run("pytest -s {0}/test/".format(BASE_DIR))
+    c.run("pytest -s {0}/ansible_collections/f5networks/f5_modules/tests/".format(BASE_DIR))
 
 
 @task
 def style(c):
     """Doc style testing on modules."""
-    c.run("pycodestyle {0}".format(BASE_DIR))
+    c.run("pycodestyle {0}/ansible_collections/f5networks/f5_modules/plugins/".format(BASE_DIR))
 
 
-@task(name='ansible-sanity')
-def ansible_sanity(c, collection='f5_modules', python_version='3.7', requirements=False):
-    """ This test is only used during CI/CD."""
-    collection_dir = '{0}/local/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-    root_dir = '{0}/local/ansible_collections'.format(BASE_DIR)
-    workaround_dir = '{0}/ansible_collections/f5networks/{1}'.format(BASE_DIR, collection)
-    copy_ignores(c, collection_dir)
-    if not os.path.exists(workaround_dir):
-        with c.cd(BASE_DIR):
-            # As a workaround to the issue ansible-tests has when ansible_collection is nested inside local/ directory,
-            # we need to move the directory out
-            c.run('mv {0} .'.format(root_dir))
-    with c.cd(workaround_dir):
+def install_dependency(c):
+    """Install netcommon collection if missing."""
+    c.run("ansible-galaxy collection install ansible.netcommon")
+
+
+@task(name='ansible-test')
+def ansible_test(c, python_version='3.7', requirements=False):
+    net_dir = '{0}/ansible_collections/ansible/netcommon/'.format(BASE_DIR)
+    collection = '{0}/ansible_collections/f5networks/f5_modules'.format(BASE_DIR)
+    if not os.path.exists(net_dir):
+        install_dependency(c)
+    with c.cd(collection):
         if requirements:
             execute = 'ansible-test sanity plugins/ --requirements --python {0}'.format(python_version)
         else:
@@ -65,4 +63,4 @@ def ansible_sanity(c, collection='f5_modules', python_version='3.7', requirement
         result = c.run(execute, warn=True)
         if result.failed:
             sys.exit(1)
-        c.run('rm -rf {0}/tests/output'.format(workaround_dir))
+        c.run('rm -rf {0}/tests/output'.format(collection))

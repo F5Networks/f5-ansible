@@ -21,7 +21,7 @@ jobs:
       name: F5 Unit Tests
       script:
         - travis_retry pip install pytest --upgrade
-        - pytest -x -s $TRAVIS_BUILD_DIR/test/unit/modules/network/f5/
+        - pytest -x -s $TRAVIS_BUILD_DIR/ansible_collections/f5networks/f5_modules/tests/unit/modules/network/f5/
       python: "3.6"
     - name: F5 Style and F5 Sanity Tests
       script:
@@ -30,9 +30,9 @@ jobs:
       python: "3.6"
     - name: Ansible Sanity Tests - Py3.6
       script:
-        - inv module.upstream -m all && inv module-utils.upstream && inv module-doc-fragments.upstream && inv plugins.upstream && inv test.ansible-sanity -r -p 3.6
+        - inv test.ansible-test -r -p 3.6
       python: "3.6"
     - name: Ansible Sanity Tests - Py3.7
       script:
-        - inv module.upstream -m all && inv module-utils.upstream && inv module-doc-fragments.upstream && inv plugins.upstream && inv test.ansible-sanity -r -p 3.7
+        - inv test.ansible-test -r -p 3.7
       python: "3.7"

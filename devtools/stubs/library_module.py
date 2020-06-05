@@ -58,8 +58,8 @@ from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
 
-from ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip import F5RestClient
-from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import (
+from ..module_utils.bigip import F5RestClient
+from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec
 )
 
