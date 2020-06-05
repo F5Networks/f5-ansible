@@ -114,8 +114,10 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm.exists = Mock(side_effect=[False, True])
         mm.create_on_device = Mock(return_value=True)
+        mm.check_file_exists_on_device = Mock(return_value=False)
         mm.upload_to_device = Mock(return_value=True)
         mm.enable_iapplx_on_device = Mock(return_value=True)
+        mm.retain_package_file = Mock(return_value=False)
         mm.remove_package_file_from_device = Mock(return_value=True)
 
         results = mm.exec_module()
