@@ -10,8 +10,6 @@ __metaclass__ = type
 
 import os
 import sys
-import glob
-from filecmp import dircmp
 
 
 AVAILABLE_PYTHON = ['2.7', '3.5', '3.6', '3.7']
@@ -41,21 +39,3 @@ def in_container():
     if any('/docker/' in x for x in lines):
         return True
     return False
-
-
-def cmp_dir(d1, d2):
-    cmpdir = dircmp(d1, d2)
-    if len(cmpdir.left_list) == len(cmpdir.right_list):
-        if len(cmpdir.diff_files) > 0:
-            return False
-        return True
-    return False
-
-
-def copy_ignores(c, collection_dir):
-    ignores_dir = '{0}/tests/sanity'.format(collection_dir)
-    if not os.path.exists(ignores_dir):
-        c.run('mkdir -p {0}'.format(ignores_dir))
-    if len(list(glob.glob('{0}/*.txt'.format(ignores_dir)))) == 0:
-        c.run('cp {0}/devtools/sanity/* {1}'.format(BASE_DIR, ignores_dir))
-        print('Ignore files copied.')

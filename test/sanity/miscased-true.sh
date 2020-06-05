@@ -6,7 +6,7 @@
 
 found=''
 
-findings=$(egrep "required: true" library/ -R)
+findings=$(egrep "required: true" ansible_collections/f5networks/f5_modules/plugins/ -R)
 if [ "$findings" ]; then
     echo "${findings}"
     found=1

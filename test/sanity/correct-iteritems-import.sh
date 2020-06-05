@@ -6,7 +6,7 @@
 
 found=''
 
-findings=$(egrep iteritems library/ -R | grep import | grep -v six)
+findings=$(egrep iteritems ansible_collections/f5networks/f5_modules/ -R | grep import | grep -v six)
 if [ "$findings" ]; then
     echo "${findings}"
     found=1

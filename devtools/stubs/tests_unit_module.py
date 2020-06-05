@@ -16,25 +16,14 @@ if sys.version_info < (2, 7):
 
 from ansible.module_utils.basic import AnsibleModule
 
-try:
-    from library.modules.{{ module }} import ApiParameters
-    from library.modules.{{ module }} import ModuleParameters
-    from library.modules.{{ module }} import ModuleManager
-    from library.modules.{{ module }} import ArgumentSpec
-    from test.units.compat import unittest
-    from test.units.compat.mock import Mock
-    from test.units.compat.mock import patch
-    from test.units.compat.utils import set_module_args
-except ImportError:
-    from ansible_collections.f5networks.f5_modules.plugins.modules.{{ module }} import ApiParameters
-    from ansible_collections.f5networks.f5_modules.plugins.modules.{{ module }} import ModuleParameters
-    from ansible_collections.f5networks.f5_modules.plugins.modules.{{ module }} import ModuleManager
-    from ansible_collections.f5networks.f5_modules.plugins.modules.{{ module }} import ArgumentSpec
-    from ansible_collections.f5networks.f5_modules.tests.units.compat import unittest
-    from ansible_collections.f5networks.f5_modules.tests.units.compat import Mock
-    from ansible_collections.f5networks.f5_modules.tests.units.compat import patch
-    from ansible_collections.f5networks.f5_modules.tests.units.utils import set_module_args
-
+from ansible_collections.f5networks.f5_modules.plugins.modules.{{ module }} import (
+    ApiParameters, ModuleParameters, ModuleManager, ArgumentSpec
+)
+from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
+from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
+from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import (
+    Mock, patch
+)
 
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')

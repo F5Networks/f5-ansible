@@ -6,7 +6,7 @@
 
 found=''
 
-findings=$(egrep defaultdict library/ -R | grep import | grep -v collections)
+findings=$(egrep defaultdict ansible_collections/f5networks/f5_modules/ -R | grep import | grep -v collections)
 if [ "$findings" ]; then
     echo "${findings}"
     found=1

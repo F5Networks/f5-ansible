@@ -9,8 +9,7 @@ Vagrantfile
 vault.txt
 **.cache/
 cache/
-local/ansible
-local/ansible_collections
+output
 test/integration/targets/bigip_imish_config/backup
 assets/
 
@@ -110,3 +109,5 @@ ansible.cfg
 ansible_py3/
 # ansible galaxy-roles
 *f5devcentral*
+# other collections
+ansible

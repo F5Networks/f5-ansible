@@ -26,7 +26,7 @@ if HAS_JINJA:
 
 
 def module_file_present(module):
-    module_file = '{0}/library/modules/{1}.py'.format(BASE_DIR, module)
+    module_file = '{0}/ansible_collections/f5networks/f5_modules/plugins/modules/{1}.py'.format(BASE_DIR, module)
     if os.path.exists(module_file):
         print('Module file "{0}" exists'.format(module_file))
         return True
@@ -40,7 +40,7 @@ def module_file_absent(module):
 
 def stub_roles_dirs(module):
     # Create role containing all of your future functional tests
-    for d in ['defaults', 'tasks']:
+    for d in ['defaults', 'tasks', 'meta']:
         directory = '{0}/test/integration/targets/{1}/{2}'.format(BASE_DIR, module, d)
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -48,9 +48,9 @@ def stub_roles_dirs(module):
 
 def stub_roles_yaml_files(module):
     # Create default vars to contain any playbook variables
-    for dir in ['defaults', 'tasks']:
+    for d in ['defaults', 'tasks']:
         defaults_file = '{0}/test/integration/targets/{1}/{2}/main.yaml'.format(
-            BASE_DIR, module, dir
+            BASE_DIR, module, d
         )
         touch(defaults_file)
     for f in ['setup.yaml', 'teardown.yaml']:
@@ -62,6 +62,18 @@ def stub_roles_yaml_files(module):
     content = template.render()
 
     with open(main_tests, 'w') as fh:
+        fh.write(content)
+
+    stub_meta_main_file(module)
+
+
+def stub_meta_main_file(module):
+    touch('{0}/test/integration/targets/{1}/meta/main.yml'.format(BASE_DIR, module))
+    main_meta = '{0}/test/integration/targets/{1}/meta/main.yml'.format(BASE_DIR, module)
+    template = JINJA_ENV.get_template('test_meta_main.yml')
+    content = template.render()
+
+    with open(main_meta, 'w') as fh:
         fh.write(content)
 
 
@@ -79,7 +91,9 @@ def stub_playbook_file(module):
 
 def stub_library_file(module, extension):
     # Create your new module python file
-    library_file = '{0}/library/modules/{1}{2}'.format(BASE_DIR, module, extension)
+    library_file = '{0}/ansible_collections/f5networks/f5_modules/plugins/modules/{1}{2}'.format(
+        BASE_DIR, module, extension
+    )
 
     template = JINJA_ENV.get_template('library_module.py')
     content = template.render(module=module)
@@ -95,10 +109,10 @@ def touch(name, times=None):
 
 
 def stub_unit_test_file(module, extension):
-    test_dir_path = '{0}/test/units/modules/network/f5/'.format(BASE_DIR)
+    test_dir_path = '{0}/ansible_collections/f5networks/f5_modules/tests/unit/modules/network/f5/'.format(BASE_DIR)
     if not os.path.exists(test_dir_path):
         os.makedirs(test_dir_path)
-    test_file = '{0}/test/units/modules/network/f5/test_{1}{2}'.format(
+    test_file = '{0}/ansible_collections/f5networks/f5_modules/tests/unit/modules/network/f5/test_{1}{2}'.format(
         BASE_DIR, module, extension
     )
 
@@ -110,13 +124,22 @@ def stub_unit_test_file(module, extension):
     fh.close()
 
 
+def unstub_meta_yml_files(module):
+    main_meta = '{0}/test/integration/targets/{1}/meta/main.yml'.format(BASE_DIR, module)
+    if os.path.exists(main_meta):
+        os.remove(main_meta)
+
+
 def unstub_roles_yaml_files(module):
-    for dir in ['defaults', 'tasks']:
+    for d in ['defaults', 'tasks']:
         defaults_file = '{0}/test/integration/targets/{1}/{2}/main.yaml'.format(
-            BASE_DIR, module, dir
+            BASE_DIR, module, d
         )
     if os.path.exists(defaults_file):
         os.remove(defaults_file)
+
+    unstub_meta_yml_files(module)
+
     for f in ['setup.yaml', 'teardown.yaml']:
         set_teardown_file = '{0}/test/integration/targets/{1}/tasks/{2}'.format(BASE_DIR, module, f)
     if os.path.exists(set_teardown_file):
@@ -127,8 +150,8 @@ def unstub_roles_yaml_files(module):
 
 
 def unstub_roles_dirs(module):
-    for dir in ['defaults', 'tasks']:
-        directory = '{0}/test/integration/targets/{1}/{2}'.format(BASE_DIR, module, dir)
+    for d in ['defaults', 'tasks', 'meta']:
+        directory = '{0}/test/integration/targets/{1}/{2}'.format(BASE_DIR, module, d)
         if os.path.exists(directory):
             shutil.rmtree(directory)
 
@@ -140,16 +163,16 @@ def unstub_playbook_file(module):
 
 
 def unstub_library_file(module, extension):
-    library_file = '{0}/library/modules/{1}{2}'.format(BASE_DIR, module, extension)
+    library_file = '{0}/ansible_collections/f5networks/f5_modules/plugins/modules/{1}{2}'.format(BASE_DIR, module, extension)
     if os.path.exists(library_file):
         os.remove(library_file)
 
 
 def unstub_unit_test_file(module, extension):
-    test_dir_path = '{0}/test/units/modules/network/f5/'.format(BASE_DIR)
+    test_dir_path = '{0}/ansible_collections/f5networks/f5_modules/tests/unit/modules/network/f5/'.format(BASE_DIR)
     if not os.path.exists(test_dir_path):
         os.makedirs(test_dir_path)
-    test_file = '{0}/test/units/modules/network/f5/test_{1}{2}'.format(
+    test_file = '{0}/ansible_collections/f5networks/f5_modules/tests/unit/modules/network/f5/test_{1}{2}'.format(
         BASE_DIR, module, extension
     )
     if os.path.exists(test_file):
