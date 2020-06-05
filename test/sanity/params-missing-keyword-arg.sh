@@ -6,7 +6,7 @@
 
 found=''
 
-findings=$(egrep "self.want = Parameters\(self.module.params\)" library/ -R)
+findings=$(egrep "self.want = Parameters\(self.module.params\)" ansible_collections/f5networks/f5_modules/plugins/ -R)
 if [ "$findings" ]; then
     echo "${findings}"
     found=1
