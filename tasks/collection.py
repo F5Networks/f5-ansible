@@ -60,6 +60,7 @@ def validate_version(version):
     collection="The collection name for which the galaxy.yml file to be changed, DEFAULT: 'f5_modules'.",
 ))
 def change_galaxy_version(c, version, collection='f5_modules'):
+    """Changes version of the collection in galaxy.yml file."""
     validate_version(version)
     update_galaxy_file(version, collection)
     print("File galaxy.yml updated.")
