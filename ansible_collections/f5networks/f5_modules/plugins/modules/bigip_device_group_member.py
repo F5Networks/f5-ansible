@@ -84,7 +84,7 @@ from ansible.module_utils.basic import AnsibleModule
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean
+    F5ModuleError, AnsibleF5Parameters, f5_argument_spec
 )
 
 

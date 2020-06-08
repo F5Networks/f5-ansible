@@ -59,9 +59,9 @@ def ansible_test(c, python_version='3.7', requirements=False):
         install_dependency(c)
     with c.cd(collection):
         if requirements:
-            execute = 'ansible-test sanity plugins/ --requirements --python {0}'.format(python_version)
+            execute = 'ansible-test sanity --requirements --python {0}'.format(python_version)
         else:
-            execute = 'ansible-test sanity plugins/ --python {0}'.format(python_version)
+            execute = 'ansible-test sanity --python {0}'.format(python_version)
         result = c.run(execute, warn=True)
         if result.failed:
             sys.exit(1)

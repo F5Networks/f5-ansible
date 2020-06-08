@@ -7219,11 +7219,11 @@ from ansible.module_utils.six import (
 
 try:
     from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import (
-        ip_network, ip_interface, ip_address
+        ip_interface
     )
 except ImportError:
     from ansible.module_utils.compat.ipaddress import (
-        ip_network, ip_interface, ip_address
+        ip_interface
     )
 
 from collections import namedtuple
@@ -12614,9 +12614,9 @@ class SelfIpsParameters(BaseParameters):
 
     @property
     def netmask(self):
+        result = None
         parts = self._values['address'].split('/')
         if is_valid_ip(parts[0]):
-            addr = ip_address(u'{0}'.format(parts[0]))
             ip = ip_interface(u'{0}'.format(self._values['address']))
             result = ip.netmask
         return str(result)

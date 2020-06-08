@@ -320,7 +320,7 @@ from ansible.module_utils.basic import (
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean, fq_name
+    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean
 )
 from ..module_utils.compare import cmp_str_with_none
 from ..module_utils.ipaddress import is_valid_ip
