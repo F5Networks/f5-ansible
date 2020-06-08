@@ -111,3 +111,5 @@ ansible_py3/
 *f5devcentral*
 # other collections
 ansible
+# ignore build artifacts
+builds/*
