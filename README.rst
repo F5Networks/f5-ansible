@@ -47,7 +47,7 @@ Installing the Daily Build
 
     ansible-galaxy collection install <collection name> -p ./collections
     e.g.
-    ansible-galaxy collection install f5networks-f5_modules-1.0.0-devel.tar.gz -p ./collections
+    ansible-galaxy collection install f5networks-f5_modules-devel.tar.gz -p ./collections
 
 .. note::
 
@@ -116,7 +116,7 @@ See `License`_.
 
 .. |dailybuild| raw:: html
 
-   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-1.4.0-devel.tar.gz" target="_blank">here</a>
+   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-devel.tar.gz" target="_blank">here</a>
 
 .. |f5_collection| raw:: html
 
