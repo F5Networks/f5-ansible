@@ -168,6 +168,12 @@ class ModuleParameters(Parameters):
             result = list()
             result.append(str(name_servers))
             return result
+        if isinstance(name_servers, list) and name_servers != []:
+            result = list()
+            for server in name_servers:
+                for ip_addr in server:
+                    result.append(ip_addr)
+            return result
         if is_empty_list(name_servers):
             return []
         return name_servers
