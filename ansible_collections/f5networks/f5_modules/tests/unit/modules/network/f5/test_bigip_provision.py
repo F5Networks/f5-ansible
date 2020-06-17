@@ -266,6 +266,7 @@ class TestManager(unittest.TestCase):
         # this forced sleeping can cause these tests to take 15
         # or more seconds to run. This is deliberate.
         mm._is_mprov_running_on_device = Mock(side_effect=[True, False, False, False, False])
+        mm._is_rest_available = Mock(side_effect=[False, False, True, True, True])
 
         results = mm.exec_module()
 
