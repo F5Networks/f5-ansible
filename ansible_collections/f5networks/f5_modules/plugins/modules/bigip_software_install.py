@@ -26,7 +26,10 @@ options:
     type: str
   block_device_image:
     description:
-      - Image to install on the remote device.
+      - Image to install on the remote device. In the case of a VCMP guest,
+        please ensure that this image is present on the VCMP host and is
+        referenced from there, and not from the VCMP guest. An ISO image
+        directly uploaded to the VCMP guest will not work.
     type: str
     version_added: "f5_modules 1.2"
   volume:

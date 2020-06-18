@@ -41,7 +41,10 @@ options:
     description:
       - Specifies the base software release ISO image file for installing the TMOS
         hypervisor instance and any licensed BIG-IP modules onto the guest's virtual
-        disk. When creating a new guest, this parameter is required.
+        disk. When creating a new guest, this parameter is required. Please ensure that
+        this image is present on the VCMP host and not just on the VCMP guest. Also, the
+        file reference for this image should be the one present on the host and not on the
+        guest.
     type: str
   initial_hotfix:
     description:
