@@ -644,6 +644,14 @@ client_ssl_profiles:
       returned: queried
       type: str
       sample: /Common/default.crt
+    key_file:
+      description:
+        - Specifies the name of the key installed on the traffic
+          management system for the purpose of terminating or initiating
+          an SSL connection.
+      returned: queried
+      type: str
+      sample: /Common/default.key
     chain_file:
       description:
         - Specifies or builds a certificate chain file that a client can
@@ -8053,6 +8061,7 @@ class ClientSslProfilesParameters(BaseParameters):
         'cacheSize': 'cache_size',
         'cacheTimeout': 'cache_timeout',
         'cert': 'certificate_file',
+        'key': 'key_file',
         'chain': 'chain_file',
         'crlFile': 'crl_file',
         'defaultsFrom': 'parent',
@@ -8090,6 +8099,7 @@ class ClientSslProfilesParameters(BaseParameters):
         'cache_size',
         'cache_timeout',
         'certificate_file',
+        'key_file',
         'chain_file',
         'ciphers',
         'crl_file',
@@ -8242,6 +8252,12 @@ class ClientSslProfilesParameters(BaseParameters):
         if self._values['certificate_file'] in [None, 'none']:
             return None
         return self._values['certificate_file']
+
+    @property
+    def key_file(self):
+        if self._values['key_file'] in [None, 'none']:
+            return None
+        return self._values['key_file']
 
     @property
     def chain_file(self):
