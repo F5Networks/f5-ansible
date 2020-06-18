@@ -647,6 +647,8 @@ class Difference(object):
             return None
         if self.want.irules == '' and len(self.have.irules) > 0:
             return []
+        if self.have.irules is None:
+            return self.want.irules
         if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
             return self.want.irules
 
