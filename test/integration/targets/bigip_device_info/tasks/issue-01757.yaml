@@ -1,0 +1,28 @@
+---
+
+- name: Issue 01757 - Create a client SSL profile
+  bigip_profile_client_ssl:
+    name: issue-01757
+    parent: clientssl
+    cert_key_chain:
+      - cert: default.crt
+        key: default.key
+  register: result
+
+- name: Issue 01757 - Select client-ssl-profiles
+  bigip_device_info:
+    gather_subset:
+      - client-ssl-profiles
+  register: bigip_facts
+
+- name: Assert key_file exists in client-ssl-profiles
+  assert:
+    that:
+      - bigip_facts is success
+      - bigip_facts.ansible_facts.ansible_net_client_ssl_profiles | json_query("[?name=='issue-01757']")
+      - bigip_facts.ansible_facts.ansible_net_client_ssl_profiles | json_query("[?name=='issue-01757']") | json_query("[?key_file=='/Common/default.key']")
+
+- name: Issue 01757 - Cleanup
+  bigip_profile_client_ssl:
+    name: issue-01757
+    state: absent
