@@ -411,10 +411,12 @@ class ModuleManager(object):
         if self.want.module == 'cgnat' and not self.version_is_greater_or_equal_15():
             return result
         self._wait_for_module_provisioning()
+        self._wait_for_rest_api_available()
 
         if self.want.module == 'vcmp':
             self._wait_for_reboot()
             self._wait_for_module_provisioning()
+            self._wait_for_rest_api_available()
 
         if self.want.module == 'asm':
             self._wait_for_asm_ready()
@@ -676,17 +678,20 @@ class ModuleManager(object):
 
         self.remove_from_device()
         self._wait_for_module_provisioning()
+        self._wait_for_rest_api_available()
         # For vCMP, because it has to reboot, we also wait for mcpd to become available
         # before "moving on", or else the REST API would not be available and subsequent
         # Tasks would fail.
         if self.want.module == 'vcmp':
             self._wait_for_reboot()
             self._wait_for_module_provisioning()
+            self._wait_for_rest_api_available()
 
         if self.should_reboot():
             self.save_on_device()
             self.reboot_device()
             self._wait_for_module_provisioning()
+            self._wait_for_rest_api_available()
 
         if self.exists():
             raise F5ModuleError("Failed to de-provision the module")
@@ -807,6 +812,49 @@ class ModuleManager(object):
                     raise F5ModuleError(resp.content)
 
             if 'commandResult' in response:
+                return True
+        except Exception:
+            pass
+        return False
+
+    def _wait_for_rest_api_available(self):
+        nops = 0
+        time.sleep(5)
+
+        while nops < 3:
+            try:
+                if self._is_rest_available():
+                    nops += 1
+                else:
+                    nops = 0
+                    time.sleep(5)
+            except Exception:
+                # This can be caused by restjavad restarting.
+                try:
+                    self.client.reconnect()
+                except Exception:
+                    pass
+
+    def _is_rest_available(self):
+        try:
+            uri = "https://{0}:{1}/mgmt/tm/sys/available".format(
+                self.client.provider['server'],
+                self.client.provider['server_port']
+            )
+            resp = self.client.api.get(uri)
+
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if 'code' in response and response['code'] in [400, 403, 404]:
+                if 'message' in response:
+                    raise F5ModuleError(response['message'])
+                else:
+                    raise F5ModuleError(resp.content)
+
+            if resp.status in [200, 201]:
                 return True
         except Exception:
             pass
