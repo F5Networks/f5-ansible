@@ -75,6 +75,9 @@ options:
       - absent
     default: present
 extends_documentation_fragment: f5networks.f5_modules.f5
+notes:
+  - This module is based on the command line (TMSH) configuration capabilities of radius authentication,
+    not the GUI.
 author:
   - Andrey Kashcheev (@andreykashcheev)
   - Wojciech Wypior (@wojtek0806)
