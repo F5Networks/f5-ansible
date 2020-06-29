@@ -133,7 +133,7 @@ from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec
 )
 from ..module_utils.icontrol import (
-    module_provisioned, tmos_version, download_file
+    module_provisioned, tmos_version, download_asm_file
 )
 
 
@@ -356,9 +356,12 @@ class ModuleManager(object):
         if 'commandResult' in response:
             raise F5ModuleError('Item export command failed.')
 
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-        raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        self._move_file_to_download()
+
+        return True
 
     def _move_file_to_download(self):
         if self.want.type == 'access_policy':
@@ -369,7 +372,7 @@ class ModuleManager(object):
         name = '{0}-{1}.conf.tar.gz'.format(item, self.want.name)
         move_path = '/shared/tmp/{0} {1}/{2}'.format(
             name,
-            '/ts/var/rest',
+            '/shared/images',
             self.want.file
         )
         params = dict(
@@ -397,13 +400,13 @@ class ModuleManager(object):
         raise F5ModuleError(resp.content)
 
     def download_from_device(self, dest):
-        url = 'https://{0}:{1}/mgmt/tm/asm/file-transfer/downloads/{2}'.format(
+        url = 'https://{0}:{1}/mgmt/cm/autodeploy/software-image-downloads/{2}'.format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             self.want.file
         )
         try:
-            download_file(self.client, url, dest)
+            download_asm_file(self.client, url, dest)
         except F5ModuleError:
             raise F5ModuleError(
                 "Failed to download the file."
@@ -413,7 +416,7 @@ class ModuleManager(object):
         return False
 
     def remove_temp_file_from_device(self):
-        tpath_name = '/ts/var/rest/{0}'.format(self.want.file)
+        tpath_name = '/shared/images/{0}'.format(self.want.file)
         uri = "https://{0}:{1}/mgmt/tm/util/unix-rm/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -431,7 +434,6 @@ class ModuleManager(object):
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return True
         raise F5ModuleError(resp.content)
-
 
 class ArgumentSpec(object):
     def __init__(self):
