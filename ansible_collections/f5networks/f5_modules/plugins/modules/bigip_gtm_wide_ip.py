@@ -18,7 +18,7 @@ module: bigip_gtm_wide_ip
 short_description: Manages F5 BIG-IP GTM wide ip
 description:
   - Manages F5 BIG-IP GTM wide ip.
-version_added: 2.0
+version_added: "1.0"
 options:
   pool_lb_method:
     description:
@@ -32,7 +32,6 @@ options:
       - ratio
       - topology
       - global-availability
-    version_added: 2.5
   name:
     description:
       - Wide IP name. This name must be formatted as a fully qualified
@@ -56,7 +55,6 @@ options:
       - mx
       - naptr
       - srv
-    version_added: 2.4
   state:
     description:
       - When C(present) or C(enabled), ensures that the Wide IP exists and
@@ -70,13 +68,11 @@ options:
       - disabled
       - enabled
     default: present
-    version_added: 2.4
   partition:
     description:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   pools:
     description:
       - The pools that you want associated with the Wide IP.
@@ -102,7 +98,6 @@ options:
           - Pool order is significant when the Global Availability load balancing method is utilized.
           - When C(order) is not provided the module assigns it value of C(0)
         type: int
-    version_added: 2.5
   irules:
     description:
       - List of rules to be applied.
@@ -110,7 +105,6 @@ options:
         See the documentation for an example.
     type: list
     elements: str
-    version_added: 2.6
   aliases:
     description:
       - Specifies alternate domain names for the web site content you are load
@@ -119,7 +113,6 @@ options:
         wide IP names.
     type: list
     elements: str
-    version_added: 2.7
   last_resort_pool:
     description:
       - Specifies which GTM pool, for the system to use as the last resort pool for
@@ -127,7 +120,6 @@ options:
       - The valid pools for this parameter are those with the C(type) specified in this
         module.
     type: str
-    version_added: 2.8
   persistence:
     description:
       - When C(yes), ensures that when a local DNS makes repetitive requests on

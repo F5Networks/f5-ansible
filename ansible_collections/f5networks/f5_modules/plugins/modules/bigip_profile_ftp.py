@@ -18,7 +18,7 @@ module: bigip_profile_ftp
 short_description: Manages FTP profiles
 description:
   - Manages FTP profiles.
-version_added: "f5_modules 1.0"
+version_added: "1.0"
 options:
   name:
     description:

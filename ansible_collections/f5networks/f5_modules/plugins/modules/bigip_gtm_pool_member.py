@@ -23,7 +23,7 @@ description:
     the member order in the pool, not the various settings of the members. The
     C(bigip_gtm_pool_member) module should be used to adjust all of the other
     settings.
-version_added: 2.6
+version_added: "1.0"
 options:
   virtual_server:
     description:
@@ -98,7 +98,6 @@ options:
     elements: dict
     aliases:
       - members
-    version_added: 2.8
   replace_all_with:
     description:
       - Remove members not defined in the C(aggregate) parameter.
@@ -108,7 +107,6 @@ options:
     type: bool
     aliases:
       - purge
-    version_added: 2.8
   limits:
     description:
       - Specifies resource thresholds or limit requirements at the pool member level.

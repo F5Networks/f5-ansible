@@ -18,7 +18,7 @@ module: bigip_log_destination
 short_description: Manages log destinations on a BIG-IP.
 description:
   - Manages log destinations on a BIG-IP.
-version_added: 2.6
+version_added: "1.0"
 options:
   name:
     description:
@@ -122,7 +122,6 @@ options:
       - legacy-bigip
       - rfc5424
       - rfc3164
-    version_added: 2.8
   forward_to:
     description:
       - When C(type) is C(remote-syslog), specifies the management port log destination, which will
@@ -135,7 +134,6 @@ options:
       - When creating a new log destination and C(type) is C(remote-syslog), C(splunk), or C(arcsight),
         this parameter is required.
     type: str
-    version_added: 2.8
   pool:
     description:
       - When C(type) is C(remote-high-speed-log), specifies the existing pool of remote high-speed
@@ -146,7 +144,6 @@ options:
       - When creating a new destination and C(type) is C(remote-high-speed-log) or C(ipfix), this
         parameter is required.
     type: str
-    version_added: 2.8
   protocol:
     description:
       - When C(type) is C(remote-high-speed-log), specifies the protocol for the system to use to
@@ -162,7 +159,6 @@ options:
       - udp
       - ipfix
       - netflow-9
-    version_added: 2.8
   distribution:
     description:
       - Specifies the distribution method used by the Remote High Speed Log destination to send
@@ -180,7 +176,6 @@ options:
       - adaptive
       - balanced
       - replicated
-    version_added: 2.8
   address:
     description:
       - Specifies the IP address that will receive messages from the specified local Log Destination.
@@ -188,7 +183,6 @@ options:
       - When creating a new log destination and C(type) is C(management-port), this parameter
         is required.
     type: str
-    version_added: 2.8
   port:
     description:
       - Specifies the port of the IP address that will receive messages from the specified local
@@ -197,7 +191,6 @@ options:
       - When creating a new log destination and C(type) is C(management-port), this parameter
         is required.
     type: int
-    version_added: 2.8
   transport_profile:
     description:
       - Is a transport profile based on either TCP or UDP.
@@ -205,7 +198,6 @@ options:
         to the pool of collectors.
       - This parameter is only available when C(type) is C(ipfix).
     type: str
-    version_added: 2.8
   server_ssl_profile:
     description:
       - If the C(transport_profile) is a TCP profile, you can use this field to
@@ -215,7 +207,6 @@ options:
         Transport Layer Security (TLS).
       - This parameter is only available when C(type) is C(ipfix).
     type: str
-    version_added: 2.8
   template_retransmit_interval:
     description:
       - Enter the time (in seconds) between each transmission of IPFIX templates
@@ -225,7 +216,6 @@ options:
         for UDP, a lossy transport mechanism.
       - This parameter is only available when C(type) is C(ipfix).
     type: int
-    version_added: 2.8
   template_delete_delay:
     description:
       - Enter the time (in seconds) that the BIG-IP device should pause between
@@ -233,7 +223,6 @@ options:
       - This feature is useful for systems where you use iRules to create
         customized IPFIX templates.
     type: int
-    version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.

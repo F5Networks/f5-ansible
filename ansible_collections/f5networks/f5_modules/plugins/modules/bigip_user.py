@@ -23,7 +23,7 @@ description:
     Your other parameters will be ignored in this case. Changing the C(root)
     password is not an idempotent operation. Therefore, it will change it
     every time this module attempts to change it.
-version_added: 2.4
+version_added: "1.0"
 options:
   full_name:
     description:
@@ -86,7 +86,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
 notes:
    - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5networks.f5_modules.f5

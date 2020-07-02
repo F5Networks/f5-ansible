@@ -19,7 +19,7 @@ short_description: Manages F5 BIG-IP GTM servers
 description:
   - Manage BIG-IP server configuration. This module is able to manipulate the server
     definitions in a BIG-IP.
-version_added: 2.5
+version_added: "1.0"
 options:
   name:
     description:
@@ -113,7 +113,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   iquery_options:
     description:
       - Specifies whether the Global Traffic Manager uses this BIG-IP
@@ -135,7 +134,6 @@ options:
             agent.
         type: bool
     type: dict
-    version_added: 2.7
   monitors:
     description:
       - Specifies the health monitors that the system currently uses to monitor this resource.
@@ -143,14 +141,12 @@ options:
         C(monitors) list.
     type: list
     elements: str
-    version_added: 2.8
   availability_requirements:
     description:
       - Specifies, if you activate more than one health monitor, the number of health
         monitors that must receive successful responses in order for the link to be
         considered available.
     type: dict
-    version_added: 2.8
     suboptions:
       type:
         description:
@@ -201,7 +197,6 @@ options:
       - outside-datacenter
       - inherit
       - pool
-    version_added: 2.8
   prober_fallback:
     description:
       - Specifies the type of prober to use to monitor this server's resources
@@ -219,7 +214,6 @@ options:
       - inherit
       - pool
       - none
-    version_added: 2.8
   prober_pool:
     description:
       - Specifies the name of the prober pool to use to monitor this server's resources.
@@ -228,7 +222,6 @@ options:
         just as an object name (C(foo)).
       - In C(TMOS) version C(12.x) prober_pool can be set to empty string to revert to default setting of inherit.
     type: str
-    version_added: 2.8
   limits:
     description:
       - Specifies resource thresholds or limit requirements at the pool member level.
@@ -295,7 +288,6 @@ options:
           - If available memory falls below this limit, the system marks the server as unavailable.
         type: int
     type: dict
-    version_added: 2.8
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Robert Teller (@r-teller)

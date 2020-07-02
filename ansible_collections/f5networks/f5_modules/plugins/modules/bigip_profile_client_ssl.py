@@ -18,7 +18,7 @@ module: bigip_profile_client_ssl
 short_description: Manages client SSL profiles on a BIG-IP
 description:
   - Manages client SSL profiles on a BIG-IP.
-version_added: 2.5
+version_added: "1.0"
 options:
   name:
     description:
@@ -44,7 +44,7 @@ options:
         the C(cipher) parameter must be set to C(none) or C('') during creation.
       - The parameter only works on TMOS version 13.x and above.
     type: str
-    version_added: "f5_modules 1.2"
+    version_added: "1.2"
   cert_key_chain:
     description:
       - One or more certificates and keys to associate with the SSL profile. This
@@ -86,13 +86,12 @@ options:
           - When C(no) the module will append C(.crt) and C(.key) extension to the given certificate and key names.
         type: bool
         default: no
-        version_added: "f5_modules 1.1"
+        version_added: "1.1"
   partition:
     description:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   options:
     description:
       - Options that the system uses for SSL processing in the form of a list. When
@@ -127,7 +126,6 @@ options:
       - netscape-ca-dn-bug
       - netscape-demo-cipher-change-bug
       - "none"
-    version_added: 2.7
   secure_renegotiation:
     description:
       - Specifies the method of secure renegotiations for SSL connections. When
@@ -144,20 +142,17 @@ options:
       - require
       - require-strict
       - request
-    version_added: 2.7
   allow_non_ssl:
     description:
       - Enables or disables acceptance of non-SSL connections.
       - When creating a new profile, the setting is provided by the parent profile.
     type: bool
-    version_added: 2.7
   server_name:
     description:
       - Specifies the fully qualified DNS hostname of the server used in Server Name Indication communications.
         When creating a new profile, the setting is provided by the parent profile.
       - The server name can also be a wildcard string containing the asterisk C(*) character.
     type: str
-    version_added: 2.8
   sni_default:
     description:
       - Indicates that the system uses this profile as the default SSL profile when there is no match to the
@@ -165,20 +160,17 @@ options:
       - When creating a new profile, the setting is provided by the parent profile.
       - There can be only one SSL profile with this setting enabled.
     type: bool
-    version_added: 2.8
   sni_require:
     description:
       - Requires that the network peers also provide SNI support, this setting only takes effect when C(sni_default) is
         set to C(true).
       - When creating a new profile, the setting is provided by the parent profile.
     type: bool
-    version_added: 2.8
   strict_resume:
     description:
       - Enables or disables the resumption of SSL sessions after an unclean shutdown.
       - When creating a new profile, the setting is provided by the parent profile.
     type: bool
-    version_added: 2.8
   client_certificate:
     description:
       - Specifies the way the system handles client certificates.
@@ -193,7 +185,6 @@ options:
       - ignore
       - require
       - request
-    version_added: 2.8
   client_auth_frequency:
     description:
       - Specifies the frequency of client authentication for an SSL session.
@@ -205,45 +196,37 @@ options:
     choices:
       - once
       - always
-    version_added: 2.8
   renegotiation:
     description:
       - Enables or disables SSL renegotiation.
       - When creating a new profile, the setting is provided by the parent profile.
     type: bool
-    version_added: 2.8
   retain_certificate:
     description:
       - When C(yes), client certificate is retained in SSL session.
     type: bool
-    version_added: 2.8
   cert_auth_depth:
     description:
       - Specifies the maximum number of certificates to be traversed in a client
         certificate chain.
     type: int
-    version_added: 2.8
   trusted_cert_authority:
     description:
       - Specifies a client CA that the system trusts.
     type: str
-    version_added: 2.8
   advertised_cert_authority:
     description:
       - Specifies that the CAs that the system advertises to clients is being trusted
         by the profile.
     type: str
-    version_added: 2.8
   client_auth_crl:
     description:
       - Specifies the name of a file containing a list of revoked client certificates.
     type: str
-    version_added: 2.8
   allow_expired_crl:
     description:
       - Instructs the system to use the specified CRL file even if it has expired.
     type: bool
-    version_added: 2.8
   cache_size:
     description:
       - Specifies the number of sessions in the SSL session cache.
@@ -251,7 +234,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the default is provided
         by the parent profile.
     type: int
-    version_added: "f5_modules 1.0"
+    version_added: "1.0"
   cache_timeout:
     description:
       - Specifies the timeout value in seconds of the SSL session cache entries.
@@ -259,7 +242,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the default is provided
         by the parent profile.
     type: int
-    version_added: "f5_modules 1.0"
+    version_added: "1.0"
   state:
     description:
       - When C(present), ensures that the profile exists.
@@ -269,7 +252,6 @@ options:
       - present
       - absent
     default: present
-    version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12
 extends_documentation_fragment: f5networks.f5_modules.f5

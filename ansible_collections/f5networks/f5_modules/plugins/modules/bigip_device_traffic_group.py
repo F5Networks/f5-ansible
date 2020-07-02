@@ -18,7 +18,7 @@ module: bigip_device_traffic_group
 short_description: Manages traffic groups on BIG-IP
 description:
   - Supports managing traffic groups and their attributes on a BIG-IP.
-version_added: 2.5
+version_added: "1.0"
 options:
   name:
     description:
@@ -37,7 +37,6 @@ options:
         either by sending an ARP request or by relying on the gratuitous ARP from the newly-active device.
       - To unset the MAC address, specify an empty value (C("")) to this parameter.
     type: str
-    version_added: 2.6
   ha_order:
     description:
       - Specifies order in which you would like to assign devices for failover.
@@ -52,7 +51,6 @@ options:
         name C(/Common/bigip1) or just the name string C(bigip1).
     type: list
     elements: str
-    version_added: 2.8
   ha_group:
     description:
       - Specifies a configured C(HA group) to be associated with the traffic group.
@@ -63,26 +61,22 @@ options:
         unless C(ha_order) setting is also configured.
       - The C(auto_failback) and C(auto_failback_time) are not compatible with C(ha_group).
     type: str
-    version_added: 2.8
   ha_load_factor:
     description:
       - The value of the load the traffic-group presents the system relative to other traffic groups.
       - This parameter only takes effect when C(Load Aware) failover method is in use.
       - The correct value range is C(1 - 1000) inclusive.
     type: int
-    version_added: 2.8
   auto_failback:
     description:
       - Specifies whether the traffic group fails back to the initial device specified in C(ha_order).
     type: bool
-    version_added: 2.8
   auto_failback_time:
     description:
       - Specifies the number of seconds the system delays before failing back to the initial device
         specified in C(ha_order).
       - The correct value range is C(0 - 300) inclusive.
     type: int
-    version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.

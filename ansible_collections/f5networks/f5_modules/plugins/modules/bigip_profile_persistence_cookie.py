@@ -18,7 +18,7 @@ module: bigip_profile_persistence_cookie
 short_description: Manage cookie persistence profiles on BIG-IP
 description:
   - Manage cookie persistence profiles on BIG-IP.
-version_added: 2.8
+version_added: "1.0"
 options:
   name:
     description:
@@ -153,7 +153,6 @@ options:
         type: int
         default: 0
     type: dict
-    version_added: 2.8
   partition:
     description:
       - Device partition to manage resources on.

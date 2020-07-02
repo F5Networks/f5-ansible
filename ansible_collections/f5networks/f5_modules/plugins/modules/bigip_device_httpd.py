@@ -19,7 +19,7 @@ short_description: Manage HTTPD related settings on BIG-IP
 description:
   - Manages HTTPD related settings on the BIG-IP. These settings are interesting
     to change when you want to set GUI timeouts and other TMUI related settings.
-version_added: 2.5
+version_added: "1.0"
 options:
   allow:
     description:
@@ -94,7 +94,6 @@ options:
         AES256-GCM-SHA384,AES128-SHA,AES256-SHA,AES128-SHA256,AES256-SHA256,
         ECDHE-RSA-DES-CBC3-SHA,ECDHE-ECDSA-DES-CBC3-SHA,DES-CBC3-SHA).
     type: raw
-    version_added: 2.6
   ssl_protocols:
     description:
       - The list of SSL protocols to accept on the management console.
@@ -105,7 +104,6 @@ options:
       - Use the value C(default) to set the SSL protocols to the system default.
         This value is equivalent to specifying a list of C(all,-SSLv2,-SSLv3).
     type: raw
-    version_added: 2.6
 notes:
   - Requires the requests Python package on the host. This is as easy as
     C(pip install requests).

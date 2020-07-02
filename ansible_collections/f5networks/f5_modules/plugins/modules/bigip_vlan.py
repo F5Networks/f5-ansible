@@ -18,7 +18,7 @@ module: bigip_vlan
 short_description: Manage VLANs on a BIG-IP system
 description:
   - Manage VLANs on a BIG-IP system
-version_added: 2.2
+version_added: "1.0"
 options:
   description:
     description:
@@ -74,7 +74,6 @@ options:
         value used will be C(1500).
       - This number must be between 576 to 9198.
     type: int
-    version_added: 2.5
   cmp_hash:
     description:
       - Specifies how the traffic on the VLAN will be disaggregated. The value
@@ -96,7 +95,6 @@ options:
       - source
       - dst
       - src
-    version_added: 2.5
   dag_tunnel:
     description:
       - Specifies how the disaggregator (DAG) distributes received tunnel-encapsulated
@@ -110,7 +108,6 @@ options:
     choices:
       - inner
       - outer
-    version_added: 2.5
   dag_round_robin:
     description:
       - Specifies whether some of the stateless traffic on the VLAN should be
@@ -120,32 +117,27 @@ options:
       - When creating a new VLAN, if this parameter is not specified, the default
         of (no) is used.
     type: bool
-    version_added: 2.5
   partition:
     description:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   source_check:
     description:
       - When C(yes), specifies that the system verifies that the return route to an initial
         packet is the same VLAN from which the packet originated.
       - The system performs this verification only if the C(auto_last_hop) option is C(no).
     type: bool
-    version_added: 2.8
   fail_safe:
     description:
       - When C(yes), specifies that the VLAN takes the specified C(fail_safe_action) if the
         system detects a loss of traffic on this VLAN's interfaces.
     type: bool
-    version_added: 2.8
   fail_safe_timeout:
     description:
       - Specifies the number of seconds that a system can run without detecting network
         traffic on this VLAN before it takes the C(fail_safe_action).
     type: int
-    version_added: 2.8
   fail_safe_action:
     description:
       - Specifies the action that the system takes when it does not detect any traffic on
@@ -155,17 +147,14 @@ options:
       - reboot
       - restart-all
       - failover
-    version_added: 2.8
   sflow_poll_interval:
     description:
       - Specifies the maximum interval in seconds between two pollings.
     type: int
-    version_added: 2.8
   sflow_sampling_rate:
     description:
       - Specifies the ratio of packets observed to the samples generated.
     type: int
-    version_added: 2.8
   interfaces:
     description:
       - Interfaces that you want added to the VLAN. This can include both tagged
@@ -186,14 +175,13 @@ options:
         choices:
           - tagged
           - untagged
-    version_added: 2.8
   hw_syn_cookie:
     description:
       - Enables hardware syncookie mode on a VLAN.
       - When C(yes), the hardware per-VLAN SYN cookie protection will be triggered when the certain traffic threshold
         is reached on supported platforms.
     type: bool
-    version_added: "f5_modules 1.3"
+    version_added: "1.3"
 notes:
   - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5networks.f5_modules.f5

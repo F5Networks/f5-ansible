@@ -18,7 +18,7 @@ module: bigip_remote_syslog
 short_description: Manipulate remote syslog settings on a BIG-IP
 description:
   - Manipulate remote syslog settings on a BIG-IP.
-version_added: 2.5
+version_added: "1.0"
 options:
   remote_host:
     description:
@@ -33,7 +33,6 @@ options:
         or hostname are present on the device.
       - If C(name) is not provided C(remote_host) is used by default.
     type: str
-    version_added: 2.8
   remote_port:
     description:
       - Specifies the port that the system uses to send messages to the

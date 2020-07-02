@@ -18,7 +18,7 @@ module: bigip_apm_network_access
 short_description: Manage APM Network Access resource
 description:
   - Manage APM Network Access resource.
-version_added: 2.9
+version_added: "1.0"
 options:
   name:
     description:
