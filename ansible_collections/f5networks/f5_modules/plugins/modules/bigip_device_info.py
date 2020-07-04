@@ -86,6 +86,7 @@ options:
       - software-hotfixes
       - ssl-certs
       - ssl-keys
+      - sync-status
       - system-db
       - system-info
       - tcp-monitors
@@ -153,6 +154,7 @@ options:
       - "!software-hotfixes"
       - "!ssl-certs"
       - "!ssl-keys"
+      - "!sync-status"
       - "!system-db"
       - "!system-info"
       - "!tcp-monitors"
@@ -5014,6 +5016,61 @@ ssl_keys:
       returned: queried
       type: str
       sample: 1fcf7de3dd8e834d613099d8e10b2060cd9ecc9f
+  sample: hash/dictionary of values
+sync_status:
+  description:
+    - Configuration Synchronization Status across all Device Groups.
+    - Note that the sync-status works across all device groups - a specific device group cannot be queried for its sync-status.
+    - In general the device-group with the 'worst' sync-status will be shown.
+  returned: When C(sync-status) is specified in C(gather_subset).
+  type: complex
+  contains:
+    color:
+      description:
+        - Sync status color.
+        - Eg. red, blue, green, yellow
+      returned: queried
+      type: str
+      sample: red
+    details:
+      description:
+        - A list of all details provided for the current sync-status of the device
+      returned: queried
+      type: list
+      sample:
+        - Optional action: Add a device to the trust domain
+    mode:
+      description:
+        - Device operation mode (high-availability, standalone)
+      returned: queried
+      type: str
+      sample:
+        - high-availability
+        - standalone
+    recommended_action:
+      description:
+        - The next recommended action to take on the current sync-status.
+        - This field might be empty.
+      returned: queried
+      type: str
+      sample: Synchronize bigip-a.example.com to group some-device-group
+    status:
+      description:
+        - Synchronization Status
+      returned: queried
+      type: str
+      sample:
+        - Changes Pending
+        - In Sync
+        - Standalone
+        - Disconnected
+    summary:
+      description: The configuration synchronization status summary
+      returned: queried
+      type: str
+      sample:
+        - The device group is awaiting the initial config sync
+        - There is a possible change conflict between ...
   sample: hash/dictionary of values
 system_db:
   description: System DB related information.
@@ -13490,6 +13547,115 @@ class SystemDbParameters(BaseParameters):
     ]
 
 
+class SyncStatusParameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+        'color',
+        'details',
+        'mode',
+        'recommended_action',
+        'status',
+        'summary',
+    ]
+
+    @property
+    def color(self):
+        result = self._values.get('color', {}).get('description', "")
+        if result.strip():
+            return result
+        return ""
+
+    @property
+    def details(self):
+        result = []
+        details = self._values.get('https://localhost/mgmt/tm/cm/syncStatus/0/details', {}) \
+                               .get('nestedStats', {}) \
+                               .get('entries', {})
+        for entry in details.keys():
+            result.append(
+                details[entry].get('nestedStats', {}) \
+                              .get('entries', {}) \
+                              .get('details', {}) \
+                              .get('description', "")
+            )
+        result.reverse()
+        return result
+
+    @property
+    def mode(self):
+        result = self._values.get('mode', {}).get('description', "")
+        if result.strip():
+            return result
+        return ""
+
+    @property
+    def status(self):
+        result = self._values.get('status', {}).get('description', "")
+        if result.strip():
+            return result
+        return ""
+
+    @property
+    def summary(self):
+        result = self._values.get('summary', {}).get('description', "")
+        if result.strip():
+            return result
+        return ""
+
+    @property
+    def recommended_action(self):
+        for entry in self.details:
+            match = re.match(r".*[Rr]ecommended action:\s(.*)$", entry)
+            if match:
+                return match.group(1)
+        return ""
+
+
+class SyncStatusFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SyncStatusFactManager, self).__init__(**kwargs)
+        self.want = SyncStatusParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(sync_status=facts)
+        return result
+
+    def _exec_module(self):
+        facts = self.read_facts()
+        attrs = facts.to_return()
+        result = [attrs]
+        return result
+
+    def read_facts(self):
+        collection = self.read_collection_from_device()
+        return SyncStatusParameters(params=collection)
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/cm/sync-status".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        result = response.get('entries', {}) \
+                         .get('https://localhost/mgmt/tm/cm/sync-status/0', {}) \
+                         .get('nestedStats', {}) \
+                         .get('entries')
+        return result
+
+
 class SystemDbFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
         self.client = kwargs.get('client', None)
@@ -16283,6 +16449,7 @@ class ModuleManager(object):
             'software-hotfixes': SoftwareHotfixesFactManager,
             'ssl-certs': SslCertificatesFactManager,
             'ssl-keys': SslKeysFactManager,
+            'sync-status': SyncStatusFactManager,
             'system-db': SystemDbFactManager,
             'system-info': SystemInfoFactManager,
             'tcp-monitors': TcpMonitorsFactManager,
@@ -16487,6 +16654,7 @@ class ArgumentSpec(object):
                     'software-hotfixes',
                     'ssl-certs',
                     'ssl-keys',
+                    'sync-status',
                     'system-db',
                     'system-info',
                     'tcp-monitors',
@@ -16558,6 +16726,7 @@ class ArgumentSpec(object):
                     '!software-hotfixes',
                     '!ssl-certs',
                     '!ssl-keys',
+                    '!sync-status',
                     '!system-db',
                     '!system-info',
                     '!tcp-monitors',
