@@ -13570,14 +13570,14 @@ class SyncStatusParameters(BaseParameters):
     @property
     def details(self):
         result = []
-        details = self._values.get('https://localhost/mgmt/tm/cm/syncStatus/0/details', {}) \
-                               .get('nestedStats', {}) \
-                               .get('entries', {})
+        details = (self._values.get('https://localhost/mgmt/tm/cm/syncStatus/0/details', {})
+                               .get('nestedStats', {})
+                               .get('entries', {}))
         for entry in details.keys():
             result.append(
-                details[entry].get('nestedStats', {}) \
-                              .get('entries', {}) \
-                              .get('details', {}) \
+                details[entry].get('nestedStats', {})
+                              .get('entries', {})
+                              .get('details', {})
                               .get('description', "")
             )
         result.reverse()
