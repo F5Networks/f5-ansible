@@ -35,7 +35,6 @@ options:
       - Load balancing method. When creating a new pool, if this value is not
         specified, the default of C(round-robin) will be used.
     type: str
-    version_added: "1.3"
     choices:
       - dynamic-ratio-member
       - dynamic-ratio-node
@@ -75,26 +74,22 @@ options:
       - and_list
       - m_of_n
       - single
-    version_added: "1.3"
   quorum:
     description:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
       - Quorum must be a value of 1 or greater when C(monitor_type) is C(m_of_n).
     type: int
-    version_added: "1.3"
   monitors:
     description:
       - Monitor template name list. If the partition is not provided as part of
         the monitor name, then the C(partition) option will be used instead.
     type: list
     elements: str
-    version_added: "1.3"
   slow_ramp_time:
     description:
       - Sets the ramp-up time (in seconds) to gradually ramp up the load on
         newly added or freshly detected up pool members.
     type: int
-    version_added: "1.3"
   reselect_tries:
     description:
       - Sets the number of times the system tries to contact a pool member
@@ -109,7 +104,6 @@ options:
       - reset
       - drop
       - reselect
-    version_added: "1.3"
   partition:
     description:
       - Device partition to manage resources on.
