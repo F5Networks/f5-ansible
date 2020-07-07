@@ -261,7 +261,7 @@ class ModuleParameters(Parameters):
 
     @property
     def pool_id(self):
-        filter = "(name eq '{0}')".format(self.pool)
+        filter = "(name%20eq%20'{0}')".format(self.pool)
         uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses?$filter={2}&$top=1'.format(
             self.client.provider['server'],
             self.client.provider['server_port'],
