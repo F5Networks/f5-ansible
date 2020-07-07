@@ -93,7 +93,9 @@ options:
       - Change into this directory before running the command.
     type: str
 notes:
-  - When running this module in an HA environment, and using a role other than C(admin) or C(root), you may see a C(Change Pending) status, even if you did not make any changes. This is being tracked with ID429869.
+  - When running this module in an HA environment, and using a role other than C(admin)
+    or C(root), you may see a C(Change Pending) status, even if you did not make any changes.
+    This is being tracked with ID429869.
 extends_documentation_fragment: f5networks.f5_modules.f5_rest_cli
 author:
   - Tim Rupp (@caphrim007)
