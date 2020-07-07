@@ -18,7 +18,7 @@ module: bigip_profile_persistence_universal
 short_description: Manage universal persistence profiles
 description:
   - Manages universal persistence profiles.
-version_added: "f5_modules 1.1"
+version_added: "1.1"
 options:
   name:
     description:

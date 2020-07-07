@@ -18,7 +18,7 @@ module: bigip_gtm_topology_region
 short_description: Manages GTM Topology Regions
 description:
   - Manages GTM Topology Regions.
-version_added: 2.8
+version_added: "1.0"
 options:
   name:
     description:
@@ -45,7 +45,6 @@ options:
         description:
           - An IP address and network mask in the CIDR format.
         type: str
-        version_added: 2.9
       region:
         description:
           - Specifies the name of region already defined in the configuration.

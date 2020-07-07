@@ -18,7 +18,7 @@ module: bigiq_device_discovery
 short_description: Manage BIG-IP devices through BIG-IQ
 description:
   - Discovers and imports BIG-IP device configuration on the BIG-IQ.
-version_added: 2.8
+version_added: "1.0"
 options:
   device_address:
     description:

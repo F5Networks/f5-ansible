@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_monitor_https
 short_description: Manages F5 BIG-IP LTM https monitors
 description: Manages F5 BIG-IP LTM https monitors.
-version_added: 2.5
+version_added: "1.0"
 options:
   name:
     description:
@@ -28,7 +28,6 @@ options:
     description:
       - The description of the monitor.
     type: str
-    version_added: 2.7
   parent:
     description:
       - The parent template of this monitor template. Once this value has
@@ -105,7 +104,6 @@ options:
         for an HTTPS monitor.
       - This parameter is only supported on BIG-IP versions 13.x and later.
     type: str
-    version_added: 2.8
   up_interval:
     description:
       - Specifies the interval for the system to use to perform the health check
@@ -115,13 +113,12 @@ options:
       - When any other number, enables specification of a different interval to
         use when checking the health of a resource that is up.
     type: int
-    version_added: 2.8
   cipher_list:
     description:
       - Specifies the list of ciphers for this monitor.
       - The items in the cipher list are separated with the colon C(:) symbol.
     type: str
-    version_added: "f5_modules 1.3"
+    version_added: "1.3"
   partition:
     description:
       - Device partition to manage resources on.
@@ -136,7 +133,6 @@ options:
       - present
       - absent
     default: present
-    version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12
 extends_documentation_fragment: f5networks.f5_modules.f5

@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_monitor_tcp_echo
 short_description: Manages F5 BIG-IP LTM tcp echo monitors
 description: Manages F5 BIG-IP LTM tcp echo monitors.
-version_added: 2.4
+version_added: "1.0"
 options:
   name:
     description:
@@ -35,7 +35,6 @@ options:
     description:
       - The description of the monitor.
     type: str
-    version_added: 2.7
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
@@ -72,7 +71,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   state:
     description:
       - When C(present), ensures that the monitor exists.
@@ -82,7 +80,6 @@ options:
       - present
       - absent
     default: present
-    version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12
 extends_documentation_fragment: f5networks.f5_modules.f5

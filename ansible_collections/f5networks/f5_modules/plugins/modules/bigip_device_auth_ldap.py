@@ -18,7 +18,7 @@ module: bigip_device_auth_ldap
 short_description: Manage LDAP device authentication settings on BIG-IP
 description:
   - Manage LDAP device authentication settings on BIG-IP.
-version_added: 2.8
+version_added: "1.0"
 options:
   servers:
     description:
@@ -154,7 +154,6 @@ options:
       - If C(no) the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
         without removing the configured LDAP resource.
     type: bool
-    version_added: "f5_modules 1.3"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

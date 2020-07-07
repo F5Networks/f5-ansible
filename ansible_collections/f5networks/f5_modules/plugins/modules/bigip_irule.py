@@ -18,7 +18,7 @@ module: bigip_irule
 short_description: Manage iRules across different modules on a BIG-IP
 description:
   - Manage iRules across different modules on a BIG-IP.
-version_added: 2.2
+version_added: "1.0"
 options:
   content:
     description:
@@ -58,7 +58,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

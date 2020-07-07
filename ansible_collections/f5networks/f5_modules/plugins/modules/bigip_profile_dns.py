@@ -21,7 +21,7 @@ description:
     own adjustments to the standard C(dns) profile. Users of this module should be aware
     that many of the adjustable knobs have no module default. Instead, the default is
     assigned by the BIG-IP system itself which, in most cases, is acceptable.
-version_added: 2.6
+version_added: "1.0"
 options:
   name:
     description:
@@ -108,14 +108,12 @@ options:
         the association with the DNS cache in the C(cache_name) parameter. Disable
         this setting when you want to debug the system.
     type: bool
-    version_added: 2.7
   cache_name:
     description:
       - Specifies the user-created cache that the system uses to cache DNS responses.
       - When you select a cache for the system to use, you must also set C(enable_dns_cache)
         to C(yes)
     type: str
-    version_added: 2.7
   unhandled_query_action:
     description:
       - Specifies the action to take when a query does not match a Wide IP or a DNS Express Zone.
@@ -135,7 +133,6 @@ options:
       - reject
       - hint
       - no-error
-    version_added: 2.7
   partition:
     description:
       - Device partition to manage resources on.

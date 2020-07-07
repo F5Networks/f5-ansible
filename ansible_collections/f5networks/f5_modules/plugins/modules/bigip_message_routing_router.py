@@ -18,7 +18,7 @@ module: bigip_message_routing_router
 short_description: Manages router profiles for message-routing protocols
 description:
   - Manages router profiles for message-routing protocols.
-version_added: 2.9
+version_added: "1.0"
 options:
   name:
     description:

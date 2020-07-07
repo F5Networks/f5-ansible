@@ -20,7 +20,7 @@ description:
   - The BIG-IP has an SNMP data collecting agent (DCA) that can query remote
     SNMP agents of various types, including the UC Davis agent (UCD) and the
     Windows 2000 Server agent (WIN2000).
-version_added: 2.5
+version_added: "1.0"
 options:
   name:
     description:
@@ -136,7 +136,6 @@ options:
       - present
       - absent
     default: present
-    version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12
   - This module does not support the C(variables) option because this option

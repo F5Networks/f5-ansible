@@ -18,7 +18,7 @@ module: bigip_gtm_pool
 short_description: Manages F5 BIG-IP GTM pools
 description:
     - Manages F5 BIG-IP GTM pools.
-version_added: 2.4
+version_added: "1.0"
 options:
   state:
     description:
@@ -130,7 +130,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   members:
     description:
       - Members to assign to the pool.
@@ -148,7 +147,6 @@ options:
         required: True
     type: list
     elements: dict
-    version_added: 2.6
   monitors:
     description:
       - Specifies the health monitors that the system currently uses to monitor this resource.
@@ -156,7 +154,6 @@ options:
         C(monitors) list.
     type: list
     elements: str
-    version_added: 2.6
   availability_requirements:
     description:
       - Specifies, if you activate more than one health monitor, the number of health
@@ -201,18 +198,15 @@ options:
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
     type: dict
-    version_added: 2.6
   max_answers_returned:
     description:
       - Specifies the maximum number of available virtual servers that the system lists in a response.
       - The maximum is 500.
     type: int
-    version_added: 2.8
   ttl:
     description:
       - Specifies the number of seconds that the IP address, once found, is valid.
     type: int
-    version_added: 2.8
 notes:
   - Support for TMOS versions below v12.x has been deprecated for this module, and will be removed in f5_modules 1.4.
 extends_documentation_fragment: f5networks.f5_modules.f5

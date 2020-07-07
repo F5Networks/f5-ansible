@@ -18,7 +18,7 @@ module: bigip_monitor_dns
 short_description: Manage DNS monitors on a BIG-IP
 description:
   - Manages DNS monitors on a BIG-IP.
-version_added: 2.7
+version_added: "1.0"
 options:
   name:
     description:

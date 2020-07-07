@@ -18,7 +18,7 @@ module: bigip_ipsec_policy
 short_description: Manage IPSec policies on a BIG-IP
 description:
   - Manage IPSec policies on a BIG-IP.
-version_added: 2.8
+version_added: "1.0"
 options:
   name:
     description:
@@ -144,7 +144,6 @@ options:
         By default C(BIG-IP) assumes C(any6) address for tunnel addresses when C(mode) is C(interface).
       - This option takes effect only when C(mode) is set to C(interface).
     type: bool
-    version_added: 2.9
   partition:
     description:
       - Device partition to manage resources on.

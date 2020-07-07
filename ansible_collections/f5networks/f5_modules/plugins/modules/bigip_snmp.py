@@ -18,7 +18,7 @@ module: bigip_snmp
 short_description: Manipulate general SNMP settings on a BIG-IP
 description:
   - Manipulate general SNMP settings on a BIG-IP.
-version_added: 2.4
+version_added: "1.0"
 options:
   allowed_addresses:
     description:
@@ -30,7 +30,6 @@ options:
       - You can remove all allowed addresses by either providing the word C(none), or
         by providing the empty string C("").
     type: raw
-    version_added: 2.6
   contact:
     description:
       - Specifies the name of the person who administers the SNMP

@@ -19,7 +19,7 @@ short_description: Collect information from F5 BIG-IQ devices
 description:
   - Collect information from F5 BIG-IQ devices.
   - This module was called C(bigiq_device_facts) before Ansible 2.9. The usage did not change.
-version_added: 2.8
+version_added: "1.0"
 options:
   gather_subset:
     description:

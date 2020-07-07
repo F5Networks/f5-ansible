@@ -18,7 +18,7 @@ module: bigip_monitor_ftp
 short_description: Manage FTP monitors on a BIG-IP
 description:
   - Manage FTP monitors on a BIG-IP.
-version_added: "f5_modules 1.1"
+version_added: "1.1"
 options:
   name:
     description:

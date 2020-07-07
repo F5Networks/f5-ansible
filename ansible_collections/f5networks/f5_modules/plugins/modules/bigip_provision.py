@@ -19,7 +19,7 @@ short_description: Manage BIG-IP module provisioning
 description:
   - Manage BIG-IP module provisioning. This module will only provision at the
     standard levels of Dedicated, Nominal, and Minimum.
-version_added: 2.4
+version_added: "1.0"
 options:
   module:
     description:
@@ -77,7 +77,6 @@ options:
         per 2 GB of installed memory. Changing the Management C(mgmt) size
         after initial provisioning causes a reprovision operation
     type: str
-    version_added: 2.9
   state:
     description:
       - The state of the provisioned module on the system. When C(present),
