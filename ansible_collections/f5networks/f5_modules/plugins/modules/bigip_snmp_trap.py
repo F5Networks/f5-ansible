@@ -18,7 +18,7 @@ module: bigip_snmp_trap
 short_description: Manipulate SNMP trap information on a BIG-IP
 description:
   - Manipulate SNMP trap information on a BIG-IP.
-version_added: 2.4
+version_added: "1.0"
 options:
   name:
     description:
@@ -74,7 +74,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
 notes:
   - This module only supports version v1 and v2c of SNMP.
   - The C(network) option is not supported on versions of BIG-IP < 12.1.0 because

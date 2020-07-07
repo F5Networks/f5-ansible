@@ -20,26 +20,23 @@ description:
   - Manages F5 BIG-IP GTM virtual servers. A GTM server can have many virtual servers
     associated with it. They are arranged in much the same way that pool members are
     to pools.
-version_added: 2.6
+version_added: "1.0"
 options:
   name:
     description:
       - Specifies the name of the virtual server.
     type: str
     required: True
-    version_added: 2.6
   server_name:
     description:
       - Specifies the name of the server that the virtual server is associated with.
     type: str
     required: True
-    version_added: 2.6
   address:
     description:
       - Specifies the IP Address of the virtual server.
       - When creating a new GTM virtual server, this parameter is required.
     type: str
-    version_added: 2.6
   port:
     description:
       - Specifies the service port number for the virtual server or pool member. For example,
@@ -55,7 +52,6 @@ options:
       - When creating a new GTM virtual server, if this parameter is not specified, a
         default of C(::) will be used.
     type: str
-    version_added: 2.6
   translation_port:
     description:
       - Specifies the translation port number or service name for the virtual server.
@@ -63,7 +59,6 @@ options:
       - When creating a new GTM virtual server, if this parameter is not specified, a
         default of C(*) will be used.
     type: str
-    version_added: 2.6
   availability_requirements:
     description:
       - Specifies, if you activate more than one health monitor, the number of health
@@ -108,7 +103,6 @@ options:
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
-    version_added: 2.6
   monitors:
     description:
       - Specifies the health monitors that the system currently uses to monitor this resource.
@@ -116,7 +110,6 @@ options:
         C(monitors) list.
     type: list
     elements: str
-    version_added: 2.6
   virtual_server_dependencies:
     description:
       - Specifies the virtual servers on which the current virtual server depends.
@@ -134,12 +127,10 @@ options:
           - Virtual server to depend on.
         type: str
         required: True
-    version_added: 2.6
   link:
     description:
       - Specifies a link to assign to the server or virtual server.
     type: str
-    version_added: 2.6
   limits:
     description:
       - Specifies resource thresholds or limit requirements at the server level.
@@ -184,13 +175,11 @@ options:
             for all of the virtual servers on the server.
           - If the connections exceed this limit, the system marks the server as unavailable.
         type: int
-    version_added: 2.6
   partition:
     description:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.6
   state:
     description:
       - When C(present), ensures that the resource exists.

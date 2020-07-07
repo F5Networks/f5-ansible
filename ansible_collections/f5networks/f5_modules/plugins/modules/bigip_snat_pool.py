@@ -18,7 +18,7 @@ module: bigip_snat_pool
 short_description: Manage SNAT pools on a BIG-IP
 description:
   - Manage SNAT pools on a BIG-IP.
-version_added: 2.3
+version_added: "1.0"
 options:
   members:
     description:
@@ -34,7 +34,6 @@ options:
       - A general description of the SNAT pool, provided by the user for their
         benefit. It is optional.
     type: str
-    version_added: 2.9
   name:
     description:
       - The name of the SNAT pool.
@@ -53,7 +52,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
 notes:
   - When C(bigip_snat_pool) object is removed it also removes any associated C(bigip_snat_translation) objects.
   - This is a BIG-IP behavior not module behavior and it only occurs when the C(bigip_snat_translation) objects

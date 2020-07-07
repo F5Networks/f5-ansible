@@ -20,7 +20,7 @@ description:
   - Manages vCMP guests on a BIG-IP. This functionality only exists on
     actual hardware and must be enabled by provisioning C(vcmp) with the
     C(bigip_provision) module.
-version_added: 2.5
+version_added: "1.0"
 options:
   name:
     description:
@@ -51,7 +51,6 @@ options:
       - Specifies the hotfix ISO image file which will be applied on top of the base
         image.
     type: str
-    version_added: 2.9
   mgmt_network:
     description:
       - Specifies the method by which the management address is used in the vCMP guest.
@@ -144,7 +143,6 @@ options:
       - Possible values are dependent on the type of blades being used in this cluster.
       - The default value depends on the type of blades being used in this cluster.
     type: int
-    version_added: 2.7
   min_number_of_slots:
     description:
       - Specifies the minimum number of slots that the guest must be assigned to in
@@ -154,7 +152,6 @@ options:
         this many slots, the attempt fails and the change that initiated it is reverted.
       - A guest's C(min_number_of_slots) value cannot be greater than its C(number_of_slots).
     type: int
-    version_added: 2.7
   allowed_slots:
     description:
       - Contains those slots that the guest is allowed to be assigned to.
@@ -167,7 +164,6 @@ options:
         by default, the guest may be assigned to any slot.
     type: list
     elements: str
-    version_added: 2.7
 notes:
   - This module can take a lot of time to deploy vCMP guests. This is an intrinsic
     limitation of the vCMP system because it is booting real VMs on the BIG-IP

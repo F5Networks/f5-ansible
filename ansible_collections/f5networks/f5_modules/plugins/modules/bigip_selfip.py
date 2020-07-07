@@ -18,7 +18,7 @@ module: bigip_selfip
 short_description: Manage Self-IPs on a BIG-IP system
 description:
   - Manage Self-IPs on a BIG-IP system.
-version_added: 2.2
+version_added: "1.0"
 options:
   address:
     description:
@@ -45,7 +45,6 @@ options:
     description:
       - Description of the traffic selector.
     type: str
-    version_added: 2.8
   netmask:
     description:
       - The netmask for the self IP. When creating a new Self IP, this value
@@ -79,12 +78,11 @@ options:
         this value is not specified, a default value of C(0) will be used.
       - This value cannot be changed after it is set.
     type: int
-    version_added: 2.3
   fw_enforced_policy:
     description:
       - Specifies AFM policy to be attached to Self IP.
     type: str
-    version_added: "f5_modules 1.1"
+    version_added: "1.1"
   partition:
     description:
       - Device partition to manage resources on. You can set different partitions
@@ -93,7 +91,6 @@ options:
         other resources on a BIG-IP are.
     type: str
     default: Common
-    version_added: 2.5
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

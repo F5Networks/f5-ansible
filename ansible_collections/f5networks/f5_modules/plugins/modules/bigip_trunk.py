@@ -18,7 +18,7 @@ module: bigip_trunk
 short_description: Manage trunks on a BIG-IP
 description:
   - Manages trunks on a BIG-IP.
-version_added: 2.6
+version_added: "1.0"
 options:
   name:
     description:
@@ -35,7 +35,6 @@ options:
     description:
       - Description of the trunk.
     type: str
-    version_added: 2.7
   link_selection_policy:
     description:
       - Specifies, once the trunk is configured, the policy that the trunk uses to determine
@@ -114,7 +113,6 @@ options:
       - You should always wrap this value in quotes to prevent Ansible from interpreting
         the value as a literal hexadecimal number and converting it to an integer.
     type: raw
-    version_added: 2.7
   state:
     description:
       - When C(present), ensures that the resource exists.

@@ -18,7 +18,7 @@ module: bigip_remote_user
 short_description: Manages default settings for remote user accounts on a BIG-IP
 description:
   - Manages default settings for remote user accounts on a BIG-IP.
-version_added: 2.9
+version_added: "1.0"
 options:
   default_role:
     description:

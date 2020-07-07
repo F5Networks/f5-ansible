@@ -19,7 +19,7 @@ short_description: Manage BIG-IP advanced routing configuration sections
 description:
   - This module provides an implementation for working with advanced routing
     configuration sections in a deterministic way.
-version_added: 2.8
+version_added: "1.0"
 options:
   route_domain:
     description:
@@ -206,7 +206,6 @@ options:
             and backup configuration will be copied in C(filename) within I(backup) directory.
         type: path
     type: dict
-    version_added: "2.8"
   allow_duplicates:
     description:
       - Allows duplicate commands to be sent to the device, this is to accommodate scenarios where
@@ -214,7 +213,7 @@ options:
       - Only used with C(lines) parameter.
     type: bool
     default: 'no'
-    version_added: "f5_modules 1.2"
+    version_added: "1.2"
 notes:
   - Abbreviated commands are NOT idempotent, see
     L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-

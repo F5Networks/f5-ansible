@@ -18,7 +18,7 @@ module: bigip_monitor_oracle
 short_description: Manages BIG-IP Oracle monitors
 description:
   - Manages BIG-IP Oracle monitors.
-version_added: "f5_modules 1.3"
+version_added: "1.3"
 options:
   name:
     description:

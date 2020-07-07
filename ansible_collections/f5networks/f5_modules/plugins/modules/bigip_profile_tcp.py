@@ -21,7 +21,7 @@ description:
     own adjustments to the standard C(tcp) profile. Users of this module should be aware
     that many of the adjustable knobs have no module default. Instead, the default is
     assigned by the BIG-IP system itself which, in most cases, is acceptable.
-version_added: 2.6
+version_added: "1.0"
 options:
   name:
     description:
@@ -54,7 +54,6 @@ options:
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
     type: bool
-    version_added: 2.7
   nagle:
     description:
       - When C(enabled) the system applies Nagle's algorithm to reduce the number of short segments on the network.
@@ -67,21 +66,18 @@ options:
       - auto
       - enabled
       - disabled
-    version_added: 2.9
   early_retransmit:
     description:
       - When C(yes) the system uses early fast retransmits to reduce the recovery time for connections that are
         receive-buffer or user-data limited.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
-    version_added: 2.9
   proxy_options:
     description:
       - When C(yes) the system advertises an option, such as a time-stamp to the server only if it was negotiated
         with the client.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
-    version_added: 2.9
   initial_congestion_window_size:
     description:
       - Specifies the initial congestion window size for connections to this destination. The actual window size is
@@ -90,7 +86,6 @@ options:
       - The valid value range is 0 - 16 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: int
-    version_added: 2.9
   initial_receive_window_size:
     description:
       - Specifies the initial receive window size for connections to this destination. The actual window size is
@@ -99,7 +94,6 @@ options:
       - The valid value range is 0 - 16 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: int
-    version_added: 2.9
   syn_rto_base:
     description:
       - Specifies the initial RTO C(Retransmission TimeOut) base multiplier for SYN retransmission, in C(milliseconds).
@@ -107,13 +101,12 @@ options:
       - The valid value range is 0 - 5000 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: int
-    version_added: 2.9
   delayed_acks:
     description:
       - When C(yes) the system sends fewer than one ACK segment per data segment received.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
-    version_added: "f5_modules 1.0"
+    version_added: "1.0"
   ip_tos_to_client:
     description:
       - Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
@@ -124,7 +117,7 @@ options:
         Valid number range is 0 - 255 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
-    version_added: "f5_modules 1.0"
+    version_added: "1.0"
   time_wait_timeout:
     description:
       - Specifies the number of milliseconds that a connection is in the TIME-WAIT state before closing.
@@ -134,7 +127,7 @@ options:
       - The valid number range is from 0 to 600000 milliseconds.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
-    version_added: "f5_modules 1.3"
+    version_added: "1.3"
   partition:
     description:
       - Device partition to manage resources on.

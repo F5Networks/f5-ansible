@@ -18,8 +18,8 @@ DOCUMENTATION = r'''
 module: bigip_pool_member
 short_description: Manages F5 BIG-IP LTM pool members
 description:
-  - Manages F5 BIG-IP LTM pool members via iControl SOAP API.
-version_added: 1.4
+  - Manages F5 BIG-IP LTM pool members via the REST API.
+version_added: "1.0"
 options:
   name:
     description:
@@ -28,7 +28,6 @@ options:
         created automatically from either the specified C(address) or C(fqdn).
       - The C(enabled) state is an alias of C(present).
     type: str
-    version_added: 2.6
   state:
     description:
       - Pool member state.
@@ -59,7 +58,6 @@ options:
     aliases:
       - ip
       - host
-    version_added: 2.2
   fqdn:
     description:
       - FQDN name of the pool member. This can be any name that is a valid RFC 1123 DNS
@@ -73,7 +71,6 @@ options:
     type: str
     aliases:
       - hostname
-    version_added: 2.6
   port:
     description:
       - Pool member port.
@@ -106,7 +103,6 @@ options:
         members. If this happens, the module will not raise an error.
       - Setting this to C(yes) disables this behavior.
     type: bool
-    version_added: 2.1
   priority_group:
     description:
       - Specifies a number representing the priority group for the pool member.
@@ -118,7 +114,6 @@ options:
       - The higher the number, the higher the priority, so a member with a priority
         of 3 has higher priority than a member with a priority of 1.
     type: int
-    version_added: 2.5
   fqdn_auto_populate:
     description:
       - Specifies whether the system automatically creates ephemeral nodes using
@@ -134,20 +129,17 @@ options:
       - Once set this parameter cannot be changed afterwards.
       - This parameter is ignored when C(reuse_nodes) is C(yes).
     type: bool
-    version_added: 2.6
   reuse_nodes:
     description:
       - Reuses node definitions if requested.
     type: bool
     default: yes
-    version_added: 2.6
   monitors:
     description:
       - Specifies the health monitors that the system currently uses to monitor
         this resource.
     type: list
     elements: str
-    version_added: 2.8
   availability_requirements:
     description:
       - Specifies, if you activate more than one health monitor, the number of health
@@ -174,7 +166,6 @@ options:
           - This parameter is only relevant when a C(type) of C(at_least) is used.
           - This parameter will be ignored if a type of C(all) is used.
         type: int
-    version_added: 2.8
   ip_encapsulation:
     description:
       - Specifies the IP encapsulation using either IPIP (IP encapsulation within IP,
@@ -184,7 +175,6 @@ options:
       - When C(inherit), inherits IP encapsulation setting from the member's pool.
       - When any other value, Options are None, Inherit from Pool, and Member Specific.
     type: str
-    version_added: 2.8
   aggregate:
     description:
       - List of pool member definitions to be created, modified or removed.
@@ -197,7 +187,6 @@ options:
     elements: dict
     aliases:
       - members
-    version_added: 2.8
   replace_all_with:
     description:
       - Remove members not defined in the C(aggregate) parameter.
@@ -207,7 +196,6 @@ options:
     default: no
     aliases:
       - purge
-    version_added: 2.8
 notes:
   - In previous versions of this module, which used the SDK, the C(name) parameter would act as C(fqdn) if C(address) or
     C(fqdn) were not provided.

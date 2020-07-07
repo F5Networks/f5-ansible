@@ -20,7 +20,7 @@ description:
   - Manages TCL iApp services on a BIG-IP.
   - If you are looking for the API that is communicated with on the BIG-IP,
     the one the is used is C(/mgmt/tm/sys/application/service/).
-version_added: 2.4
+version_added: "1.0"
 options:
   name:
     description:
@@ -66,7 +66,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   strict_updates:
     description:
       - Indicates whether the application service is tied to the template,
@@ -80,7 +79,6 @@ options:
         over any similar setting in the iApp Service payload that you provide in
         the C(parameters) field.
     type: bool
-    version_added: 2.5
   traffic_group:
     description:
       - The traffic group for the iApp service. When creating a new service, if
@@ -90,7 +88,6 @@ options:
         over any similar setting in the iApp Service payload that you provide in
         the C(parameters) field.
     type: str
-    version_added: 2.5
   metadata:
     description:
       - Metadata associated with the iApp service.
@@ -99,7 +96,6 @@ options:
         the C(parameters) field.
     type: list
     elements: raw
-    version_added: 2.7
   description:
     description:
       - Description of the iApp service.
@@ -107,7 +103,6 @@ options:
         over any similar setting in the iApp Service payload that you provide in
         the C(parameters) field.
     type: str
-    version_added: 2.7
   device_group:
     description:
       - The device group for the iApp service.
@@ -115,7 +110,6 @@ options:
         over any similar setting in the iApp Service payload that you provide in
         the C(parameters) field.
     type: str
-    version_added: 2.7
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

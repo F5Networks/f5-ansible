@@ -18,7 +18,7 @@ module: bigip_virtual_address
 short_description: Manage LTM virtual addresses on a BIG-IP
 description:
   - Manage LTM virtual addresses on a BIG-IP.
-version_added: 2.4
+version_added: "1.0"
 options:
   name:
     description:
@@ -26,7 +26,6 @@ options:
       - If this parameter is not provided, then the value of C(address) will
         be used.
     type: str
-    version_added: 2.6
   address:
     description:
       - Virtual address. This value cannot be modified after it is set.
@@ -71,7 +70,6 @@ options:
       - When creating a new virtual address, if this parameter is not specified,
         the default value is C(yes).
     type: bool
-    version_added: 2.7
   auto_delete:
     description:
       - Specifies whether the system automatically deletes the virtual
@@ -127,7 +125,6 @@ options:
       - when_all_available
       - when_any_available
     aliases: ['advertise_route']
-    version_added: 2.6
   route_advertisement:
     description:
       - Specifies whether the system uses route advertisement for this
@@ -159,26 +156,22 @@ options:
       - selective
       - any
       - all
-    version_added: 2.6
   partition:
     description:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   traffic_group:
     description:
       - The traffic group for the virtual address. When creating a new address,
         if this value is not specified, the default of C(/Common/traffic-group-1)
         will be used.
     type: str
-    version_added: 2.5
   route_domain:
     description:
       - The route domain of the C(address) that you want to use.
       - This value cannot be modified after it is set.
     type: str
-    version_added: 2.6
   spanning:
     description:
       - Enables all BIG-IP systems in a device group to listen for and process traffic
@@ -192,7 +185,6 @@ options:
         address when Spanning is enabled.
       - When creating a new virtual address, if this parameter is not specified, the default
         valus is C(no).
-    version_added: 2.7
     type: bool
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:

@@ -18,7 +18,7 @@ module: bigip_sys_db
 short_description: Manage BIG-IP system database variables
 description:
   - Manage BIG-IP system database variables
-version_added: 2.2
+version_added: "1.0"
 options:
   key:
     description:

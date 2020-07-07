@@ -18,7 +18,7 @@ module: bigip_message_routing_protocol
 short_description: Manage generic message parser profile.
 description:
   - Manages generic message parser profile for use with the message routing framework.
-version_added: 2.9
+version_added: "1.0"
 options:
   name:
     description:

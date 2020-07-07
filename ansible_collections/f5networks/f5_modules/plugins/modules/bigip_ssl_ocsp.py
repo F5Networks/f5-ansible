@@ -18,7 +18,7 @@ module: bigip_ssl_ocsp
 short_description: Manage OCSP configurations on BIG-IP
 description:
   - Manage OCSP configurations on BIG-IP.
-version_added: 2.8
+version_added: "1.0"
 options:
   name:
     description:
@@ -126,7 +126,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   state:
     description:
       - When C(present), ensures that the resource exists.

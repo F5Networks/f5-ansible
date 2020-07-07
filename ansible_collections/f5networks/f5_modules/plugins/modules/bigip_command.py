@@ -26,7 +26,7 @@ description:
     a real module has been developed to configure in the way you need.
   - If you are using this module, you should probably also be filing an issue
     to have a B(real) module created for your needs.
-version_added: 2.4
+version_added: "1.0"
 options:
   commands:
     description:
@@ -88,12 +88,10 @@ options:
         Ansible modules. This module should always be used as a last resort.
     default: True
     type: bool
-    version_added: 2.6
   chdir:
     description:
       - Change into this directory before running the command.
     type: str
-    version_added: 2.6
 extends_documentation_fragment: f5networks.f5_modules.f5_rest_cli
 author:
   - Tim Rupp (@caphrim007)

@@ -19,7 +19,7 @@ short_description: Create SSL CSR files on the BIG-IP
 description:
   - This module will create SSL CSR files on a BIG-IP. CSRs
     require an associated SSL key to pre-exist on the BIG-IP.
-version_added: "f5_modules 1.3"
+version_added: "1.3"
 options:
   name:
     description:

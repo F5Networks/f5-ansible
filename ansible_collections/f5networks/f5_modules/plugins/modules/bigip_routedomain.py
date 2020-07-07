@@ -18,13 +18,12 @@ module: bigip_routedomain
 short_description: Manage route domains on a BIG-IP
 description:
   - Manage route domains on a BIG-IP.
-version_added: 2.2
+version_added: "1.0"
 options:
   name:
     description:
       - The name of the route domain.
     type: str
-    version_added: 2.5
   bwc_policy:
     description:
       - The bandwidth controller for the route domain.
@@ -64,7 +63,6 @@ options:
         once they are created.
     type: str
     default: Common
-    version_added: 2.5
   routing_protocol:
     description:
       - Dynamic routing protocols for the system to use in the route domain.
@@ -105,7 +103,6 @@ options:
     description:
       - Specifies AFM policy to be attached to route domain.
     type: str
-    version_added: 2.8
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

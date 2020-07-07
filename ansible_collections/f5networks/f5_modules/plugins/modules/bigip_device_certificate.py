@@ -18,7 +18,7 @@ module: bigip_device_certificate
 short_description: Manage self-signed device certificates
 description:
   - Module used to create and/or renew self-signed defice certificates for BIG-IP.
-version_added: 2.9
+version_added: "1.0"
 options:
   days_valid:
     description:

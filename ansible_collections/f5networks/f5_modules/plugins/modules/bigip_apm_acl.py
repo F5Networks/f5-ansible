@@ -18,7 +18,7 @@ module: bigip_apm_acl
 short_description: Manage user-defined APM ACLs
 description:
   - Manage user-defined APM ACLs.
-version_added: 2.9
+version_added: "1.0"
 options:
   name:
     description:
@@ -41,7 +41,7 @@ options:
     description:
       - Specifies a number that indicates the order of this ACL relative to other ACLs.
       - When not set, the device will always place the ACL after the last one created.
-      - The lower number the higher the ACL will be in the general order, with lowest number C(0) being the topmost one.
+      - The lower the number, the higher the ACL will be in the general order, with lowest number C(0) being the topmost one.
       - Valid range of values is between C(0) and C(65535) inclusive.
     type: int
   path_match_case:

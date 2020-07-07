@@ -20,7 +20,7 @@ description:
   - Defines one or more listener objects to control what protocols are available for the BIG-IP DNS system to process DNS requests.
   - BIG-IP DNS listeners allows to use TCP and UDP protocols.
 
-version_added: "f5_modules 1.4"
+version_added: "1.4"
 options:
   name:
     description:

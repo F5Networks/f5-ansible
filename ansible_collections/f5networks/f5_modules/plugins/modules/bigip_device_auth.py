@@ -20,7 +20,7 @@ description:
   - Manage the system authentication configuration. This module can assist in configuring
     a number of different system authentication types. Note that this module can not be used
     to configure APM authentication types.
-version_added: 2.7
+version_added: "1.0"
 options:
   type:
     description:
@@ -128,7 +128,6 @@ options:
       - When C(send-to-all-servers), specifies that the system transmits accounting
         information back to all TACACS+ servers in the list.
       - This parameter is supported by the C(tacacs) type.
-    version_added: "f5_modules 1.1"
     type: str
     choices:
       - send-to-first-server

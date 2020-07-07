@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_monitor_udp
 short_description: Manages F5 BIG-IP LTM udp monitors
 description: Manages F5 BIG-IP LTM udp monitors.
-version_added: 2.5
+version_added: "1.0"
 options:
   name:
     description:
@@ -35,7 +35,6 @@ options:
     description:
       - The description of the monitor.
     type: str
-    version_added: 2.7
   send:
     description:
       - The send string for the monitor call. When creating a new monitor, if
@@ -95,7 +94,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
   state:
     description:
       - When C(present), ensures that the monitor exists.
@@ -105,7 +103,6 @@ options:
       - present
       - absent
     default: present
-    version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12
 extends_documentation_fragment: f5networks.f5_modules.f5
