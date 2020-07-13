@@ -78,6 +78,6 @@ notes:
   - Requires BIG-IP software version >= 12.
   - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP
     specific configuration persists to disk, be sure to include at least one task that uses the
-    M(bigip_config) module to save the running configuration. Refer to the module's documentation for
+    M(f5networks.f5_modules.bigip_config) module to save the running configuration. Refer to the module's documentation for
     the correct usage of the module to save your running configuration.
 '''
