@@ -18,7 +18,7 @@ module: bigip_gtm_topology_region
 short_description: Manages GTM Topology Regions
 description:
   - Manages GTM Topology Regions.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

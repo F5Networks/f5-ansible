@@ -18,7 +18,7 @@ module: bigip_monitor_icmp
 short_description: Manages F5 BIG-IP LTM ICMP monitors
 description:
   - Manages ICMP monitors on a BIG-IP.
-version_added: "1.1"
+version_added: "1.1.0"
 options:
   name:
     description:

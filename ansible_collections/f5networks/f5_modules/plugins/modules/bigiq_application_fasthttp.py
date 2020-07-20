@@ -19,7 +19,7 @@ short_description: Manages BIG-IQ FastHTTP applications
 description:
   - Manages BIG-IQ applications used for load balancing an HTTP-based application, speeding
     up connections and reducing the number of connections to the back-end server.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

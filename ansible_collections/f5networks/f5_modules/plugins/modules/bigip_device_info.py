@@ -20,7 +20,7 @@ short_description: Collect information from F5 BIG-IP devices
 description:
   - Collect information from F5 BIG-IP devices.
   - This module was called C(bigip_device_facts) before Ansible 2.9. The usage did not change.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   gather_subset:
     description:

@@ -18,7 +18,7 @@ module: bigip_vlan
 short_description: Manage VLANs on a BIG-IP system
 description:
   - Manage VLANs on a BIG-IP system
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   description:
     description:
@@ -181,7 +181,7 @@ options:
       - When C(yes), the hardware per-VLAN SYN cookie protection will be triggered when the certain traffic threshold
         is reached on supported platforms.
     type: bool
-    version_added: "1.3"
+    version_added: "1.3.0"
 notes:
   - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5networks.f5_modules.f5

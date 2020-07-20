@@ -18,7 +18,7 @@ module: bigip_profile_http_compression
 short_description: Manage HTTP compression profiles on a BIG-IP
 description:
   - Manage HTTP compression profiles on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

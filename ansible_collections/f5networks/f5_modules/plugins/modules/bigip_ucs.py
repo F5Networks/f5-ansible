@@ -18,7 +18,7 @@ module: bigip_ucs
 short_description: Manage upload, installation and removal of UCS files
 description:
    - Manage upload, installation and removal of UCS files.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   include_chassis_level_config:
     description:

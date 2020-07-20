@@ -18,7 +18,7 @@ module: bigip_node
 short_description: Manages F5 BIG-IP LTM nodes
 description:
   - Manages F5 BIG-IP LTM nodes.
-version_added: "1.4"
+version_added: "1.0.0"
 options:
   state:
     description:
@@ -56,7 +56,6 @@ options:
         considers all monitors as "a list". BIG=IP either has a list of many,
         or it has a list of one. Where they differ is in the extra guards that
         C(single) provides; namely that it only allows a single monitor.
-    version_added: "1.3"
     type: str
     choices:
      - and_list
@@ -1149,11 +1148,13 @@ class ArgumentSpec(object):
                 choices=[
                     'and_list', 'm_of_n', 'single'
                 ],
-                removed_in_version=2.12,
+                removed_in_version="1.7.0",
+                removed_from_collection="f5networks.f5_modules"
             ),
             quorum=dict(
                 type='int',
-                removed_in_version=2.12,
+                removed_in_version="1.7.0",
+                removed_from_collection="f5networks.f5_modules"
             ),
 
         )

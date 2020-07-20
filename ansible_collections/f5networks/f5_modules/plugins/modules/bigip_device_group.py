@@ -21,7 +21,7 @@ description:
     of BIG-IP devices. Usage of this module should be done in conjunction
     with the C(bigip_configsync_actions) to sync configuration across
     the pair or cluster if auto-sync is disabled.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
@@ -96,7 +96,6 @@ options:
       - Indicates whether failover occurs over the network or is hard-wired.
       - This parameter is only valid for C(type)'s that are C(sync-failover).
     type: bool
-    version_added: 2.7
 notes:
   - This module is primarily used as a component of configuring HA pairs of
     BIG-IP devices.

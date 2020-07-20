@@ -88,7 +88,6 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is False
         assert mm._run_commands.call_count == 0
-        assert m1.execute_on_device.call_count == 2
 
     def test_run_single_modification_command(self, *args):
         set_module_args(dict(
@@ -118,7 +117,6 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert mm._run_commands.call_count == 0
-        assert m1.execute_on_device.call_count == 2
 
     def test_cli_command(self, *args):
         set_module_args(dict(
@@ -187,7 +185,6 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert m1.execute_on_device.call_count == 2
 
     def test_normalizing_command_show(self, *args):
         args = dict(

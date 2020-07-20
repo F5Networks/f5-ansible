@@ -18,7 +18,7 @@ module: bigip_log_destination
 short_description: Manages log destinations on a BIG-IP.
 description:
   - Manages log destinations on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
@@ -1707,7 +1707,8 @@ class ArgumentSpec(object):
                         ]
                     )
                 ),
-                removed_in_version=2.12,
+                removed_in_version="1.7.0",
+                removed_from_collection="f5networks.f5_modules"
             ),
             syslog_settings=dict(
                 type='dict',
@@ -1723,7 +1724,8 @@ class ArgumentSpec(object):
                     ),
                     forward_to=dict()
                 ),
-                removed_in_version=2.12,
+                removed_in_version="1.7.0",
+                removed_from_collection="f5networks.f5_modules"
             ),
         )
         self.argument_spec = {}

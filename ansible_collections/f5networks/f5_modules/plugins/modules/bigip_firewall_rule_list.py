@@ -18,7 +18,7 @@ module: bigip_firewall_rule_list
 short_description: Manage AFM security firewall policies on a BIG-IP
 description:
   - Manages AFM security firewall policies on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

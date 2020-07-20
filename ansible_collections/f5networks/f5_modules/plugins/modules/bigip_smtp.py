@@ -19,7 +19,7 @@ short_description: Manages SMTP settings on the BIG-IP
 description:
   - Allows configuring of the BIG-IP to send mail via an SMTP server by
     configuring the parameters of an SMTP server.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

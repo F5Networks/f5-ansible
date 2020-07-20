@@ -18,7 +18,7 @@ module: bigip_password_policy
 short_description: Manages the authentication password policy on a BIG-IP
 description:
   - Manages the authentication password policy on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   expiration_warning:
     description:

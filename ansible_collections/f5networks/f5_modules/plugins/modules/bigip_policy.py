@@ -23,7 +23,7 @@ description:
     the description, and things unrelated to the policy rules themselves.
     It is also the first module that should be used when creating rules as
     the C(bigip_policy_rule) module requires a policy parameter.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   description:
     description:

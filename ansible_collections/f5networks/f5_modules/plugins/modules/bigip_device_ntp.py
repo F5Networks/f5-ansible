@@ -18,7 +18,7 @@ module: bigip_device_ntp
 short_description: Manage NTP servers on a BIG-IP
 description:
   - Manage NTP servers on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   ntp_servers:
     description:

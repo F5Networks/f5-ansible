@@ -18,7 +18,7 @@ module: bigip_virtual_address
 short_description: Manage LTM virtual addresses on a BIG-IP
 description:
   - Manage LTM virtual addresses on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
@@ -900,7 +900,8 @@ class ArgumentSpec(object):
             # Deprecated pair - ARP
             arp_state=dict(
                 choices=['enabled', 'disabled'],
-                removed_in_version=2.11,
+                removed_in_version="1.6.0",
+                removed_from_collection="f5networks.f5_modules"
             ),
             arp=dict(type='bool'),
         )
