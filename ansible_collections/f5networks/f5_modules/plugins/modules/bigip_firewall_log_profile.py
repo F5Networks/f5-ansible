@@ -18,7 +18,7 @@ module: bigip_firewall_log_profile
 short_description: Manages AFM logging profiles configured in the system
 description:
   - Manages AFM logging profiles configured in the system along with basic information about each profile.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

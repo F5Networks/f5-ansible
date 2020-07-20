@@ -18,7 +18,7 @@ module: bigip_message_routing_route
 short_description: Manages static routes for routing message protocol messages
 description:
   - Manages static routes for routing message protocol messages.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

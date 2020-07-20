@@ -20,7 +20,7 @@ description:
   - This module will import/delete SSL certificates on BIG-IP LTM.
     Certificates can be imported from certificate and key files on the local
     disk, in PEM format.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   content:
     description:

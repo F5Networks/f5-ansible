@@ -19,7 +19,7 @@ short_description: Manage data groups on a BIG-IP
 description:
   - Allows for managing data groups on a BIG-IP. Data groups provide a way to store collections
     of values on a BIG-IP for later use in things such as LTM rules, iRules, and ASM policies.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

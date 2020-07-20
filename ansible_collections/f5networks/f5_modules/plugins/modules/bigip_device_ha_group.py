@@ -18,7 +18,7 @@ module: bigip_device_ha_group
 short_description: Manage HA group settings on a BIG-IP system
 description:
   - Manage HA group settings on a BIG-IP system.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

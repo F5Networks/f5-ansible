@@ -18,7 +18,7 @@ module: bigip_monitor_smtp
 short_description: Manage SMTP monitors on a BIG-IP
 description:
   - Manage SMTP monitors on a BIG-IP.
-version_added: "1.1"
+version_added: "1.1.0"
 options:
   name:
     description:

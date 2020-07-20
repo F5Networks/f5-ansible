@@ -18,7 +18,7 @@ module: bigip_firewall_log_profile_network
 short_description: Configures Network Firewall related settings of the log profile
 description:
   - Configures Network Firewall related settings of the log profile.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   profile_name:
     description:

@@ -18,7 +18,7 @@ module: bigip_device_sshd
 short_description: Manage the SSHD settings of a BIG-IP
 description:
   - Manage the SSHD settings of a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   allow:
     description:

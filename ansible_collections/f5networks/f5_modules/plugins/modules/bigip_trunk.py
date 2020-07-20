@@ -18,7 +18,7 @@ module: bigip_trunk
 short_description: Manage trunks on a BIG-IP
 description:
   - Manages trunks on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

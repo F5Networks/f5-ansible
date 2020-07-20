@@ -18,7 +18,7 @@ module: bigip_asm_dos_application
 short_description: Manage application settings for DOS profile
 description:
   - Manages Application settings for ASM/AFM DOS profile.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   profile:
     description:

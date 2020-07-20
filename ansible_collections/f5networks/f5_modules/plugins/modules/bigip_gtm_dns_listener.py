@@ -19,8 +19,7 @@ short_description: configures BIG-IP DNS system to answer TCP or UDP DNS request
 description:
   - Defines one or more listener objects to control what protocols are available for the BIG-IP DNS system to process DNS requests.
   - BIG-IP DNS listeners allows to use TCP and UDP protocols.
-
-version_added: "1.4"
+version_added: "1.4.0"
 options:
   name:
     description:

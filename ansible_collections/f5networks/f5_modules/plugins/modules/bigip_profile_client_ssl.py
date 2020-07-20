@@ -18,7 +18,7 @@ module: bigip_profile_client_ssl
 short_description: Manages client SSL profiles on a BIG-IP
 description:
   - Manages client SSL profiles on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
@@ -44,7 +44,7 @@ options:
         the C(cipher) parameter must be set to C(none) or C('') during creation.
       - The parameter only works on TMOS version 13.x and above.
     type: str
-    version_added: "1.2"
+    version_added: "1.2.0"
   cert_key_chain:
     description:
       - One or more certificates and keys to associate with the SSL profile. This
@@ -86,7 +86,7 @@ options:
           - When C(no) the module will append C(.crt) and C(.key) extension to the given certificate and key names.
         type: bool
         default: no
-        version_added: "1.1"
+        version_added: "1.1.0"
   partition:
     description:
       - Device partition to manage resources on.
@@ -234,7 +234,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the default is provided
         by the parent profile.
     type: int
-    version_added: "1.0"
+    version_added: "1.0.0"
   cache_timeout:
     description:
       - Specifies the timeout value in seconds of the SSL session cache entries.
@@ -242,7 +242,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the default is provided
         by the parent profile.
     type: int
-    version_added: "1.0"
+    version_added: "1.0.0"
   state:
     description:
       - When C(present), ensures that the profile exists.

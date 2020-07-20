@@ -18,7 +18,7 @@ module: bigip_profile_persistence_cookie
 short_description: Manage cookie persistence profiles on BIG-IP
 description:
   - Manage cookie persistence profiles on BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

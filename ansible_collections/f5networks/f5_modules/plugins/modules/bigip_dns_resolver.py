@@ -18,7 +18,7 @@ module: bigip_dns_resolver
 short_description: Manage DNS resolvers on a BIG-IP
 description:
   - Manage DNS resolver on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

@@ -18,7 +18,7 @@ module: bigip_asm_policy_import
 short_description: Manage BIG-IP ASM policy imports
 description:
    - Manage BIG-IP ASM policies policy imports.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

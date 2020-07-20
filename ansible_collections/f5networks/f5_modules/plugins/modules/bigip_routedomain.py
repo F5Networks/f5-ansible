@@ -18,7 +18,7 @@ module: bigip_routedomain
 short_description: Manage route domains on a BIG-IP
 description:
   - Manage route domains on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

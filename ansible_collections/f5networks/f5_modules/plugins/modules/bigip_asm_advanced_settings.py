@@ -18,7 +18,7 @@ module: bigip_asm_advanced_settings
 short_description: Manage BIG-IP system ASM advanced settings
 description:
   - Manage BIG-IP system ASM advanced settings.
-version_added: "1.4"
+version_added: "1.4.0"
 options:
   name:
     description:

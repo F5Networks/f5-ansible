@@ -18,7 +18,7 @@ module: bigip_static_route
 short_description: Manipulate static routes on a BIG-IP
 description:
   - Manipulate static routes on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

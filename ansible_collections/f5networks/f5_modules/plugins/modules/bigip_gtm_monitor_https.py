@@ -18,7 +18,7 @@ module: bigip_gtm_monitor_https
 short_description: Manages F5 BIG-IP GTM https monitors
 description:
   - Manages F5 BIG-IP GTM https monitors.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

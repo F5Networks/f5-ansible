@@ -18,7 +18,7 @@ module: bigip_firewall_schedule
 short_description: Manage BIG-IP AFM schedule configurations
 description:
   - Manage BIG-IP AFM schedule configurations.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

@@ -18,7 +18,7 @@ module: bigip_monitor_external
 short_description: Manages external LTM monitors on a BIG-IP
 description:
   - Manages external LTM monitors on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
