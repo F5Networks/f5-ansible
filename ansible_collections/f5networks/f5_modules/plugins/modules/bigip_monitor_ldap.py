@@ -18,7 +18,7 @@ module: bigip_monitor_ldap
 short_description: Manages BIG-IP LDAP monitors
 description:
   - Manages BIG-IP LDAP monitors.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_monitor_tcp_echo
 short_description: Manages F5 BIG-IP LTM tcp echo monitors
 description: Manages F5 BIG-IP LTM tcp echo monitors.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

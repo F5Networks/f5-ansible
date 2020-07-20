@@ -18,7 +18,7 @@ module: bigip_policy_rule
 short_description: Manage LTM policy rules on a BIG-IP
 description:
   - This module will manage LTM policy rules on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   description:
     description:
@@ -72,7 +72,7 @@ options:
           - Node that you want to forward traffic to.
           - This parameter is only valid with the C(forward) type.
         type: str
-        version_added: "1.2"
+        version_added: "1.2.0"
       asm_policy:
         description:
           - ASM policy to enable.
@@ -101,13 +101,13 @@ options:
           - Cookie name to persist on.
           - This parameter is only valid with the C(persist) type.
         type: str
-        version_added: "1.1"
+        version_added: "1.1.0"
       cookie_expiry:
         description:
           - Optional argument, specifying the time for which the session will be persisted.
           - This parameter is only valid with the C(persist) type.
         type: int
-        version_added: "1.1"
+        version_added: "1.1.0"
   policy:
     description:
       - The name of the policy that you want to associate this rule with.

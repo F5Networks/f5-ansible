@@ -19,7 +19,7 @@ short_description: Manage BIG-IP advanced routing configuration sections
 description:
   - This module provides an implementation for working with advanced routing
     configuration sections in a deterministic way.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   route_domain:
     description:
@@ -213,7 +213,7 @@ options:
       - Only used with C(lines) parameter.
     type: bool
     default: 'no'
-    version_added: "1.2"
+    version_added: "1.2.0"
 notes:
   - Abbreviated commands are NOT idempotent, see
     L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-

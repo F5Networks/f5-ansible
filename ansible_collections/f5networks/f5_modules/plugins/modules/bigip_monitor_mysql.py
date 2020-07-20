@@ -18,7 +18,7 @@ module: bigip_monitor_mysql
 short_description: Manages BIG-IP MySQL monitors
 description:
   - Manages BIG-IP MySQL monitors.
-version_added: "1.3"
+version_added: "1.3.0"
 options:
   name:
     description:

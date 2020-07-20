@@ -18,7 +18,7 @@ module: bigip_network_globals
 short_description: Manage network global settings on BIG-IP
 description:
   - Module to manage STP, Multicast, DAG, LLDP and Self Allow global settings on BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   stp:
     description:
@@ -210,7 +210,7 @@ options:
           - When C(no) the self_allow allows no protocols and ports, this is the equivalent of setting B(none) option
             in C(TMSH).
         type: bool
-    version_added: "1.1"
+    version_added: "1.1.0"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)

@@ -19,7 +19,7 @@ short_description: Manages device's radius server configuration
 description:
   - Manages device's radius server configuration.
   - Used in tandem with C(bigip_device_auth_radius) module.
-version_added: "1.3"
+version_added: "1.3.0"
 options:
   name:
     description:

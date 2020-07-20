@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_monitor_https
 short_description: Manages F5 BIG-IP LTM https monitors
 description: Manages F5 BIG-IP LTM https monitors.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
@@ -118,7 +118,7 @@ options:
       - Specifies the list of ciphers for this monitor.
       - The items in the cipher list are separated with the colon C(:) symbol.
     type: str
-    version_added: "1.3"
+    version_added: "1.3.0"
   partition:
     description:
       - Device partition to manage resources on.

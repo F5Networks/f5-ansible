@@ -19,7 +19,7 @@ short_description: Collect information from F5 BIG-IQ devices
 description:
   - Collect information from F5 BIG-IQ devices.
   - This module was called C(bigiq_device_facts) before Ansible 2.9. The usage did not change.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   gather_subset:
     description:
@@ -2296,8 +2296,6 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if module._name == 'bigiq_device_facts':
-        module.deprecate("The 'bigiq_device_facts' module has been renamed to 'bigiq_device_info'", version='2.13')
 
     try:
         mm = ModuleManager(module=module)

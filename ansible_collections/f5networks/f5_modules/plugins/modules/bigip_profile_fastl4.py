@@ -18,7 +18,7 @@ module: bigip_profile_fastl4
 short_description: Manages Fast L4 profiles
 description:
   - Manages Fast L4 profiles.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
@@ -296,7 +296,7 @@ options:
       - dedicated
       - partial
       - none
-    version_added: "1.3"
+    version_added: "1.3.0"
   partition:
     description:
       - Device partition to manage resources on.

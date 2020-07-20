@@ -18,7 +18,7 @@ module: bigip_message_routing_transport_config
 short_description: Manages configuration for an outgoing connection
 description:
   - Manages configuration for an outgoing connection in BIG-IP message routing.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

@@ -18,7 +18,7 @@ module: bigip_apm_acl
 short_description: Manage user-defined APM ACLs
 description:
   - Manage user-defined APM ACLs.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

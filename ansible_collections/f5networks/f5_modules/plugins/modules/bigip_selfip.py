@@ -18,7 +18,7 @@ module: bigip_selfip
 short_description: Manage Self-IPs on a BIG-IP system
 description:
   - Manage Self-IPs on a BIG-IP system.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   address:
     description:
@@ -82,7 +82,7 @@ options:
     description:
       - Specifies AFM policy to be attached to Self IP.
     type: str
-    version_added: "1.1"
+    version_added: "1.1.0"
   partition:
     description:
       - Device partition to manage resources on. You can set different partitions
