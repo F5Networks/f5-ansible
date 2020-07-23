@@ -32,6 +32,7 @@ options:
     choices:
       - profile_access
       - access_policy
+      - profile_api_protection
     default: profile_access
   source:
     description:
@@ -309,7 +310,7 @@ class ModuleManager(object):
         name = os.path.split(self.want.source)[1]
         self.upload_file_to_device(self.want.source, name)
 
-        cmd = 'ng_import -s /var/config/rest/downloads/{0} {1} -p {2}'.format(name, self.want.name, self.want.partition)
+        cmd = 'ng_import -s /var/config/rest/downloads/{0} {1} -p {2} -t {3}'.format(name, self.want.name, self.want.partition, self.want.type)
 
         uri = "https://{0}:{1}/mgmt/tm/util/bash/".format(
             self.client.provider['server'],
@@ -368,7 +369,7 @@ class ArgumentSpec(object):
             ),
             type=dict(
                 default='profile_access',
-                choices=['profile_access', 'access_policy']
+                choices=['profile_access', 'access_policy', 'profile_api_protection']
             ),
             partition=dict(
                 default='Common',
