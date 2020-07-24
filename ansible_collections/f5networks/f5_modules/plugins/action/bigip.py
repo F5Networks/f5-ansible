@@ -66,7 +66,7 @@ class ActionModule(ActionNetworkModule):
                 pc.port = int(provider['server_port'] or self._play_context.port or 22)
                 pc.remote_user = provider['user'] or self._play_context.connection_user
                 pc.password = provider['password'] or self._play_context.password
-                pc.private_key_file = provider['ssh_keyfile'] or self._play_context.private_key_file
+                pc.private_key_file = provider.get('ssh_keyfile', None) or self._play_context.private_key_file
                 command_timeout = int(provider['timeout'] or C.PERSISTENT_COMMAND_TIMEOUT)
 
                 display.vvv('using connection plugin %s' % pc.connection, pc.remote_addr)

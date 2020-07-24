@@ -225,7 +225,7 @@ from ..module_utils.common import (
 )
 
 try:
-    from .module_utils.common import run_commands
+    from ..module_utils.common import run_commands
     HAS_CLI_TRANSPORT = True
 except ImportError:
     HAS_CLI_TRANSPORT = False
@@ -513,7 +513,11 @@ class BaseManager(object):
         else:
             failed_conditions = [item.raw for item in conditionals]
             errmsg = 'One or more conditional statements have not been satisfied.'
-            raise FailedConditionsError(errmsg, failed_conditions)
+            from ansible.module_utils.common.warnings import warn
+            # display = Display()
+            warn(errmsg)
+            warn(failed_conditions)
+            raise F5ModuleError(errmsg, failed_conditions)
         stdout_lines = self._to_lines(responses)
         changes = {
             'stdout': responses,
