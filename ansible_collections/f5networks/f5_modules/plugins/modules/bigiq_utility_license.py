@@ -21,7 +21,7 @@ description:
     that BIG-IQ can distribute. These licenses, unlike regkey licenses, do not require
     a pool to be created before creation. Additionally, when assigning them, you assign
     by offering instead of key.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   license_key:
     description:

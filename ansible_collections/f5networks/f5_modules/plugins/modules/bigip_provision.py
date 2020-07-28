@@ -19,7 +19,7 @@ short_description: Manage BIG-IP module provisioning
 description:
   - Manage BIG-IP module provisioning. This module will only provision at the
     standard levels of Dedicated, Nominal, and Minimum.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   module:
     description:

@@ -19,7 +19,7 @@ short_description: Manage address lists on BIG-IP AFM
 description:
   - Manages the AFM address lists on a BIG-IP. This module can be used to add
     and remove address list entries.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

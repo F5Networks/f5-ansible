@@ -18,7 +18,7 @@ module: bigip_asm_policy_manage
 short_description: Manage BIG-IP ASM policies
 description:
    - Manage BIG-IP ASM policies, create from templates and manage global policy settings.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   active:
     description:
@@ -33,7 +33,7 @@ options:
       - If C(yes) will apply the policy if the policy has pending changes.
       - Parameter supported on TMOS C(v14.x) and above.
     type: bool
-    version_added: "1.4"
+    version_added: "1.4.0"
   name:
     description:
       - The ASM policy to manage or create.

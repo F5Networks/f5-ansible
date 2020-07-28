@@ -18,7 +18,7 @@ module: bigip_snat_translation
 short_description:  Manage SNAT Translations on a BIG-IP
 description:
   - Manage SNAT Translations on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   address:
     description:

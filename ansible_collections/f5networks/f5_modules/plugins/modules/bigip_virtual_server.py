@@ -18,7 +18,7 @@ module: bigip_virtual_server
 short_description: Manage LTM virtual servers on a BIG-IP
 description:
   - Manage LTM virtual servers on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   state:
     description:
@@ -488,7 +488,7 @@ options:
         the BIG-IP will throw an error.
     type: bool
     default: yes
-    version_added: "1.2"
+    version_added: "1.2.0"
   bypass_module_checks:
     description:
       - Disables all built in module verification checks that require BIG-IP device calls. Using this option will cut
@@ -500,7 +500,7 @@ options:
       - This parameter can be used when creating new or updating existing resources.
     type: bool
     default: no
-    version_added: "1.3"
+    version_added: "1.3.0"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

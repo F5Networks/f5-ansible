@@ -18,7 +18,7 @@ module: bigip_gtm_topology_record
 short_description: Manages GTM Topology Records
 description:
   - Manages GTM Topology Records. Once created, only topology record C(weight) can be modified.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   source:
     description:

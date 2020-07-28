@@ -21,7 +21,7 @@ description:
     where the physical network components reside, such as the server and link
     objects that share the same subnet on the network. This module is able to
     manipulate the data center definitions in a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   contact:
     description:
@@ -60,7 +60,6 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
-    version_added: 2.5
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

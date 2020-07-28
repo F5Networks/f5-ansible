@@ -18,7 +18,7 @@ module: bigip_software_install
 short_description: Install software images on a BIG-IP
 description:
   - Install new images on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   image:
     description:
@@ -31,7 +31,7 @@ options:
         referenced from there, and not from the VCMP guest. An ISO image
         directly uploaded to the VCMP guest will not work.
     type: str
-    version_added: "1.2"
+    version_added: "1.2.0"
   volume:
     description:
       - The volume to install the software image to.
@@ -57,7 +57,7 @@ options:
     choices:
       - standard
       - vcmp
-    version_added: "1.2"
+    version_added: "1.2.0"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

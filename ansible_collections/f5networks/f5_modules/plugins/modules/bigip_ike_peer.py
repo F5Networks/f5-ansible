@@ -18,7 +18,7 @@ module: bigip_ike_peer
 short_description: Manage IPSec IKE Peer configuration on BIG-IP
 description:
   - Manage IPSec IKE Peer configuration on BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
@@ -99,7 +99,7 @@ options:
       - When creating a new IKE peer, if this value is not specified, the default value set by the system is
         C(1440) minutes.
     type: int
-    version_added: "1.1"
+    version_added: "1.1.0"
   phase1_cert:
     description:
       - Specifies the digital certificate to use for the RSA signature.

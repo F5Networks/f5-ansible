@@ -18,7 +18,7 @@ module: bigip_message_routing_peer
 short_description: Manage peers for routing generic message protocol messages
 description:
   - Manage peers for routing generic message protocol messages.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

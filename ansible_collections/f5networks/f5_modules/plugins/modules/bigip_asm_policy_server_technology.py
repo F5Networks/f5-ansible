@@ -18,7 +18,7 @@ module: bigip_asm_policy_server_technology
 short_description: Manages Server Technology on ASM policy
 description:
   - Manages Server Technology on ASM policy.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

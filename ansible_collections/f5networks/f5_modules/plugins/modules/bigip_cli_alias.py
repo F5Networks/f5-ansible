@@ -18,7 +18,7 @@ module: bigip_cli_alias
 short_description: Manage CLI aliases on a BIG-IP
 description:
   - Allows for managing both private and shared aliases on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

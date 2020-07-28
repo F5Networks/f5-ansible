@@ -18,7 +18,7 @@ module: bigip_management_route
 short_description: Manage system management routes on a BIG-IP
 description:
   - Configures route settings for the management interface of a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

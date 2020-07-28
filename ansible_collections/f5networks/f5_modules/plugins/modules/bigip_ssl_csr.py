@@ -19,7 +19,7 @@ short_description: Create SSL CSR files on the BIG-IP
 description:
   - This module will create SSL CSR files on a BIG-IP. CSRs
     require an associated SSL key to pre-exist on the BIG-IP.
-version_added: "1.3"
+version_added: "1.3.0"
 options:
   name:
     description:
@@ -30,12 +30,10 @@ options:
     description:
       - The certificate common name.
     type: str
-    required: True
   key_name:
     description:
       - The SSL key to be used to generate the CSR.
     type: str
-    required: True
   state:
     description:
       - When C(present), ensures that the resource exists.

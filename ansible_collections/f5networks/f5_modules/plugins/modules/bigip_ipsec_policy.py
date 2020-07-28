@@ -18,7 +18,7 @@ module: bigip_ipsec_policy
 short_description: Manage IPSec policies on a BIG-IP
 description:
   - Manage IPSec policies on a BIG-IP.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:

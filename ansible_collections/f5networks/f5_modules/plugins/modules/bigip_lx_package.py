@@ -19,7 +19,7 @@ short_description: Manages Javascript LX packages on a BIG-IP
 description:
   - Manages Javascript LX packages on a BIG-IP. This module will allow
     you to deploy LX packages to the BIG-IP and manage their lifecycle.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   package:
     description:
@@ -43,7 +43,7 @@ options:
       - Should the install file be deleted on successful installation of the package
     type: bool
     default: no
-    version_added: "1.4"
+    version_added: "1.4.0"
 notes:
   - Requires the rpm tool be installed on the host. This can be accomplished through
     different ways on each platform. On Debian based systems with C(apt);

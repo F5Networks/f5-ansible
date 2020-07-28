@@ -21,7 +21,7 @@ description:
     own adjustments to the standard C(tcp) profile. Users of this module should be aware
     that many of the adjustable knobs have no module default. Instead, the default is
     assigned by the BIG-IP system itself which, in most cases, is acceptable.
-version_added: "1.0"
+version_added: "1.0.0"
 options:
   name:
     description:
@@ -106,7 +106,6 @@ options:
       - When C(yes) the system sends fewer than one ACK segment per data segment received.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
-    version_added: "1.0"
   ip_tos_to_client:
     description:
       - Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
@@ -117,7 +116,6 @@ options:
         Valid number range is 0 - 255 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
-    version_added: "1.0"
   time_wait_timeout:
     description:
       - Specifies the number of milliseconds that a connection is in the TIME-WAIT state before closing.
@@ -127,7 +125,7 @@ options:
       - The valid number range is from 0 to 600000 milliseconds.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
-    version_added: "1.3"
+    version_added: "1.3.0"
   partition:
     description:
       - Device partition to manage resources on.
