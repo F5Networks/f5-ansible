@@ -28,7 +28,7 @@ options:
   state:
     description:
       - The state of the setting on the system. When C(present), guarantees
-        that an existing setting is set to C(value). When C(reset) sets the
+        that an existing setting is set to C(value). When C(reset), sets the
         setting back to the default value. At least one of value and state
         C(reset) are required.
     type: str
@@ -72,17 +72,17 @@ EXAMPLES = r'''
 
 RETURN = r'''
 name:
-  description: The name of the asm setting that was specified
+  description: The name of the ASM setting that was specified
   returned: changed and success
   type: str
   sample: long_request_buffer_size
 default_value:
-  description: The default value of the specified asm setting
+  description: The default value of the specified ASM setting
   returned: changed and success
   type: str
   sample: '10000000'
 value:
-  description: The value that you set the asm setting to
+  description: The value you set the ASM setting to
   returned: changed and success
   type: str
   sample: '20000000'
