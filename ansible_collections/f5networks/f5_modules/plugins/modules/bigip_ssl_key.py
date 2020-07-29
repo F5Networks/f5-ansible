@@ -209,7 +209,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -337,6 +337,7 @@ class ModuleManager(object):
         if self.module.check_mode:
             return True
         self.update_on_device()
+        self.remove_uploaded_file_from_device(self.want.key_filename)
         return True
 
     def should_update(self):
@@ -352,6 +353,7 @@ class ModuleManager(object):
         if self.module.check_mode:
             return True
         self.create_on_device()
+        self.remove_uploaded_file_from_device(self.want.key_filename)
         return True
 
     def remove(self):
@@ -361,6 +363,25 @@ class ModuleManager(object):
         if self.exists():
             raise F5ModuleError("Failed to delete the key")
         return True
+
+    def remove_uploaded_file_from_device(self, name):
+        filepath = '/var/config/rest/downloads/{0}'.format(name)
+        params = {
+            "command": "run",
+            "utilCmdArgs": filepath
+        }
+        uri = "https://{0}:{1}/mgmt/tm/util/unix-rm".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-key/{2}".format(
@@ -414,11 +435,10 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -436,11 +456,10 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-key/{2}".format(
@@ -454,12 +473,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-key/{2}".format(
