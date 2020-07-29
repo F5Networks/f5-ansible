@@ -15,9 +15,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_asm_policy_fetch
-short_description: Exports the asm policy from remote nodes.
+short_description: Exports the ASM policy from remote nodes.
 description:
-  - Exports the asm policy from remote nodes.
+  - Exports the ASM policy from remote nodes.
 version_added: "1.0.0"
 options:
   name:
@@ -32,13 +32,13 @@ options:
     type: path
   file:
     description:
-      - The name of the file to be create on the remote device for downloading.
+      - The name of the file to be created on the remote device for downloading.
       - When C(binary) is set to C(no) the ASM policy will be in XML format.
     type: str
   inline:
     description:
       - If C(yes), the ASM policy will be exported C(inline) as a string instead of a file.
-      - The policy can be be retrieved in playbook C(result) dictionary under C(inline_policy) key.
+      - The policy can be be retrieved in the playbook C(result) dictionary under the C(inline_policy) key.
     type: bool
   compact:
     description:
@@ -62,7 +62,7 @@ options:
     type: bool
   partition:
     description:
-      - Device partition which contains ASM policy to export.
+      - Device partition which contains the ASM policy to export.
     type: str
     default: Common
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -136,7 +136,7 @@ name:
   type: str
   sample: Asm_APP1_Transparent
 dest:
-  description: Local path to download exported ASM policy.
+  description: Local path to download the exported ASM policy.
   returned: changed
   type: str
   sample: /root/downloads/foobar.xml
@@ -158,12 +158,12 @@ compact:
   type: bool
   sample: no
 base64:
-  description: Set to encode inline export in base64 format.
+  description: Set to encode inline export in Base64 format.
   returned: changed
   type: bool
   sample: no
 binary:
-  description: Set to export ASM policy in binary format.
+  description: Set to export the ASM policy in binary format.
   returned: changed
   type: bool
   sample: yes
