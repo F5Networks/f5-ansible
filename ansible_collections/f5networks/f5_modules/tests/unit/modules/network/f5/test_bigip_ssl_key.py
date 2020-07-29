@@ -93,6 +93,7 @@ class TestModuleManager(unittest.TestCase):
         cm = ModuleManager(module=module)
         cm.exists = Mock(side_effect=[False, True])
         cm.create_on_device = Mock(return_value=True)
+        cm.remove_uploaded_file_from_device = Mock(return_value=True)
 
         results = cm.exec_module()
 

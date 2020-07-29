@@ -70,7 +70,7 @@
 - name: Assert Delete a key - Idempotent check
   assert:
     that:
-      - not result| changed
+      - result is not changed
 
 - name: Import a key, password protected key
   bigip_ssl_key:

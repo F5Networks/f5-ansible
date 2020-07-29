@@ -104,6 +104,7 @@ class TestCertificateManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         mm.exists = Mock(side_effect=[False, True])
         mm.create_on_device = Mock(return_value=True)
+        mm.remove_uploaded_file_from_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
@@ -130,6 +131,7 @@ class TestCertificateManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         mm.exists = Mock(side_effect=[False, True])
         mm.create_on_device = Mock(return_value=True)
+        mm.remove_uploaded_file_from_device = Mock(return_value=True)
 
         results = mm.exec_module()
 

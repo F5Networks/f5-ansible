@@ -405,9 +405,7 @@ class ModuleManager(object):
         try:
             upload_file(self.client, url, self.want.image)
         except F5ModuleError:
-            raise F5ModuleError(
-                "Failed to upload the file."
-            )
+            raise
 
     def read_current_from_device(self):
         resp = self.client.api.get(self.image_url)
