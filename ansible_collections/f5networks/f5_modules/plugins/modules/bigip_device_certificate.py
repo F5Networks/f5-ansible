@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_device_certificate
 short_description: Manage self-signed device certificates
 description:
-  - Module used to create and/or renew self-signed defice certificates for BIG-IP.
+  - Module used to create and/or renew self-signed device certificates for BIG-IP.
 version_added: "1.0.0"
 options:
   days_valid:
@@ -77,11 +77,11 @@ options:
         type: str
       common_name:
         description:
-          - Specifies Common Name attribute for the certificate.
+          - Specifies the Common Name attribute for the certificate.
         type: str
       email:
         description:
-          - "Specifies the domain administrator's email address."
+          - "Specifies the email address of the domain administrator."
         type: str
     type: dict
   add_to_trusted:
@@ -91,8 +91,8 @@ options:
     default: no
   new_cert:
     description:
-      - Specified if the module should generate new certificate.
-      - When C(yes) the device certificate and key will be replaced
+      - Specified if the module should generate a new certificate.
+      - When C(yes), the device certificate and key will be replaced.
     type: bool
     default: no
   force:
@@ -100,7 +100,7 @@ options:
       - When C(yes), will update or overwrite the existing certificate when it is not expired device.
       - When C(no), the certificate will only be updated/overwritten if expired.
       - Generally should be C(yes) only in cases where you need to update certificate that is about to expire.
-      - This option is also needed when generating new certificate to replace non expired one.
+      - This option is also needed when generating a new certificate to replace non-expired one.
     type: bool
     default: no
 extends_documentation_fragment: f5networks.f5_modules.f5ssh

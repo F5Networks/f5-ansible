@@ -15,16 +15,16 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_device_dns
-short_description: Manage BIG-IP device DNS settings
+short_description: Manage DNS settings on a BIG-IP
 description:
-  - Manage BIG-IP device DNS settings.
+  - Manage the DNS settings on a BIG-IP device.
 version_added: "1.0.0"
 options:
   cache:
     description:
       - Specifies whether the system caches DNS lookups or performs the
-        operation each time a lookup is needed. Please note that this applies
-        only to Access Policy Manager features, such as ACLs, web application
+        operation each time a lookup is needed. Note this applies
+        only to Access Policy Manager (APM) features, such as ACLs, web application
         rewrites, and authentication.
     type: str
     choices:
@@ -34,12 +34,12 @@ options:
        - disable
   name_servers:
     description:
-      - A list of name servers that the system uses to validate DNS lookups
+      - A list of name servers the system uses to validate DNS lookups
     type: list
     elements: str
   search:
     description:
-      - A list of domains that the system searches for local domain lookups,
+      - A list of domains the system searches for local domain lookups,
         to resolve local host names.
     type: list
     elements: str
@@ -53,7 +53,7 @@ options:
   state:
     description:
       - The state of the variable on the system. When C(present), guarantees
-        that an existing variable is set to C(value).
+        an existing variable is set to C(value).
     type: str
     choices:
       - absent
@@ -83,22 +83,22 @@ EXAMPLES = r'''
 
 RETURN = r'''
 cache:
-  description: The new value of the DNS caching
+  description: The new value of the DNS caching.
   returned: changed
   type: str
   sample: enabled
 name_servers:
-  description: List of name servers that were set
+  description: List of name servers that were set.
   returned: changed
   type: list
   sample: ['192.0.2.10', '172.17.12.10']
 search:
-  description: List of search domains that were set
+  description: List of search domains that were set.
   returned: changed
   type: list
   sample: ['192.0.2.10', '172.17.12.10']
 ip_version:
-  description: IP version that was set that DNS will specify IP addresses in
+  description: IP version that was set, DNS will specify IP addresses in this version.
   returned: changed
   type: int
   sample: 4
