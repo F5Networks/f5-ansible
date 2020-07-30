@@ -23,7 +23,7 @@ options:
   name:
     description:
       - Specifies the name of the signature sets to apply on, or remove from, the ASM policy.
-      - Apart from built-in signature sets that ship with the device, you can create and use 
+      - Apart from built-in signature sets that ship with the device, you can create and use
         custom signature sets.
       - When C(All Response Signatures), configures all signatures in the attack signature
         pool that can review responses.
