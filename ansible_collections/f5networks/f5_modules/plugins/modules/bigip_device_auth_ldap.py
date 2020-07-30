@@ -30,7 +30,7 @@ options:
   port:
     description:
       - Specifies the port the system uses for access to the remote host server.
-      - When configuring LDAP device authentication for the first time, the default 
+      - When configuring LDAP device authentication for the first time, the default
         port is C(389) if this parameter is not specified.
     type: int
   remote_directory_tree:
@@ -116,7 +116,7 @@ options:
     description:
       - Specifies the LDAP directory attribute containing the local user name that is
         associated with the selected directory entry.
-      - If this parameter is not specified, when configuring LDAP device authentication for the first time, 
+      - If this parameter is not specified, when configuring LDAP device authentication for the first time,
         the default port is C(samaccountname).
     type: str
   fallback_to_local:
