@@ -27,7 +27,7 @@ options:
       - The authentication type to manage with this module.
       - Take special note that the parameters supported by this module will vary depending
         on the C(type) that you are configuring.
-      - This module only supports a subset, at this time, of the total available auth types.
+      - At this time, this module only supports a subset of the total available auth types.
     type: str
     required: True
     choices:
@@ -48,7 +48,7 @@ options:
         description:
           - The IP address of the server.
           - This field is required, unless you are specifying a simple list of servers.
-            In that case, the simple list can specify server IPs. See examples for
+            In that case, the simple list can specify server IPs. See the examples for
             more clarification.
       port:
         description:
@@ -62,12 +62,12 @@ options:
     type: str
   service_name:
     description:
-      - Specifies the name of the service that the user is requesting to be
+      - Specifies the name of the service the user is requesting to be
         authorized to use.
-      - Identifying what the user is asking to be authorized for, enables the
+      - Identifying what the user is asking to be authorized for enables the
         TACACS+ serverc to behave differently for different types of authorization
         requests.
-      - When configuring this form of system authentication, this setting is required.
+      - This setting is required when configuring this form of system authentication.
       - Note that the majority of TACACS+ implementations are of service type C(ppp),
         so try that first.
     type: str
@@ -109,9 +109,9 @@ options:
   authentication:
     description:
       - Specifies the process the system employs when sending authentication requests.
-      - When C(use-first-server), specifies that the system sends authentication
-        attempts to only the first server in the list.
-      - When C(use-all-servers), specifies that the system sends an authentication
+      - When C(use-first-server), specifies the system sends authentication
+        attempts only to the first server in the list.
+      - When C(use-all-servers), specifies the system sends an authentication
         request to each server until authentication succeeds, or until the system has
         sent a request to all servers in the list.
       - This parameter is supported by the C(tacacs) type.
@@ -122,10 +122,10 @@ options:
   accounting:
     description:
       - Specifies how the system returns accounting information, such as which services
-        users access and how much network resources they consume, to the TACACS+ server.
-      - When C(send-to-first-server), specifies that the system transmits accounting
+        users access and the amount of network resources they consume, to the TACACS+ server.
+      - When C(send-to-first-server), specifies the system transmits accounting
         information back to the first available TACACS+ server in the list.
-      - When C(send-to-all-servers), specifies that the system transmits accounting
+      - When C(send-to-all-servers), specifies the system transmits accounting
         information back to all TACACS+ servers in the list.
       - This parameter is supported by the C(tacacs) type.
     type: str
@@ -139,7 +139,7 @@ options:
   state:
     description:
       - The state of the authentication configuration on the system.
-      - When C(present), guarantees that the system is configured for the specified C(type).
+      - When C(present), guarantees the system is configured for the specified C(type).
       - When C(absent), sets the system auth source back to C(local).
     type: str
     choices:
@@ -148,7 +148,7 @@ options:
     default: present
   update_secret:
     description:
-      - C(always) will allow to update secrets if the user chooses to do so.
+      - C(always) will allow updating secrets if the user chooses to do so.
       - C(on_create) will only set the secret when a C(use_auth_source) is C(yes)
         and TACACS+ is not currently the auth source.
     type: str
