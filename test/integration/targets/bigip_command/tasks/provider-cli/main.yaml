@@ -142,3 +142,8 @@
   tags:
     - issue-01407
     - provider-issue-01407
+
+- import_tasks: issue-01728.yaml
+  tags:
+    - issue-01728
+    - provider-issue-01728
