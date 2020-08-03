@@ -1,0 +1,20 @@
+---
+
+- name: Issue 01728 - run show version and see failure
+  bigip_command:
+    commands: 
+      - show sys version
+    wait_for: result[0] contains BIG-IP2
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password }}"
+  register: result
+  ignore_errors: true
+
+- name: Issue 01728 - Assert run show version and see failure
+  assert:
+    that:
+      - "'wait_for conditional statements have not been satisfied' not in result"

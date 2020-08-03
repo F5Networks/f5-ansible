@@ -203,16 +203,12 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
 
 try:
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.parsing import (
-        FailedConditionsError, Conditional
-    )
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.parsing import Conditional
     from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
         ComplexList, to_list
     )
 except ImportError:
-    from ansible.module_utils.network.common.parsing import (
-        FailedConditionsError, Conditional
-    )
+    from ansible.module_utils.network.common.parsing import Conditional
     from ansible.module_utils.network.common.utils import (
         ComplexList, to_list
     )
@@ -225,7 +221,7 @@ from ..module_utils.common import (
 )
 
 try:
-    from .module_utils.common import run_commands
+    from ..module_utils.common import run_commands
     HAS_CLI_TRANSPORT = True
 except ImportError:
     HAS_CLI_TRANSPORT = False
@@ -512,8 +508,8 @@ class BaseManager(object):
             retries -= 1
         else:
             failed_conditions = [item.raw for item in conditionals]
-            errmsg = 'One or more conditional statements have not been satisfied.'
-            raise FailedConditionsError(errmsg, failed_conditions)
+            errmsg = 'The following wait_for conditional statements have not been satisfied.'
+            raise F5ModuleError(errmsg, failed_conditions)
         stdout_lines = self._to_lines(responses)
         changes = {
             'stdout': responses,
