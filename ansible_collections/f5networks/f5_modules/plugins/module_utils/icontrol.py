@@ -506,8 +506,8 @@ def upload_file(client, url, src, dest=None):
                 # POSTed. This is almost always unreadable because it is a series
                 # of bytes.
                 #
-                # Therefore, including an empty exception here.
-                raise F5ModuleError()
+                # Therefore, we only inform on the returned HTTP error code.
+                raise F5ModuleError('Error during upload, http error code: {0}'.format(str(response.status)))
             start += current_bytes
         except F5ModuleError:
             # You must seek back to the beginning of the file upon exception.
