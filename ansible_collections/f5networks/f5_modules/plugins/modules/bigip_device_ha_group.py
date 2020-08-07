@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_device_ha_group
 short_description: Manage HA group settings on a BIG-IP system
 description:
-  - Manage HA group settings on a BIG-IP system.
+  - Manage HA (High Availability) group settings on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -27,7 +27,7 @@ options:
     required: True
   enable:
     description:
-      - When set to C(no) the system disables the ha score feature.
+      - When set to C(no), the system disables the HA score feature.
     type: bool
     default: yes
   description:
@@ -36,40 +36,40 @@ options:
     type: str
   active_bonus:
     description:
-      - Specifies the extra value to be added to the active unit's ha score.
+      - Specifies the extra value to be added to the HA score of the active unit.
       - When system creates HA group this value is set to C(10) by the system.
     type: int
   pools:
     description:
-      - Specifies pools to contribute to the ha score.
-      - The pools must exist on the BIG-IP otherwise the operation will fail.
+      - Specifies pools to contribute to the HA score.
+      - The pools must exist on the BIG-IP, otherwise the operation will fail.
     type: list
     elements: dict
     suboptions:
       pool_name:
         description:
-          - The pool name which is used to contribute to the ha score.
-          - Referencing pool can be done in the full path format for example, C(/Common/pool_name).
-          - When pool is referenced in full path format, the C(partition) parameter is ignored.
+          - The pool name which is used to contribute to the HA score.
+          - Referencing the pool can be done in the full path format for example, C(/Common/pool_name).
+          - When the pool is referenced in full path format, the C(partition) parameter is ignored.
         type: str
         required: True
       attribute:
         description:
-          - The pool attribute that contributes to the ha score.
+          - The pool attribute that contributes to the HA score.
         type: str
         choices:
           - percent-up-members
         default: 'percent-up-members'
       weight:
         description:
-          - Maximum value the selected pool attribute contributes to the ha score.
+          - Maximum value the selected pool attribute contributes to the HA score.
         type: int
         required: True
       minimum_threshold:
         description:
-          - Below this value the selected pool attribute contributes nothing to the ha score.
+          - Below this value, the selected pool attribute contributes nothing to the HA score.
           - This value must be greater than the number of pool members present in the pool.
-          - In TMOS versions 12.x this attribute is named C(threshold) however it has been deprecated
+          - In TMOS versions 12.x this attribute is named C(threshold), however it has been deprecated
             in versions 13.x and above.
           - Specifying this attribute in the module running against v12.x will keep the same behavior
             as if C(threshold) option was set.
@@ -82,40 +82,40 @@ options:
         default: Common
   trunks:
     description:
-      - Specifies trunks to contribute to the ha score.
-      - The trunks must exist on the BIG-IP otherwise the operation will fail.
+      - Specifies trunks to contribute to the HA score.
+      - The trunks must exist on the BIG-IP, otherwise the operation will fail.
     type: list
     elements: dict
     suboptions:
       trunk_name:
         description:
-          - The trunk name which is used to contribute to the ha score.
+          - The trunk name used to contribute to the HA score.
         type: str
         required: True
       attribute:
         description:
-          - The trunk attribute that contributes to the ha score.
+          - The trunk attribute that contributes to the HA score.
         type: str
         choices:
           - percent-up-members
         default: 'percent-up-members'
       weight:
         description:
-          - Maximum value the selected trunk attribute contributes to the ha score.
+          - Maximum value the selected trunk attribute contributes to the HA score.
         type: int
         required: True
       minimum_threshold:
         description:
-          - Below this value the selected trunk attribute contributes nothing to the ha score.
+          - Below this value the selected trunk attribute contributes nothing to the HA score.
           - This value must be greater than the number of trunk members.
-          - In TMOS versions 12.x this attribute is named C(threshold) however it has been deprecated
+          - In TMOS versions 12.x this attribute is named C(threshold), however it has been deprecated
             in versions 13.x and above.
           - Specifying this attribute in the module running against v12.x will keep the same behavior
             as if C(threshold) option was set.
         type: int
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:
@@ -194,7 +194,7 @@ name:
   type: str
   sample: foo_HA
 enable:
-  description: Enables or disables HA score feature.
+  description: Enables or disables the HA score feature.
   returned: changed
   type: bool
   sample: yes
@@ -204,32 +204,32 @@ description:
   type: str
   sample: Some Group
 active_bonus:
-  description: The extra value to be added to the active unit's ha score.
+  description: The extra value to be added to the HA score of the active unit.
   returned: changed
   type: int
   sample: 20
 pools:
-  description: The pools to contribute to the ha score.
+  description: The pools to contribute to the HA score.
   returned: changed
   type: complex
   contains:
     pool_name:
-      description: The pool name which is used to contribute to the ha score.
+      description: The pool name which is used to contribute to the HA score.
       returned: changed
       type: str
       sample: foo_pool
     attribute:
-      description: The pool attribute that contributes to the ha score.
+      description: The pool attribute that contributes to the HA score.
       returned: changed
       type: str
       sample: percent-up-members
     weight:
-      description: Maximum value the selected pool attribute contributes to the ha score.
+      description: Maximum value the selected pool attribute contributes to the HA score.
       returned: changed
       type: int
       sample: 40
     minimum_threshold:
-      description: Below this value the selected pool attribute contributes nothing to the ha score.
+      description: Below this value the selected pool attribute contributes nothing to the HA score.
       returned: changed
       type: int
       sample: 2
@@ -240,27 +240,27 @@ pools:
       sample: Common
   sample: hash/dictionary of values
 trunks:
-  description: The trunks to contribute to the ha score.
+  description: The trunks to contribute to the HA score.
   returned: changed
   type: complex
   contains:
     trunk_name:
-      description: The trunk name which is used to contribute to the ha score.
+      description: The trunk name used to contribute to the HA score.
       returned: changed
       type: str
       sample: foo_trunk
     attribute:
-      description: The trunk attribute that contributes to the ha score.
+      description: The trunk attribute that contributes to the HA score.
       returned: changed
       type: str
       sample: percent-up-members
     weight:
-      description: Maximum value the selected trunk attribute contributes to the ha score.
+      description: Maximum value the selected trunk attribute contributes to the HA score.
       returned: changed
       type: int
       sample: 40
     minimum_threshold:
-      description: Below this value the selected trunk attribute contributes nothing to the ha score.
+      description: Below this value, the selected trunk attribute contributes nothing to the HA score.
       returned: changed
       type: int
       sample: 2
