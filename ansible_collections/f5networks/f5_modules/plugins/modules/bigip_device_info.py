@@ -1601,8 +1601,8 @@ fastl4_profiles:
     pva_offload_state:
       description:
         - Specifies at what stage the ePVA performs hardware offload.
-        - When C(embryonic), implies at TCP CSYN or the first client UDP packet.
-        - When C(establish), implies TCP 3WAY handshaking or UDP CS round trip are
+        - When C(embryonic), applies at TCP CSYN or the first client UDP packet.
+        - When C(establish), applies TCP 3WAY handshaking or UDP CS round trip are
           confirmed.
       returned: queried
       type: str
@@ -2120,7 +2120,7 @@ gtm_servers:
       sample: ['/Common/https_443', '/Common/icmp']
     monitor_type:
       description:
-        - Whether one or monitors need to pass, or all monitors need to pass.
+        - Whether one or more monitors need to pass, or all monitors need to pass.
       returned: queried
       type: str
       sample: and_list
@@ -4159,7 +4159,7 @@ provision_info:
       sample: 0
   sample: hash/dictionary of values
 route_domains:
-  description: Self-IP related information.
+  description: Route domain related information.
   returned: When C(self-ips) is specified in C(gather_subset).
   type: complex
   contains:

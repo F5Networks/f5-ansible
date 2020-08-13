@@ -17,8 +17,8 @@ DOCUMENTATION = r'''
 module: bigip_device_httpd
 short_description: Manage HTTPD related settings on a BIG-IP system
 description:
-  - Manages HTTPD related settings on the BIG-IP. These settings are interesting
-    to change when you want to set GUI timeouts and other TMUI related settings.
+  - Manages HTTPD related settings on the BIG-IP. These settings are useful
+    when you want to set GUI timeouts and other TMUI related settings.
 version_added: "1.0.0"
 options:
   allow:

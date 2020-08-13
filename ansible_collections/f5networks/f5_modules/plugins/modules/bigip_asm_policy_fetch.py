@@ -148,7 +148,7 @@ file:
   type: str
   sample: foobar.xml
 inline:
-  description: Set when ASM policy to be exported inline
+  description: Set when the ASM policy to be exported is inline
   returned: changed
   type: bool
   sample: yes

@@ -108,7 +108,7 @@ options:
     description:
       - Specifies the number of ports in a block.
       - Valid range of values is between C(0) and C(65535) inclusive.
-      - The C(pba_block_size) value be less than or equal to the LSN pool range, i.e the range of ports defined by
+      - The C(pba_block_size) value should be less than or equal to the LSN pool range, i.e the range of ports defined by
         C(port_range_low) and C(port_range_high) values.
     type: int
   pba_client_block_limit:

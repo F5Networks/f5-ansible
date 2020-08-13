@@ -21,7 +21,7 @@ description:
     modify the running configuration, or merge SCF formatted files into
     the running configuration. Additionally, this module is of
     significant importance because it allows you to save your running
-    configuration to disk. Since the F5 module only manipulate running
+    configuration to disk. Since all F5 modules manipulate the running
     configuration, it is important you use this module to save
     that running config.
 version_added: "1.0.0"

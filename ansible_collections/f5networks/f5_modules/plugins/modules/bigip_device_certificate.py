@@ -97,7 +97,7 @@ options:
     default: no
   force:
     description:
-      - When C(yes), will update or overwrite the existing certificate when it is not expired device.
+      - When C(yes), will update or overwrite the existing certificate when it is not expired on the device.
       - When C(no), the certificate will only be updated/overwritten if expired.
       - Generally should be C(yes) only in cases where you need to update certificate that is about to expire.
       - This option is also needed when generating a new certificate to replace non-expired one.
