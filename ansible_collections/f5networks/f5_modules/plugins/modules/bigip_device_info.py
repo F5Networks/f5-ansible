@@ -35,6 +35,8 @@ options:
       - all
       - monitors
       - profiles
+      - apm-access-profiles
+      - apm-access-policies
       - asm-policy-stats
       - asm-policies
       - asm-server-technologies
@@ -103,6 +105,8 @@ options:
       - "!all"
       - "!monitors"
       - "!profiles"
+      - "!apm-access-profiles"
+      - "!apm-access-policies"
       - "!asm-policy-stats"
       - "!asm-policies"
       - "!asm-server-technologies"
@@ -210,6 +214,46 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+apm_access_profiles:
+  description: Information about APM Access Profiles.
+  returned: When C(apm-access-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: queried
+      type: str
+      sample: /Common/foo_policy
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: queried
+      type: str
+      sample: foo_policy
+    access_policy:
+      description:
+        - APM Access Policy attached to this Access Profile.
+      returned: queried
+      type: str
+      sample: foo_policy
+apm_access_policies:
+  description: Information about APM Access Policies.
+  returned: When C(apm-access-policies) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: queried
+      type: str
+      sample: /Common/foo_policy
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: queried
+      type: str
+      sample: foo_policy
 asm_policy_stats:
   description: Miscellaneous ASM policy related information.
   returned: When C(asm-policy-stats) is specified in C(gather_subset).
@@ -7383,6 +7427,132 @@ class BaseParameters(Parameters):
         return result
 
 
+class ApmAccessProfileFactParameters(BaseParameters):
+    api_map = {
+        'accessPolicy': 'access_policy',
+        'fullPath': 'full_path',
+    }
+
+    returnables = [
+        'access_policy',
+        'full_path',
+        'name',
+    ]
+
+
+class ApmAccessProfileFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ApmAccessProfileFactManager, self).__init__(**kwargs)
+        self.want = ApmAccessProfileFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(apm_access_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        if 'apm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ApmAccessProfileFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/apm/profile/access".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class ApmAccessPolicyFactParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+    ]
+
+
+class ApmAccessPolicyFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ApmAccessPolicyFactManager, self).__init__(**kwargs)
+        self.want = ApmAccessProfileFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(apm_access_policies=facts)
+        return result
+
+    def _exec_module(self):
+        if 'apm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ApmAccessProfileFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/apm/policy/access-policy".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
 class AsmPolicyStatsParameters(BaseParameters):
     api_map = {
 
@@ -13837,7 +14007,7 @@ class SystemInfoParameters(BaseParameters):
 
     def _transform_name_attribute(self, entry):
         if isinstance(entry, dict):
-            for k, v in iteritems(entry):
+            for k, v in list(entry.items()):
                 if k == 'tmName':
                     entry['name'] = entry.pop('tmName')
                 self._transform_name_attribute(v)
@@ -16400,6 +16570,8 @@ class ModuleManager(object):
         self.kwargs = kwargs
         self.want = Parameters(params=self.module.params)
         self.managers = {
+            'apm-access-profiles': ApmAccessProfileFactManager,
+            'apm-access-policies': ApmAccessPolicyFactManager,
             'asm-policy-stats': AsmPolicyStatsFactManager,
             'asm-policies': AsmPolicyFactManager,
             'asm-server-technologies': AsmServerTechnologyFactManager,
@@ -16605,6 +16777,8 @@ class ArgumentSpec(object):
                     'gtm-wide-ips',
 
                     # Non-meta choices
+                    'apm-access-profiles',
+                    'apm-access-policies',
                     'asm-policies',
                     'asm-policy-stats',
                     'asm-server-technologies',
@@ -16677,6 +16851,8 @@ class ArgumentSpec(object):
                     '!gtm-wide-ips',
 
                     # Negations of non-meta-choices
+                    '!apm-access-profiles',
+                    '!apm-access-policies',
                     '!asm-policy-stats',
                     '!asm-policies',
                     '!asm-server-technologies',
