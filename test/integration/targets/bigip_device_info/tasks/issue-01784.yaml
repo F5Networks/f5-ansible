@@ -1,0 +1,75 @@
+---
+- name: Issue 01784 - Collect BIG-IP facts
+  bigip_device_info:
+    include: system-info
+  register: f
+
+- name: Issue 01784 - Provision APM
+  bigip_provision:
+    name: apm
+  tags:
+    - module-provisioning
+  when:
+    - f.system_info.product_version >= "14.1.0"
+
+- name: Issue 01784 - Import APM access profile - v15
+  bigip_apm_policy_import:
+    name: foo-profile
+    source: "{{ role_path }}/files/v15_1_profile.tar.gz"
+  when: f.system_info.product_version >= "15.0.0"
+
+- name: Issue 01784 - Import APM access policy - v15
+  bigip_apm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v15_1_policy.tar.gz"
+  when: f.system_info.product_version >= "15.0.0"
+
+- name: Issue 01784 - Import APM access profile
+  bigip_apm_policy_import:
+    name: foo-profile
+    source: "{{ role_path }}/files/v14_1_profile.tar.gz"
+  when:
+    - f.system_info.product_version >= "14.1.0"
+    - f.system_info.product_version < "15.0.0"
+
+- name: Issue 01784 - Import APM access policy
+  bigip_apm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v14_1_policy.tar.gz"
+  when:
+    - f.system_info.product_version >= "14.1.0"
+    - f.system_info.product_version < "15.0.0"
+
+- name: Issue 01784 - Collect Uploaded policies and profiles facts
+  bigip_device_info:
+    include:
+      - apm-access-profiles
+      - apm-access-policies
+  register: result
+  when:
+    - f.system_info.product_version >= "14.1.0"
+
+- name: Issue 01784 - Assert Collect Uploaded policies and profiles facts
+  assert:
+    that:
+      - result is success
+      - result.apm_access_profiles| json_query("[?name=='foo-profile'].full_path") | first == "/Common/foo-profile"
+      - result.apm_access_policies| json_query("[?name=='foo-policy'].full_path") | first == "/Common/foo-policy"
+
+- name: Issue 01784 - Delete APM Policies and Profiles
+  bigip_command:
+    commands:
+      - tmsh delete apm profile access all
+      - tmsh delete apm policy access-policy all
+  when:
+    - f.system_info.product_version >= "14.1.0"
+
+- name: Issue 01784 - De-provision APM
+  bigip_provision:
+    name: apm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module
+  when:
+    - f.system_info.product_version >= "14.1.0"
