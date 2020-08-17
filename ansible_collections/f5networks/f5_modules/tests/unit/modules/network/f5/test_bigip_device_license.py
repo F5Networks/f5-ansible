@@ -51,12 +51,14 @@ class TestParameters(unittest.TestCase):
         args = dict(
             license_key='xxxx-yyyy-zzzz',
             license_server='foo-license.f5.com',
+            state='latest',
             accept_eula=True
         )
 
         p = ModuleParameters(params=args)
         assert p.license_key == 'xxxx-yyyy-zzzz'
         assert p.license_server == 'foo-license.f5.com'
+        assert p.state == 'latest'
         assert p.accept_eula is True
 
 
@@ -76,6 +78,7 @@ class TestModuleManager(unittest.TestCase):
                 license_key='xxxx-yyyy-zzzz',
                 license_server='foo-license.f5.com',
                 accept_eula=True,
+                state='latest',
                 provider=dict(
                     server='localhost',
                     password='password',
@@ -93,6 +96,115 @@ class TestModuleManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm.exists = Mock(side_effect=[False, True])
+        mm.read_dossier_from_device = Mock(return_value=True)
+        mm.generate_license_from_remote = Mock(return_value=True)
+        mm.upload_license_to_device = Mock(return_value=True)
+        mm.upload_eula_to_device = Mock(return_value=True)
+        mm.reload_license = Mock(return_value=True)
+        mm._is_mcpd_ready_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+
+    def test_renewal(self, *args):
+        set_module_args(
+            dict(
+                license_key='xxxx-yyyy-zzzz',
+                license_server='foo-license.f5.com',
+                accept_eula=True,
+                state='latest',
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
+            )
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[True, True])
+        mm.is_revoked = Mock(return_value=False)
+        mm.license_valid = Mock(return_value=False)
+        mm.read_dossier_from_device = Mock(return_value=True)
+        mm.generate_license_from_remote = Mock(return_value=True)
+        mm.upload_license_to_device = Mock(return_value=True)
+        mm.upload_eula_to_device = Mock(return_value=True)
+        mm.reload_license = Mock(return_value=True)
+        mm._is_mcpd_ready_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+
+    def test_no_renewal(self, *args):
+        set_module_args(
+            dict(
+                license_key='xxxx-yyyy-zzzz',
+                license_server='foo-license.f5.com',
+                accept_eula=True,
+                state='latest',
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
+            )
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[True, True])
+        mm.is_revoked = Mock(return_value=False)
+        mm.license_valid = Mock(return_value=True)
+        mm.read_dossier_from_device = Mock(return_value=True)
+        mm.generate_license_from_remote = Mock(return_value=True)
+        mm.upload_license_to_device = Mock(return_value=True)
+        mm.upload_eula_to_device = Mock(return_value=True)
+        mm.reload_license = Mock(return_value=True)
+        mm._is_mcpd_ready_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+        assert results['changed'] is False
+
+    def test_force_renewal(self, *args):
+        set_module_args(
+            dict(
+                license_key='xxxx-yyyy-zzzz',
+                license_server='foo-license.f5.com',
+                accept_eula=True,
+                state='latest',
+                force=True,
+                provider=dict(
+                    server='localhost',
+                    password='password',
+                    user='admin'
+                )
+            )
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[True, True])
+        mm.is_revoked = Mock(return_value=False)
+        mm.license_valid = Mock(return_value=True)
         mm.read_dossier_from_device = Mock(return_value=True)
         mm.generate_license_from_remote = Mock(return_value=True)
         mm.upload_license_to_device = Mock(return_value=True)
