@@ -276,7 +276,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 auth_priv_from:
-  description: The new lowest user authentication logging level
+  description: The new lowest user authentication logging level.
   returned: changed
   type: str
   sample: alert
@@ -286,12 +286,12 @@ auth_priv_to:
   type: str
   sample: emerg
 console_log:
-  description: Whether logging to console is enabled or not.
+  description: Whether logging to the console is enabled or not.
   returned: changed
   type: bool
   sample: yes
 iso_date:
-  description: Whether ISO date format in logs is enabled or not
+  description: Whether ISO date format in logs is enabled or not.
   returned: changed
   type: bool
   sample: no

@@ -17,18 +17,18 @@ DOCUMENTATION = r'''
 module: bigip_device_sshd
 short_description: Manage the SSHD settings of a BIG-IP
 description:
-  - Manage the SSHD settings of a BIG-IP.
+  - Manage the SSHD (secure shell daemon) settings of a BIG-IP.
 version_added: "1.0.0"
 options:
   allow:
     description:
-      - Specifies, if you have enabled SSH access, the IP address or address
+      - If you have enabled SSH access, specifies the IP address or address
         range for other systems that can use SSH to communicate with this
         system.
       - To specify all addresses, use the value C(all).
-      - IP address can be specified, such as 172.27.1.10.
-      - IP rangees can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
-      - To remove SSH access specify an empty list or an empty string.
+      - An IP address can be specified, such as 172.27.1.10.
+      - IP ranges can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
+      - To remove SSH access, specify an empty list or an empty string.
     type: list
     elements: str
   banner:
@@ -40,7 +40,7 @@ options:
       - disabled
   banner_text:
     description:
-      - Specifies the text to include on the pre-login banner that displays
+      - Specifies the text to include on the pre-login banner, which displays
         when a user attempts to login to the system using SSH.
     type: str
   inactivity_timeout:
@@ -64,15 +64,15 @@ options:
       - verbose
   login:
     description:
-      - Specifies, when checked C(enabled), that the system accepts SSH
-        communications.
+      - When checked C(enabled), specifies the system accepts SSH
+        communication.
     type: str
     choices:
       - enabled
       - disabled
   port:
     description:
-      - Port that you want the SSH daemon to run on.
+      - Port on which you want the SSH daemon to run.
     type: int
 notes:
   - Requires BIG-IP version 12.0.0 or greater
@@ -116,7 +116,7 @@ EXAMPLES = r'''
 RETURN = r'''
 allow:
   description:
-    - Specifies, if you have enabled SSH access, the IP address or address
+    - If you have enabled SSH access, specifies the IP address or address
       range for other systems that can use SSH to communicate with this
       system.
   returned: changed
@@ -129,7 +129,7 @@ banner:
   sample: true
 banner_text:
   description:
-    - Specifies the text included on the pre-login banner that
+    - Specifies the text included on the pre-login banner which
       displays when a user attempts to login to the system using SSH.
   returned: changed and success
   type: str
@@ -147,12 +147,12 @@ log_level:
   type: str
   sample: debug
 login:
-  description: Specifies that the system accepts SSH communications or not.
+  description: Specifies whether the system accepts SSH communications or not.
   returned: changed
   type: bool
   sample: true
 port:
-  description: Port that you want the SSH daemon to run on.
+  description: Port on which you want the SSH daemon to run.
   returned: changed
   type: int
   sample: 22

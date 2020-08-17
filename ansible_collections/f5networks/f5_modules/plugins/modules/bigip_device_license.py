@@ -29,7 +29,7 @@ options:
     type: str
   addon_keys:
     description:
-      - The list of addon keys to use to in conjunction with base license.
+      - The list of addon keys to use to in conjunction with the base license.
       - This parameter will be ignored if no C(license_key) is provided.
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
@@ -47,7 +47,7 @@ options:
   state:
     description:
       - The state of the license on the system.
-      - When C(present), only guarantees that a license is there.
+      - When C(present), only guarantees that a license exists.
       - When C(absent), removes the license on the system.
       - When C(revoked), removes the license on the system and revokes its future usage
         on the F5 license servers.
@@ -60,9 +60,9 @@ options:
   accept_eula:
     description:
       - Declares whether you accept the BIG-IP EULA or not. By default, this
-        value is C(no). You must specifically declare that you have viewed and
-        accepted the license. This module will not present you with that EULA
-        though, so it is incumbent on you to read it.
+        value is C(no). You must specifically declare you have viewed and
+        accepted the license. This module does not present you with the EULA,
+        so it is incumbent on you to read it.
       - The EULA can be found here; https://support.f5.com/csp/article/K12902.
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
