@@ -23,7 +23,7 @@ options:
   license_key:
     description:
       - The registration key to use to license the BIG-IP.
-      - This parameter is required if the C(state) is equal to C(present).
+      - This parameter is required if the C(state) is equal to C(present) or C(latest).
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
     type: str
@@ -39,7 +39,7 @@ options:
   license_server:
     description:
       - The F5 license server to use when getting a license and validating a dossier.
-      - This parameter is required if the C(state) is equal to C(present).
+      - This parameter is required if the C(state) is equal to C(present) or C(latest).
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
     type: str
@@ -49,11 +49,13 @@ options:
       - The state of the license on the system.
       - When C(present), only guarantees that a license is there.
       - When C(absent), removes the license on the system.
+      - When C(latest), ensures that the license is always valid. This is not idempotent state since re-run can modify result.
       - When C(revoked), removes the license on the system and revokes its future usage
         on the F5 license servers.
     type: str
     choices:
       - absent
+      - latest
       - present
       - revoked
     default: present
@@ -68,10 +70,18 @@ options:
         ignored if it is provided.
     type: bool
     default: no
+  force:
+    description:
+      - Declares whether to force license renewal. By default, this
+        value is C(no).
+      - This parameter is not required and will be ignored if it is provided.
+    type: bool
+    default: no
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
+  - Andrey Kashcheev (@andreykashcheev)
 '''
 
 EXAMPLES = '''
@@ -403,6 +413,8 @@ class ModuleManager(object):
 
         if state == "present":
             changed = self.present()
+        elif state == "latest":
+            changed = self.valid()
         elif state == "absent":
             changed = self.absent()
         elif state == "revoked":
@@ -426,6 +438,15 @@ class ModuleManager(object):
     def present(self):
         if self.exists() and not self.is_revoked():
             return False
+        else:
+            return self.create()
+
+    def valid(self):
+        if self.exists() and not self.is_revoked():
+            if self.want.force or not self.license_valid():
+                return self.create()
+            else:
+                return False
         else:
             return self.create()
 
@@ -595,6 +616,29 @@ class ModuleManager(object):
                     "Failed to remove the license from the device."
                 )
             return True
+        return False
+
+    def license_valid(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+        uri = "https://{0}:{1}/mgmt/tm/shared/licensing/registration".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        try:
+            return int(float(response['expiresInDays'])) > 0
+        except Exception:
+            pass
         return False
 
     def exists(self):
@@ -857,10 +901,14 @@ class ArgumentSpec(object):
                 default='activate.f5.com'
             ),
             state=dict(
-                choices=['absent', 'present', 'revoked'],
+                choices=['absent', 'present', 'revoked', 'latest'],
                 default='present'
             ),
             accept_eula=dict(
+                type='bool',
+                default='no'
+            ),
+            force=dict(
                 type='bool',
                 default='no'
             )
@@ -869,7 +917,8 @@ class ArgumentSpec(object):
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.required_if = [
-            ['state', 'present', ['accept_eula', 'license_key']]
+            ['state', 'present', ['accept_eula', 'license_key']],
+            ['state', 'latest', ['accept_eula', 'license_key']]
         ]
 
 
