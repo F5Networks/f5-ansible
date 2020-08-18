@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_firewall_log_profile
 short_description: Manages AFM logging profiles configured in the system
 description:
-  - Manages AFM logging profiles configured in the system along with basic information about each profile.
+  - Manages AFM (Advanced Firewall Manager) logging profiles configured in the system along with basic information about each profile.
 version_added: "1.0.0"
 options:
   name:
@@ -37,22 +37,22 @@ options:
         description:
           - Specifies the name of the log publisher used for DNS DoS events.
           - To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath
-            format, e.g. C(/Foobar/log-publisher), otherwise the partition for log publisher
-            is inferred from C(partition) module parameter.
+            format, e.g. C(/Foobar/log-publisher), otherwise the partition for the log publisher
+            is inferred from the C(partition) module parameter.
         type: str
       sip_publisher:
         description:
           - Specifies the name of the log publisher used for SIP DoS events.
           - To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath
-            format, e.g. C(/Foobar/log-publisher), otherwise the partition for log publisher
-            is inferred from C(partition) module parameter.
+            format, e.g. C(/Foobar/log-publisher), otherwise the partition for the log publisher
+            is inferred from the C(partition) module parameter.
         type: str
       network_publisher:
         description:
           - Specifies the name of the log publisher used for DoS Network events.
           - To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath
-            format, e.g. C(/Foobar/log-publisher), otherwise the partition for log publisher
-            is inferred from C(partition) module parameter.
+            format, e.g. C(/Foobar/log-publisher), otherwise the partition for the log publisher
+            is inferred from the C(partition) module parameter.
         type: str
     type: dict
   ip_intelligence:
@@ -63,8 +63,8 @@ options:
         description:
           - Specifies the name of the log publisher used for IP Intelligence events.
           - To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath
-            format, e.g. C(/Foobar/log-publisher), otherwise the partition for log publisher
-            is inferred from C(partition) module parameter.
+            format, e.g. C(/Foobar/log-publisher), otherwise the partition for the log publisher
+            is inferred the from C(partition) module parameter.
         type: str
       rate_limit:
         description:
@@ -75,12 +75,12 @@ options:
         type: str
       log_rtbh:
         description:
-          - Specifies, when C(yes), that remotely triggered blackholing events are logged.
+          - When C(yes), specifies remotely triggered blackholing events are logged.
         type: bool
       log_shun:
         description:
-          - Specifies, when C(yes), that IP Intelligence shun list events are logged.
-          - This option can only be set on C(global-network) built-in profile
+          - When C(yes), specifies IP Intelligence shun list events are logged.
+          - This option can only be set on the C(global-network) built-in profile.
         type: bool
       log_translation_fields:
         description:
@@ -98,8 +98,8 @@ options:
         description:
           - Specifies the name of the log publisher used for Port Misuse events.
           - To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath
-            format, e.g. C(/Foobar/log-publisher), otherwise the partition for log publisher
-            is inferred from C(partition) module parameter.
+            format, e.g. C(/Foobar/log-publisher), otherwise the partition for the log publisher
+            is inferred from the C(partition) module parameter.
         type: str
       rate_limit:
         description:
@@ -118,7 +118,7 @@ options:
   state:
     description:
       - When C(state) is C(present), ensures the resource exists.
-      - When C(state) is C(absent), ensures that resource is removed. Attempts to remove built-in system profiles are
+      - When C(state) is C(absent), ensures the resource is removed. Attempts to remove built-in system profiles are
         ignored and no change is returned.
     type: str
     choices:
