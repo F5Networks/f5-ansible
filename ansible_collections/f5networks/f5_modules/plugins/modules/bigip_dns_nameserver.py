@@ -18,9 +18,9 @@ module: bigip_dns_nameserver
 short_description: Manage LTM DNS nameservers on a BIG-IP
 description:
   - Manages LTM DNS nameservers on a BIG-IP. These nameservers form part of what is
-    known as DNS Express on a BIG-IP. This module does not configure GTM related
+    known as DNS Express on a BIG-IP. This module does not configure GTM (DNS module) related
     functionality, nor does it configure system-level name servers that affect the
-    base system's ability to resolve DNS names.
+    ability of the base system to resolve DNS names.
 version_added: "1.0.0"
 options:
   name:
@@ -44,7 +44,7 @@ options:
     type: str
   route_domain:
     description:
-      - Specifies the local route domain that the DNS nameserver (client) or back-end
+      - Specifies the local route domain the DNS nameserver (client) or back-end
         DNS authoritative server (DNS Express server) uses for outbound traffic.
       - When creating a new nameserver, if this value is not specified, the default
         is C(0).
@@ -61,7 +61,7 @@ options:
     type: str
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

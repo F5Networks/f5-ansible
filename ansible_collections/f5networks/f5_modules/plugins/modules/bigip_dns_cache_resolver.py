@@ -16,9 +16,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_dns_cache_resolver
-short_description: Manage DNS resolver cache configurations on BIG-IP
+short_description: Manage DNS resolver cache configuration on a BIG-IP
 description:
-  - Manage DNS resolver cache configurations on BIG-IP.
+  - Manage the DNS resolver cache configuration on BIG-IP devices.
 version_added: "1.0.0"
 options:
   name:
@@ -40,7 +40,7 @@ options:
     suboptions:
       name:
         description:
-          - Specifies a FQDN for the forward zone.
+          - Specifies an FQDN for the forward zone.
         type: str
       nameservers:
         description:
@@ -67,7 +67,7 @@ options:
     type: str
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

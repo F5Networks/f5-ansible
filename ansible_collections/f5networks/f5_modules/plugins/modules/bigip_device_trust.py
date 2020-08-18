@@ -17,37 +17,37 @@ DOCUMENTATION = r'''
 module: bigip_device_trust
 short_description: Manage the trust relationships between BIG-IPs
 description:
-  - Manage the trust relationships between BIG-IPs. Devices, once peered, cannot
+  - Manage the trust relationships between BIG-IP systems. Devices, once peered, cannot
     be updated. If updating is needed, the peer must first be removed before it
     can be re-added to the trust.
 version_added: "1.0.0"
 options:
   peer_server:
     description:
-      - The peer address to connect to and trust for synchronizing configuration.
+      - The peer address to connect to and trust for synchronizing the configuration.
         This is typically the management address of the remote device, but may
-        also be a Self IP.
+        also be a Self IP address.
     type: str
     required: True
   peer_hostname:
     description:
-      - The hostname that you want to associate with the device. This value will
-        be used to easily distinguish this device in BIG-IP configuration.
+      - The hostname you want to associate with the device. This value is
+        used to easily distinguish this device in BIG-IP configuration.
       - When trusting a new device, if this parameter is not specified, the value
-        of C(peer_server) will be used as a default.
+        of C(peer_server) is used as a default.
     type: str
   peer_user:
     description:
-      - The API username of the remote peer device that you are trusting. Note
+      - The API username of the remote peer device you are trusting. Note
         that the CLI user cannot be used unless it too has an API account. If this
         value is not specified, then the value of C(user), or the environment
-        variable C(F5_USER) will be used.
+        variable C(F5_USER) is used.
     type: str
   peer_password:
     description:
-      - The password of the API username of the remote peer device that you are
+      - The password of the API username of the remote peer device you are
         trusting. If this value is not specified, then the value of C(password),
-        or the environment variable C(F5_PASSWORD) will be used.
+        or the environment variable C(F5_PASSWORD) is used.
     type: str
   type:
     description:
