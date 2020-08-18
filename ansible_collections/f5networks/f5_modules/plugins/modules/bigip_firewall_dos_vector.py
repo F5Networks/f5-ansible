@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_firewall_dos_vector
 short_description: Manage attack vector configuration in an AFM DoS profile
 description:
-  - Manage attack vector configuration in an AFM DoS profile. In addition to the normal
+  - Manage the attack vector configuration in an AFM (Advanced Firewall Manager) DoS profile. In addition to the normal
     AFM DoS profile vectors, this module can manage the device-configuration vectors.
     See the module documentation for details about this method.
 version_added: "1.0.0"
@@ -25,7 +25,7 @@ options:
   name:
     description:
       - Specifies the name of the vector to modify.
-      - Vectors that ship with the device are "hard-coded" so-to-speak in that the list
+      - Vectors that ship with the device are "hard-coded" in that the list
         of vectors is known to the system and users cannot add new vectors. Users only
         manipulate the existing vectors; all of which are disabled by default.
       - When C(bad-icmp-chksum), configures the "Bad ICMP Checksum"
@@ -323,7 +323,7 @@ options:
     description:
       - Specifies the name of the profile to manage vectors in.
       - The name C(device-config) is reserved for use by this module.
-      - Vectors can be managed in either DoS Profiles, or Device Configuration. By
+      - Vectors can be managed in either DoS Profiles or Device Configuration. By
         specifying a profile of 'device-config', this module will specifically tailor
         configuration of the provided vectors to the Device Configuration.
     type: str
@@ -361,22 +361,22 @@ options:
     type: str
   allow_advertisement:
     description:
-      - Specifies that addresses that are identified for blacklisting are advertised to
-        BGP routers
+      - Specifies addresses that are identified for blacklisting are advertised to
+        BGP routers.
     type: bool
   simulate_auto_threshold:
     description:
-      - Specifies that results of the current automatic thresholds are logged, though
+      - Specifies results of the current automatic thresholds are logged, though
         manual thresholds are enforced, and no action is taken on automatic thresholds.
       - The C(sweep) vector does not support this parameter.
     type: bool
   blacklist_detection_seconds:
     description:
-      - Detection, in seconds, before blacklisting occurs.
+      - Detection before blacklisting occurs, in seconds.
     type: int
   blacklist_duration:
     description:
-      - Duration, in seconds, that the blacklist will last.
+      - Duration the blacklist will last, in seconds.
     type: int
   per_source_ip_detection_threshold:
     description:
@@ -405,7 +405,7 @@ options:
       - rate_threshold
   mitigation_threshold_eps:
     description:
-      - Specify the maximum number of this type of packet per second the system allows
+      - Specifies the maximum number of this type of packet per second the system allows
         for a vector.
       - The system drops packets once the traffic level exceeds the rate limit.
     type: str
@@ -413,11 +413,11 @@ options:
       - rate_limit
   threshold_mode:
     description:
-      - The C(dns-malformed) vector does not support C(fully-automatic), or C(stress-based-mitigation)
+      - The C(dns-malformed) vector does not support C(fully-automatic) or C(stress-based-mitigation)
         for this parameter.
-      - The C(qdcount) vector does not support C(fully-automatic), or C(stress-based-mitigation)
+      - The C(qdcount) vector does not support C(fully-automatic) or C(stress-based-mitigation)
         for this parameter.
-      - The C(sip-malformed) vector does not support C(fully-automatic), or C(stress-based-mitigation)
+      - The C(sip-malformed) vector does not support C(fully-automatic) or C(stress-based-mitigation)
         for this parameter.
     type: str
     choices:
@@ -426,13 +426,13 @@ options:
       - fully-automatic
   state:
     description:
-      - When C(state) is C(mitigate), ensures that the vector enforces limits and
+      - When C(state) is C(mitigate), ensures the vector enforces limits and
         thresholds.
-      - When C(state) is C(detect-only), ensures that the vector does not enforce limits
-        and thresholds (rate limiting, dopping, etc), but is still tracked in logs and statistics.
-      - When C(state) is C(disabled), ensures that the vector does not enforce limits
+      - When C(state) is C(detect-only), ensures the vector does not enforce limits
+        and thresholds (rate limiting, dropping, etc), but is still tracked in logs and statistics.
+      - When C(state) is C(disabled), ensures the vector does not enforce limits
         and thresholds, but is still tracked in logs and statistics.
-      - When C(state) is C(learn-only), ensures that the vector does not "detect" any attacks.
+      - When C(state) is C(learn-only), ensures the vector does not "detect" any attacks.
         Only learning and stat collecting is performed.
     type: str
     choices:

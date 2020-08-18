@@ -39,10 +39,10 @@ options:
       - There are several different datastores and each of them allows files
         to be exposed in different ways.
       - When C(external-monitor), the specified file will be stored as
-        an external monitor file and be available for use in external monitors
+        an external monitor file and be available for use in external monitors.
       - When C(ifile), the specified file will be stored as an iFile.
-      - When C(lw4o6-table), the specified file will be store as an Lightweight 4
-        over 6 (lw4o6) tunnel binding table, which include an IPv6 address for the
+      - When C(lw4o6-table), the specified file will be stored as a Lightweight 4
+        over 6 (lw4o6) tunnel binding table, which includes an IPv6 address for the
         lwB4, public IPv4 address, and restricted port set.
     type: str
     choices:
@@ -52,9 +52,9 @@ options:
     default: ifile
   force:
     description:
-      - Force overwrite a file.
+      - Force overwriting a file.
       - By default, files will only be overwritten if the SHA of the file is different
-        for the given filename. This parameter can be used to force overwrite the file
+        for the given filename. This parameter can be used to force overwriting the file
         even if it already exists and its SHA matches.
       - The C(lw4o6-table) datastore does not keep checksums of its file. Therefore, you
         would need to provide this argument to update any of these files.
@@ -66,7 +66,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:
