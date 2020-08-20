@@ -15,9 +15,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_gtm_monitor_http
-short_description: Manages F5 BIG-IP GTM http monitors
+short_description: Manages F5 BIG-IP GTM HTTP monitors
 description:
-  - Manages F5 BIG-IP GTM http monitors.
+  - Manages F5 BIG-IP GTM (now BIG-IP DNS) HTTP monitors.
 version_added: "1.0.0"
 options:
   name:
@@ -45,22 +45,21 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
+        provided when creating a new monitor, the default value will be
         '*'.
       - If this value is an IP address, then a C(port) number must be specified.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified
+        provided when creating a new monitor, the default value will be
+        '*'. If specifying an IP address, you must use a value between 1 and 65535.
     type: str
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
         template will run.
-      - If this parameter is not provided when creating a new monitor, then the
+      - If this parameter is not provided when creating a new monitor, the
         default value will be 30.
       - This value B(must) be less than the C(timeout) value.
     type: int
@@ -70,9 +69,9 @@ options:
         the monitor request. If the target responds within the set time
         period, it is considered up. If the target does not respond within
         the set time period, it is considered down. You can change this
-        number to any number you want, however, it should be 3 times the
+        to any number, however, it should be 3 times the
         interval number of seconds plus 1 second.
-      - If this parameter is not provided when creating a new monitor, then the
+      - If this parameter is not provided when creating a new monitor, then
         default value will be 120.
     type: int
   partition:
@@ -82,7 +81,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:
@@ -93,18 +92,18 @@ options:
     description:
       - Specifies the number of seconds after which the system times out the probe request
         to the system.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(5).
     type: int
   ignore_down_response:
     description:
-      - Specifies that the monitor allows more than one probe attempt per interval.
-      - When C(yes), specifies that the monitor ignores down responses for the duration of
+      - Specifies the monitor allows more than one probe attempt per interval.
+      - When C(yes), specifies the monitor ignores down responses for the duration of
         the monitor timeout. Once the monitor timeout is reached without the system receiving
         an up response, the system marks the object down.
-      - When C(no), specifies that the monitor immediately marks an object down when it
+      - When C(no), specifies the monitor immediately marks an object down when it
         receives a down response.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(no).
     type: bool
   transparent:
@@ -115,7 +114,7 @@ options:
         probes the C(ip)-C(port) combination specified in the monitor).
       - If the monitor cannot successfully reach the aliased destination, the pool member
         or node through which the monitor traffic was sent is marked down.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(no).
     type: bool
   reverse:
@@ -124,7 +123,7 @@ options:
         This setting is useful, for example, if the content on your web site home page is
         dynamic and changes frequently, you may want to set up a reverse ECV service check
         that looks for the string Error.
-      - A match for this string means that the web server was down.
+      - A match for this string means the web server was down.
       - To use this option, you must specify values for C(send) and C(receive).
     type: bool
   target_username:

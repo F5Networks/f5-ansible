@@ -17,13 +17,13 @@ DOCUMENTATION = r'''
 module: bigip_gtm_monitor_bigip
 short_description: Manages F5 BIG-IP GTM BIG-IP monitors
 description:
-  - Manages F5 BIG-IP GTM BIG-IP monitors. This monitor is used by GTM to monitor
+  - Manages F5 BIG-IP GTM (now BIG-IP DNS) BIG-IP monitors. This monitor is used by GTM to monitor
     BIG-IPs themselves.
 version_added: "1.0.0"
 options:
   name:
     description:
-      - Monitor name.
+      - Name of the monitor.
     type: str
     required: True
   parent:
@@ -36,21 +36,20 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
+        provided when creating a new monitor, the default value will be
         '*'.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified
+        provided when creating a new monitor, the default value will be
+        '*'. Note that if specifying an IP address, you must use a value between 1 and 65535.
     type: str
   interval:
     description:
       - Specifies, in seconds, the frequency at which the system issues the monitor
         check when either the resource is down or the status of the resource is unknown.
-      - When creating a new monitor, if this parameter is not provided, then the
+      - When creating a new monitor, if this parameter is not provided, the
         default value will be C(30). This value B(must) be less than the C(timeout) value.
     type: int
   timeout:
@@ -60,18 +59,18 @@ options:
       - If the target responds within the set time period, it is considered up.
       - If the target does not respond within the set time period, it is considered down.
       - When this value is set to 0 (zero), the system uses the interval from the parent monitor.
-      - When creating a new monitor, if this parameter is not provided, then
+      - When creating a new monitor, if this parameter is not provided,
         the default value will be C(90).
     type: int
   ignore_down_response:
     description:
-      - Specifies that the monitor allows more than one probe attempt per interval.
-      - When C(yes), specifies that the monitor ignores down responses for the duration of
+      - Specifies the monitor allows more than one probe attempt per interval.
+      - When C(yes), specifies the monitor ignores down responses for the duration of
         the monitor timeout. Once the monitor timeout is reached without the system receiving
         an up response, the system marks the object down.
-      - When C(no), specifies that the monitor immediately marks an object down when it
+      - When C(no), specifies the monitor immediately marks an object down when it
         receives a down response.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(no).
     type: bool
   aggregate_dynamic_ratios:
@@ -80,21 +79,21 @@ options:
         (score) for the load balancing operation.
       - The score represents the module's estimated capacity for handing traffic.
       - Averaged values are appropriate for downstream Web Accelerator or Application
-        Security Manager virtual servers.
+        Security Manager (ASM) virtual servers.
       - When creating a new monitor, if this parameter is not specified, the default
-        of C(none) is used, meaning that the system does not use the scores in the load
+        of C(none) is used, meaning the system does not use the scores in the load
         balancing operation.
-      - When C(none), specifies that the monitor ignores the nodes and pool member scores.
-      - When C(average-nodes), specifies that the system averages the dynamic ratios
+      - When C(none), specifies the monitor ignores the nodes and pool member scores.
+      - When C(average-nodes), specifies the system averages the dynamic ratios
         on the nodes associated with the monitor's target virtual servers and returns
         that average as the virtual servers' score.
-      - When C(sum-nodes), specifies that the system adds together the scores of the
+      - When C(sum-nodes), specifies the system adds together the scores of the
         nodes associated with the monitor's target virtual servers and uses that value
         in the load balancing operation.
-      - When C(average-members), specifies that the system averages the dynamic ratios
+      - When C(average-members), specifies the system averages the dynamic ratios
         on the pool members associated with the monitor's target virtual servers and
         returns that average as the virtual servers' score.
-      - When C(sum-members), specifies that the system adds together the scores of the
+      - When C(sum-members), specifies the system adds together the scores of the
         pool members associated with the monitor's target virtual servers and uses
         that value in the load balancing operation.
     type: str
@@ -111,7 +110,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:
@@ -171,7 +170,7 @@ ip:
   type: str
   sample: 10.12.13.14
 interval:
-  description: The new interval in which to run the monitor check.
+  description: The new interval at which to run the monitor check.
   returned: changed
   type: int
   sample: 2

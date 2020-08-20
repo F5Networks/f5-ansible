@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_global
 short_description: Manages global GTM settings
 description:
-  - Manages global GTM (DNS module) settings. These settings include general, load balancing, and metrics
+  - Manages global BIG-IP GTM (now BIG-IP DNS) settings. These settings include general, load balancing, and metrics
     related settings.
 version_added: "1.0.0"
 options:

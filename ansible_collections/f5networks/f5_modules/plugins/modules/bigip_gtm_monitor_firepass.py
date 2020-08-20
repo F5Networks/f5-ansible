@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_monitor_firepass
 short_description: Manages F5 BIG-IP GTM FirePass monitors
 description:
-  - Manages F5 BIG-IP GTM FirePass monitors.
+  - Manages F5 BIG-IP GTM (now BIG-IP DNS) FirePass monitors.
 version_added: "1.0.0"
 options:
   name:
@@ -35,14 +35,14 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
+        provided when creating a new monitor, the default value will be
         '*'.
-      - If this value is an IP address, then a C(port) number must be specified.
+      - If this value is an IP address, a C(port) number must be specified.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
+        provided when creating a new monitor, the default value will be
         '*'. Note that if specifying an IP address, a value between 1 and 65535
         must be specified.
     type: str
@@ -60,9 +60,9 @@ options:
         the monitor request. If the target responds within the set time
         period, it is considered up. If the target does not respond within
         the set time period, it is considered down. You can change this
-        number to any number you want, however, it should be 3 times the
+        to any number, however, it should be 3 times the
         interval number of seconds plus 1 second.
-      - If this parameter is not provided when creating a new monitor, then
+      - If this parameter is not provided when creating a new monitor,
         the default value will be 90.
     type: int
   partition:
@@ -72,7 +72,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:
@@ -83,18 +83,18 @@ options:
     description:
       - Specifies the number of seconds after which the system times out the probe request
         to the system.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(5).
     type: int
   ignore_down_response:
     description:
-      - Specifies that the monitor allows more than one probe attempt per interval.
-      - When C(yes), specifies that the monitor ignores down responses for the duration of
+      - Specifies the monitor allows more than one probe attempt per interval.
+      - When C(yes), specifies the monitor ignores down responses for the duration of
         the monitor timeout. Once the monitor timeout is reached without the system receiving
         an up response, the system marks the object down.
-      - When C(no), specifies that the monitor immediately marks an object down when it
+      - When C(no), specifies the monitor immediately marks an object down when it
         receives a down response.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(no).
     type: bool
   target_username:
@@ -123,7 +123,7 @@ options:
     type: str
   max_load_average:
     description:
-      - Specifies the number that the monitor uses to mark the Secure Access Manager
+      - Specifies the number the monitor uses to mark the Secure Access Manager
         system up or down.
       - The system compares the Max Load Average setting against a one-minute average
         of the Secure Access Manager system load.

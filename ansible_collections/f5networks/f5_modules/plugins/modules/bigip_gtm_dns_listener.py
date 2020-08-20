@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_gtm_dns_listener
-short_description: Configures BIG-IP DNS system to answer TCP or UDP DNS requests
+short_description: Configures the BIG-IP DNS system to answer TCP or UDP DNS requests
 description:
   - Defines one or more Listener objects to control which protocols are available for the BIG-IP DNS system to process DNS requests.
   - BIG-IP DNS Listeners allow TCP and UDP protocols.

@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_monitor_external
 short_description: Manages external GTM monitors on a BIG-IP
 description:
-  - Manages external GTM monitors on a BIG-IP.
+  - Manages external GTM (now BIG-IP DNS) monitors on a BIG-IP.
 version_added: "1.0.0"
 options:
   name:
@@ -34,7 +34,7 @@ options:
     default: "/Common/external"
   arguments:
     description:
-      - Specifies any command-line arguments that the script requires.
+      - Specifies any command-line arguments the script requires.
     type: str
   ip:
     description:
@@ -45,9 +45,8 @@ options:
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified.
+        provided when creating a new monitor, the default value will be
+        '*'. Note that if specifying an IP address, you must use a value between 1 and 65535.
     type: str
   external_program:
     description:
@@ -60,7 +59,7 @@ options:
     description:
       - The interval specifying how frequently the monitor instance of this
         template will run. If this parameter is not provided when creating
-        a new monitor, then the default value will be 30. This value B(must)
+        a new monitor, the default value will be 30. This value B(must)
         be less than the C(timeout) value.
     type: int
   timeout:
@@ -69,14 +68,14 @@ options:
         the monitor request. If the target responds within the set time
         period, it is considered up. If the target does not respond within
         the set time period, it is considered down. You can change this
-        number to any number you want, however, it should be 3 times the
+        to any number, however, it should be 3 times the
         interval number of seconds plus 1 second. If this parameter is not
-        provided when creating a new monitor, then the default value will be 120.
+        provided when creating a new monitor, the default value will be 120.
     type: int
   variables:
     description:
-      - Specifies any variables that the script requires.
-      - Note that double quotes in values will be suppressed.
+      - Specifies any variables the script requires.
+      - Double quotes in values will be suppressed.
     type: dict
   partition:
     description:
@@ -85,7 +84,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:
