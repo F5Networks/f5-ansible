@@ -1,0 +1,10 @@
+---
+
+- name: Select ts facts
+  bigip_device_info:
+    include:
+      - ts
+  register: result
+
+- debug:
+    var: result
