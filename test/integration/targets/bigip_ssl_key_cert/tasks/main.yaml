@@ -12,14 +12,14 @@
     that:
       - result is changed
 
-- name: Idemponent Import a key
+- name: Import a key - Idempotent check
   bigip_ssl_key_cert:
     key_content: "{{ lookup('file', 'key.pem') }}"
     key_name: cert1
     state: present
   register: result
 
-- name: Assert Idemponent Import a key
+- name: Assert Import a key - Idempotent check
   assert:
     that:
       - result is not changed
@@ -35,13 +35,13 @@
     that:
       - result is changed
 
-- name: Idemponent Delete the key
+- name: Delete the key - Idempotent check
   bigip_ssl_key_cert:
     key_name: cert1
     state: absent
   register: result
 
-- name: Assert Idemponent Delete the key
+- name: Assert Delete the key - Idempotent check
   assert:
     that:
       - result is not changed
@@ -58,14 +58,14 @@
     that:
       - result is changed
 
-- name: Idemponent Import a cert
+- name: Import a cert - Idempotent check
   bigip_ssl_key_cert:
     cert_content: "{{ lookup('file', 'cert.pem') }}"
     cert_name: cert1
     state: present
   register: result
 
-- name: Assert Idemponent Import a cert
+- name: Assert Import a cert - Idempotent check
   assert:
     that:
       - result is not changed
@@ -81,13 +81,13 @@
     that:
       - result is changed
 
-- name: Idemponent Delete the cert
+- name: Delete the cert - Idempotent check
   bigip_ssl_key_cert:
     cert_name: cert1
     state: absent
   register: result
 
-- name: Assert Idemponent Delete the cert
+- name: Assert Delete the cert - Idempotent check
   assert:
     that:
       - result is not changed
@@ -106,7 +106,7 @@
     that:
       - result is changed
 
-- name: Idemponent Import both key and cert
+- name: Import both key and cert - Idempotent check
   bigip_ssl_key_cert:
     key_content: "{{ lookup('file', 'key.pem') }}"
     key_name: cert1
@@ -115,7 +115,7 @@
     state: present
   register: result
 
-- name: Assert Idemponent Import both key and cert
+- name: Assert Import both key and cert - Idempotent check
   assert:
     that:
       - result is not changed
@@ -147,7 +147,6 @@
     that:
       - result is changed
 
-
 - name: Update key and cert
   bigip_ssl_key_cert:
     key_content: "{{ lookup('file', 'key3.pem') }}"
@@ -162,14 +161,14 @@
     that:
       - result is changed
 
-- name: Create a client SSL profile
+- name: Remove a client SSL profile
   bigip_profile_client_ssl:
     name: foo
     parent: clientssl
     state: absent
   register: result
 
-- name: Assert Create a client SSL profile
+- name: Assert Remove a client SSL profile
   assert:
     that:
       - result is changed
@@ -188,7 +187,7 @@
     that:
       - result is changed
 
-- name: Idemponent Delete key and cert
+- name: Delete key and cert - Idempotent check
   bigip_ssl_key_cert:
     key_content: "{{ lookup('file', 'key3.pem') }}"
     key_name: cert1
@@ -197,7 +196,7 @@
     state: absent
   register: result
 
-- name: Assert Idemponent Delete key and cert
+- name: Assert Delete key and cert - Idempotent check
   assert:
     that:
       - result is not changed
