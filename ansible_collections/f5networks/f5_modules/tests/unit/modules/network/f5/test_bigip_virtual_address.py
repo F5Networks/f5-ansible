@@ -53,7 +53,7 @@ class TestParameters(unittest.TestCase):
             address='1.1.1.1',
             netmask='2.2.2.2',
             connection_limit='10',
-            arp_state='enabled',
+            arp='enabled',
             auto_delete='enabled',
             icmp_echo='enabled',
             availability_calculation='always',
@@ -63,8 +63,8 @@ class TestParameters(unittest.TestCase):
         assert p.address == '1.1.1.1'
         assert p.netmask == '2.2.2.2'
         assert p.connection_limit == 10
-        assert p.arp is True
-        assert p.auto_delete is True
+        assert p.arp == 'enabled'
+        assert p.auto_delete == 'true'
         assert p.icmp_echo == 'enabled'
         assert p.availability_calculation == 'none'
 
@@ -73,8 +73,8 @@ class TestParameters(unittest.TestCase):
         p = ApiParameters(params=args)
         assert p.name == '1.1.1.1'
         assert p.address == '1.1.1.1'
-        assert p.arp is True
-        assert p.auto_delete is True
+        assert p.arp == 'enabled'
+        assert p.auto_delete == 'true'
         assert p.connection_limit == 0
         assert p.state == 'enabled'
         assert p.icmp_echo == 'enabled'
@@ -115,14 +115,14 @@ class TestParameters(unittest.TestCase):
             auto_delete='disabled'
         )
         p = ModuleParameters(params=args)
-        assert p.auto_delete is False
+        assert p.auto_delete == 'false'
 
-    def test_module_parameters_arp_state_disabled(self):
+    def test_module_parameters_arp_disabled(self):
         args = dict(
-            arp_state='disabled'
+            arp='disabled'
         )
         p = ModuleParameters(params=args)
-        assert p.arp_state == 'disabled'
+        assert p.arp == 'disabled'
 
     def test_module_parameters_state_present(self):
         args = dict(
@@ -167,8 +167,8 @@ class TestManager(unittest.TestCase):
             address='1.1.1.1',
             netmask='2.2.2.2',
             connection_limit='10',
-            arp_state='enabled',
-            auto_delete='enabled',
+            arp='yes',
+            auto_delete='yes',
             icmp_echo='enabled',
             advertise_route='always',
             provider=dict(
@@ -181,7 +181,6 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive,
             required_one_of=self.spec.required_one_of
         )
         mm = ModuleManager(module=module)
@@ -207,7 +206,6 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive,
             required_one_of=self.spec.required_one_of
         )
         mm = ModuleManager(module=module)

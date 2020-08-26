@@ -523,6 +523,7 @@ class ReportableChanges(Changes):
         elif self._values['spanning'] == 'enabled':
             return 'yes'
 
+
 class Difference(object):
     def __init__(self, want, have=None):
         self.want = want
