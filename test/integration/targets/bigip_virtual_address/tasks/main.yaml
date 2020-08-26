@@ -49,7 +49,7 @@
 - name: Disable ARP state
   bigip_virtual_address:
     address: "{{ va_address }}"
-    arp_state: disabled
+    arp: no
     state: present
   register: result
 
@@ -61,7 +61,7 @@
 - name: Disable ARP state - Idempotent check
   bigip_virtual_address:
     address: "{{ va_address }}"
-    arp_state: disabled
+    arp: no
     state: present
   register: result
 
@@ -73,7 +73,7 @@
 - name: Enable ARP state
   bigip_virtual_address:
     address: "{{ va_address }}"
-    arp_state: enabled
+    arp: yes
     state: present
   register: result
 
@@ -85,7 +85,7 @@
 - name: Enable ARP state - Idempotent check
   bigip_virtual_address:
     address: "{{ va_address }}"
-    arp_state: enabled
+    arp: yes
     state: present
   register: result
 
@@ -97,7 +97,7 @@
 - name: Disable auto-delete
   bigip_virtual_address:
     address: "{{ va_address }}"
-    auto_delete: disabled
+    auto_delete: no
     state: present
   register: result
 
@@ -109,7 +109,7 @@
 - name: Disable auto-delete - Idempotent check
   bigip_virtual_address:
     address: "{{ va_address }}"
-    auto_delete: disabled
+    auto_delete: no
     state: present
   register: result
 
@@ -121,7 +121,7 @@
 - name: Enable auto-delete
   bigip_virtual_address:
     address: "{{ va_address }}"
-    auto_delete: enabled
+    auto_delete: yes
     state: present
   register: result
 
@@ -133,7 +133,7 @@
 - name: Enable auto-delete - Idempotent check
   bigip_virtual_address:
     address: "{{ va_address }}"
-    auto_delete: enabled
+    auto_delete: yes
     state: present
   register: result
 
@@ -391,9 +391,6 @@
 
 - import_tasks: issue-00797.yaml
   tags: issue-00797
-
-- import_tasks: issue-01063.yaml
-  tags: issue-01063
 
 - import_tasks: issue-01436.yaml
   tags: issue-01436

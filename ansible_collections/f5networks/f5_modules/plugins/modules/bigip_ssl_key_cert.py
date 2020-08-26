@@ -59,7 +59,6 @@ options:
       - SSL Certificate Name. This is the cert name used when importing a certificate
         into the F5. It also determines the filenames of the objects on the LTM.
     type: str
-    required: True
   issuer_cert:
     description:
       - Issuer certificate used for OCSP monitoring.
@@ -76,9 +75,13 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Import both key and cert
   bigip_ssl_key_cert:
-    name: foo
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: cert1
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: cert1
+    state: present
     provider:
       password: secret
       server: lb.mydomain.com
@@ -87,16 +90,7 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
-  returned: changed
-  type: str
-  sample: Foo is bar
+# only common fields returned
 '''
 
 import hashlib
@@ -137,7 +131,6 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     returnables = [
-        'filename',
         'checksum',
         'source_path',
         'issuer_cert',
@@ -337,7 +330,7 @@ class Difference(object):
         if self.want.source_path is None:
             return None
         if self.want.source_path == self.have.source_path:
-            if self.content:
+            if self.cert_content:
                 return self.want.source_path
         if self.want.source_path != self.have.source_path:
             return self.want.source_path

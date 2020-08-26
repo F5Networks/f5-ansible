@@ -46,20 +46,6 @@ options:
       - Specifies the number of concurrent connections that the system
         allows on this virtual address.
     type: int
-  arp_state:
-    description:
-      - Specifies whether the system accepts ARP requests. When (disabled),
-        specifies that the system does not accept ARP requests. Note that
-        both ARP and ICMP Echo must be disabled in order for forwarding
-        virtual servers using that virtual address to forward ICMP packets.
-        If (enabled), then the packets are dropped.
-      - Deprecated. Use the C(arp) parameter instead.
-      - When creating a new virtual address, if this parameter is not specified,
-        the default value is C(enabled).
-    type: str
-    choices:
-      - enabled
-      - disabled
   arp:
     description:
       - Specifies whether the system accepts ARP requests.
@@ -74,13 +60,10 @@ options:
     description:
       - Specifies whether the system automatically deletes the virtual
         address with the deletion of the last associated virtual server.
-        When C(disabled), specifies that the system leaves the virtual
+        When C(no), specifies that the system leaves the virtual
         address even when all associated virtual servers have been deleted.
-        When creating the virtual address, the default value is C(enabled).
-      - C(enabled) and C(disabled) are deprecated and will be removed in
-        Ansible 2.11. Instead, use known Ansible booleans such as C(yes) and
-        C(no)
-    type: str
+        When creating the virtual address, the default value is C(yes).
+    type: bool
   icmp_echo:
     description:
       - Specifies how the systems sends responses to (ICMP) echo requests
@@ -225,8 +208,8 @@ availability_calculation:
 auto_delete:
   description: New setting for auto deleting virtual address.
   returned: changed
-  type: str
-  sample: enabled
+  type: bool
+  sample: yes
 icmp_echo:
   description: New ICMP echo setting applied to virtual address.
   returned: changed
@@ -274,7 +257,7 @@ from distutils.version import LooseVersion
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name
+    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name, flatten_boolean
 )
 from ..module_utils.icontrol import tmos_version
 from ..module_utils.ipaddress import (
@@ -378,14 +361,11 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def auto_delete(self):
-        if self._values['auto_delete'] is None:
-            return None
-        elif self._values['auto_delete'] in BOOLEANS_TRUE:
-            return True
-        elif self._values['auto_delete'] == 'enabled':
-            return True
-        else:
-            return False
+        result = flatten_boolean(self._values['auto_delete'])
+        if result == 'yes':
+            return 'true'
+        if result == 'no':
+            return 'false'
 
     @property
     def state(self):
@@ -431,34 +411,10 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    @property
-    def arp(self):
-        if self._values['arp'] is None:
-            return None
-        elif self._values['arp'] == 'enabled':
-            return True
-        return False
-
-    @property
-    def spanning(self):
-        if self._values['spanning'] is None:
-            return None
-        if self._values['spanning'] == 'enabled':
-            return True
-        return False
+    pass
 
 
 class ModuleParameters(Parameters):
-    @property
-    def arp(self):
-        if self._values['arp'] is None:
-            if self.arp_state and self.arp_state == 'enabled':
-                return True
-            elif self.arp_state and self.arp_state == 'disabled':
-                return False
-        else:
-            return self._values['arp']
-
     @property
     def address(self):
         if self._values['address'] is None:
@@ -512,6 +468,22 @@ class ModuleParameters(Parameters):
 
             return int(response['id'])
 
+    @property
+    def arp(self):
+        result = flatten_boolean(self._values['arp'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
+    @property
+    def spanning(self):
+        result = flatten_boolean(self._values['spanning'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -521,7 +493,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -535,23 +507,6 @@ class UsableChanges(Changes):
         result = "{0}%{1}".format(self._values['address'], self.route_domain)
         return result
 
-    @property
-    def arp(self):
-        if self._values['arp'] is None:
-            return None
-        elif self._values['arp'] is True:
-            return 'enabled'
-        elif self._values['arp'] is False:
-            return 'disabled'
-
-    @property
-    def spanning(self):
-        if self._values['spanning'] is None:
-            return None
-        if self._values['spanning']:
-            return 'enabled'
-        return 'disabled'
-
 
 class ReportableChanges(Changes):
     @property
@@ -561,6 +516,12 @@ class ReportableChanges(Changes):
         elif self._values['arp'] == 'enabled':
             return 'yes'
 
+    @property
+    def spanning(self):
+        if self._values['spanning'] == 'disabled':
+            return 'no'
+        elif self._values['spanning'] == 'enabled':
+            return 'yes'
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -596,11 +557,11 @@ class Difference(object):
             return self.want.spanning
 
     @property
-    def arp_state(self):
-        if self.want.arp_state is None:
+    def arp(self):
+        if self.want.arp is None:
             return None
-        if self.want.arp_state != self.have.arp_state:
-            return self.want.arp_state
+        if self.want.arp != self.have.arp:
+            return self.want.arp
 
 
 class ModuleManager(object):
@@ -721,7 +682,7 @@ class ModuleManager(object):
             else:
                 self.want.update({'netmask': 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'})
 
-        if self.want.arp and self.want.spanning:
+        if self.want.arp == 'enabled' and self.want.spanning == 'enabled':
             raise F5ModuleError(
                 "'arp' and 'spanning' cannot both be enabled on virtual address."
             )
@@ -747,7 +708,7 @@ class ModuleManager(object):
                     "The address cannot be changed. Delete and recreate "
                     "the virtual address if you need to do this."
                 )
-        if self.changes.arp and self.changes.spanning:
+        if self.changes.arp == 'enabled' and self.changes.spanning == 'enabled':
             raise F5ModuleError(
                 "'arp' and 'spanning' cannot both be enabled on virtual address."
             )
@@ -871,7 +832,9 @@ class ArgumentSpec(object):
                 type='int'
             ),
 
-            auto_delete=dict(),
+            auto_delete=dict(
+                type='bool'
+            ),
             icmp_echo=dict(
                 choices=['enabled', 'disabled', 'selective'],
             ),
@@ -896,13 +859,6 @@ class ArgumentSpec(object):
                     'all',
                 ]
             ),
-
-            # Deprecated pair - ARP
-            arp_state=dict(
-                choices=['enabled', 'disabled'],
-                removed_in_version="1.6.0",
-                removed_from_collection="f5networks.f5_modules"
-            ),
             arp=dict(type='bool'),
         )
         self.argument_spec = {}
@@ -910,9 +866,6 @@ class ArgumentSpec(object):
         self.argument_spec.update(argument_spec)
         self.required_one_of = [
             ['name', 'address']
-        ]
-        self.mutually_exclusive = [
-            ['arp_state', 'arp']
         ]
 
 
@@ -922,7 +875,6 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        mutually_exclusive=spec.mutually_exclusive,
         required_one_of=spec.required_one_of
     )
 
