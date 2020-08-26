@@ -202,16 +202,11 @@ import time
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
 
-try:
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.parsing import Conditional
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-        ComplexList, to_list
-    )
-except ImportError:
-    from ansible.module_utils.network.common.parsing import Conditional
-    from ansible.module_utils.network.common.utils import (
-        ComplexList, to_list
-    )
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.parsing import Conditional
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    ComplexList, to_list
+)
+
 
 from collections import deque
 
