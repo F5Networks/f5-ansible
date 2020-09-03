@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2017, F5 Networks Inc.
+# Copyright: (c) 2020, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -9,7 +9,7 @@ __metaclass__ = type
 DOCUMENTATION = """
     lookup: Select a random license key from a pool of biqiq available licenses
     author: Wojciech Wypior <w.wypior@f5.com>
-    version_added: "2.8"
+    version_added: "1.0"
     short_description: Return random license from list
     description:
       - Select a random license key from a pool of biqiq available licenses
