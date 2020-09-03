@@ -7,7 +7,7 @@ __metaclass__ = type
 DOCUMENTATION = """
     lookup: Select a random license key from a file and remove it from future lookups
     author: Tim Rupp <caphrim007@gmail.com>
-    version_added: "2.5"
+    version_added: "1.0"
     short_description: Return random license from list
     description:
       - Select a random license key from a file and remove it from future lookups
