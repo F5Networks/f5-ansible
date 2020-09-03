@@ -34,7 +34,7 @@ options:
         will do a "push" to all the other devices in the group. This option
         is mutually exclusive with the C(sync_group_to_device) option.
     type: bool
-  sync_most_recent_to_device:
+  sync_group_to_device:
     description:
       - Specifies that the system synchronizes configuration data from the
         device with the most recent configuration. In this case, the device
@@ -70,7 +70,7 @@ EXAMPLES = r'''
 - name: Sync configuration from most recent device to the current host
   bigip_configsync_action:
     device_group: foo-group
-    sync_most_recent_to_device: yes
+    sync_group_to_device: yes
     provider:
       server: lb.mydomain.com
       user: admin
@@ -96,11 +96,11 @@ import re
 import time
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
+
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, f5_argument_spec
+    F5ModuleError, AnsibleF5Parameters, f5_argument_spec, flatten_boolean
 )
 
 try:
@@ -129,13 +129,19 @@ class ModuleParameters(Parameters):
 
     @property
     def sync_device_to_group(self):
-        result = self._cast_to_bool(self._values['sync_device_to_group'])
-        return result
+        result = flatten_boolean(self._values['sync_device_to_group'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
     @property
     def sync_group_to_device(self):
-        result = self._cast_to_bool(self._values['sync_group_to_device'])
-        return result
+        result = flatten_boolean(self._values['sync_group_to_device'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
     @property
     def force_full_push(self):
@@ -146,15 +152,10 @@ class ModuleParameters(Parameters):
 
     @property
     def overwrite_config(self):
-        result = self._cast_to_bool(self._values['overwrite_config'])
-        return result
-
-    def _cast_to_bool(self, value):
-        if value is None:
-            return None
-        elif value in BOOLEANS_TRUE:
+        result = flatten_boolean(self._values['overwrite_config'])
+        if result == 'yes':
             return True
-        else:
+        if result == 'no':
             return False
 
 
@@ -385,7 +386,7 @@ class ArgumentSpec(object):
             sync_device_to_group=dict(
                 type='bool'
             ),
-            sync_most_recent_to_device=dict(
+            sync_group_to_device=dict(
                 type='bool'
             ),
             overwrite_config=dict(
@@ -401,10 +402,10 @@ class ArgumentSpec(object):
         self.argument_spec.update(argument_spec)
 
         self.required_one_of = [
-            ['sync_device_to_group', 'sync_most_recent_to_device']
+            ['sync_device_to_group', 'sync_group_to_device']
         ]
         self.mutually_exclusive = [
-            ['sync_device_to_group', 'sync_most_recent_to_device']
+            ['sync_device_to_group', 'sync_group_to_device']
         ]
 
 
