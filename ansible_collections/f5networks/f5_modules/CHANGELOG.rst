@@ -5,6 +5,43 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.2.0
+======
+
+Minor Changes
+-------------
+
+- Add ImishConfig class to add duplicate records handling capability
+- Add additional dos vectors to bigip_firewall_dos_vector_module
+- Add addon_keys parameter to bigip_device_license module
+- Add aliases for address and port to bigip_monitor_tcp module
+- Add allow_duplicates parameter to bigip_imish_config module
+- Add bigip_device_auth radius module
+- Add check_profiles parameter to bypass profile verification ability in bigip_virtual_server module
+- Add cipher_group parameter to bigip_profile_client_ssl module
+- Add dns-oversize DNS protocol security vector to bigip_firewall_doc_vector
+- Add forward_node option to bigip_policy_rule module
+- Add ipv6-ext-hdr-frames security vector to bigip_firewall_doc_vector
+- Add management routes information to bigip_device_info module
+- Add support for BIG-IQ 7.0 and above to bigiq_device_info module
+- Add virtual server policies information to bigip_device_info
+
+Bugfixes
+--------
+
+- Change bigip_data_group module's records parameter type to 'raw'
+- Fix '?' character handling in value for bigip_data_group module
+- Fix a bug with using true_name parameter in bigip_profile_client_ssl module
+- Fix an issue with /32 IPV6 subnet being saved as host rather than a network in bigip_data_group module
+- Fix attribute error in bigip_software_install module
+- Fix check_profiles boolean parameter conversion in bigip_virtual_server
+- Fix handling of duplicate records by the bigip_imish_config module
+
+New Modules
+-----------
+
+- bigip_pool - Manages F5 BIG-IP LTM pools
+
 v1.1.0
 ======
 

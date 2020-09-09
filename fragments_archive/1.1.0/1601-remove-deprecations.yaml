@@ -1,0 +1,12 @@
+---
+removed_features:
+  - Remove _bigip_iapplx_package alias
+  - Remove bigip_asm_policy module
+  - Remove _bigip_security_address_list alias
+  - Remove _bigip_security_port_list alias
+  - Remove _bigip_traffic_group alias
+
+deprecated_features:
+  - Deprecated bigip_appsvcs_extension module
+  - Deprecated bigiq_device_facts module name
+  - Deprecated bigip_device_facts module name

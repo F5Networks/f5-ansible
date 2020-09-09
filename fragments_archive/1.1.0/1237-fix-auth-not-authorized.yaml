@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix allowing authenticated not authorized users using modules to modify a resource

@@ -18,7 +18,7 @@ module: bigip_pool
 short_description: Manages F5 BIG-IP LTM pools
 description:
   - Manages F5 BIG-IP LTM pools via iControl REST API.
-version_added: "1.2.0"
+version_added: "1.0.0"
 options:
   description:
     description:
