@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_log_destination
 short_description: Manages log destinations on a BIG-IP.
 description:
-  - Manages log destinations on a BIG-IP.
+  - Manages log destinations on a BIG-IP device.
 version_added: "1.0.0"
 options:
   name:
@@ -91,8 +91,8 @@ options:
           - Specifies the method to use to format the logs associated with the remote Syslog log destination.
           - When creating a new log destination (and C(type) is C(remote-syslog)), if this parameter is
             not specified, the default is C(bsd-syslog).
-          - The C(syslog) and C(rfc5424) choices are two ways of saying the same thing.
-          - The C(bsd-syslog) and C(rfc3164) choices are two ways of saying the same thing.
+          - The C(syslog) and C(rfc5424) choices are the same.
+          - The C(bsd-syslog) and C(rfc3164) choices are the same.
         type: str
         choices:
           - bsd-syslog
@@ -113,8 +113,8 @@ options:
       - Specifies the method to use to format the logs associated with the remote Syslog log destination.
       - When creating a new log destination (and C(type) is C(remote-syslog)), if this parameter is
         not specified, the default is C(bsd-syslog).
-      - The C(syslog) and C(rfc5424) choices are two ways of saying the same thing.
-      - The C(bsd-syslog) and C(rfc3164) choices are two ways of saying the same thing.
+      - The C(syslog) and C(rfc5424) choices are the same.
+      - The C(bsd-syslog) and C(rfc3164) choices are the same.
     type: str
     choices:
       - bsd-syslog
@@ -230,7 +230,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:
