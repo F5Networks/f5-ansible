@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_server
 short_description: Manages F5 BIG-IP GTM servers
 description:
-  - Manage BIG-IP server configuration. This module is able to manipulate the server
+  - Manage BIG-IP GTM (now BIG-IP DNS) server configuration. This module is able to manipulate the server
     definitions in a BIG-IP.
 version_added: "1.0.0"
 options:
@@ -28,10 +28,10 @@ options:
     required: True
   state:
     description:
-      - The server state. If C(absent), an attempt to delete the server will be made.
+      - The server state. If C(absent), the module attempts to delete the server.
         This will only succeed if this server is not in use by a virtual server.
-        C(present) creates the server and enables it. If C(enabled), enable the server
-        if it exists. If C(disabled), create the server if needed, and set state to
+        C(present) creates the server and enables it. If C(enabled), enables the server
+        if it exists. If C(disabled), creates the server if needed, and sets state to
         C(disabled).
     type: str
     choices:
@@ -42,7 +42,7 @@ options:
     default: present
   datacenter:
     description:
-      - Data center the server belongs to. When creating a new GTM server, this value
+      - Data center to which the server belongs. When creating a new GTM server, this value
         is required.
     type: str
   devices:
@@ -62,7 +62,7 @@ options:
     type: raw
   server_type:
     description:
-      - Specifies the server type. The server type determines the metrics that the
+      - Specifies the server type. The server type determines the metrics the
         system can collect from the server. When creating a new GTM server, the default
         value C(bigip) is used.
     type: str
@@ -91,7 +91,7 @@ options:
         creating a new GTM server, if this parameter is not specified, the default
         value C(disabled) is used.
       - If you set this parameter to C(enabled) or C(enabled-no-delete), you must
-        also ensure that the C(virtual_server_discovery) parameter is also set to
+        also ensure the C(virtual_server_discovery) parameter is also set to
         C(enabled) or C(enabled-no-delete).
     type: str
     choices:
@@ -120,30 +120,30 @@ options:
     suboptions:
       allow_path:
         description:
-          - Specifies that the system verifies the logical network route between a data
+          - Specifies the system verifies the logical network route between a data
             center server and a local DNS server.
         type: bool
       allow_service_check:
         description:
-          - Specifies that the system verifies that an application on a server is running,
+          - Specifies the system verifies that an application on a server is running,
             by remotely running the application using an external service checker program.
         type: bool
       allow_snmp:
         description:
-          - Specifies that the system checks the performance of a server running an SNMP
+          - Specifies the system checks the performance of a server running an SNMP
             agent.
         type: bool
     type: dict
   monitors:
     description:
-      - Specifies the health monitors that the system currently uses to monitor this resource.
+      - Specifies the health monitors the system currently uses to monitor this resource.
       - When C(availability_requirements.type) is C(require), you may only have a single monitor in the
         C(monitors) list.
     type: list
     elements: str
   availability_requirements:
     description:
-      - Specifies, if you activate more than one health monitor, the number of health
+      - If you activate more than one health monitor, specifies the number of health
         monitors that must receive successful responses in order for the link to be
         considered available.
     type: dict
@@ -151,7 +151,7 @@ options:
       type:
         description:
           - Monitor rule type when C(monitors) is specified.
-          - When creating a new pool, if this value is not specified, the default of 'all' will be used.
+          - When creating a new pool, if this value is not specified, the default of B(all) will be used.
         type: str
         required: True
         choices:
@@ -178,7 +178,7 @@ options:
       number_of_probers:
         description:
           - Specifies the number of probers that should be used when running probes.
-          - When creating a new virtual server, if this parameter is specified, then the C(number_of_probes)
+          - When creating a new virtual server, if this parameter is specified, the C(number_of_probes)
             parameter must also be specified.
           - The value of this parameter should always be B(higher) than, or B(equal to),
             the value of C(number_of_probers).
@@ -205,7 +205,7 @@ options:
       - From C(TMOS) version C(13.x) and up, when prober_preference is set to C(pool)
         a C(prober_pool) parameter must be specified.
       - The choices are mutually exclusive with prober_preference parameter,
-        with the exception of C(any-available) or C(none) option.
+        with the exception of the C(any-available) or C(none) options.
     type: str
     choices:
       - any
@@ -217,10 +217,10 @@ options:
   prober_pool:
     description:
       - Specifies the name of the prober pool to use to monitor this server's resources.
-      - From C(TMOS) version C(13.x) and up, this parameter is mandatory when C(prober_preference) is set to C(pool).
-      - Format of the name can be either be prepended by partition (C(/Common/foo)), or specified
+      - In C(TMOS) version C(13.x) and later, this parameter is mandatory when C(prober_preference) is set to C(pool).
+      - The format of the name can be either be prepended by partition (C(/Common/foo)), or specified
         just as an object name (C(foo)).
-      - In C(TMOS) version C(12.x) prober_pool can be set to empty string to revert to default setting of inherit.
+      - In C(TMOS) version C(12.x), prober_pool can be set to an empty string to revert to default setting of C(inherit).
     type: str
   limits:
     description:
@@ -229,7 +229,7 @@ options:
         members in and out of service.
       - You can define limits for any or all of the limit settings. However, when a
         member does not meet the resource threshold limit requirement, the system marks
-        the member as unavailable and directs load-balancing traffic to another resource.
+        the member as unavailable and directs load balancing traffic to another resource.
     suboptions:
       bits_enabled:
         description:
@@ -258,22 +258,22 @@ options:
         type: bool
       bits_limit:
         description:
-          - Specifies the maximum allowable data throughput rate, in bits per second,
-            for the member.
+          - Specifies the maximum allowable data throughput rate for the member,
+            in bits per second.
           - If the network traffic volume exceeds this limit, the system marks the
             member as unavailable.
         type: int
       packets_limit:
         description:
-          - Specifies the maximum allowable data transfer rate, in packets per second,
-            for the member.
+          - Specifies the maximum allowable data transfer rate for the member,
+            in packets per second.
           - If the network traffic volume exceeds this limit, the system marks the
             member as unavailable.
         type: int
       connections_limit:
         description:
           - Specifies the maximum number of concurrent connections, combined, for all of
-            the member.
+            the members.
           - If the connections exceed this limit, the system marks the server as
             unavailable.
         type: int
@@ -402,7 +402,7 @@ server_type:
   type: str
   sample: bigip
 datacenter:
-  description: The new C(datacenter) which the server is part of.
+  description: The new C(datacenter) which the server is a part of.
   returned: changed
   type: str
   sample: datacenter01
