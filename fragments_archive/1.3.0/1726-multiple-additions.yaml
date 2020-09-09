@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - Add ssl certificate subject_alternative_name information to bigip_device_info module
+  - Add cipher_list parameter to bigip_monitor_https

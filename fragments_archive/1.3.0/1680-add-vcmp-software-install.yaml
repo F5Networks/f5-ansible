@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Add ability to install software images on vcmp guests with bigip_software_install module

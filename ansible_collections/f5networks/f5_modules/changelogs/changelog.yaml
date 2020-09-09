@@ -500,3 +500,213 @@ releases:
         name: license_hopper
         namespace: null
     release_date: '2019-11-14'
+  1.1.0:
+    changes:
+      bugfixes:
+      - Fix allowing authenticated not authorized users using modules to modify a
+        resource
+      - Fix ipv6 netmask for self-ips in bigip_device_info
+      - Fix save_when parameter not saving configuration as expected in bigip_imish_config
+        module
+      deprecated_features:
+      - Deprecated bigip_appsvcs_extension module
+      - Deprecated bigip_device_facts module name
+      - Deprecated bigiq_device_facts module name
+      minor_changes:
+      - Add accounting parameter for tacacs type to bigip_device_auth module
+      - Add fw_enforcement_policy parameter to bigip_selfip module
+      - Add persist cookie option to bigip_policy_rule module
+      - Add phase1_lifetime parameter to bigip_ike_peer module
+      - Add self allow option to bigip_network_globals module
+      - Add true_names support to bigip_profile_client_ssl modules allowing specifying
+        true filenames of the certificates
+      - New ftp monitor module for configuring and managing ftp monitors
+      - New icmp monitor module for configuring and managing icmp monitors
+      - New smtp monitor module for configuring and managing smtp monitors
+      - New universal persistence profile module for configuring and managing universal
+        persistence profiles
+      removed_features:
+      - Remove _bigip_iapplx_package alias
+      - Remove _bigip_security_address_list alias
+      - Remove _bigip_security_port_list alias
+      - Remove _bigip_traffic_group alias
+      - Remove bigip_asm_policy module
+    fragments:
+    - 1237-fix-auth-not-authorized.yaml
+    - 1336-adds-accounting-device-auth.yaml
+    - 1392-fix-save-when.yaml
+    - 1405-add-perist-cookie-option.yaml
+    - 1440-add-true-name-support.yaml
+    - 1500-add-phase1-lifetime.yaml
+    - 1527-add-fw_enf-support.yaml
+    - 1563-ipv6-bigip-device-info.yaml
+    - 1566-new-universal-persistence.yaml
+    - 1575-new-ftp-monitor.yaml
+    - 1576-new-icmp-monitor.yaml
+    - 1580-add-self-allow.yaml
+    - 1580-new-smtp-monitor.yaml
+    - 1601-remove-deprecations.yaml
+    modules:
+    - description: Manage FTP monitors on a BIG-IP
+      name: bigip_monitor_ftp
+      namespace: ''
+    - description: Manages F5 BIG-IP LTM ICMP monitors
+      name: bigip_monitor_icmp
+      namespace: ''
+    - description: Manage SMTP monitors on a BIG-IP
+      name: bigip_monitor_smtp
+      namespace: ''
+    - description: Manage universal persistence profiles
+      name: bigip_profile_persistence_universal
+      namespace: ''
+    release_date: '2020-01-07'
+  1.2.0:
+    changes:
+      bugfixes:
+      - Change bigip_data_group module's records parameter type to 'raw'
+      - Fix '?' character handling in value for bigip_data_group module
+      - Fix a bug with using true_name parameter in bigip_profile_client_ssl module
+      - Fix an issue with /32 IPV6 subnet being saved as host rather than a network
+        in bigip_data_group module
+      - Fix attribute error in bigip_software_install module
+      - Fix check_profiles boolean parameter conversion in bigip_virtual_server
+      - Fix handling of duplicate records by the bigip_imish_config module
+      minor_changes:
+      - Add ImishConfig class to add duplicate records handling capability
+      - Add additional dos vectors to bigip_firewall_dos_vector_module
+      - Add addon_keys parameter to bigip_device_license module
+      - Add aliases for address and port to bigip_monitor_tcp module
+      - Add allow_duplicates parameter to bigip_imish_config module
+      - Add check_profiles parameter to bypass profile verification ability in bigip_virtual_server
+        module
+      - Add cipher_group parameter to bigip_profile_client_ssl module
+      - Add dns-oversize DNS protocol security vector to bigip_firewall_doc_vector
+      - Add forward_node option to bigip_policy_rule module
+      - Add ipv6-ext-hdr-frames security vector to bigip_firewall_doc_vector
+      - Add management routes information to bigip_device_info module
+      - Add support for BIG-IQ 7.0 and above to bigiq_device_info module
+      - Add virtual server policies information to bigip_device_info
+      - New bigip_device_auth_radius module to manage radius auth configuration
+    fragments:
+    - 1112-addon-keys.yaml
+    - 1483-add-ciphergroup-param.yaml
+    - 1497-add-mgmt-routes.yaml
+    - 1521-add-forward-node.yaml
+    - 1587-bugfix-data-grp.yaml
+    - 1607-bugfix-ipv6-datagrp.yaml
+    - 1610-add-bypass-checks.yaml
+    - 1616-add-multiple-vectors.yaml
+    - 1618-bugfix-imish-dupe.yaml
+    - 1625-bigiq-device-info-support.yaml
+    - 1628-add-dos-vectors.yaml
+    - 1630-add-info-policies.yaml
+    - 1634-bugfix-sofware-install.yaml
+    - 1642-bugfix-truenames.yaml
+    - 1662-add-aliases.yaml
+    - 1681-new-radius-auth.yaml
+    - 1690-bugfix-boolean.yaml
+    - 1691-bugfix-list-type.yaml
+    release_date: '2020-03-17'
+  1.3.0:
+    changes:
+      breaking_changes:
+      - Broke apart bigip_device_auth_radius to implement radius server configuration
+        in bigip_device_auth_server module. Refer to module documentation for usage
+        details
+      bugfixes:
+      - Fix invalid data type of parition_access parameter in bigip_user module
+      minor_changes:
+      - Add ability to install software images on vcmp guests with bigip_software_install
+        module
+      - Add cipher_list parameter to bigip_monitor_https
+      - Add hw_syn_cookie parameter to bigip_vlan module
+      - Add option to bypass all module validation for bigip_virtual_server
+      - Add pool order option to bigip_gtm_wide_ip module
+      - Add pva_acceleration parameter to bigip_profile_fastl4 module
+      - Add set_variable type to bigip_policy_rule module
+      - Add ssl certificate subject_alternative_name information to bigip_device_info
+        module
+      - Add time_wait_timeout parameter to bigip_profile_tcp module
+      - Add use_for_auth parameter to bigip_device_auth_ldap module to allow setting
+        up ldap as authentication source
+      - New bigip_device_auth_radius server module to manage radius server configuration
+      - New bigip_monitor_mysql module to manage mysql monitor configuration
+      - New bigip_monitor_oracle module to manage oracle monitor configuration
+      - New bigip_ssl_csr_module to create CSR files
+      removed_features:
+      - Remove bigip_appsvcs_extension module
+    fragments:
+    - 1182-add-auth-source.yaml
+    - 1275-new-ssl-csr-module.yaml
+    - 1632-new-monitor-oracle.yaml
+    - 1680-add-vcmp-software-install.yaml
+    - 1693-new-monitor_mysql.yaml
+    - 1696-add-pool-order.yaml
+    - 1701-bugfix-list-index-user.yaml
+    - 1706-add-set-variable-rule.yaml
+    - 1715-add-remove-changes.yaml
+    - 1719-device-auth-changes.yaml
+    - 1724-added-options.yaml
+    - 1726-multiple-additions.yaml
+    modules:
+    - description: Manages RADIUS auth configuration on BIGIP device
+      name: bigip_device_auth_radius
+      namespace: ''
+    - description: Manages device's radius server configuration
+      name: bigip_device_auth_radius_server
+      namespace: ''
+    - description: Manages BIG-IP MySQL monitors
+      name: bigip_monitor_mysql
+      namespace: ''
+    - description: Manages BIG-IP Oracle monitors
+      name: bigip_monitor_oracle
+      namespace: ''
+    - description: Create SSL CSR files on the BIG-IP
+      name: bigip_ssl_csr
+      namespace: ''
+    release_date: '2020-04-22'
+  1.4.0:
+    changes:
+      bugfixes:
+      - Fix asm policy import issue by users with web-application-security-administrator
+        role
+      - Fix idempotency when using true_names parameter in bigip_profile_client_ssl
+        module
+      major_changes:
+      - Remove redundant parameters in f5_provider to fix disparity between documentation
+        and modules' parameters
+      minor_changes:
+      - Add SSH connection type capability to bigip_wait module
+      - Add apply option to bigip_asm_policy_manage module
+      - Add retain_package_file option to bigip_lx_package module
+      - New bigip_asm_advanced_settings module to manage ASM settings
+      - New bigip_gtm_dns_listener module to manage DNS listener configuration
+    fragments:
+    - 1485-new-asm-advanced-settings.yaml
+    - 1561-bugfix-asm-policy-import.yaml
+    - 1717-add-rpm-retention.yaml
+    - 1721-bugfix-idempotency-client-ssl.yaml
+    - 1730-add-apply-asm-policy.yaml
+    - 1740-new-gtm-dns-listener-module.yaml
+    - 1749-parameter-changes.yaml
+    modules:
+    - description: Manage BIG-IP system ASM advanced settings
+      name: bigip_asm_advanced_settings
+      namespace: ''
+    - description: configures BIG-IP DNS system to answer TCP or UDP DNS requests
+      name: bigip_gtm_dns_listener
+      namespace: ''
+    - description: Manages F5 BIG-IP LTM tcp monitors
+      name: bigip_monitor_tcp
+      namespace: ''
+    release_date: '2020-06-09'
+  1.5.0:
+    changes:
+      bugfixes:
+      - Fix download of apm policy in bigip_apm_policy_fetch module
+      - Fix issue with control characters in pool_id in bigiq_regkey_license_assignment
+        module
+    fragments:
+    - 1624-bugfix-bigiq-control.yaml
+    - 1781-bugfix-apm-policy-fetch.yaml
+    release_date: '2020-07-21'

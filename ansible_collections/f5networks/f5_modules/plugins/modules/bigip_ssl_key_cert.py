@@ -21,7 +21,7 @@ description:
     Keys can be imported from key files on the local disk, in PEM format.
     Certificates can be imported from certificate and key files on the local
     disk, in PEM format.
-version_added: "1.5.0"
+version_added: "1.6.0"
 options:
   key_content:
     description:

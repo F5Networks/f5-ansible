@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix an issue with /32 IPV6 subnet being saved as host rather than a network in bigip_data_group module

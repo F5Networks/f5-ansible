@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix invalid data type of parition_access parameter in bigip_user module

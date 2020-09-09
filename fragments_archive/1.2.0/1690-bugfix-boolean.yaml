@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix check_profiles boolean parameter conversion in bigip_virtual_server

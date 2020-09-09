@@ -1,0 +1,6 @@
+---
+bugfixes:
+  - Fix missing ssh-keyfile parameter causing key error in bigip action plugin
+
+minor_changes:
+  - Add meaningful error message for wait_for parameter in bigip_command module

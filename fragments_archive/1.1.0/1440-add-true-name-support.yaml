@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Add true_names support to bigip_profile_client_ssl modules allowing specifying true filenames of the certificates

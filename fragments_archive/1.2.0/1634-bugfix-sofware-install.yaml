@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix attribute error in bigip_software_install module
