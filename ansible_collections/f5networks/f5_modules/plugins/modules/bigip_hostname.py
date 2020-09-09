@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_hostname
 short_description: Manage the hostname of a BIG-IP
 description:
-  - Manage the hostname of a BIG-IP.
+  - Manage the hostname of a BIG-IP device.
 version_added: "1.0.0"
 options:
   hostname:
@@ -45,7 +45,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 hostname:
-  description: The new hostname of the device
+  description: The new hostname of the device.
   returned: changed
   type: str
   sample: big-ip01.internal

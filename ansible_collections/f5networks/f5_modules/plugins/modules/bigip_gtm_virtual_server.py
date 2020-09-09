@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_virtual_server
 short_description: Manages F5 BIG-IP GTM virtual servers
 description:
-  - Manages F5 BIG-IP GTM virtual servers. A GTM server can have many virtual servers
+  - Manages F5 BIG-IP GTM (now BIG-IP DNS) virtual servers. A GTM server can have many virtual servers
     associated with it. They are arranged in much the same way that pool members are
     to pools.
 version_added: "1.0.0"
@@ -29,7 +29,7 @@ options:
     required: True
   server_name:
     description:
-      - Specifies the name of the server that the virtual server is associated with.
+      - Specifies the name of the server the virtual server is associated with.
     type: str
     required: True
   address:
@@ -48,7 +48,7 @@ options:
   translation_address:
     description:
       - Specifies the translation IP address for the virtual server.
-      - To unset this parameter, provide an empty string (C("")) as a value.
+      - To unset this parameter, use an empty string (C("")) as a value.
       - When creating a new GTM virtual server, if this parameter is not specified, a
         default of C(::) will be used.
     type: str
@@ -61,7 +61,7 @@ options:
     type: str
   availability_requirements:
     description:
-      - Specifies, if you activate more than one health monitor, the number of health
+      - If you activate more than one health monitor, specifies the number of health
         monitors that must receive successful responses in order for the link to be
         considered available.
     type: dict
@@ -69,7 +69,7 @@ options:
       type:
         description:
           - Monitor rule type when C(monitors) is specified.
-          - When creating a new virtual, if this value is not specified, the default of 'all' will be used.
+          - When creating a new virtual, if this value is not specified, the default of C(all) will be used.
         type: str
         required: True
         choices:
@@ -88,7 +88,7 @@ options:
           - Specifies the minimum number of probes that must succeed for this server to be declared up.
           - When creating a new virtual server, if this parameter is specified, then the C(number_of_probers)
             parameter must also be specified.
-          - The value of this parameter should always be B(lower) than, or B(equal to),
+          - The value of this parameter should always be B(lower) than or B(equal to)
             the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
@@ -96,16 +96,16 @@ options:
       number_of_probers:
         description:
           - Specifies the number of probers that should be used when running probes.
-          - When creating a new virtual server, if this parameter is specified, then the C(number_of_probes)
+          - When creating a new virtual server, if this parameter is specified, the C(number_of_probes)
             parameter must also be specified.
-          - The value of this parameter should always be B(higher) than, or B(equal to),
+          - The value of this parameter should always be B(higher) than or B(equal to)
             the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
           - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
         type: int
   monitors:
     description:
-      - Specifies the health monitors that the system currently uses to monitor this resource.
+      - Specifies the health monitors the system currently uses to monitor this resource.
       - When C(availability_requirements.type) is C(require), you may only have a single monitor in the
         C(monitors) list.
     type: list
@@ -137,7 +137,7 @@ options:
       - When you enable one or more limit settings, the system then uses that data to take servers in and out
         of service.
       - You can define limits for any or all of the limit settings. However, when a server does not meet the resource
-        threshold limit requirement, the system marks the entire server as unavailable and directs load-balancing
+        threshold limit requirement, the system marks the entire server as unavailable and directs load balancing
         traffic to another resource.
       - The limit settings available depend on the type of server.
     type: dict
@@ -159,14 +159,14 @@ options:
         type: bool
       bits_limit:
         description:
-          - Specifies the maximum allowable data throughput rate, in bits per second,
-            for the virtual servers on the server.
+          - Specifies the maximum allowable data throughput rate
+            for the virtual servers on the server, in bits per second.
           - If the network traffic volume exceeds this limit, the system marks the server as unavailable.
         type: int
       packets_limit:
         description:
-          - Specifies the maximum allowable data transfer rate, in packets per second,
-            for the virtual servers on the server.
+          - Specifies the maximum allowable data transfer rate
+            for the virtual servers on the server, in packets per second.
           - If the network traffic volume exceeds this limit, the system marks the server as unavailable.
         type: int
       connections_limit:
@@ -182,7 +182,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:
@@ -247,7 +247,7 @@ monitors:
   type: list
   sample: ['/Common/monitor1', '/Common/monitor2']
 virtual_server_dependencies:
-  description: The new list of virtual server dependencies for the resource
+  description: The new list of virtual server dependencies for the resource.
   returned: changed
   type: list
   sample: ['/Common/vs1', '/Common/vs2']

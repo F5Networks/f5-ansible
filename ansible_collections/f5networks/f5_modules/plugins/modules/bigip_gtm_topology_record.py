@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_topology_record
 short_description: Manages GTM Topology Records
 description:
-  - Manages GTM Topology Records. Once created, only topology record C(weight) can be modified.
+  - Manages GTM (now BIG-IP DNS) Topology Records. Once created, only topology record C(weight) can be modified.
 version_added: "1.0.0"
 options:
   source:
@@ -54,7 +54,7 @@ options:
       state:
         description:
           - Specifies a state in a given country.
-          - This parameter requires country option to be provided.
+          - This parameter requires the C(country) option.
         type: str
       isp:
         description:
@@ -75,7 +75,7 @@ options:
           - ShanghaiTelecom
       geo_isp:
         description:
-          - Specifies a geolocation ISP
+          - Specifies a geolocation ISP.
         type: str
     type: dict
     required: True
@@ -85,7 +85,7 @@ options:
     suboptions:
       negate:
         description:
-          - When set to c(yes) the system selects this topology record, when the request destination does not match.
+          - When set to C(yes) the system selects this topology record, when the request destination does not match.
         type: bool
         default: no
       subnet:
@@ -111,7 +111,7 @@ options:
       state:
         description:
           - Specifies a state in a given country.
-          - This parameter requires country option to be provided.
+          - This parameter requires the C(country) option.
         type: str
       pool:
         description:
@@ -159,13 +159,13 @@ options:
     description:
       - Device partition to manage resources on.
       - Partition parameter is taken into account when used in conjunction with C(pool), C(data_center),
-        and C(region) parameters, it is ignored otherwise.
+        and C(region) parameters, otherwise it is ignored.
     type: str
     default: Common
   state:
     description:
-      - When C(state) is C(present), ensures that the record exists.
-      - When C(state) is C(absent), ensures that the record is removed.
+      - When C(state) is C(present), ensures the record exists.
+      - When C(state) is C(absent), ensures the record is removed.
     type: str
     choices:
       - present
