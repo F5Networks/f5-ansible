@@ -1,0 +1,3 @@
+---
+removed_features:
+  - Removed arp_state parameter from bigip_virtual_address
