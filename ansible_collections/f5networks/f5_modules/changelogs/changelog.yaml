@@ -700,3 +700,18 @@ releases:
       name: bigip_monitor_tcp
       namespace: ''
     release_date: '2020-06-09'
+  1.5.0:
+    changes:
+      bugfixes:
+      - Fix download of apm policy in bigip_apm_policy_fetch module
+      - Fix issue with control characters in pool_id in bigiq_regkey_license_assignment
+        module
+      - New bigip_ssl_key_cert module to manage ssl certificates with transaction interface
+    fragments:
+    - 1624-bugfix-bigiq-control.yaml
+    - 1781-bugfix-apm-policy-fetch.yaml
+    modules:
+    - description: Import/Delete SSL keys and certs from BIG-IP
+      name: bigip_ssl_key_cert
+      namespace: ''
+    release_date: '2020-07-21'

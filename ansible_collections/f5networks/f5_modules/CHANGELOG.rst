@@ -5,6 +5,20 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.5.0
+======
+
+Bugfixes
+--------
+
+- Fix download of apm policy in bigip_apm_policy_fetch module
+- Fix issue with control characters in pool_id in bigiq_regkey_license_assignment module
+
+New Modules
+-----------
+
+- bigip_ssl_key_cert - Import/Delete SSL keys and certs from BIG-IP
+
 v1.4.0
 ======
 
