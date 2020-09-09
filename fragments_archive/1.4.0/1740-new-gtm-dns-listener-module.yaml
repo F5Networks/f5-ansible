@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - New bigip_gtm_dns_listener module to manage DNS listener configuration

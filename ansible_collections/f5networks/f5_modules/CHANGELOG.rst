@@ -5,6 +5,36 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.4.0
+======
+
+Major Changes
+-------------
+
+- Remove redundant parameters in f5_provider to fix disparity between documentation and modules' parameters
+
+Minor Changes
+-------------
+
+- Add SSH connection type capability to bigip_wait module
+- Add apply option to bigip_asm_policy_manage module
+- Add retain_package_file option to bigip_lx_package module
+- New bigip_asm_advanced_settings module to manage ASM settings
+- New bigip_gtm_dns_listener module to manage DNS listener configuration
+
+Bugfixes
+--------
+
+- Fix asm policy import issue by users with web-application-security-administrator role
+- Fix idempotency when using true_names parameter in bigip_profile_client_ssl module
+
+New Modules
+-----------
+
+- bigip_asm_advanced_settings - Manage BIG-IP system ASM advanced settings
+- bigip_gtm_dns_listener - configures BIG-IP DNS system to answer TCP or UDP DNS requests
+- bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors
+
 v1.3.0
 ======
 

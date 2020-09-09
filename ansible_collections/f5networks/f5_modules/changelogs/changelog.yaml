@@ -665,3 +665,38 @@ releases:
       name: bigip_ssl_csr
       namespace: ''
     release_date: '2020-04-22'
+  1.4.0:
+    changes:
+      bugfixes:
+      - Fix asm policy import issue by users with web-application-security-administrator
+        role
+      - Fix idempotency when using true_names parameter in bigip_profile_client_ssl
+        module
+      major_changes:
+      - Remove redundant parameters in f5_provider to fix disparity between documentation
+        and modules' parameters
+      minor_changes:
+      - Add SSH connection type capability to bigip_wait module
+      - Add apply option to bigip_asm_policy_manage module
+      - Add retain_package_file option to bigip_lx_package module
+      - New bigip_asm_advanced_settings module to manage ASM settings
+      - New bigip_gtm_dns_listener module to manage DNS listener configuration
+    fragments:
+    - 1485-new-asm-advanced-settings.yaml
+    - 1561-bugfix-asm-policy-import.yaml
+    - 1717-add-rpm-retention.yaml
+    - 1721-bugfix-idempotency-client-ssl.yaml
+    - 1730-add-apply-asm-policy.yaml
+    - 1740-new-gtm-dns-listener-module.yaml
+    - 1749-parameter-changes.yaml
+    modules:
+    - description: Manage BIG-IP system ASM advanced settings
+      name: bigip_asm_advanced_settings
+      namespace: ''
+    - description: configures BIG-IP DNS system to answer TCP or UDP DNS requests
+      name: bigip_gtm_dns_listener
+      namespace: ''
+    - description: Manages F5 BIG-IP LTM tcp monitors
+      name: bigip_monitor_tcp
+      namespace: ''
+    release_date: '2020-06-09'

@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix idempotency when using true_names parameter in bigip_profile_client_ssl module

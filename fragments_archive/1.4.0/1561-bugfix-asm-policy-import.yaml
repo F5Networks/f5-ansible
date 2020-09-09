@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix asm policy import issue by users with web-application-security-administrator role
