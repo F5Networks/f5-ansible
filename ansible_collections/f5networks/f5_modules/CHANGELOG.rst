@@ -5,6 +5,51 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.3.0
+======
+
+Minor Changes
+-------------
+
+- Add ability to install software images on vcmp guests with bigip_software_install module
+- Add cipher_list parameter to bigip_monitor_https
+- Add hw_syn_cookie parameter to bigip_vlan module
+- Add option to bypass all module validation for bigip_virtual_server
+- Add pool order option to bigip_gtm_wide_ip module
+- Add pva_acceleration parameter to bigip_profile_fastl4 module
+- Add set_variable type to bigip_policy_rule module
+- Add ssl certificate subject_alternative_name information to bigip_device_info module
+- Add time_wait_timeout parameter to bigip_profile_tcp module
+- Add use_for_auth parameter to bigip_device_auth_ldap module to allow setting up ldap as authentication source
+- New bigip_device_auth_radius server module to manage radius server configuration
+- New bigip_monitor_mysql module to manage mysql monitor configuration
+- New bigip_monitor_oracle module to manage oracle monitor configuration
+- New bigip_ssl_csr_module to create CSR files
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- Broke apart bigip_device_auth_radius to implement radius server configuration in bigip_device_auth_server module. Refer to module documentation for usage details
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- Remove bigip_appsvcs_extension module
+
+Bugfixes
+--------
+
+- Fix invalid data type of parition_access parameter in bigip_user module
+
+New Modules
+-----------
+
+- bigip_device_auth_radius - Manages RADIUS auth configuration on BIGIP device
+- bigip_device_auth_radius_server - Manages device's radius server configuration
+- bigip_monitor_mysql - Manages BIG-IP MySQL monitors
+- bigip_monitor_oracle - Manages BIG-IP Oracle monitors
+- bigip_ssl_csr - Create SSL CSR files on the BIG-IP
+
 v1.2.0
 ======
 
@@ -16,7 +61,6 @@ Minor Changes
 - Add addon_keys parameter to bigip_device_license module
 - Add aliases for address and port to bigip_monitor_tcp module
 - Add allow_duplicates parameter to bigip_imish_config module
-- Add bigip_device_auth radius module
 - Add check_profiles parameter to bypass profile verification ability in bigip_virtual_server module
 - Add cipher_group parameter to bigip_profile_client_ssl module
 - Add dns-oversize DNS protocol security vector to bigip_firewall_doc_vector
@@ -25,6 +69,7 @@ Minor Changes
 - Add management routes information to bigip_device_info module
 - Add support for BIG-IQ 7.0 and above to bigiq_device_info module
 - Add virtual server policies information to bigip_device_info
+- New bigip_device_auth_radius module to manage radius auth configuration
 
 Bugfixes
 --------
@@ -36,11 +81,6 @@ Bugfixes
 - Fix attribute error in bigip_software_install module
 - Fix check_profiles boolean parameter conversion in bigip_virtual_server
 - Fix handling of duplicate records by the bigip_imish_config module
-
-New Modules
------------
-
-- bigip_pool - Manages F5 BIG-IP LTM pools
 
 v1.1.0
 ======

@@ -1,0 +1,6 @@
+---
+minor_changes:
+  - Add option to bypass all module validation for bigip_virtual_server
+
+removed_features:
+  - Remove bigip_appsvcs_extension module

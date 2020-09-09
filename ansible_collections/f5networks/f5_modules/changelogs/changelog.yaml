@@ -577,7 +577,6 @@ releases:
       - Add addon_keys parameter to bigip_device_license module
       - Add aliases for address and port to bigip_monitor_tcp module
       - Add allow_duplicates parameter to bigip_imish_config module
-      - Add bigip_device_auth radius module
       - Add check_profiles parameter to bypass profile verification ability in bigip_virtual_server
         module
       - Add cipher_group parameter to bigip_profile_client_ssl module
@@ -587,6 +586,7 @@ releases:
       - Add management routes information to bigip_device_info module
       - Add support for BIG-IQ 7.0 and above to bigiq_device_info module
       - Add virtual server policies information to bigip_device_info
+      - New bigip_device_auth_radius module to manage radius auth configuration
     fragments:
     - 1112-addon-keys.yaml
     - 1483-add-ciphergroup-param.yaml
@@ -603,7 +603,65 @@ releases:
     - 1634-bugfix-sofware-install.yaml
     - 1642-bugfix-truenames.yaml
     - 1662-add-aliases.yaml
-    - 1681-add-radius-auth.yaml
+    - 1681-new-radius-auth.yaml
     - 1690-bugfix-boolean.yaml
     - 1691-bugfix-list-type.yaml
     release_date: '2020-03-17'
+  1.3.0:
+    changes:
+      breaking_changes:
+      - Broke apart bigip_device_auth_radius to implement radius server configuration
+        in bigip_device_auth_server module. Refer to module documentation for usage
+        details
+      bugfixes:
+      - Fix invalid data type of parition_access parameter in bigip_user module
+      minor_changes:
+      - Add ability to install software images on vcmp guests with bigip_software_install
+        module
+      - Add cipher_list parameter to bigip_monitor_https
+      - Add hw_syn_cookie parameter to bigip_vlan module
+      - Add option to bypass all module validation for bigip_virtual_server
+      - Add pool order option to bigip_gtm_wide_ip module
+      - Add pva_acceleration parameter to bigip_profile_fastl4 module
+      - Add set_variable type to bigip_policy_rule module
+      - Add ssl certificate subject_alternative_name information to bigip_device_info
+        module
+      - Add time_wait_timeout parameter to bigip_profile_tcp module
+      - Add use_for_auth parameter to bigip_device_auth_ldap module to allow setting
+        up ldap as authentication source
+      - New bigip_device_auth_radius server module to manage radius server configuration
+      - New bigip_monitor_mysql module to manage mysql monitor configuration
+      - New bigip_monitor_oracle module to manage oracle monitor configuration
+      - New bigip_ssl_csr_module to create CSR files
+      removed_features:
+      - Remove bigip_appsvcs_extension module
+    fragments:
+    - 1182-add-auth-source.yaml
+    - 1275-new-ssl-csr-module.yaml
+    - 1632-new-monitor-oracle.yaml
+    - 1680-add-vcmp-software-install.yaml
+    - 1693-new-monitor_mysql.yaml
+    - 1696-add-pool-order.yaml
+    - 1701-bugfix-list-index-user.yaml
+    - 1706-add-set-variable-rule.yaml
+    - 1715-add-remove-changes.yaml
+    - 1719-device-auth-changes.yaml
+    - 1724-added-options.yaml
+    - 1726-multiple-additions.yaml
+    modules:
+    - description: Manages RADIUS auth configuration on BIGIP device
+      name: bigip_device_auth_radius
+      namespace: ''
+    - description: Manages device's radius server configuration
+      name: bigip_device_auth_radius_server
+      namespace: ''
+    - description: Manages BIG-IP MySQL monitors
+      name: bigip_monitor_mysql
+      namespace: ''
+    - description: Manages BIG-IP Oracle monitors
+      name: bigip_monitor_oracle
+      namespace: ''
+    - description: Create SSL CSR files on the BIG-IP
+      name: bigip_ssl_csr
+      namespace: ''
+    release_date: '2020-04-22'

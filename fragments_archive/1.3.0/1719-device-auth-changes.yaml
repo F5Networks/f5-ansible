@@ -1,0 +1,6 @@
+---
+breaking_changes:
+  - Broke apart bigip_device_auth_radius to implement radius server configuration in bigip_device_auth_server
+    module. Refer to module documentation for usage details
+minor_changes:
+  - New bigip_device_auth_radius server module to manage radius server configuration
