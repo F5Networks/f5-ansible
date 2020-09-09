@@ -500,3 +500,63 @@ releases:
         name: license_hopper
         namespace: null
     release_date: '2019-11-14'
+  1.1.0:
+    changes:
+      bugfixes:
+      - Fix allowing authenticated not authorized users using modules to modify a
+        resource
+      - Fix ipv6 netmask for self-ips in bigip_device_info
+      - Fix save_when parameter not saving configuration as expected in bigip_imish_config
+        module
+      deprecated_features:
+      - Deprecated bigip_appsvcs_extension module
+      - Deprecated bigip_device_facts module name
+      - Deprecated bigiq_device_facts module name
+      minor_changes:
+      - Add accounting parameter for tacacs type to bigip_device_auth module
+      - Add fw_enforcement_policy parameter to bigip_selfip module
+      - Add persist cookie option to bigip_policy_rule module
+      - Add phase1_lifetime parameter to bigip_ike_peer module
+      - Add self allow option to bigip_network_globals module
+      - Add true_names support to bigip_profile_client_ssl modules allowing specifying
+        true filenames of the certificates
+      - New ftp monitor module for configuring and managing ftp monitors
+      - New icmp monitor module for configuring and managing icmp monitors
+      - New smtp monitor module for configuring and managing smtp monitors
+      - New universal persistence profile module for configuring and managing universal
+        persistence profiles
+      removed_features:
+      - Remove _bigip_iapplx_package alias
+      - Remove _bigip_security_address_list alias
+      - Remove _bigip_security_port_list alias
+      - Remove _bigip_traffic_group alias
+      - Remove bigip_asm_policy module
+    fragments:
+    - 1237-fix-auth-not-authorized.yaml
+    - 1336-adds-accounting-device-auth.yaml
+    - 1392-fix-save-when.yaml
+    - 1405-add-perist-cookie-option.yaml
+    - 1440-add-true-name-support.yaml
+    - 1500-add-phase1-lifetime.yaml
+    - 1527-add-fw_enf-support.yaml
+    - 1563-ipv6-bigip-device-info.yaml
+    - 1566-new-universal-persistence.yaml
+    - 1575-new-ftp-monitor.yaml
+    - 1576-new-icmp-monitor.yaml
+    - 1580-add-self-allow.yaml
+    - 1580-new-smtp-monitor.yaml
+    - 1601-remove-deprecations.yaml
+    modules:
+    - description: Manage FTP monitors on a BIG-IP
+      name: bigip_monitor_ftp
+      namespace: ''
+    - description: Manages F5 BIG-IP LTM ICMP monitors
+      name: bigip_monitor_icmp
+      namespace: ''
+    - description: Manage SMTP monitors on a BIG-IP
+      name: bigip_monitor_smtp
+      namespace: ''
+    - description: Manage universal persistence profiles
+      name: bigip_profile_persistence_universal
+      namespace: ''
+    release_date: '2020-01-07'

@@ -5,6 +5,54 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.1.0
+======
+
+Minor Changes
+-------------
+
+- Add accounting parameter for tacacs type to bigip_device_auth module
+- Add fw_enforcement_policy parameter to bigip_selfip module
+- Add persist cookie option to bigip_policy_rule module
+- Add phase1_lifetime parameter to bigip_ike_peer module
+- Add self allow option to bigip_network_globals module
+- Add true_names support to bigip_profile_client_ssl modules allowing specifying true filenames of the certificates
+- New ftp monitor module for configuring and managing ftp monitors
+- New icmp monitor module for configuring and managing icmp monitors
+- New smtp monitor module for configuring and managing smtp monitors
+- New universal persistence profile module for configuring and managing universal persistence profiles
+
+Deprecated Features
+-------------------
+
+- Deprecated bigip_appsvcs_extension module
+- Deprecated bigip_device_facts module name
+- Deprecated bigiq_device_facts module name
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- Remove _bigip_iapplx_package alias
+- Remove _bigip_security_address_list alias
+- Remove _bigip_security_port_list alias
+- Remove _bigip_traffic_group alias
+- Remove bigip_asm_policy module
+
+Bugfixes
+--------
+
+- Fix allowing authenticated not authorized users using modules to modify a resource
+- Fix ipv6 netmask for self-ips in bigip_device_info
+- Fix save_when parameter not saving configuration as expected in bigip_imish_config module
+
+New Modules
+-----------
+
+- bigip_monitor_ftp - Manage FTP monitors on a BIG-IP
+- bigip_monitor_icmp - Manages F5 BIG-IP LTM ICMP monitors
+- bigip_monitor_smtp - Manage SMTP monitors on a BIG-IP
+- bigip_profile_persistence_universal - Manage universal persistence profiles
+
 v1.0.0
 ======
 
