@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Change bigip_data_group module's records parameter type to 'raw'

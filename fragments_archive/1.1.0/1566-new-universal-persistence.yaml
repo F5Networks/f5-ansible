@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - New universal persistence profile module for configuring and managing universal persistence profiles

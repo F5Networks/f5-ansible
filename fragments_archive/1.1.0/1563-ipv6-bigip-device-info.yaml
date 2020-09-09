@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix ipv6 netmask for self-ips in bigip_device_info

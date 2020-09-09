@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Add support for BIG-IQ 7.0 and above to bigiq_device_info module

@@ -5,6 +5,175 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.5.0
+======
+
+Bugfixes
+--------
+
+- Fix download of apm policy in bigip_apm_policy_fetch module
+- Fix issue with control characters in pool_id in bigiq_regkey_license_assignment module
+
+New Modules
+-----------
+
+- bigip_ssl_key_cert - Import/Delete SSL keys and certs from BIG-IP
+
+v1.4.0
+======
+
+Major Changes
+-------------
+
+- Remove redundant parameters in f5_provider to fix disparity between documentation and modules' parameters
+
+Minor Changes
+-------------
+
+- Add SSH connection type capability to bigip_wait module
+- Add apply option to bigip_asm_policy_manage module
+- Add retain_package_file option to bigip_lx_package module
+- New bigip_asm_advanced_settings module to manage ASM settings
+- New bigip_gtm_dns_listener module to manage DNS listener configuration
+
+Bugfixes
+--------
+
+- Fix asm policy import issue by users with web-application-security-administrator role
+- Fix idempotency when using true_names parameter in bigip_profile_client_ssl module
+
+New Modules
+-----------
+
+- bigip_asm_advanced_settings - Manage BIG-IP system ASM advanced settings
+- bigip_gtm_dns_listener - configures BIG-IP DNS system to answer TCP or UDP DNS requests
+- bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors
+
+v1.3.0
+======
+
+Minor Changes
+-------------
+
+- Add ability to install software images on vcmp guests with bigip_software_install module
+- Add cipher_list parameter to bigip_monitor_https
+- Add hw_syn_cookie parameter to bigip_vlan module
+- Add option to bypass all module validation for bigip_virtual_server
+- Add pool order option to bigip_gtm_wide_ip module
+- Add pva_acceleration parameter to bigip_profile_fastl4 module
+- Add set_variable type to bigip_policy_rule module
+- Add ssl certificate subject_alternative_name information to bigip_device_info module
+- Add time_wait_timeout parameter to bigip_profile_tcp module
+- Add use_for_auth parameter to bigip_device_auth_ldap module to allow setting up ldap as authentication source
+- New bigip_device_auth_radius server module to manage radius server configuration
+- New bigip_monitor_mysql module to manage mysql monitor configuration
+- New bigip_monitor_oracle module to manage oracle monitor configuration
+- New bigip_ssl_csr_module to create CSR files
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- Broke apart bigip_device_auth_radius to implement radius server configuration in bigip_device_auth_server module. Refer to module documentation for usage details
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- Remove bigip_appsvcs_extension module
+
+Bugfixes
+--------
+
+- Fix invalid data type of parition_access parameter in bigip_user module
+
+New Modules
+-----------
+
+- bigip_device_auth_radius - Manages RADIUS auth configuration on BIGIP device
+- bigip_device_auth_radius_server - Manages device's radius server configuration
+- bigip_monitor_mysql - Manages BIG-IP MySQL monitors
+- bigip_monitor_oracle - Manages BIG-IP Oracle monitors
+- bigip_ssl_csr - Create SSL CSR files on the BIG-IP
+
+v1.2.0
+======
+
+Minor Changes
+-------------
+
+- Add ImishConfig class to add duplicate records handling capability
+- Add additional dos vectors to bigip_firewall_dos_vector_module
+- Add addon_keys parameter to bigip_device_license module
+- Add aliases for address and port to bigip_monitor_tcp module
+- Add allow_duplicates parameter to bigip_imish_config module
+- Add check_profiles parameter to bypass profile verification ability in bigip_virtual_server module
+- Add cipher_group parameter to bigip_profile_client_ssl module
+- Add dns-oversize DNS protocol security vector to bigip_firewall_doc_vector
+- Add forward_node option to bigip_policy_rule module
+- Add ipv6-ext-hdr-frames security vector to bigip_firewall_doc_vector
+- Add management routes information to bigip_device_info module
+- Add support for BIG-IQ 7.0 and above to bigiq_device_info module
+- Add virtual server policies information to bigip_device_info
+- New bigip_device_auth_radius module to manage radius auth configuration
+
+Bugfixes
+--------
+
+- Change bigip_data_group module's records parameter type to 'raw'
+- Fix '?' character handling in value for bigip_data_group module
+- Fix a bug with using true_name parameter in bigip_profile_client_ssl module
+- Fix an issue with /32 IPV6 subnet being saved as host rather than a network in bigip_data_group module
+- Fix attribute error in bigip_software_install module
+- Fix check_profiles boolean parameter conversion in bigip_virtual_server
+- Fix handling of duplicate records by the bigip_imish_config module
+
+v1.1.0
+======
+
+Minor Changes
+-------------
+
+- Add accounting parameter for tacacs type to bigip_device_auth module
+- Add fw_enforcement_policy parameter to bigip_selfip module
+- Add persist cookie option to bigip_policy_rule module
+- Add phase1_lifetime parameter to bigip_ike_peer module
+- Add self allow option to bigip_network_globals module
+- Add true_names support to bigip_profile_client_ssl modules allowing specifying true filenames of the certificates
+- New ftp monitor module for configuring and managing ftp monitors
+- New icmp monitor module for configuring and managing icmp monitors
+- New smtp monitor module for configuring and managing smtp monitors
+- New universal persistence profile module for configuring and managing universal persistence profiles
+
+Deprecated Features
+-------------------
+
+- Deprecated bigip_appsvcs_extension module
+- Deprecated bigip_device_facts module name
+- Deprecated bigiq_device_facts module name
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- Remove _bigip_iapplx_package alias
+- Remove _bigip_security_address_list alias
+- Remove _bigip_security_port_list alias
+- Remove _bigip_traffic_group alias
+- Remove bigip_asm_policy module
+
+Bugfixes
+--------
+
+- Fix allowing authenticated not authorized users using modules to modify a resource
+- Fix ipv6 netmask for self-ips in bigip_device_info
+- Fix save_when parameter not saving configuration as expected in bigip_imish_config module
+
+New Modules
+-----------
+
+- bigip_monitor_ftp - Manage FTP monitors on a BIG-IP
+- bigip_monitor_icmp - Manages F5 BIG-IP LTM ICMP monitors
+- bigip_monitor_smtp - Manage SMTP monitors on a BIG-IP
+- bigip_profile_persistence_universal - Manage universal persistence profiles
+
 v1.0.0
 ======
 
