@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_monitor_gateway_icmp
 short_description: Manages F5 BIG-IP LTM gateway ICMP monitors
 description:
-  - Manages gateway ICMP monitors on a BIG-IP.
+  - Manages gateway ICMP monitors on a BIG-IP LTM.
 version_added: "1.0.0"
 options:
   name:
@@ -39,15 +39,13 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'.
+        provided when creating a new monitor, the default value is '*'.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified.
+        provided when creating a new monitor, the default value is '*'. If 
+        specifying an IP address, you must use a value between 1 and 65535.
     type: str
   interval:
     description:
@@ -72,16 +70,16 @@ options:
         correctly to the monitor before setting the resource to 'up'.
       - During the interval, all responses from the resource must be correct.
       - When the interval expires, the resource is marked 'up'.
-      - A value of 0, means that the resource is marked up immediately upon
+      - A value of C(0) means the resource is marked up immediately upon
         receipt of the first correct response.
     type: int
   up_interval:
     description:
       - Specifies the interval for the system to use to perform the health check
         when a resource is up.
-      - When C(0), specifies that the system uses the interval specified in
+      - When C(0), specifies the system uses the interval specified in
         C(interval) to check the health of the resource.
-      - When any other number, enables specification of a different interval to
+      - When any other number, enables you to specify a different interval to
         use when checking the health of a resource that is up.
     type: int
   manual_resume:
@@ -90,9 +88,9 @@ options:
         to B(enabled) at the next successful monitor check.
       - If you set this option to C(yes), you must manually re-enable the resource
         before the system can use it for load balancing connections.
-      - When C(yes), specifies that you must manually re-enable the resource after an
+      - When C(yes), specifies you must manually re-enable the resource after an
         unsuccessful monitor check.
-      - When C(no), specifies that the system automatically changes the status of a
+      - When C(no), specifies the system automatically changes the status of a
         resource to B(enabled) at the next successful monitor check.
     type: bool
   adaptive:
@@ -108,7 +106,7 @@ options:
   allowed_divergence_type:
     description:
       - When specifying a new monitor, if C(adaptive) is C(yes), the default is
-        C(relative)
+        C(relative).
       - When C(absolute), the number of milliseconds the latency of a monitor probe
         can exceed the mean latency of a monitor probe for the service being probed.
         In typical cases, if the monitor detects three probes in a row that miss the
@@ -197,7 +195,7 @@ ip:
   type: str
   sample: 10.12.13.14
 interval:
-  description: The new interval in which to run the monitor check.
+  description: The new interval at which to run the monitor check.
   returned: changed
   type: int
   sample: 2

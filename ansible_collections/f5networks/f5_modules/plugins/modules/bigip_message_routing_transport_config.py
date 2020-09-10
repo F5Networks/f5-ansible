@@ -1,4 +1,4 @@
-#!/usr/bin/python
+b #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # Copyright: (c) 2019, F5 Networks Inc.
@@ -27,22 +27,22 @@ options:
     required: True
   description:
     description:
-      - The user defined description of the transport config.
+      - The user-defined description of the transport config.
     type: str
   profiles:
     description:
-      - Specifies a list profiles for the outgoing connection to use to direct and manage traffic.
+      - Specifies a list of profiles for the outgoing connection to use to direct and manage traffic.
     type: list
     elements: str
   src_addr_translation:
     description:
       - Specifies the type of source address translation enabled for the transport config and the pool
-        that the source address translation will use.
+        the source address translation will use.
     suboptions:
       type:
         description:
           - Specifies the type of source address translation associated with the specified transport config.
-          - When set to C(snat) the C(pool) parameter needs to contain a name for a valid LSN or SNAT pool.
+          - When set to C(snat), the C(pool) parameter needs to contain a name for a valid LSN or SNAT pool.
         type: str
         choices:
           - snat
@@ -51,16 +51,16 @@ options:
       pool:
         description:
           - Specifies the name of a LSN or SNAT pool used by the specified transport config.
-          - "Name can also be specified in C(fullPath) format: C(/Common/foobar)"
-          - When C(type) is C(none) or C(automap) the pool parameter will be replaced by C(none) keyword,
+          - "Name can also be specified in C(fullPath) format: C(/Common/foobar)."
+          - When C(type) is C(none) or C(automap), the pool parameter will be replaced by C(none) keyword,
             thus any defined C(pool) parameter will be ignored.
         type: str
     type: dict
   src_port:
     description:
-      - Specifies the source port to be used for the connection being created.
+      - Specifies the source port for the connection being created.
       - If no value is specified an ephemeral port is chosen for the connection being created.
-      - The accepted range is between 0 and 65535 inclusive.
+      - The acceptable range is between 0 and 65535 inclusive.
     type: int
   rules:
     description:
@@ -70,8 +70,8 @@ options:
     elements: str
   type:
     description:
-      - Parameter used to specify the type of the transport-config object to manage.
-      - Default setting is C(generic) with more options added in future.
+      - Parameter used to specify the type of transport-config object to manage.
+      - Default setting is C(generic) with more options coming.
     type: str
     choices:
       - generic
@@ -83,7 +83,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the transport-config object exists.
+      - When C(present), ensures the transport-config object exists.
       - When C(absent), ensures the transport-config object is removed.
     type: str
     choices:
@@ -136,7 +136,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 description:
-  description: The user defined description of the router profile.
+  description: The user-defined description of the router profile.
   returned: changed
   type: str
   sample: My description
@@ -167,7 +167,7 @@ src_addr_translation:
       sample: /Common/pool1
   sample: hash/dictionary of values
 source_port:
-  description: The source port to be used for the connection being created.
+  description: The source port for the connection being created.
   returned: changed
   type: int
   sample: 10041
