@@ -44,7 +44,7 @@ options:
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value is '*'. If 
+        provided when creating a new monitor, the default value is '*'. If
         specifying an IP address, you must use a value between 1 and 65535.
     type: str
   interval:

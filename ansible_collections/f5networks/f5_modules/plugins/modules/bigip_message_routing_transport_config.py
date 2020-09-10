@@ -1,4 +1,4 @@
-b #!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # Copyright: (c) 2019, F5 Networks Inc.
