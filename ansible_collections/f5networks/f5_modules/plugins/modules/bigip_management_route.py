@@ -31,17 +31,17 @@ options:
     type: str
   gateway:
     description:
-      - Specifies that the system forwards packets to the destination through the
+      - Specifies the system forwards packets to the destination through the
         gateway with the specified IP address.
     type: str
   network:
     description:
-      - The subnet and netmask to be used for the route.
-      - To specify that the route is the default route for the system, provide the
+      - The subnet and netmask for the route.
+      - To specify the route is the default route for the system, provide the
         value C(default).
       - Only one C(default) entry is allowed.
       - This parameter cannot be changed after it is set. Therefore, if you do need to change
-        it, it is required that you delete and create a new route.
+        it, you must delete it and create a new route.
     type: str
   partition:
     description:
@@ -50,7 +50,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

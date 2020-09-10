@@ -15,9 +15,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_message_routing_protocol
-short_description: Manage generic message parser profile.
+short_description: Manage the generic message parser profile.
 description:
-  - Manages generic message parser profile for use with the message routing framework.
+  - Manages the generic message parser profile for use with the message routing framework.
 version_added: "1.0.0"
 options:
   name:
@@ -27,7 +27,7 @@ options:
     type: str
   description:
     description:
-      - The user defined description of the generic parser profile.
+      - The user-defined description of the generic parser profile.
     type: str
   parent:
     description:
@@ -37,10 +37,10 @@ options:
     type: str
   disable_parser:
     description:
-      - When C(yes), the generic message parser will be disabled ignoring all incoming packets and not directly
+      - When C(yes), the generic message parser is disabled, ignoring all incoming packets and not directly
         send message data.
-      - This mode supports iRule script protocol implementations that will generate messages from the incoming transport
-        stream and send outgoing messages on the outgoing transport stream.
+      - This mode supports iRule script protocol implementations that generates messages from the incoming transport
+        stream and sends outgoing messages on the outgoing transport stream.
     type: bool
   max_egress_buffer:
     description:
@@ -70,7 +70,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the route exists.
+      - When C(present), ensures the route exists.
       - When C(absent), ensures the route is removed.
     type: str
     choices:
@@ -121,7 +121,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 description:
-  description: The user defined description of the parser profile.
+  description: The user-defined description of the parser profile.
   returned: changed
   type: str
   sample: My description

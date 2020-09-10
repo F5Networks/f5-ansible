@@ -27,12 +27,12 @@ options:
     type: str
   description:
     description:
-      - The user defined description of the static route.
+      - The user-defined description of the static route.
     type: str
   type:
     description:
       - Parameter used to specify the type of the route to manage.
-      - Default setting is C(generic) with more options added in future.
+      - Default setting is C(generic) with more options coming.
     type: str
     choices:
       - generic
@@ -69,7 +69,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the route exists.
+      - When C(present), ensures the route exists.
       - When C(absent), ensures the route is removed.
     type: str
     choices:
@@ -121,7 +121,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 description:
-  description: The user defined description of the route.
+  description: The user-defined description of the route.
   returned: changed
   type: str
   sample: Some description
