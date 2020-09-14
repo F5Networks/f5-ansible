@@ -27,7 +27,7 @@ options:
   parent:
     description:
       - The parent template of this monitor template. Once this value has
-        been set, it cannot be changed. By default, this value is the C(http)
+        been set, it cannot be changed. By default, this value is the C(external)
         parent on the C(Common) partition.
     type: str
     default: /Common/external
