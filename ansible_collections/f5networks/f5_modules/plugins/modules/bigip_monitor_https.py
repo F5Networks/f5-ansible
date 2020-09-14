@@ -103,7 +103,7 @@ options:
         when a resource is up.
       - When C(0), specifies the system uses the interval specified in
         C(interval) to check the health of the resource.
-      - When any other number, enables you to specify a different interval 
+      - When any other number, enables you to specify a different interval
         when checking the health of a resource that is up.
     type: int
   cipher_list:
