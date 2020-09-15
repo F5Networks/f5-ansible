@@ -10,8 +10,8 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_monitor_tcp
-short_description: Manages F5 BIG-IP LTM tcp monitors
-description: Manages F5 BIG-IP LTM tcp monitors via iControl SOAP API.
+short_description: Manages F5 BIG-IP LTM TCP monitors
+description: Manages F5 BIG-IP LTM TCP monitors via iControl SOAP API.
 version_added: "1.4.0"
 options:
   name:
@@ -32,35 +32,37 @@ options:
     type: str
   send:
     description:
-      - The send string for the monitor call.
+      - The Send string for the monitor call.
     type: str
   receive:
     description:
-      - The receive string for the monitor call.
+      - The Receive string for the monitor call.
     type: str
   receive_disable:
     description:
-      - The receive disable string for the monitor call.
+      - The Receive Disable string for the monitor call.
+        This setting works like C(receive), except the system marks the node
+        or pool member disabled when its response matches the C(receive_disable)
+        string but not C(receive). To use this setting, you must specify both
+        C(receive_disable) and C(receive).
     type: str
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'.
+        provided when creating a new monitor, the default value is '*'.
       - If this value is an IP address, and the C(type) is C(tcp) (the default),
         then a C(port) number must be specified.
-      - In BIG IP Management UI, this field is titled as 'Alias Address'.
+      - In BIG IP Management UI, this field is B(Alias Address).
     aliases:
       - alias_address
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified
+        provided when creating a new monitor, the default value is '*'.
+        If specifying an IP address, you must specify a value between 1 and 65535.
       - This argument is not supported for TCP Echo types.
-      - In BIG IP Management UI, this field is titled as 'Alias Service Port'.
+      - In BIG IP Management UI, this field is B(Alias Service Port).
     type: str
     aliases:
       - alias_service_port
@@ -68,7 +70,7 @@ options:
     description:
       - The interval specifying how frequently the monitor instance of this
         template will run. If this parameter is not provided when creating
-        a new monitor, then the default value will be 5. This value B(must)
+        a new monitor, the default value is 5. This value B(must)
         be less than the C(timeout) value.
     type: int
   timeout:
@@ -79,15 +81,15 @@ options:
         the set time period, it is considered down. You can change this
         number to any number you want, however, it should be 3 times the
         interval number of seconds plus 1 second. If this parameter is not
-        provided when creating a new monitor, then the default value will be 16.
+        provided when creating a new monitor, the default value is 16.
     type: int
   time_until_up:
     description:
       - Specifies the amount of time in seconds after the first successful
-        response before a node will be marked up. A value of 0 will cause a
+        response before a node will be marked up. A value of C(0) causes a
         node to be marked up immediately after a valid response is received
         from the node. If this parameter is not provided when creating
-        a new monitor, then the default value will be 0.
+        a new monitor, the default value is C(0).
     type: int
   partition:
     description:
@@ -96,7 +98,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:
@@ -142,7 +144,7 @@ parent:
   type: str
   sample: tcp
 send:
-  description: The new send string for this monitor.
+  description: The new Send string for this monitor.
   returned: changed
   type: str
   sample: tcp string to send
@@ -152,12 +154,12 @@ description:
   type: str
   sample: Important Monitor
 receive:
-  description: The new receive string for this monitor.
+  description: The new Receive string for this monitor.
   returned: changed
   type: str
   sample: tcp string to receive
 receive_disable:
-  description: The new receive disable string for this monitor.
+  description: The new Receive Disable string for this monitor.
   returned: changed
   type: str
   sample: tcp string to receive
@@ -172,7 +174,7 @@ port:
   type: str
   sample: admin@root.local
 interval:
-  description: The new interval in which to run the monitor check.
+  description: The new interval at which to run the monitor check.
   returned: changed
   type: int
   sample: 2
