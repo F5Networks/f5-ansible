@@ -28,7 +28,7 @@ options:
   lb_method:
     description:
       - Load balancing method. When creating a new pool, if this value is not
-        specified, the default of C(round-robin) will be used.
+        specified, the default of C(round-robin) is used.
     type: str
     choices:
       - dynamic-ratio-member
@@ -54,15 +54,15 @@ options:
     description:
       - Monitor rule type when C(monitors) is specified.
       - When creating a new pool, if this value is not specified, the default
-        of 'and_list' will be used.
-      - When C(single) ensures that all specified monitors are checked, but
+        of C(and_list) is used.
+      - When C(single), ensures all specified monitors are checked, but
         additionally includes checks to make sure you only specified a single
         monitor.
-      - When C(and_list) ensures that B(all) monitors are checked.
-      - When C(m_of_n) ensures that C(quorum) of C(monitors) are checked. C(m_of_n)
-        B(requires) that a C(quorum) of 1 or greater be set either in the playbook,
-        or already existing on the device.
-      - Both C(single) and C(and_list) are functionally identical since BIG-IP
+      - When C(and_list), ensures B(all) monitors are checked.
+      - When C(m_of_n), ensures C(quorum) of C(monitors) are checked. C(m_of_n)
+        B(requires) a C(quorum) of 1 or greater be set either in the playbook,
+        or already exist on the device.
+      - Both C(single) and C(and_list) are functionally identical, as BIG-IP
         considers all monitors as "a list".
     type: str
     choices:
@@ -77,7 +77,7 @@ options:
   monitors:
     description:
       - Monitor template name list. If the partition is not provided as part of
-        the monitor name, then the C(partition) option will be used instead.
+        the monitor name, the C(partition) option is used instead.
     type: list
     elements: str
   slow_ramp_time:
@@ -106,7 +106,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), guarantees that the pool exists with the provided
+      - When C(present), guarantees the pool exists with the provided
         attributes.
       - When C(absent), removes the pool from the system.
     type: str
@@ -116,10 +116,10 @@ options:
     default: present
   metadata:
     description:
-      - Arbitrary key/value pairs that you can attach to a pool. This is useful in
-        situations where you might want to annotate a pool to me managed by Ansible.
-      - Key names will be stored as strings; this includes names that are numbers.
-      - Values for all of the keys will be stored as strings; this includes values
+      - Arbitrary key/value pairs you can attach to a pool. This is useful in
+        situations where you might want to annotate a pool to be managed by Ansible.
+      - Key names are stored as strings; this includes names that are numbers.
+      - Values for all of the keys are stored as strings; this includes values
         that are numbers.
       - Data will be persisted, not ephemeral.
     type: raw
@@ -128,7 +128,7 @@ options:
       - Specifies whether the system load balances traffic according to the priority
         number assigned to the pool member.
       - When creating a new pool, if this parameter is not specified, the default of
-        C(0) will be used.
+        C(0) is used.
       - To disable this setting, provide the value C(0).
       - Once you enable this setting, you can specify pool member priority when you
         create a new pool or on a pool member's properties screen.
@@ -144,20 +144,20 @@ options:
       - minimum_active_members
   aggregate:
     description:
-      - List of pool definitions to be created, modified or removed.
-      - When using C(aggregates) if one of the aggregate definitions is invalid, the aggregate run will fail,
+      - List of pool definitions to be created, modified, or removed.
+      - When using C(aggregates), if one of the aggregate definitions is invalid, the aggregate run will fail,
         indicating the error it last encountered.
-      - The module will C(NOT) rollback any changes it has made prior to encountering the error.
-      - The module also will not indicate what changes were made prior to failure, therefore it is strongly advised
-        to run the module in check mode to make basic validation, prior to module execution.
+      - The module will B(NOT) rollback any changes it has made prior to encountering the error.
+      - The module also will not indicate which changes were made prior to failure. Therefore we strongly advise
+        you run the module in C(check) mode to ensure basic validation prior to executing this module.
     type: list
     elements: dict
     aliases:
       - pools
   replace_all_with:
     description:
-      - Remove pools not defined in the C(aggregate) parameter.
-      - This operation is all or none, meaning that it will stop if there are some pools
+      - Removes pools not defined in the C(aggregate) parameter.
+      - This operation is all or none, meaning it will stop if there are some pools
         that cannot be removed.
     type: bool
     default: no
@@ -353,17 +353,17 @@ description:
   type: str
   sample: Pool of web servers
 lb_method:
-  description: The LB method set for the pool.
+  description: The load balancing method set for the pool.
   returned: changed
   type: str
   sample: round-robin
 slow_ramp_time:
-  description: The new value that is set for the slow ramp-up time.
+  description: The new value set for the slow ramp-up time.
   returned: changed
   type: int
   sample: 500
 reselect_tries:
-  description: The new value that is set for the number of tries to contact member.
+  description: The new value set for the number of tries to contact member.
   returned: changed
   type: int
   sample: 10
