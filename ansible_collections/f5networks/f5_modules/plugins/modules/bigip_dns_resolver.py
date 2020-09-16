@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_dns_resolver
 short_description: Manage DNS resolvers on a BIG-IP
 description:
-  - Manage DNS resolver on a BIG-IP.
+  - Manage DNS resolvers on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -37,11 +37,11 @@ options:
       - Specifies whether the system answers DNS queries for the default zones localhost,
         reverse 127.0.0.1 and ::1, and AS112.
       - When creating a new resolver, if this parameter is not specified, the default
-        is C(no), meaning that the system passes along the DNS queries for the default zones.
+        is C(no), meaning the system passes along the DNS queries for the default zones.
     type: bool
   randomize_query_case:
     description:
-      - When C(yes), specifies that the internal DNS resolver randomizes character case
+      - When C(yes), specifies the internal DNS resolver randomizes character case
         in domain name queries issued to the root DNS servers.
       - When creating a new resolver, if this parameter is not specified, the default
         is C(yes).
@@ -76,7 +76,7 @@ options:
     type: bool
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

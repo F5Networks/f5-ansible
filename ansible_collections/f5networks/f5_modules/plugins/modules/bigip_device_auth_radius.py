@@ -10,14 +10,14 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_device_auth_radius
-short_description: Manages RADIUS auth configuration on BIGIP device
+short_description: Manages RADIUS auth configuration on a BIG-IP device
 description:
-  - Module creates RADIUS configuration.
+  - Module creates a RADIUS configuration.
 version_added: "1.3.0"
 options:
   servers:
     description:
-      - Specifies RADIUS servers names for use with RADIUS authentication profiles.
+      - Specifies the names of RADIUS servers for use with RADIUS authentication profiles.
     type: list
     elements: str
   accounting_bug:
@@ -27,12 +27,12 @@ options:
     type: bool
   retries:
     description:
-      - Specifies the number of authentication retries that the BIG-IP local traffic management system allows before
+      - Specifies the number of authentication retries the BIG-IP Local Traffic Management system allows before
         authentication fails.
     type: int
   service_type:
     description:
-      - Specifies the type of service requested from the RADIUS server. The default value is authenticate-only.
+      - Specifies the type of service requested from the RADIUS server. The default value is C(authenticate-only).
     type: str
     choices:
       - authenticate-only
@@ -49,21 +49,21 @@ options:
       - callback-administrative
   fallback_to_local:
     description:
-      - Specifies that the system uses the Local authentication method if the remote
+      - Specifies the system uses the Local authentication method if the remote
         authentication method is not available.
       - Option only available on C(TMOS 13.0.0) and above.
     type: bool
   use_for_auth:
     description:
       - Specifies whether or not this auth source is put in use on the system.
-      - If C(yes) the module sets the current system auth type to the value of C(radius).
-      - If C(no) the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
+      - If C(yes), the module sets the current system auth type to the value of C(radius).
+      - If C(no), the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
         without removing the configured RADIUS resource.
     type: bool
   state:
     description:
-      - When C(state) is C(present), ensures that the RADIUS server exists.
-      - When C(state) is C(absent), ensures that the RADIUS server is removed.
+      - When C(state) is C(present), ensures the RADIUS server exists.
+      - When C(state) is C(absent), ensures the RADIUS server is removed.
     type: str
     choices:
       - present
@@ -71,7 +71,7 @@ options:
     default: present
 extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
-  - This module is based on the command line (TMSH) configuration capabilities of radius authentication,
+  - This module is based on the command line (TMSH) configuration capabilities of RADIUS authentication,
     not the GUI.
 author:
   - Andrey Kashcheev (@andreykashcheev)
@@ -130,12 +130,12 @@ service_type:
   type: str
   sample: login
 retries:
-  description: Number of authentication retries before authentication fails
+  description: Number of authentication retries before authentication fails.
   type: int
   returned: changed
   sample: 10
 accounting_bug:
-  description: Enables or disables validation of the accounting response vector
+  description: Enables or disables validation of the accounting response vector.
   type: bool
   returned: changed
   sample: yes

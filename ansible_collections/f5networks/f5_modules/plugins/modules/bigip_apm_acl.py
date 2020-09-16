@@ -36,7 +36,7 @@ options:
     description:
       - Specifies a number that indicates the order of this ACL relative to other ACLs.
       - When not set, the device will always place the ACL after the last one created.
-      - The lower the number, the higher the ACL will be in the general order, with lowest number C(0) being the topmost one.
+      - The lower the number, the higher the ACL will be in the general order, with the lowest number C(0) being the topmost one.
       - Valid range of values is between C(0) and C(65535) inclusive.
     type: int
   path_match_case:
@@ -46,7 +46,7 @@ options:
   entries:
     description:
       - Access control entries that define the ACL matching and its respective behavior.
-      - The order in which the rules are placed as arguments to this parameter, determines their order in the ACL,
+      - The order in which the rules are placed as arguments to this parameter determines their order in the ACL,
         in other words changing the order of the same elements will cause a change on the unit.
     type: list
     elements: dict
@@ -94,7 +94,7 @@ options:
       dst_mask:
         description:
           - Optional parameter that specifies the destination network mask for the access control entry.
-          - If not specified and C(dst_addr) is not C(any) the C(dst_addr) is deemed to be host address.
+          - If not specified and C(dst_addr) is not C(any), the C(dst_addr) is deemed to be host address.
         type: str
       src_addr:
         description:
@@ -104,7 +104,7 @@ options:
       src_mask:
         description:
           - Optional parameter that specifies the source network mask for the access control entry.
-          - If not specified and C(src_addr) is not C(any) the C(src_addr) is deemed to be host address.
+          - If not specified and C(src_addr) is not C(any), the C(src_addr) is deemed to be host address.
         type: str
       scheme:
         description:
@@ -303,7 +303,7 @@ entries:
   returned: changed
   contains:
     action:
-      description: Action that the access control entry takes when a match for this access control entry is encountered.
+      description: Action the access control entry takes when a match for this access control entry is encountered.
       returned: changed
       type: str
       sample: allow

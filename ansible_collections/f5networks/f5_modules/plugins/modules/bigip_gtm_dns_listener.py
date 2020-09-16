@@ -10,10 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_gtm_dns_listener
-short_description: configures BIG-IP DNS system to answer TCP or UDP DNS requests
+short_description: Configures the BIG-IP DNS system to answer TCP or UDP DNS requests
 description:
-  - Defines one or more listener objects to control what protocols are available for the BIG-IP DNS system to process DNS requests.
-  - BIG-IP DNS listeners allows to use TCP and UDP protocols.
+  - Defines one or more Listener objects to control which protocols are available for the BIG-IP DNS system to process DNS requests.
+  - BIG-IP DNS Listeners allow TCP and UDP protocols.
 version_added: "1.4.0"
 options:
   name:
@@ -23,7 +23,7 @@ options:
     required: True
   description:
     description:
-      - Provides brief description for DNS Listener.
+      - Provides a brief description for DNS Listener.
     type: str
   address:
     description:
@@ -32,7 +32,7 @@ options:
     required: True
   mask:
     description:
-      - Specifies the netmask for a network listener only.
+      - Specifies the netmask for a network Listener only.
       - Netmask clarifies whether the host bit is an actual zero or a wildcard representation.
     type: str
   enabled_vlans:
@@ -53,11 +53,11 @@ options:
     elements: str
   pool:
     description:
-      - Specifies a default pool to which the listener to automatically direct traffic.
+      - Specifies a default pool to which the Listener automatically directs traffic.
     type: str
   port:
     description:
-      - Specifies the port on which the listener listens for connections.
+      - Specifies the port on which the Listener listens for connections.
       - Valid range of values is between C(0) and C(65535) inclusive.
     type: int
   source_port:
@@ -66,7 +66,7 @@ options:
     type: str
   translate_address:
     description:
-      - Enables or disables address translation for the listener.
+      - Enables or disables address translation for the Listener.
     type: bool
   translate_port:
     description:
@@ -74,7 +74,7 @@ options:
     type: bool
   irules:
     description:
-      - Specifies list of iRules to run on listener.
+      - Specifies list of iRules to run on the Listener.
       - iRules help automate the intercepting, processing, and routing of application traffic.
       - If you want to remove existing iRules, provide an empty list value; C([]).
         See the documentation for an example.
@@ -82,23 +82,23 @@ options:
     elements: str
   advertise:
     description:
-      - Specifies whether this listener's address is advertised to surrounding routers.
+      - Specifies whether this Listener's address is advertised to surrounding routers.
     type: bool
   auto_lasthop:
     description:
-      - Specifies whether to automatically map last hop for pools or not.
+      - Specifies whether to automatically map the last hop for pools or not.
     type: str
   last_hop_pool:
     description:
-      - Specifies the name of the last hop pool that you want the listener to use to direct reply traffic to the last hop router.
+      - Specifies the name of the last hop pool that you want the Listener to use to direct reply traffic to the last hop router.
     type: str
   fallback_persistence:
     description:
-      - Specifies a fallback persistence profile for the listener to use when the default persistence profile is not available.
+      - Specifies a fallback persistence profile for the Listener to use when the default persistence profile is not available.
     type: str
   ip_protocol:
     description:
-      - Specifies the protocol on which this listener receives network traffic.
+      - Specifies the protocol on which this Listener receives network traffic.
     type: str
   partition:
     description:
@@ -108,9 +108,9 @@ options:
   state:
     description:
       - DNS Listener state.
-      - When C(present), ensures that the pool is created and enabled.
-      - When C(absent), ensures that the pool is removed from the system.
-      - When C(enabled) or C(disabled), ensures that the pool is enabled or disabled respectively) on the remote device.
+      - When C(present), ensures the pool is created and enabled.
+      - When C(absent), ensures the pool is removed from the system.
+      - When C(enabled) or C(disabled), ensures the pool is enabled or disabled respectively) on the remote device.
     type: str
     choices:
       - present
@@ -169,7 +169,7 @@ name:
   type: str
   sample: test-dns-listener
 mask:
-  description: Subnet mask used by listener to identify address range.
+  description: Subnet mask used by the Listener to identify address range.
   returned: changed
   type: str
   sample: 255.255.0.0
@@ -184,17 +184,17 @@ port:
   type: int
   sample: 53
 source_port:
-  description: Specifies if system preservs the source port of the connection.
+  description: Specifies if system preserves the source port of the connection.
   returned: changed
   type: str
   sample: preserve
 advertise:
-  description: Specifies if listener advertises to surrounding routers.
+  description: Specifies if the Listener advertises to surrounding routers.
   returned: changed
   type: bool
   sample: yes
 auto_lasthop:
-  description: Shows if automatically map last hop for pools.
+  description: Shows whether the system automatically maps the last hop for pools.
   returned: changed
   type: str
   sample: default
@@ -209,32 +209,32 @@ translate_port:
   type: str
   sample: enabled
 fallback_persistence:
-  description: Fallback persistence profile for the listener to use when the default persistence profile is not available.
+  description: Fallback persistence profile for the Listener to use when the default persistence profile is not available.
   returned: changed
   type: str
   sample: /Common/fallback-profile
 enabled:
-  description: Provides DNS listener state.
+  description: Provides DNS Listener state.
   returned: changed
   type: bool
   sample: yes
 ip_protocol:
-  description: IP protocol used by DNS listener.
+  description: IP protocol used by the DNS Listener.
   returned: changed
   type: str
   sample: tcp
 disabled_vlans:
-  description: List of VLANs that the virtual is disabled for.
+  description: List of VLANs the virtual is disabled for.
   returned: changed
   type: list
   sample: ['/Common/vlan1', '/Common/vlan2']
 enabled_vlans:
-  description: List of VLANs that the virtual is enabled for.
+  description: List of VLANs the virtual is enabled for.
   returned: changed
   type: list
   sample: ['/Common/vlan5', '/Common/vlan6']
 irules:
-  description: List of rules run by DNS Listener.
+  description: List of rules run by the DNS Listener.
   returned: changed
   type: list
   sample: ['/Common/rule1', '/Common/rule2']

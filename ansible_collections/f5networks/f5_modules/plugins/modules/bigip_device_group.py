@@ -14,7 +14,7 @@ short_description: Manage device groups on a BIG-IP
 description:
   - Managing device groups allows you to create HA pairs and clusters
     of BIG-IP devices. Usage of this module should be done in conjunction
-    with the C(bigip_configsync_actions) to sync configuration across
+    with the C(bigip_configsync_actions) to sync the configuration across
     the pair or cluster if auto-sync is disabled.
 version_added: "1.0.0"
 options:
@@ -25,7 +25,7 @@ options:
     required: True
   type:
     description:
-      - Specifies that the type of group.
+      - Specifies the type of group.
       - A C(sync-failover) device group contains devices that synchronize their
         configuration data and fail over to one another when a device becomes
         unavailable.
@@ -80,7 +80,7 @@ options:
   state:
     description:
       - When C(state) is C(present), ensures the device group exists.
-      - When C(state) is C(absent), ensures that the device group is removed.
+      - When C(state) is C(absent), ensures  the device group is removed.
     type: str
     choices:
       - present
@@ -89,7 +89,7 @@ options:
   network_failover:
     description:
       - Indicates whether failover occurs over the network or is hard-wired.
-      - This parameter is only valid for C(type)'s that are C(sync-failover).
+      - This parameter is only valid for C(type)s that are C(sync-failover).
     type: bool
 notes:
   - This module is primarily used as a component of configuring HA pairs of
@@ -149,7 +149,7 @@ auto_sync:
   type: bool
   sample: true
 max_incremental_sync_size:
-  description: The new sync size of the device group
+  description: The new sync size of the device group.
   returned: changed
   type: int
   sample: 1000

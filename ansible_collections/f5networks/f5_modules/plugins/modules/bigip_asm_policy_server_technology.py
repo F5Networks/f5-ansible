@@ -10,14 +10,14 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_asm_policy_server_technology
-short_description: Manages Server Technology on ASM policy
+short_description: Manages Server Technology on an ASM policy
 description:
-  - Manages Server Technology on ASM policy.
+  - Manages Server Technology on ASM policies.
 version_added: "1.0.0"
 options:
   name:
     description:
-      - Specifies the name of the server technology to apply on or remove from the ASM policy.
+      - Specifies the name of the server technology to apply on, or remove from, the ASM policy.
     type: str
     required: True
     choices:
@@ -64,12 +64,12 @@ options:
       - Jetty
   policy_name:
     description:
-      - Specifies the name of an existing ASM policy to add or remove server technology.
+      - Specifies the name of an existing ASM policy to add or remove a server technology to.
     type: str
     required: True
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     default: present
@@ -78,11 +78,11 @@ options:
       - absent
   partition:
     description:
-      - This parameter is only used when identifying ASM policy.
+      - This parameter is only used when identifying an ASM policy.
     type: str
     default: Common
 notes:
-  - This module is primarily used as a component of configuring ASM policy in Ansible Galaxy ASM Policy Role.
+  - This module is primarily used as a component of configuring an ASM policy in Ansible Galaxy ASM Policy Role.
   - Requires BIG-IP >= 13.0.0
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
@@ -118,7 +118,7 @@ policy_name:
   type: str
   sample: FooPolicy
 name:
-  description: The name of Server Technology added/removed on ASM policy
+  description: The name of Server Technology added/removed on the ASM policy
   returned: changed
   type: str
   sample: Joomla
