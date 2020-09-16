@@ -12,9 +12,9 @@ DOCUMENTATION = r'''
 module: bigip_profile_dns
 short_description: Manage DNS profiles on a BIG-IP
 description:
-  - Manage DNS profiles on a BIG-IP. Many DNS profiles; each with their
+  - Manage DNS profiles on a BIG-IP. There are many DNS profiles options, each with their
     own adjustments to the standard C(dns) profile. Users of this module should be aware
-    that many of the adjustable knobs have no module default. Instead, the default is
+    that many of the configurable options have no module default. Instead, the default is
     assigned by the BIG-IP system itself which, in most cases, is acceptable.
 version_added: "1.0.0"
 options:
@@ -48,7 +48,7 @@ options:
       - The C(enable_dns_express) and C(enable_zone_transfer) settings on a DNS profile
         affect how the system responds to zone transfer requests.
       - When the C(enable_dns_express) and C(enable_zone_transfer) settings are both C(yes),
-        if a zone transfer request matches a DNS Express zone, then DNS Express answers the
+        if a zone transfer request matches a DNS Express zone, DNS Express answers the
         request.
       - When the C(enable_dns_express) setting is C(no) and the C(enable_zone_transfer)
         setting is C(yes), the BIG-IP system processes zone transfer requests based on the
@@ -57,13 +57,13 @@ options:
   enable_dnssec:
     description:
       - Specifies whether the system signs responses with DNSSEC keys and replies to DNSSEC
-        specific queries (e.g., DNSKEY query type).
+        specific queries (for example, DNSKEY query type).
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
     type: bool
   enable_gtm:
     description:
-      - Specifies whether the system uses Global Traffic Manager to manage the response.
+      - Specifies whether the system uses Global Traffic Manager (now BIG-IP DNS) to manage the response.
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
     type: bool
@@ -86,7 +86,7 @@ options:
     type: bool
   enable_dns_firewall:
     description:
-      - Specifies whether DNS firewall capability is enabled.
+      - Specifies whether the DNS firewall is enabled.
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
     type: bool
@@ -105,7 +105,7 @@ options:
     type: bool
   cache_name:
     description:
-      - Specifies the user-created cache that the system uses to cache DNS responses.
+      - Specifies the user-created cache the system uses to cache DNS responses.
       - When you select a cache for the system to use, you must also set C(enable_dns_cache)
         to C(yes)
     type: str
@@ -135,7 +135,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:

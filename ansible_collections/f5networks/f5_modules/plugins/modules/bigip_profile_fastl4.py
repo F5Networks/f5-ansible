@@ -12,7 +12,9 @@ DOCUMENTATION = r'''
 module: bigip_profile_fastl4
 short_description: Manages Fast L4 profiles
 description:
-  - Manages Fast L4 profiles.
+  - Manages Fast L4 profiles. Using the FastL4 profile can increase virtual server
+    performance and throughput for supported platforms by using the embedded Packet 
+    Velocity Acceleration (ePVA) chip to accelerate traffic.
 version_added: "1.0.0"
 options:
   name:
@@ -28,23 +30,23 @@ options:
     type: str
   idle_timeout:
     description:
-      - Specifies the length of time that a connection is idle (has no traffic) before
+      - Specifies the length of time a connection is idle (has no traffic) before
         the connection is eligible for deletion.
       - When creating a new profile, if this parameter is not specified, the remote
         device will choose a default value appropriate for the profile, based on its
         C(parent) profile.
-      - When a number is specified, indicates the number of seconds that the TCP
+      - When a number is specified, indicates the number of seconds the TCP
         connection can remain idle before the system deletes it.
-      - When C(indefinite), specifies that the system does not delete TCP connections
+      - When C(indefinite), specifies the system does not delete TCP connections
         regardless of how long they remain idle.
-      - When C(0), or C(immediate), specifies that the system deletes connections
+      - When C(0), or C(immediate), specifies the system deletes connections
         immediately when they become idle.
     type: str
   client_timeout:
     description:
       - Specifies a timeout for Late Binding.
       - This is the time limit for the client to provide the application data required to
-        select a back-end server. That is, this is the maximum time that the BIG-IP system
+        select a back-end server, meaning the maximum time the BIG-IP system
         waits for information about the sender and the target.
       - This information typically arrives at the beginning of the FIX logon packet.
       - When C(0), or C(immediate), allows for no time beyond the moment of the first packet
@@ -62,7 +64,7 @@ options:
         command to migrate down to ePVA hardware.
       - When C(no), a late-binding connection migrates down to ePVA immediately after
         establishing the server-side connection.
-      - When C(yes), this parameter stops automatic migration to ePVA, and requires that
+      - When C(yes), this parameter stops automatic migration to ePVA, and requires
         the iRule explicitly trigger ePVA processing by invoking the C(release_flow)
         iRule command. This allows an iRule author to control when the connection uses the
         ePVA hardware.
@@ -83,22 +85,22 @@ options:
       - clear
   ip_tos_to_client:
     description:
-      - Specifies, for IP traffic passing through the system to clients, whether the system
+      - For IP traffic passing through the system to clients, specifies whether the system
         modifies the IP type-of-service (ToS) setting in an IP packet header.
       - May be a number between 0 and 255 (inclusive). When a number, specifies the IP ToS
         setting that the system inserts in the IP packet header.
-      - When C(pass-through), specifies that the IP ToS setting remains unchanged.
-      - When C(mimic), specifies that the system sets the ToS level of outgoing packets to
+      - When C(pass-through), specifies the IP ToS setting remains unchanged.
+      - When C(mimic), specifies the system sets the ToS level of outgoing packets to
         the same ToS level of the most-recently received incoming packet.
     type: str
   ip_tos_to_server:
     description:
-      - Specifies, for IP traffic passing through the system to back-end servers, whether
+      - For IP traffic passing through the system to back-end servers, specifies whether
         the system modifies the IP type-of-service (ToS) setting in an IP packet header.
       - May be a number between 0 and 255 (inclusive). When a number, specifies the IP ToS
         setting that the system inserts in the IP packet header.
-      - When C(pass-through), specifies that the IP ToS setting remains unchanged.
-      - When C(mimic), specifies that the system sets the ToS level of outgoing packets to
+      - When C(pass-through), specifies that IP ToS setting remains unchanged.
+      - When C(mimic), specifies the system sets the ToS level of outgoing packets to
         the same ToS level of the most-recently received incoming packet.
     type: str
   ip_ttl_mode:
@@ -120,12 +122,12 @@ options:
   ip_ttl_v4:
     description:
       - Specifies the outgoing packet's IP Header TTL value for IPv4 traffic.
-      - Maximum TTL value that can be specified is 255.
+      - The maximum TTL value is 255.
     type: int
   ip_ttl_v6:
     description:
       - Specifies the outgoing packet's IP Header TTL value for IPv6 traffic.
-      - Maximum TTL value that can be specified is 255.
+      - The maximum TTL value is 255.
     type: int
   keep_alive_interval:
     description:
@@ -135,11 +137,11 @@ options:
     description:
       - Enables intelligent selection of a back-end server or pool, using an
         iRule to make the selection.
-      - "Enabling C(late_binding) on BIG-IP running TMOS 12.x branch, requires software syn cookie to be enabled."
+      - "Enabling C(late_binding) on BIG-IP running TMOS 12.x branch requires software syn cookie is enabled."
     type: bool
   link_qos_to_client:
     description:
-      - Specifies, for IP traffic passing through the system to clients,
+      - For IP traffic passing through the system to clients, specifies
         whether the system modifies the link quality-of-service (QoS) setting
         in an IP packet header.
       - The link QoS value prioritizes the IP packet relative to other Layer
@@ -147,11 +149,11 @@ options:
       - You can specify a number between 0 (lowest priority) and 7 (highest priority).
       - When a number, specifies the link QoS setting that the system inserts
         in the IP packet header.
-      - When C(pass-through), specifies that the link QoS setting remains unchanged.
+      - When C(pass-through), specifies the link QoS setting remains unchanged.
     type: str
   link_qos_to_server:
     description:
-      - Specifies, for IP traffic passing through the system to back-end servers,
+      - For IP traffic passing through the system to back-end servers, specifies
         whether the system modifies the link quality-of-service (QoS) setting
         in an IP packet header.
       - The link QoS value prioritizes the IP packet relative to other Layer
@@ -159,17 +161,17 @@ options:
       - You can specify a number between 0 (lowest priority) and 7 (highest priority).
       - When a number, specifies the link QoS setting that the system inserts
         in the IP packet header.
-      - When C(pass-through), specifies that the link QoS setting remains unchanged.
+      - When C(pass-through), specifies the link QoS setting remains unchanged.
     type: str
   loose_close:
     description:
-      - When C(yes), specifies, that the system closes a loosely-initiated connection
+      - When C(yes), specifies the system closes a loosely-initiated connection
         when the system receives the first FIN packet from either the client or the server.
     type: bool
   loose_initialization:
     description:
-      - When C(yes), specifies that the system initializes a connection when it
-        receives any TCP packet, rather that requiring a SYN packet for connection
+      - When C(yes), specifies the system initializes a connection when it
+        receives any TCP packet, rather than requiring a SYN packet for connection
         initiation.
     type: bool
   mss_override:
@@ -179,7 +181,7 @@ options:
     type: int
   reassemble_fragments:
     description:
-      - When C(yes), specifies that the system reassembles IP fragments.
+      - When C(yes), specifies the system reassembles IP fragments.
     type: bool
   receive_window_size:
     description:
@@ -188,17 +190,17 @@ options:
     type: int
   reset_on_timeout:
     description:
-      - When C(yes), specifies that the system sends a reset packet (RST) in addition
+      - When C(yes), specifies the system sends a reset packet (RST) in addition
         to deleting the connection, when a connection exceeds the idle timeout value.
     type: bool
   rtt_from_client:
     description:
-      - When C(yes), specifies that the system uses TCP timestamp options to measure
+      - When C(yes), specifies the system uses TCP timestamp options to measure
         the round-trip time to the client.
     type: bool
   rtt_from_server:
     description:
-      - When C(yes), specifies that the system uses TCP timestamp options to measure
+      - When C(yes), specifies the system uses TCP timestamp options to measure
         the round-trip time to the server.
     type: bool
   server_sack:
@@ -224,35 +226,35 @@ options:
     type: str
   tcp_generate_isn:
     description:
-      - When C(yes), specifies that the system generates initial sequence numbers
+      - When C(yes), specifies the system generates initial sequence numbers
         for SYN packets, according to RFC 1948.
     type: bool
   tcp_handshake_timeout:
     description:
-      - Specifies the acceptable duration for a TCP handshake, that is, the maximum
+      - Specifies the acceptable duration for a TCP handshake (the maximum
         idle time between a client synchronization (SYN) and a client acknowledgment
-        (ACK). If the TCP handshake takes longer than the timeout, the system
+        (ACK)). If the TCP handshake takes longer than the timeout, the system
         automatically closes the connection.
       - When a number, specifies how long the system can try to establish a TCP
         handshake before timing out.
-      - When C(disabled), specifies that the system does not apply a timeout to a
+      - When C(disabled), specifies the system does not apply a timeout to a
         TCP handshake.
-      - When C(indefinite), specifies that attempting a TCP handshake never times out.
+      - When C(indefinite), specifies attempting a TCP handshake never times out.
     type: str
   tcp_strip_sack:
     description:
-      - When C(yes), specifies that the system blocks a TCP selective ACK SackOK
+      - When C(yes), specifies the system blocks a TCP selective ACK SackOK
         option from passing to the server on an initiating SYN.
     type: bool
   tcp_time_wait_timeout:
     description:
-      - Specifies the number of milliseconds that a connection is in the TIME-WAIT
+      - Specifies the number of milliseconds a connection is in the TIME-WAIT
         state before closing.
-      - Parameter only available on TMOS 13.0.0 and higher.
+      - This parameter is only available on TMOS 13.0.0 and later.
     type: int
   tcp_timestamp_mode:
     description:
-      - Specifies the action that the system should take on TCP timestamps.
+      - Specifies the action the system should take on TCP timestamps.
     type: str
     choices:
       - preserve
@@ -260,7 +262,7 @@ options:
       - strip
   tcp_wscale_mode:
     description:
-      - Specifies the action that the system should take on TCP windows.
+      - Specifies the action the system should take on TCP windows.
     type: str
     choices:
       - preserve
@@ -299,7 +301,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:

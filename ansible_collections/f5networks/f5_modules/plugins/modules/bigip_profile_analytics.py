@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_profile_analytics
 short_description: Manage HTTP analytics profiles on a BIG-IP
 description:
-  - Manage HTTP analytics profiles on a BIG-IP.
+  - Manage HTTP analytics profiles on a BIG-IP device.
 version_added: "1.0.0"
 options:
   name:
@@ -98,7 +98,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:
