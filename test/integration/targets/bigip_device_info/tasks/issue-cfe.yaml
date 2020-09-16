@@ -1,0 +1,10 @@
+---
+
+- name: Select cfe facts
+  bigip_device_info:
+    include:
+      - cfe
+  register: result
+
+- debug:
+    var: result

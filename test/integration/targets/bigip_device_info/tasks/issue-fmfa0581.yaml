@@ -1,0 +1,10 @@
+---
+
+- name: Select as3 facts
+  bigip_device_info:
+    include:
+      - as3
+  register: result
+
+- debug:
+    var: result
