@@ -32,13 +32,16 @@ options:
       - profiles
       - apm-access-profiles
       - apm-access-policies
+      - as3
       - asm-policy-stats
       - asm-policies
       - asm-server-technologies
       - asm-signature-sets
       - client-ssl-profiles
+      - cfe
       - devices
       - device-groups
+      - do
       - external-monitors
       - fasthttp-profiles
       - fastl4-profiles
@@ -86,6 +89,7 @@ options:
       - sync-status
       - system-db
       - system-info
+      - ts
       - tcp-monitors
       - tcp-half-open-monitors
       - tcp-profiles
@@ -7548,6 +7552,58 @@ class ApmAccessPolicyFactManager(BaseManager):
         return result
 
 
+class As3Parameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+
+    ]
+
+
+class As3FactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(As3FactManager, self).__init__(**kwargs)
+        self.want = self.module.params
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(as3_config=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        return facts
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        return collection
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/appsvcs/declare".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'class' not in response:
+            return []
+        result = {}
+        result['declaration'] = response
+        return result
+
+
 class AsmPolicyStatsParameters(BaseParameters):
     api_map = {
 
@@ -8589,6 +8645,56 @@ class ClientSslProfilesFactManager(BaseManager):
         return result
 
 
+class CFEParameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+
+    ]
+
+
+class CFEFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(CFEFactManager, self).__init__(**kwargs)
+        self.want = self.module.params
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(cfe_config=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        return facts
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        return collection
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/cloud-failover/declare".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        result = {}
+        result['declaration'] = response['declaration']
+        return result
+
+
 class DeviceGroupsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -8858,6 +8964,56 @@ class DevicesFactManager(BaseManager):
         if 'items' not in response:
             return []
         result = response['items']
+        return result
+
+
+class DOParameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+
+    ]
+
+
+class DOFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(DOFactManager, self).__init__(**kwargs)
+        self.want = self.module.params
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(do_config=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        return facts
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        return collection
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/declarative-onboarding/inspect".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        result = {}
+        result['declaration'] = response[0]['declaration']
         return result
 
 
@@ -14312,6 +14468,58 @@ class SystemInfoFactManager(BaseManager):
         return result[0]
 
 
+class TSParameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+
+    ]
+
+
+class TSFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(TSFactManager, self).__init__(**kwargs)
+        self.want = self.module.params
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(ts_config=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        return facts
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        return collection
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/telemetry/declare".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'message' not in response:
+            return []
+        result = {}
+        result['declaration'] = response['declaration']
+        return result
+
+
 class TcpMonitorsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -16567,13 +16775,16 @@ class ModuleManager(object):
         self.managers = {
             'apm-access-profiles': ApmAccessProfileFactManager,
             'apm-access-policies': ApmAccessPolicyFactManager,
+            'as3': As3FactManager,
             'asm-policy-stats': AsmPolicyStatsFactManager,
             'asm-policies': AsmPolicyFactManager,
             'asm-server-technologies': AsmServerTechnologyFactManager,
             'asm-signature-sets': AsmSignatureSetsFactManager,
             'client-ssl-profiles': ClientSslProfilesFactManager,
+            'cfe': CFEFactManager,
             'devices': DevicesFactManager,
             'device-groups': DeviceGroupsFactManager,
+            'do': DOFactManager,
             'external-monitors': ExternalMonitorsFactManager,
             'fasthttp-profiles': FastHttpProfilesFactManager,
             'fastl4-profiles': FastL4ProfilesFactManager,
@@ -16619,6 +16830,7 @@ class ModuleManager(object):
             'sync-status': SyncStatusFactManager,
             'system-db': SystemDbFactManager,
             'system-info': SystemInfoFactManager,
+            'ts': TSFactManager,
             'tcp-monitors': TcpMonitorsFactManager,
             'tcp-half-open-monitors': TcpHalfOpenMonitorsFactManager,
             'tcp-profiles': TcpProfilesFactManager,
@@ -16770,6 +16982,7 @@ class ArgumentSpec(object):
                     'profiles',
                     'gtm-pools',
                     'gtm-wide-ips',
+                    'as3',
 
                     # Non-meta choices
                     'apm-access-profiles',
@@ -16779,8 +16992,10 @@ class ArgumentSpec(object):
                     'asm-server-technologies',
                     'asm-signature-sets',
                     'client-ssl-profiles',
+                    'cfe',
                     'devices',
                     'device-groups',
+                    'do',
                     'external-monitors',
                     'fasthttp-profiles',
                     'fastl4-profiles',
@@ -16826,6 +17041,7 @@ class ArgumentSpec(object):
                     'sync-status',
                     'system-db',
                     'system-info',
+                    'ts',
                     'tcp-monitors',
                     'tcp-half-open-monitors',
                     'tcp-profiles',
