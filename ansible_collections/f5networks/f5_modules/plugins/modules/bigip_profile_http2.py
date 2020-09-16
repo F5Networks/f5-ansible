@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_profile_http2
 short_description: Manage HTTP2 profiles on a BIG-IP
 description:
-  - Manage HTTP2 profiles on a BIG-IP.
+  - Manage HTTP2 profiles on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -32,13 +32,13 @@ options:
     type: str
   streams:
     description:
-      - Specifies the number of outstanding concurrent requests that are allowed on a single HTTP/2 connection.
+      - Specifies the number of outstanding concurrent requests allowed on a single HTTP/2 connection.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
       - The valid value range is C(1 - 256).
     type: int
   idle_timeout:
     description:
-      - Specifies the number of seconds that an HTTP/2 connection is idly left open before being shut down.
+      - Specifies the number of seconds an HTTP/2 connection is idly left open before being shut down.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: int
   insert_header:
@@ -81,7 +81,7 @@ options:
     type: int
   receive_window:
     description:
-      - Specifies the way that the HTTP/2 profile performs flow control.
+      - Specifies the way the HTTP/2 profile performs flow control.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
       - The valid value range in kilobytes is C(16 - 128).
     type: int
@@ -98,7 +98,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:
@@ -152,27 +152,27 @@ description:
   type: str
   sample: My profile
 insert_header_name:
-  description: Specifies the name of the HTTP2 header
+  description: Specifies the name of the HTTP2 header.
   returned: changed
   type: str
   sample: X-HTTP2
 streams:
-  description: The number of outstanding concurrent requests allowed on a single HTTP/2 connection
+  description: The number of outstanding concurrent requests allowed on a single HTTP/2 connection.
   returned: changed
   type: int
   sample: 30
 enforce_tls_requirements:
-  description: pecifies whether the system requires TLS for communications.
+  description: Specifies whether the system requires TLS for communications.
   returned: changed
   type: bool
   sample: yes
 frame_size:
-  description: The size of the data frames
+  description: The size of the data frames.
   returned: changed
   type: int
   sample: 30
 activation_modes:
-  description: Specifies HTTP/2 connection handling modes
+  description: Specifies HTTP/2 connection handling modes.
   returned: changed
   type: list
   sample: ['always']
