@@ -13,7 +13,7 @@ module: bigip_profile_fastl4
 short_description: Manages Fast L4 profiles
 description:
   - Manages Fast L4 profiles. Using the FastL4 profile can increase virtual server
-    performance and throughput for supported platforms by using the embedded Packet 
+    performance and throughput for supported platforms by using the embedded Packet
     Velocity Acceleration (ePVA) chip to accelerate traffic.
 version_added: "1.0.0"
 options:
