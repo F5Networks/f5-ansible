@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_apm_policy_fetch
 short_description: Exports the APM policy or APM access profile from remote nodes.
 description:
-  - Exports the apm policy or APM access profile from remote nodes.
+  - Exports the APM policy or APM access profile from remote nodes.
 version_added: "1.0.0"
 options:
   name:
@@ -30,7 +30,7 @@ options:
     type: str
   type:
     description:
-      - Specifies the type of item to export from device.
+      - Specifies the type of item to export from the device.
     type: str
     choices:
       - profile_access
@@ -43,11 +43,11 @@ options:
     default: yes
   partition:
     description:
-      - Device partition to which contain APM policy or APM access profile to export.
+      - Device partition which contains the APM policy or APM access profile to export.
     type: str
     default: Common
 notes:
-  - Due to ID685681 it is not possible to execute ng_* tools via REST api on v12.x and 13.x, once this is fixed
+  - Due to ID685681 it is not possible to execute ng_* tools via REST API on v12.x and 13.x, once this is fixed
     this restriction will be removed.
   - Requires BIG-IP >= 14.0.0
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -104,12 +104,12 @@ file:
   type: str
   sample: foobar_file
 dest:
-  description: Local path to download exported APM policy.
+  description: Local path to download the exported APM policy.
   returned: changed
   type: str
   sample: /root/downloads/profile-foobar_file.conf.tar.gz
 type:
-  description: Set to specify type of item to export.
+  description: Set to specify the type of item to export.
   returned: changed
   type: str
   sample: access_policy

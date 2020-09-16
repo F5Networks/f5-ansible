@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_ipsec_policy
 short_description: Manage IPSec policies on a BIG-IP
 description:
-  - Manage IPSec policies on a BIG-IP.
+  - Manage IPSec policies on a BIG-IP device.
 version_added: "1.0.0"
 options:
   name:
@@ -26,7 +26,7 @@ options:
     type: str
   protocol:
     description:
-      - Specifies the IPsec protocol
+      - Specifies the IPsec protocol.
       - Options include ESP (Encapsulating Security Protocol) or AH (Authentication Header).
     type: str
     choices:
@@ -44,7 +44,7 @@ options:
       - When C(isession), specifies the use of iSession over an IPsec tunnel. To use
         this option, you must also configure the iSession endpoints with IPsec in the
         Acceleration section of the user interface.
-      - When C(interface), specifies that the IPsec policy can be used in the tunnel
+      - When C(interface), specifies the IPsec policy can be used in the tunnel
         profile for network interfaces.
     type: str
     choices:
@@ -101,8 +101,8 @@ options:
   ipcomp:
     description:
       - Specifies whether to use IPComp encapsulation.
-      - When C(none), specifies that IPComp is disabled.
-      - When C(deflate), specifies that IPComp is enabled and uses the Deflate
+      - When C(none), specifies IPComp is disabled.
+      - When C(deflate), specifies IPComp is enabled and uses the Deflate
         compression algorithm.
     type: str
     choices:
@@ -111,12 +111,12 @@ options:
       - deflate
   lifetime:
     description:
-      - Specifies the length of time, in minutes, before the IKE security association
-        expires.
+      - Specifies the length of time before the IKE security association expires,
+        in minutes.
     type: int
   kb_lifetime:
     description:
-      - Specifies the length of time, in kilobytes, before the IKE security association
+      - Specifies the length of time before the IKE security association, in kilobytes.
         expires.
     type: int
   perfect_forward_secrecy:
@@ -135,7 +135,7 @@ options:
       - modp8192
   ipv4_interface:
     description:
-      - When C(mode) is C(interface) indicate if the IPv4 C(any) address should be used.
+      - When C(mode) is C(interface), indicates if the IPv4 C(any) address should be used.
         By default C(BIG-IP) assumes C(any6) address for tunnel addresses when C(mode) is C(interface).
       - This option takes effect only when C(mode) is set to C(interface).
     type: bool
@@ -146,7 +146,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

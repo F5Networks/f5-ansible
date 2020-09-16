@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_firewall_dos_profile
 short_description: Manage AFM DoS profiles on a BIG-IP
 description:
-  - Manages AFM Denial of Service (DoS) profiles on a BIG-IP. To manage the vectors
+  - Manages AFM (Advanced Firewall Manager) Denial of Service (DoS) profiles on a BIG-IP. To manage the vectors
     associated with a DoS profile, refer to the C(bigip_firewall_dos_vector) module.
 version_added: "1.0.0"
 options:
@@ -52,7 +52,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

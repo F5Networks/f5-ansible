@@ -12,8 +12,8 @@ DOCUMENTATION = r'''
 module: bigip_firewall_address_list
 short_description: Manage address lists on BIG-IP AFM
 description:
-  - Manages the AFM address lists on a BIG-IP. This module can be used to add
-    and remove address list entries.
+  - Manages the AFM (Advanced Firewall Manager) address lists on a BIG-IP. This module
+    can be used to add and remove address list entries.
 version_added: "1.0.0"
 options:
   name:
@@ -28,7 +28,7 @@ options:
     default: Common
   description:
     description:
-      - Description of the address list
+      - Description of the address list.
     type: str
   geo_locations:
     description:
@@ -53,8 +53,8 @@ options:
         type: str
   addresses:
     description:
-      - Individual addresses that you want to add to the list. These addresses differ
-        from ranges, and lists of lists such as what can be used in C(address_ranges)
+      - Individual addresses you want to add to the list. These addresses differ
+        from ranges and lists of lists, such as what can be used in C(address_ranges)
         and C(address_lists) respectively.
       - This list can also include networks that have CIDR notation.
     type: list
@@ -62,9 +62,9 @@ options:
   address_ranges:
     description:
       - A list of address ranges where the range starts with a port number, is followed
-        by a dash (-) and then a second number.
+        by a dash (-), and then a second number.
       - If the first address is greater than the second number, the numbers will be
-        reversed so-as to be properly formatted. ie, C(2.2.2.2-1.1.1). would become
+        reversed so-as to be properly formatted. For example, C(2.2.2.2-1.1.1). would become
         C(1.1.1.1-2.2.2.2).
     type: list
     elements: str
@@ -80,16 +80,16 @@ options:
     description:
       - A list of fully qualified domain names (FQDNs).
       - An FQDN has at least one decimal point in it, separating the host from the domain.
-      - To add FQDNs to a list requires that a global FQDN resolver be configured.
-        At the moment, this must either be done via C(bigip_command), or, in the GUI
-        of BIG-IP. If using C(bigip_command), this can be done with C(tmsh modify security
+      - To add FQDNs to a list requires that a global FQDN resolver is configured.
+        This must either be done via C(bigip_command), or in the GUI
+        of the BIG-IP. If using C(bigip_command), you can do this with C(tmsh modify security
         firewall global-fqdn-policy FOO) where C(FOO) is a DNS resolver configured
         at C(tmsh create net dns-resolver FOO).
     type: list
     elements: str
   state:
     description:
-      - When C(present), ensures that the address list and entries exists.
+      - When C(present), ensures the address list and entries exists.
       - When C(absent), ensures the address list is removed.
     type: str
     choices:
@@ -144,17 +144,17 @@ fqdns:
   type: list
   sample: [google.com, mit.edu]
 geo_locations:
-  description: The new list of geo locations applied to the address list.
+  description: The new list of geolocations applied to the address list.
   returned: changed
   type: complex
   contains:
     country:
-      description: Country of the geo location.
+      description: Country of the geolocation.
       returned: changed
       type: str
       sample: US
     region:
-      description: Region of the geo location.
+      description: Region of the geolocation.
       returned: changed
       type: str
       sample: California

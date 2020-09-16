@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_topology_region
 short_description: Manages GTM Topology Regions
 description:
-  - Manages GTM Topology Regions.
+  - Manages GTM (now BIG-IP DNS) Topology Regions.
 version_added: "1.0.0"
 options:
   name:
@@ -25,14 +25,14 @@ options:
       - Specifies the list of region members.
       - This list of members is all or nothing, in order to add or remove a member,
         you must specify the entire list of members.
-      - The list will override what is on the device if different.
-      - If an empty list is specified the region members list will be removed.
+      - The list will override what is on the device, if different.
+      - If you specify an empty list, the region members list is removed.
     type: list
     elements: dict
     suboptions:
       negate:
         description:
-          - When set to c(yes) the system selects this topology region, when the request source does not match.
+          - When set to c(yes), the system selects this topology region when the request source does not match.
           - Only a single list entry can be specified together with negate.
         type: bool
         default: no
@@ -53,7 +53,7 @@ options:
         type: str
       country:
         description:
-          - The country name, or code to use.
+          - The country name or code to use.
           - In addition to the country full names, you may also specify their abbreviated
             form, such as C(US) instead of C(United States).
           - Valid country codes can be found here https://countrycode.org/.
@@ -64,11 +64,11 @@ options:
         type: str
       pool:
         description:
-          - Specifies the name of GTM pool already defined in the configuration.
+          - Specifies the name of the GTM pool already defined in the configuration.
         type: str
       datacenter:
         description:
-          - Specifies the name of GTM data center already defined in the configuration.
+          - Specifies the name of the GTM data center already defined in the configuration.
         type: str
       isp:
         description:
@@ -89,7 +89,7 @@ options:
           - ShanghaiTelecom
       geo_isp:
         description:
-          - Specifies a geolocation ISP
+          - Specifies a geolocation ISP.
         type: str
   partition:
     description:
@@ -100,8 +100,8 @@ options:
     default: Common
   state:
     description:
-      - When C(state) is C(present), ensures that the region exists.
-      - When C(state) is C(absent), ensures that the region is removed.
+      - When C(state) is C(present), ensures the region exists.
+      - When C(state) is C(absent), ensures the region is removed.
     type: str
     choices:
       - present

@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_log_publisher
 short_description: Manages log publishers on a BIG-IP
 description:
-  - Manages log publishers on a BIG-IP.
+  - Manages log publishers on a BIG-IP device.
 version_added: "1.0.0"
 options:
   name:
@@ -36,7 +36,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_device_connectivity
-short_description: Manages device IP configuration settings for HA on a BIG-IP
+short_description: Manages device IP configuration settings for HA on a BIG-IP.
 description:
-  - Manages device IP configuration settings for HA on a BIG-IP. Each BIG-IP device
+  - Manages device IP configuration settings for High Availability (HA) on a BIG-IP. Each BIG-IP device
     has synchronization and failover connectivity information (IP addresses) that
     you define as part of HA pairing or clustering. This module allows you to configure
     that information.
@@ -20,7 +20,7 @@ version_added: "1.0.0"
 options:
   config_sync_ip:
     description:
-      - Local IP address that the system uses for ConfigSync operations.
+      - Local IP address the system uses for ConfigSync operations.
     type: str
   mirror_primary_address:
     description:
@@ -34,10 +34,10 @@ options:
     type: str
   unicast_failover:
     description:
-      - Desired addresses to use for failover operations. Options C(address)
-        and C(port) are supported with dictionary structure where C(address) is the
-        local IP address that the system uses for failover operations. Port
-        specifies the port that the system uses for failover operations. If C(port)
+      - Addresses to use for failover operations. Options C(address)
+        and C(port) are supported with dictionary structure, where C(address) is the
+        local IP address the system uses for failover operations. Port
+        specifies the port the system uses for failover operations. If C(port)
         is not specified, the default value C(1026) will be used.  If you are
         specifying the (recommended) management IP address, use 'management-ip' in
         the address field.
@@ -45,10 +45,10 @@ options:
     elements: str
   failover_multicast:
     description:
-      - When C(yes), ensures that the Failover Multicast configuration is enabled
-        and if no further multicast configuration is provided, ensures that
+      - When C(yes), ensures the Failover Multicast configuration is enabled
+        and, if no further multicast configuration is provided, ensures that
         C(multicast_interface), C(multicast_address) and C(multicast_port) are
-        the defaults specified in each option's description. When C(no), ensures
+        the defaults specified in the description of each option. When C(no), ensures
         that Failover Multicast configuration is disabled.
     type: bool
   multicast_interface:
@@ -75,7 +75,7 @@ options:
       - Specifies whether mirroring occurs within the same cluster or between
         different clusters on a multi-bladed system.
       - This parameter is only supported on platforms that have multiple blades,
-        such as Viprion hardware. It is not supported on VE.
+        such as Viprion hardware. It is not supported on Virtual Editions (VEs).
     type: str
     choices:
       - between-clusters

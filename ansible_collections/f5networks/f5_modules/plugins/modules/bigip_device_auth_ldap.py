@@ -17,16 +17,16 @@ version_added: "1.0.0"
 options:
   servers:
     description:
-      - Specifies the LDAP servers that the system must use to obtain
+      - Specifies the LDAP servers the system must use to obtain
         authentication information. You must specify a server when you
         create an LDAP configuration object.
     type: list
     elements: str
   port:
     description:
-      - Specifies the port that the system uses for access to the remote host server.
-      - When configuring LDAP device authentication for the first time, if this parameter
-        is not specified, the default port is C(389).
+      - Specifies the port the system uses for access to the remote host server.
+      - When configuring LDAP device authentication for the first time, the default
+        port is C(389) if this parameter is not specified.
     type: int
   remote_directory_tree:
     description:
@@ -35,7 +35,7 @@ options:
     type: str
   scope:
     description:
-      - Specifies the level of the remote Active Directory or LDAP directory that the
+      - Specifies the level of the remote Active Directory or LDAP directory the
         system should search for the user authentication.
     type: str
     choices:
@@ -73,7 +73,7 @@ options:
     type: str
   check_member_attr:
     description:
-      - Checks the user's member attribute in the remote LDAP or AD group.
+      - Checks the member attribute of the user in the remote LDAP or AD group.
     type: bool
   ssl:
     description:
@@ -111,12 +111,12 @@ options:
     description:
       - Specifies the LDAP directory attribute containing the local user name that is
         associated with the selected directory entry.
-      - When configuring LDAP device authentication for the first time, if this parameter
-        is not specified, the default port is C(samaccountname).
+      - If this parameter is not specified, when configuring LDAP device authentication for the first time,
+        the default port is C(samaccountname).
     type: str
   fallback_to_local:
     description:
-      - Specifies that the system uses the Local authentication method if the remote
+      - Specifies the system uses the Local authentication method if the remote
         authentication method is not available.
       - Option only available on C(TMOS 13.0.0) and above.
     type: bool
@@ -145,8 +145,8 @@ options:
   use_for_auth:
     description:
       - Specifies whether or not this auth source is put in use on the system.
-      - If C(yes) the module sets the current system auth type to the value of C(ldap).
-      - If C(no) the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
+      - If C(yes), the module sets the current system auth type to the value of C(ldap).
+      - If C(no), the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
         without removing the configured LDAP resource.
     type: bool
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -173,7 +173,7 @@ servers:
   type: list
   sample: ['192.168.1.1', '192.168.1.2']
 port:
-  description: The port that the system uses for access to the remote LDAP server.
+  description: The port the system uses for access to the remote LDAP server.
   returned: changed
   type: int
   sample: 389
@@ -233,7 +233,7 @@ login_ldap_attr:
   type: str
   sample: samaccountname
 fallback_to_local:
-  description: Specifies that the system uses the Local authentication method as fallback
+  description: Specifies the system uses the Local authentication method as fallback
   returned: changed
   type: bool
   sample: yes

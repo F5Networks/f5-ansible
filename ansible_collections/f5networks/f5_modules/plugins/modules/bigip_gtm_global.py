@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_global
 short_description: Manages global GTM settings
 description:
-  - Manages global GTM settings. These settings include general, load balancing, and metrics
+  - Manages global BIG-IP GTM (now BIG-IP DNS) settings. These settings include general, load balancing, and metrics
     related settings.
 version_added: "1.0.0"
 options:
@@ -22,7 +22,7 @@ options:
       - When you enable synchronization, the system periodically queries other systems in
         the synchronization group to obtain and distribute configuration and metrics collection
         updates.
-      - The synchronization group may contain systems configured as Global Traffic Manager and
+      - The synchronization group may contain systems configured as Global Traffic Manager (DNS) and
         Link Controller systems.
     type: bool
   synchronization_group_name:
@@ -31,7 +31,7 @@ options:
     type: str
   synchronize_zone_files:
     description:
-      - Specifies that the system synchronizes Domain Name System (DNS) zone files among the
+      - Specifies the system synchronizes Domain Name System (DNS) zone files among the
         synchronization group members.
     type: bool
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -66,7 +66,7 @@ synchronization_group_name:
   type: str
   sample: my-group
 synchronize_zone_files:
-  description: Whether or not the system will sync zone files.
+  description: Whether or not the system will synchronize zone files.
   returned: changed
   type: str
   sample: my-group

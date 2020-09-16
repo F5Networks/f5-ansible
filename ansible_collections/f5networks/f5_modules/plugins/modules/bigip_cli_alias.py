@@ -39,13 +39,13 @@ options:
     type: str
   partition:
     description:
-      - Device partition to manage resources on.
+      - Device partition on which to manage resources.
       - This parameter is disregarded when the C(scope) is C(private).
     type: str
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     default: present

@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_gtm_monitor_tcp_half_open
-short_description: Manages F5 BIG-IP GTM tcp half-open monitors
+short_description: Manages F5 BIG-IP GTM TCP half-open monitors
 description:
-  - Manages F5 BIG-IP GTM tcp half-open monitors.
+  - Manages F5 BIG-IP GTM (now BIG-IP DNS) TCP half-open monitors.
 version_added: "1.0.0"
 options:
   name:
@@ -30,15 +30,14 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
+        provided when creating a new monitor, the default value will be
         '*'.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified
+        provided when creating a new monitor, the default value will be
+        '*'. Note that if using an IP address, you must specify a value between 1 and 65535.
     type: str
   interval:
     description:
@@ -54,7 +53,7 @@ options:
       - If the target responds within the set time period, it is considered up.
       - If the target does not respond within the set time period, it is considered down.
       - When this value is set to 0 (zero), the system uses the interval from the parent monitor.
-      - When creating a new monitor, if this parameter is not provided, then
+      - When creating a new monitor, if this parameter is not provided,
         the default value will be C(120).
     type: int
   probe_interval:
@@ -69,23 +68,23 @@ options:
     description:
       - Specifies the number of seconds after which the system times out the probe request
         to the system.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(5).
     type: int
   probe_attempts:
     description:
       - Specifies the number of times the system attempts to probe the host server, after
         which the system considers the host server down or unavailable.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(3).
     type: int
   ignore_down_response:
     description:
       - Specifies that the monitor allows more than one probe attempt per interval.
-      - When C(yes), specifies that the monitor ignores down responses for the duration of
+      - When C(yes), specifies the monitor ignores down responses for the duration of
         the monitor timeout. Once the monitor timeout is reached without the system receiving
         an up response, the system marks the object down.
-      - When C(no), specifies that the monitor immediately marks an object down when it
+      - When C(no), specifies the monitor immediately marks an object down when it
         receives a down response.
       - When creating a new monitor, if this parameter is not provided, then the default
         value will be C(no).
@@ -98,7 +97,7 @@ options:
         probes the C(ip)-C(port) combination specified in the monitor).
       - If the monitor cannot successfully reach the aliased destination, the pool member
         or node through which the monitor traffic was sent is marked down.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(no).
     type: bool
   partition:
@@ -108,7 +107,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:

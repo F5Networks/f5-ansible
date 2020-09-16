@@ -20,7 +20,7 @@ options:
   gather_subset:
     description:
       - When supplied, this argument will restrict the information returned to a given subset.
-      - Can specify a list of values to include a larger subset.
+      - You can specify a list of values to include a larger subset.
       - Values can also be used with an initial C(!) to specify that a specific subset
         should not be collected.
     type: list
@@ -296,13 +296,13 @@ asm_policies:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/foo_policy
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: foo_policy
@@ -418,7 +418,7 @@ asm_policies:
       sample: disabled
     inspect_http_uploads:
       description:
-        - Specify if the system should inspect all http uploads.
+        - Specifies whether the system should inspect all HTTP uploads.
       returned: queried
       type: bool
       sample: yes
@@ -479,8 +479,8 @@ asm_policies:
     csrf_urls:
       description:
         - Specifies a list of URLs for CSRF token verification.
-        - In version 13.0.0 and above this has become a sub-collection and a list of dictionaries.
-        - In version 12.x this is a list of simple strings.
+        - In version 13.0.0 and later, this has become a sub-collection and a list of dictionaries.
+        - In version 12.x, this is a list of simple strings.
       returned: queried
       type: complex
       contains:
@@ -517,19 +517,19 @@ asm_policies:
           sample: none
         csrf_url_id:
           description:
-            - Specified the generated ID for the configured CSRF url resource.
+            - Specifies the generated ID for the configured CSRF URL resource.
           returned: queried
           type: str
           sample: l0Ckxe-7yHsXp8U5tTgbFQ
         csrf_url_wildcard_order:
           description:
-            - Specified the order in which the wildcard URLs are enforced.
+            - Specifies the order in which the wildcard URLs are enforced.
           returned: queried
           type: str
           sample: 1
   sample: hash/dictionary of values
 asm_server_technologies:
-  description: Detailed information for ASM server technologies present on device.
+  description: Detailed information for ASM server technologies present on the device.
   returned: When C(asm-server-technologies) is specified in C(gather_subset).
   type: complex
   contains:
@@ -541,7 +541,7 @@ asm_server_technologies:
       sample: l0Ckxe-7yHsXp8U5tTgbFQ
     server_technology_name:
       description:
-        - Human friendly name of the server technology resource.
+        - Friendly name of the server technology resource.
       returned: queried
       type: str
       sample: Wordpress
@@ -565,7 +565,7 @@ asm_signature_sets:
   contains:
     name:
       description:
-        - Name of the signature set
+        - Name of the signature set.
       returned: queried
       type: str
       sample: WebSphere signatures
@@ -589,7 +589,7 @@ asm_signature_sets:
       sample: filter-based
     is_user_defined:
       description:
-        - Specifies that this signature set was added by a user.
+        - Specifies this signature set was added by a user.
       returned: queried
       type: bool
       sample: no
@@ -602,13 +602,13 @@ asm_signature_sets:
     default_alarm:
       description:
         - Displays whether the security policy logs the request data in the Statistics
-          screen if a request matches a signature that is included in the signature set
+          screen if a request matches a signature that is included in the signature set.
       returned: queried
       type: bool
       sample: yes
     default_block:
       description:
-        - Displays, when the security policy's enforcement mode is Blocking,
+        - When the security policy enforcement mode is Blocking, displays
           how the system treats requests that match a signature included in the signature set.
       returned: queried
       type: bool
@@ -628,7 +628,7 @@ client_ssl_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/bigip02.internal
@@ -640,7 +640,7 @@ client_ssl_profiles:
       sample: bigip02.internal
     alert_timeout:
       description:
-        - Maximum time period in seconds to keep the SSL session active after alert
+        - Maximum time period, in seconds, to keep the SSL session active after an alert
           message is sent, or indefinite.
       returned: queried
       type: int
@@ -1025,7 +1025,7 @@ devices:
       sample: 2.2.2.2
     self:
       description:
-        - Whether this device is the one that was queried for information, or not.
+        - Whether or not this device is the one that was queried for information.
       returned: queried
       type: bool
       sample: yes
@@ -1067,13 +1067,13 @@ devices:
           sample: 1026
         ip:
           description:
-            - The IP address that the failover daemon will listen on for packets from its peers.
+            - The IP address the failover daemon will listen on for packets from its peers.
           returned: queried
           type: str
           sample: 5.4.3.5
         port:
           description:
-            - The IP port that the failover daemon uses to accept packets from its peers.
+            - The IP port the failover daemon uses to accept packets from its peers.
           returned: queried
           type: int
           sample: 1026
@@ -1085,13 +1085,13 @@ device_groups:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/fasthttp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: fasthttp
@@ -1109,13 +1109,13 @@ device_groups:
       sample: My device group
     devices:
       description:
-        - List of devices that are in the group. Devices are listed by their C(full_path).
+        - List of devices in the group. Devices are listed by their C(full_path).
       returned: queried
       type: list
       sample: [/Common/bigip02.internal]
     full_load_on_sync:
       description:
-        - Specifies that the entire configuration for a device group is sent when configuration
+        - Specifies the entire configuration for a device group is sent when configuration
           synchronization is performed.
       returned: queried
       type: bool
@@ -1158,7 +1158,7 @@ external_monitors:
       sample: /Common/external
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: external
@@ -1183,7 +1183,7 @@ external_monitors:
       sample: "*:*"
     args:
       description:
-        - Specifies any command-line arguments that the script requires.
+        - Specifies any command-line arguments the script requires.
       returned: queried
       type: str
       sample: arg1 arg2 arg3
@@ -1195,7 +1195,7 @@ external_monitors:
       sample: /Common/arg_example
     variables:
       description:
-        - Specifies any variables that the script requires.
+        - Specifies any variables the script requires.
       type: dict
       sample: { "key1": "val", "key_2": "val 2" }
     interval:
@@ -1209,7 +1209,7 @@ external_monitors:
     manual_resume:
       description:
         - Specifies whether the system automatically changes the status of a
-          resource to up at the next successful monitor check.
+          resource to B(up) at the next successful monitor check.
       returned: queried
       type: bool
       sample: yes
@@ -1242,13 +1242,13 @@ fasthttp_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/fasthttp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: fasthttp
@@ -1268,7 +1268,7 @@ fasthttp_profiles:
       sample: 0
     oneconnect_maximum_reuse:
       description:
-        - Maximum number of times that the system can re-use a current connection.
+        - Maximum number of times the system can re-use a current connection.
       returned: queried
       type: int
       sample: 0
@@ -1286,8 +1286,8 @@ fasthttp_profiles:
       sample: 0
     oneconnect_replenish':
       description:
-        - Specifies, when C(yes), that the system will not keep a steady-state maximum of
-          connections to the back-end unless the number of connections to the pool have
+        - When C(yes), specifies the system will not keep a steady-state maximum of
+          connections to the back-end, unless the number of connections to the pool have
           dropped beneath the C(minimum_pool_size) specified in the profile.
       returned: queried
       type: bool
@@ -1313,21 +1313,21 @@ fasthttp_profiles:
       sample: My profile
     force_http_1_0_response:
       description:
-        - Specifies, when C(yes), that the server sends responses to clients in the HTTP/1.0
+        - When C(yes), specifies the server sends responses to clients in the HTTP/1.0
           format.
       returned: queried
       type: bool
       sample: no
     request_header_insert:
       description:
-        - A string that the system inserts as a header in an HTTP request. If the header
-          exists already, the system does not replace it.
+        - A string the system inserts as a header in an HTTP request. If the header
+          already exists, the system does not replace it.
       returned: queried
       type: str
       sample: "X-F5-Authentication: foo"
     http_1_1_close_workarounds:
       description:
-        - Specifies, when C(yes), that the server uses workarounds for HTTP 1.1 close issues.
+        - When C(yes), specifies the server uses workarounds for HTTP 1.1 close issues.
       returned: queried
       type: bool
       sample: no
@@ -1347,14 +1347,14 @@ fasthttp_profiles:
       sample: no
     maximum_header_size:
       description:
-        - Maximum amount of HTTP header data that the system buffers before making a load
+        - Maximum amount of HTTP header data the system buffers before making a load
           balancing decision.
       returned: queried
       type: int
       sample: 32768
     maximum_requests:
       description:
-        - Maximum number of requests that the system can receive on a client-side connection,
+        - Maximum number of requests the system can receive on a client-side connection,
           before the system closes the connection.
       returned: queried
       type: int
@@ -1373,7 +1373,7 @@ fasthttp_profiles:
       sample: 0
     reset_on_timeout:
       description:
-        - Specifies, when C(yes), that the system sends a reset packet (RST) in addition to
+        - When C(yes), specifies the system sends a reset packet (RST) in addition to
           deleting the connection, when a connection exceeds the idle timeout value.
       returned: queried
       type: bool
@@ -1430,7 +1430,7 @@ fastl4_profiles:
         - This is the number of seconds allowed for a client to transmit enough data to
           select a server pool.
         - If this timeout expires, the timeout-recovery option dictates whether
-          to drop the connection or fallback to the normal FastL4 load-balancing method
+          to drop the connection or fallback to the normal FastL4 load balancing method
           to pick a server pool.
       returned: queried
       type: int
@@ -1463,9 +1463,9 @@ fastl4_profiles:
       sample: no
     idle_timeout:
       description:
-        - Specifies the number of seconds that a connection is idle before the connection is
+        - Specifies the number of seconds a connection is idle before the connection is
           eligible for deletion.
-        - Values will be in the range of 0 to 4294967295 (inclusive).
+        - Values are in the range of 0 to 4294967295 (inclusive).
         - C(0) is equivalent to the TMUI value "immediate".
         - C(4294967295) is equivalent to the TMUI value "indefinite".
       returned: queried
@@ -1475,10 +1475,10 @@ fastl4_profiles:
       description:
         - Describes the Don't Fragment (DF) bit setting in the IP Header of
           the outgoing TCP packet.
-        - When C(pmtu), sets the outgoing IP Header DF bit based on IP pmtu
+        - When C(pmtu), sets the outgoing IP Header DF bit based on the IP pmtu
           setting(tm.pathmtudiscovery).
-        - When C(preserve), sets the outgoing Packet's IP Header DF bit to be same as incoming
-          IP Header DF bit.
+        - When C(preserve), sets the outgoing packet's IP Header DF bit to be the same as
+          the incoming IP Header DF bit.
         - When C(set), sets the outgoing packet's IP Header DF bit.
         - When C(clear), clears the outgoing packet's IP Header DF bit.
       returned: queried
@@ -1487,7 +1487,7 @@ fastl4_profiles:
     ip_tos_to_client:
       description:
         - Specifies an IP Type of Service (ToS) number for the client-side.
-        - This option specifies the ToS level that the traffic management
+        - This option specifies the ToS level the traffic management
           system assigns to IP packets when sending them to clients.
       returned: queried
       type: str
@@ -1495,37 +1495,37 @@ fastl4_profiles:
     ip_tos_to_server:
       description:
         - Specifies an IP ToS number for the server side.
-        - This option specifies the ToS level that the traffic management system assigns
+        - This option specifies the ToS level the traffic management system assigns
           to IP packets when sending them to servers.
       returned: queried
       type: str
       sample: pass-through
     ttl_mode:
       description:
-        - Describe the outgoing TCP packet's IP Header TTL mode.
-        - When C(proxy), sets the outgoing IP Header TTL value to 255/64 for ipv4/ipv6
+        - Describes the outgoing TCP packet's IP Header TTL mode.
+        - When C(proxy), sets the outgoing IP Header TTL value to 255/64 for IPv4/IPv6
           respectively.
         - When C(preserve), sets the outgoing IP Header TTL value to be same as the
           incoming IP Header TTL value.
         - When C(decrement), sets the outgoing IP Header TTL value to be one less than
           the incoming TTL value.
-        - When C(set), sets the outgoing IP Header TTL value to a specific value(as
+        - When C(set), sets the outgoing IP Header TTL value to a specific value (as
           specified by C(ttl_v4) or C(ttl_v6).
       returned: queried
       type: str
       sample: preserve
     ttl_v4:
       description:
-        - Specify the outgoing packet's IP Header TTL value for IPv4 traffic.
-        - Maximum value that can be specified is 255.
+        - Specifies the outgoing packet's IP Header TTL value for IPv4 traffic.
+        - Maximum value is 255.
       returned: queried
       type: int
       sample: 200
     ttl_v6:
       description:
-        - Specify the outgoing packet's IP Header TTL value for IPv6
+        - Specify the outgoing packet's IP Header TTL value for IPv6.
           traffic.
-        - Maximum value that can be specified is 255.
+        - Maximum value is 255.
       returned: queried
       type: int
       sample: 300
@@ -1538,7 +1538,7 @@ fastl4_profiles:
       sample: 10
     late_binding:
       description:
-        - Specifies whether to enable or disable intelligent selection of a
+        - Specifies whether to enable or disable the intelligent selection of a
           back-end server pool.
       returned: queried
       type: bool
@@ -1547,7 +1547,7 @@ fastl4_profiles:
       description:
         - Specifies a Link Quality of Service (QoS) (VLAN priority) number
           for the client side.
-        - This option specifies the QoS level that the system assigns to packets
+        - This option specifies the QoS level the system assigns to packets
           when sending them to clients.
       returned: queried
       type: int
@@ -1555,22 +1555,22 @@ fastl4_profiles:
     link_qos_to_server:
       description:
         - Specifies a Link QoS (VLAN priority) number for the server side.
-        - This option specifies the QoS level that the system assigns to
+        - This option specifies the QoS level the system assigns to
           packets when sending them to servers.
       returned: queried
       type: int
       sample: 5
     loose_close:
       description:
-        - Specifies that the system closes a loosely-initiated connection
-          when the system receives the first FIN packet from either the
+        - Specifies the system closes a loosely-initiated connection
+          when it receives the first FIN packet from either the
           client or the server.
       returned: queried
       type: bool
       sample: no
     loose_init:
       description:
-        - Specifies that the system initializes a connection when it
+        - Specifies the system initializes a connection when it
           receives any Transmission Control Protocol (TCP) packet, rather
           than requiring a SYN packet for connection initiation.
       returned: queried
@@ -1579,7 +1579,7 @@ fastl4_profiles:
     mss_override:
       description:
         - Specifies a maximum segment size (MSS) override for server
-          connections. Note that this is also the MSS advertised to a client
+          connections. Note this is also the MSS advertised to a client
           when a client first connects.
         - C(0) (zero), means the option is disabled. Otherwise, the value will be
           between 256 and 9162.
@@ -1588,16 +1588,16 @@ fastl4_profiles:
       sample: 500
     priority_to_client:
       description:
-        - Specifies internal packet priority for the client side.
-        - This option specifies the internal packet priority that the system
+        - Specifies the internal packet priority for the client side.
+        - This option specifies the internal packet priority the system
           assigns to packets when sending them to clients.
       returned: queried
       type: int
       sample: 300
     priority_to_server:
       description:
-        - Specifies internal packet priority for the server side.
-        - This option specifies the internal packet priority that the system
+        - Specifies the internal packet priority for the server side.
+        - This option specifies the internal packet priority the system
           assigns to packets when sending them to servers.
       returned: queried
       type: int
@@ -1612,7 +1612,7 @@ fastl4_profiles:
       description:
         - Specifies the number of client packets before dynamic ePVA
           hardware re-offloading occurs.
-        - Values will be between 0 and 10.
+        - Values are between 0 and 10.
       returned: queried
       type: int
       sample: 8
@@ -1620,7 +1620,7 @@ fastl4_profiles:
       description:
         - Specifies the number of server packets before dynamic ePVA
           hardware re-offloading occurs.
-        - Values will be between 0 and 10.
+        - Values are between 0 and 10.
       returned: queried
       type: int
       sample: 5
@@ -1646,8 +1646,8 @@ fastl4_profiles:
     pva_offload_state:
       description:
         - Specifies at what stage the ePVA performs hardware offload.
-        - When C(embryonic), implies at TCP CSYN or the first client UDP packet.
-        - When C(establish), implies TCP 3WAY handshaking or UDP CS round trip are
+        - When C(embryonic), applies at TCP CSYN or the first client UDP packet.
+        - When C(establish), applies TCP 3WAY handshaking or UDP CS round trip are
           confirmed.
       returned: queried
       type: str
@@ -1687,15 +1687,15 @@ fastl4_profiles:
       sample: yes
     server_sack:
       description:
-        - Specifies whether to support server sack option in cookie response
+        - Specifies whether to support the server sack option in cookie responses
           by default.
       returned: queried
       type: bool
       sample: no
     server_timestamp:
       description:
-        - Specifies whether to support server timestamp option in cookie
-          response by default.
+        - Specifies whether to support the server timestamp option in cookie
+          responses by default.
       returned: queried
       type: bool
       sample: yes
@@ -1778,7 +1778,7 @@ fastl4_profiles:
           to take when late binding timeout occurs on a connection.
         - When C(disconnect), only the L7 iRule actions are acceptable to
           pick a server.
-        - When C(fallback), the normal FastL4 load-balancing methods are acceptable
+        - When C(fallback), the normal FastL4 load balancing methods are acceptable
           to pick a server.
       returned: queried
       type: str
@@ -1865,7 +1865,7 @@ gateway_icmp_monitors:
     manual_resume:
       description:
         - Specifies whether the system automatically changes the status of a
-          resource to up at the next successful monitor check.
+          resource to (B)up at the next successful monitor check.
       returned: queried
       type: bool
       sample: yes
@@ -1919,38 +1919,38 @@ gtm_pools:
       sample: pool1
     alternate_mode:
       description:
-        - The load balancing mode that the system uses to load balance name resolution
+        - The load balancing mode the system uses to load balance name resolution
           requests among the members of the pool.
       returned: queried
       type: str
       sample: drop-packet
     dynamic_ratio:
       description:
-        - Whether or not the dynamic ratio load balancing algorithm is enabled for this
+        - Specifies whether the dynamic ratio load balancing algorithm is enabled for this
           pool.
       returned: queried
       type: bool
       sample: yes
     enabled:
       description:
-        - Is the pool enabled.
+        - Specifies the pool is enabled.
       returned: queried
       type: bool
     disabled:
       description:
-        - Is the pool disabled.
+        - Specifies the pool is disabled.
       returned: queried
       type: bool
     fallback_mode:
       description:
-        - Specifies the load balancing mode that the system uses to load balance
-          name resolution amongst the pool members if the preferred and alternate
+        - Specifies the load balancing mode the system uses to load balance
+          name resolution among the pool members if the preferred and alternate
           modes are unsuccessful in picking a pool.
       returned: queried
       type: str
     load_balancing_mode:
       description:
-        - Specifies the preferred load balancing mode that the system uses to load
+        - Specifies the preferred load balancing mode the system uses to load
           balance requests across pool members.
       returned: queried
       type: str
@@ -1961,7 +1961,7 @@ gtm_pools:
       type: bool
     max_answers_returned:
       description:
-        - Maximum number of available virtual servers that the system lists in a
+        - Maximum number of available virtual servers the system lists in a
           response.
       returned: queried
       type: int
@@ -1972,7 +1972,7 @@ gtm_pools:
       type: dict
     partition:
       description:
-        - Partition the pool exists on.
+        - Partition on which the pool exists.
       returned: queried
       type: str
     qos_hit_ratio:
@@ -1989,49 +1989,49 @@ gtm_pools:
       type: int
     qos_kilobytes_second:
       description:
-        - Weight assigned to Kilobytes per Second performance factor when load balancing
-          option is QoS.
+        - Weight assigned to the Kilobytes per Second performance factor when the load
+           balancing option is QoS.
       returned: queried
       type: int
     qos_lcs:
       description:
-        - Weight assign to the Link Capacity performance factor when load balacing option
-          is QoS.
+        - Weight assigned to the Link Capacity performance factor when the load balacing
+          option is QoS.
       returned: queried
       type: int
     qos_packet_rate:
       description:
-        - Weight assign to the Packet Rate performance factor when load balacing option
-          is QoS.
+        - Weight assigned to the Packet Rate performance factor when the load balacing
+          option is QoS.
       returned: queried
       type: int
     qos_rtt:
       description:
-        - Weight assign to the Round Trip Time performance factor when load balacing option
-          is QoS.
+        - Weight assigned to the Round Trip Time performance factor when the load balacing
+          option is QoS.
       returned: queried
       type: int
     qos_topology:
       description:
-        - Weight assign to the Topology performance factor when load balacing option
+        - Weight assigned to the Topology performance factor when the load balacing option
           is QoS.
       returned: queried
       type: int
     qos_vs_capacity:
       description:
-        - Weight assign to the Virtual Server performance factor when load balacing option
-          is QoS.
+        - Weight assigned to the Virtual Server performance factor when the load balacing
+          option is QoS.
       returned: queried
       type: int
     qos_vs_score:
       description:
-        - Weight assign to the Virtual Server Score performance factor when load balacing
+        - Weight assigned to the Virtual Server Score performance factor when the load balacing
           option is QoS.
       returned: queried
       type: int
     ttl:
       description:
-        - Number of seconds that the IP address, once found, is valid.
+        - Number of seconds the IP address, once found, is valid.
       returned: queried
       type: int
     verify_member_availability:
@@ -2061,17 +2061,17 @@ gtm_servers:
       sample: server1
     datacenter:
       description:
-        - Full name of the datacenter this server belongs to.
+        - Full name of the datacenter to which this server belongs.
       returned: queried
       type: str
     enabled:
       description:
-        - Whether the server is enabled.
+        - Specifies the server is enabled.
       returned: queried
       type: bool
     disabled:
       description:
-        - Whether the server is disabled.
+        - Specifies the server is disabled.
       returned: queried
       type: bool
     expose_route_domains:
@@ -2101,7 +2101,7 @@ gtm_servers:
     limit_cpu_usage:
       description:
         - For a server configured as a generic host, specifies the percent of CPU
-          usage, otherwise has no effect.
+          usage, otherwise this has no effect.
       returned: queried
       type: int
     limit_cpu_usage_status:
@@ -2130,7 +2130,7 @@ gtm_servers:
       type: bool
     limit_max_pps:
       description:
-        - Maximum allowable data transfer rate, in packets per second, for this server.
+        - Maximum allowable data transfer rate for this server, in packets per second.
       returned: queried
       type: int
     limit_max_pps_status:
@@ -2165,7 +2165,7 @@ gtm_servers:
       sample: ['/Common/https_443', '/Common/icmp']
     monitor_type:
       description:
-        - Whether one or monitors need to pass, or all monitors need to pass.
+        - Whether one or more monitors need to pass, or all monitors need to pass.
       returned: queried
       type: str
       sample: and_list
@@ -2176,13 +2176,13 @@ gtm_servers:
       type: str
     prober_fallback:
       description:
-        - The type of prober to use to monitor this servers resources when the
+        - The type of prober to use to monitor this server's resources when the
           preferred type is not available.
       returned: queried
       type: str
     prober_preference:
       description:
-        - Specifies the type of prober to use to monitor this servers resources.
+        - Specifies the type of prober to use to monitor this server's resources.
       returned: queried
       type: str
     virtual_server_discovery:
@@ -2192,7 +2192,7 @@ gtm_servers:
       type: str
     addresses:
       description:
-        - Specifies the server IP addresses for the server.
+        - Specifies the server IP addresses.
       returned: queried
       type: dict
     devices:
@@ -2202,14 +2202,14 @@ gtm_servers:
       type: dict
     virtual_servers:
       description:
-        - Virtual servers that are resources for this server.
+        - Specifies the virtual servers that are resources for this server.
       returned: queried
       type: dict
   sample: hash/dictionary of values
 gtm_wide_ips:
   description:
     - GTM Wide IP related information.
-    - Every "type" of wide-ip has the exact same list of possible information. Therefore,
+    - Every "type" of Wide IP has the exact same list of possible information. Therefore,
       the list of information here is presented once instead of 6 times.
   returned: When any of C(gtm-wide-ips) or C(gtm-*-wide-ips) is specified in C(gather_subset).
   type: complex
@@ -2228,7 +2228,7 @@ gtm_wide_ips:
       sample: wide1
     description:
       description:
-        - Description of the wide ip.
+        - Description of the Wide IP.
       returned: queried
       type: str
     enabled:
@@ -2248,8 +2248,8 @@ gtm_wide_ips:
       type: int
     failure_rcode_response:
       description:
-        - When C(yes), specifies that the system returns a RCODE response to
-          Wide IP requests after exhausting all load-balancing methods.
+        - When C(yes), specifies the system returns a RCODE response to
+          Wide IP requests after exhausting all load balancing methods.
       returned: queried
       type: bool
     failure_rcode_ttl:
@@ -2260,12 +2260,12 @@ gtm_wide_ips:
     last_resort_pool:
       description:
         - Specifies which pool, as listed in Pool List, for the system to use as
-          the last resort pool for the wide IP.
+          the last resort pool for the Wide IP.
       returned: queried
       type: str
     minimal_response:
       description:
-        - Specifies that the system forms the smallest allowable DNS response to
+        - Specifies the system forms the smallest allowable DNS response to
           a query.
       returned: queried
       type: str
@@ -2283,7 +2283,7 @@ gtm_wide_ips:
       type: int
     pool_lb_mode:
       description:
-        - Specifies the load balancing method used to select a pool in this wide IP.
+        - Specifies the load balancing method used to select a pool in this Wide IP.
       returned: queried
       type: str
     ttl_persistence:
@@ -2294,7 +2294,7 @@ gtm_wide_ips:
       type: int
     pools:
       description:
-        - Specifies the pools that this wide IP uses for load balancing.
+        - Specifies the pools this Wide IP uses for load balancing.
       returned: queried
       type: dict
   sample: hash/dictionary of values
@@ -2322,8 +2322,8 @@ gtm_topology_regions:
       contains:
         negate:
           description:
-            - Indicates if region member is a C(IS-NOT) negative. In BIG-IP configuration the region members
-              can be C(IS) or C(IS-NOT).
+            - Indicates if the region member is a C(IS-NOT) negative. In a BIG-IP configuration, the
+              region members can be C(IS) or C(IS-NOT).
           returned: when configured for the region member.
           type: bool
           sample: yes
@@ -2360,13 +2360,13 @@ gtm_topology_regions:
           sample: "AD/Sant Julia de Loria"
         pool:
           description:
-            - The name of GTM pool already defined in the configuration.
+            - The name of a GTM pool already defined in the configuration.
           type: str
           returned: when configured for the region member.
           sample: /Common/pool1
         datacenter:
           description:
-            - The name of GTM data center already defined in the configuration.
+            - The name of a GTM data center already defined in the configuration.
           type: str
           returned: when configured for the region member.
           sample: /Common/dc1
@@ -2378,7 +2378,7 @@ gtm_topology_regions:
           sample: /Common/AOL
         geo_isp:
           description:
-            - Specifies a geolocation ISP
+            - Specifies a geolocation ISP.
           type: str
           returned: when configured for the region member.
           sample: /Common/FOO_ISP
@@ -2471,20 +2471,20 @@ http_monitors:
     manual_resume:
       description:
         - Specifies whether the system automatically changes the status of a
-          resource to up at the next successful monitor check.
+          resource to (B)up at the next successful monitor check.
       returned: queried
       type: bool
       sample: yes
     receive_string:
       description:
-        - Specifies the text string that the monitor looks for in the
+        - Specifies the text string the monitor looks for in the
           returned resource.
       returned: queried
       type: str
       sample: check string
     receive_disable_string:
       description:
-        - Specifies a text string that the monitor looks for in the returned
+        - Specifies a text string the monitor looks for in the returned
           resource. If the text string is matched in the returned resource,
           the corresponding node or pool member is marked session disabled.
       returned: queried
@@ -2500,7 +2500,7 @@ http_monitors:
       sample: no
     send_string:
       description:
-        - Specifies the text string that the monitor sends to the target
+        - Specifies the text string the monitor sends to the target
           object.
       returned: queried
       type: str
@@ -2633,14 +2633,14 @@ https_monitors:
       sample: yes
     receive_string:
       description:
-        - Specifies the text string that the monitor looks for in the
+        - Specifies the text string the monitor looks for in the
           returned resource.
       returned: queried
       type: str
       sample: check string
     receive_disable_string:
       description:
-        - Specifies a text string that the monitor looks for in the returned
+        - Specifies a text string the monitor looks for in the returned
           resource. If the text string is matched in the returned resource,
           the corresponding node or pool member is marked session disabled.
       returned: queried
@@ -2656,7 +2656,7 @@ https_monitors:
       sample: no
     send_string:
       description:
-        - Specifies the text string that the monitor sends to the target
+        - Specifies the text string the monitor sends to the target
           object.
       returned: queried
       type: str
@@ -2744,15 +2744,15 @@ http_profiles:
         - Specifies the pass-through behavior when a redirect lacking the
           trailing carriage-return and line feed pair at the end of the headers
           is parsed.
-        - When C(no), will silently drop the invalid HTTP.
+        - When C(no), the system will silently drop the invalid HTTP.
       returned: queried
       type: bool
       sample: no
     excess_client_headers:
       description:
-        - Specifies the pass-through behavior when C(max_header_count) value is
+        - Specifies the pass-through behavior when the C(max_header_count) value is
           exceeded by the client.
-        - When C(reject), rejects the connection.
+        - When C(reject), the system rejects the connection.
       returned: queried
       type: str
       sample: reject
@@ -2760,7 +2760,7 @@ http_profiles:
       description:
         - Specifies the pass-through behavior when C(max_header_count) value is
           exceeded by the server.
-        - When C(reject), rejects the connection.
+        - When C(reject), the system rejects the connection.
       returned: queried
       type: str
       sample: reject
@@ -2782,14 +2782,14 @@ http_profiles:
       sample: 64
     max_header_size:
       description:
-        - Specifies the maximum size in bytes the system allows for all HTTP
+        - Specifies the maximum size, in bytes, the system allows for all HTTP
           request headers combined, including the request line.
       returned: queried
       type: int
       sample: 32768
     max_requests:
       description:
-        - Specifies the number of requests that the system accepts on a per-connection
+        - Specifies the number of requests the system accepts on a per-connection
           basis.
       returned: queried
       type: int
@@ -2841,7 +2841,7 @@ http_profiles:
       sample: yes
     insert_x_forwarded_for:
       description:
-        - When C(yes), specifies that the system inserts an X-Forwarded-For header in
+        - When C(yes), specifies the system inserts an X-Forwarded-For header in
           an HTTP request with the client IP address, to use with connection pooling.
       returned: queried
       type: bool
@@ -2855,7 +2855,7 @@ http_profiles:
       sample: 80
     onconnect_transformations:
       description:
-        - When C(yes), specifies, that the system performs HTTP header transformations
+        - When C(yes), specifies the system performs HTTP header transformations
           for the purpose of keeping connections open.
       returned: queried
       type: bool
@@ -2869,7 +2869,7 @@ http_profiles:
     redirect_rewrite:
       description:
         - Specifies whether the system rewrites the URIs that are part of HTTP
-          redirect (3XX) responses
+          redirect (3XX) responses.
       returned: queried
       type: str
       sample: none
@@ -2961,7 +2961,7 @@ iapp_services:
       sample: yes
     template_modified:
       description:
-        - Whether template that the service is based on is modified from its
+        - Whether template the service is based on is modified from its
           default value, or not.
       returned: queried
       type: bool
@@ -2986,7 +2986,7 @@ iapp_services:
       sample: [{"name": "afm__policy"},{"encrypted": "no"},{"value": "/#no_not_use#"},...]
     metadata:
       description:
-        - List of the metadata data used to create the service..
+        - List of the metadata data used to create the service.
       returned: queried
       type: list
       sample: [{"name": "var1"},{"persist": "true"},...]
@@ -2998,7 +2998,7 @@ iapp_services:
       sample: [{"name": "irules__irules"},{"value": []},...]
     description:
       description:
-        - Description of the service
+        - Description of the service.
       returned: queried
       type: str
       sample: My service
@@ -3084,7 +3084,7 @@ icmp_monitors:
     manual_resume:
       description:
         - Specifies whether the system automatically changes the status of a
-          resource to up at the next successful monitor check.
+          resource to (B)up at the next successful monitor check.
       type: bool
       sample: yes
     time_until_up:
@@ -3147,7 +3147,7 @@ interfaces:
       sample: tx-rx
     description:
       description:
-        - Description of the interface
+        - Description of the interface.
       returned: queried
       type: str
       sample: My interface
@@ -3166,7 +3166,7 @@ interfaces:
       sample: 100G
     enabled:
       description:
-        - Whether the interface is enabled or not
+        - Whether the interface is enabled or not.
       returned: queried
       type: bool
       sample: yes
@@ -3387,7 +3387,7 @@ ltm_pools:
       sample: my pool
     enabled_status:
       description:
-        - The enabled-ness of the pool.
+        - The enabled status of the pool.
       returned: queried
       type: str
       sample: enabled
@@ -3399,7 +3399,7 @@ ltm_pools:
       sample: /Common/pool1
     ignore_persisted_weight:
       description:
-        - Do not count the weight of persisted connections on pool members when making load balancing decisions.
+        - Specifies not to count the weight of persisted connections on pool members when making load balancing decisions.
       returned: queried
       type: bool
       sample: no
@@ -3510,14 +3510,14 @@ ltm_pools:
       sample: yes
     queue_time_limit:
       description:
-        - Specifies the maximum time, in milliseconds, a connection will remain enqueued.
+        - Specifies the maximum time, in milliseconds, a connection will remain queued.
       returned: queried
       type: int
       sample: 0
     real_session:
       description:
         - The actual REST API value for the C(session) attribute.
-        - This is different from the C(state) return value, insofar as the return value
+        - This is different from the C(state) return value, as the return value
           can be considered a generalization of all available sessions, instead of the
           specific value of the session.
       returned: queried
@@ -3526,7 +3526,7 @@ ltm_pools:
     real_state:
       description:
         - The actual REST API value for the C(state) attribute.
-        - This is different from the C(state) return value, insofar as the return value
+        - This is different from the C(state) return value, as the return value
           can be considered a generalization of all available states, instead of the
           specific value of the state.
       returned: queried
@@ -3594,21 +3594,21 @@ ltm_pools:
       sample: 3484734
     server_side_total_connections:
       description:
-        - Total number of connections.
+        - Total number of server-side connections.
       returned: queried
       type: int
       sample: 24
     slow_ramp_time:
       description:
         - The ramp time for the pool.
-        - This provides the ability to cause a pool member that has just been enabled,
-          or marked up, to receive proportionally less traffic than other members in the pool.
+        - This provides the ability for a pool member that is newly enabled or marked up
+          to receive proportionally less traffic than other members in the pool.
       returned: queried
       type: int
       sample: 10
     status_reason:
       description:
-        - If there is a problem with the status of the pool, that problem is reported here.
+        - If there is a problem with the status of the pool, it is reported here.
       returned: queried
       type: str
       sample: The children pool member(s) are down.
@@ -3634,7 +3634,7 @@ ltm_pools:
           sample: pool member 1
         dynamic_ratio:
           description:
-            - A range of numbers that you want the system to use in conjunction with the ratio load balancing method.
+            - A range of numbers you want the system to use in conjunction with the ratio load balancing method.
           returned: queried
           type: int
           sample: 1
@@ -3653,7 +3653,7 @@ ltm_pools:
         full_path:
           description:
             - Full name of the resource as known to BIG-IP.
-            - Includes the port in the name
+            - Includes the port in the name.
           returned: queried
           type: str
           sample: "/Common/member:80"
@@ -3671,7 +3671,7 @@ ltm_pools:
           sample: no
         monitors:
           description:
-            - Monitors active on the pool member. Monitor names are in their "full_path" form.
+            - The Monitors active on the pool member. Monitor names are in their "full_path" form.
           returned: queried
           type: list
           sample: ['/Common/http']
@@ -3683,7 +3683,7 @@ ltm_pools:
           sample: "member:80"
         partition:
           description:
-            - Partition that the member exists on.
+            - Partition the member exists on.
           returned: queried
           type: str
           sample: Common
@@ -3791,7 +3791,7 @@ ltm_policies:
           contains:
             http_reply:
               description:
-                - Indicate if the action will affects a reply to a given HTTP request.
+                - Indicates if the action affects a reply to a given HTTP request.
               returned: when defined in the action.
               type: bool
               sample: yes
@@ -3816,31 +3816,31 @@ ltm_policies:
           sample: hash/dictionary of values
         conditions:
           description:
-            - The conditions that a policy will match on.
+            - The conditions a policy will match on.
           returned: when conditions are defined in the rule.
           type: complex
           contains:
             case_insensitive:
               description:
-                - The value matched on is case insensitive.
+                - Specifies the value matched on is case insensitive.
               returned: when defined in the condition.
               type: bool
               sample: no
             case_sensitive:
               description:
-                - The value matched on is case sensitive.
+                - Specifies the value matched on is case sensitive.
               returned: when defined in the condition.
               type: bool
               sample: yes
             contains_string:
               description:
-                - The value matches if it contains a certain string.
+                - Specifies the value matches if it contains a certain string.
               returned: when defined in the condition.
               type: bool
               sample: yes
             external:
               description:
-                - The value matched on is from the external side of a connection.
+                - Specifies the value matched on is from the external side of a connection.
               returned: when defined in the condition.
               type: bool
               sample: yes
@@ -3864,7 +3864,7 @@ ltm_policies:
               sample: no
             request:
               description:
-                - This policy will match on a request.
+                - This policy matches on a request.
               returned: when defined in the condition.
               type: bool
               sample: yes
@@ -3962,7 +3962,7 @@ nodes:
       sample: My node
     connection_limit:
       description:
-        - Maximum number of connections that node can handle.
+        - Maximum number of connections the node can handle.
       returned: queried
       type: int
       sample: 100
@@ -3980,7 +3980,7 @@ nodes:
       sample: 200
     rate_limit:
       description:
-        - Maximum number of connections per second allowed for node.
+        - Maximum number of connections per second allowed for the node.
       returned: queried
       type: int
       sample: 1000
@@ -4005,13 +4005,13 @@ nodes:
       sample: offline
     enabled_status:
       description:
-        - The enabled-ness of the node.
+        - The enabled status of the node.
       returned: queried
       type: str
       sample: enabled
     status_reason:
       description:
-        - If there is a problem with the status of the node, that problem is reported here.
+        - If there is a problem with the status of the node, it is reported here.
       returned: queried
       type: str
       sample: /Common/https_443 No successful responses received...
@@ -4078,7 +4078,7 @@ oneconnect_profiles:
         - When C(idle), idle connections will be dropped as the TCP connection
           limit is reached.
         - When C(strict), the TCP connection limit is honored with no
-          exceptions. This means that idle connections will prevent new TCP
+          exceptions. This means idle connections will prevent new TCP
           connections from being made until they expire, even if they could
           otherwise be reused.
       returned: queried
@@ -4086,21 +4086,21 @@ oneconnect_profiles:
       sample: idle
     max_age:
       description:
-        - Specifies the maximum age, in number of seconds, of a connection
+        - Specifies the maximum age, in seconds, of a connection
           in the connection reuse pool.
       returned: queried
       type: int
       sample: 100
     max_reuse:
       description:
-        - Specifies the maximum number of times that a server connection can
+        - Specifies the maximum number of times a server connection can
           be reused.
       returned: queried
       type: int
       sample: 1000
     max_size:
       description:
-        - Specifies the maximum number of connections that the system holds
+        - Specifies the maximum number of connections the system holds
           in the connection reuse pool.
         - If the pool is already full, then the server connection closes after
           the response is completed.
@@ -4109,7 +4109,7 @@ oneconnect_profiles:
       sample: 1000
     share_pools:
       description:
-        - Indicates that connections may be shared not only within a virtual
+        - Indicates connections may be shared not only within a virtual
           server, but also among similar virtual servers.
       returned: queried
       type: bool
@@ -4204,7 +4204,7 @@ provision_info:
       sample: 0
   sample: hash/dictionary of values
 route_domains:
-  description: Self-IP related information.
+  description: Route domain related information.
   returned: When C(self-ips) is specified in C(gather_subset).
   type: complex
   contains:
@@ -4282,7 +4282,7 @@ route_domains:
       sample: ['/Common/http-tunnel', '/Common/socks-tunnel']
   sample: hash/dictionary of values
 self_ips:
-  description: Self-IP related information.
+  description: Self IP related information.
   returned: When C(self-ips) is specified in C(gather_subset).
   type: complex
   contains:
@@ -4300,50 +4300,50 @@ self_ips:
       sample: self1
     description:
       description:
-        - Description of the Self-IP.
+        - Description of the Self IP.
       returned: queried
       type: str
       sample: My self-ip
     netmask:
       description:
-        - Netmask portion of the IP address. In dotted notation.
+        - Netmask portion of the IP address, in dotted notation.
       returned: queried
       type: str
       sample: 255.255.255.0
     netmask_cidr:
       description:
-        - Netmask portion of the IP address. In CIDR notation.
+        - Netmask portion of the IP address, in CIDR notation.
       returned: queried
       type: int
       sample: 24
     floating:
       description:
-        - Whether the Self-IP is a floating address or not.
+        - Whether the Self IP is a floating address or not.
       returned: queried
       type: bool
       sample: yes
     traffic_group:
       description:
-        - Traffic group the Self-IP is associated with.
+        - Traffic group the Self IP is associated with.
       returned: queried
       type: str
       sample: /Common/traffic-group-local-only
     service_policy:
       description:
-        - Service policy assigned to the Self-IP.
+        - Service policy assigned to the Self IP.
       returned: queried
       type: str
       sample: /Common/service1
     vlan:
       description:
-        - VLAN associated with the Self-IP.
+        - VLAN associated with the Self IP.
       returned: queried
       type: str
       sample: /Common/vlan1
     allow_access_list:
       description:
-        - List of protocols and optionally their ports that are allowed to access the
-          Self-IP. Also known as port-lockdown in the web interface.
+        - List of protocols, and optionally their ports, that are allowed to access the
+          Self IP. Also known as port-lockdown in the web interface.
         - Items in the list are in the format of "protocol:port". Some items may not
           have a port associated with them and in those cases the port is C(0).
       returned: queried
@@ -4388,13 +4388,13 @@ server_ssl_profiles:
     alert_timeout:
       description:
         - Maximum time period in seconds to keep the SSL
-          session active after alert message is sent, or indefinite.
+          session active after an alert message is sent, or indefinite.
       returned: queried
       type: str
       sample: 100
     allow_expired_crl:
       description:
-        - Use the specified CRL file even if it has expired.
+        - Use the specified CRL file, even if it has expired.
       returned: queried
       type: bool
       sample: yes
@@ -4412,7 +4412,7 @@ server_ssl_profiles:
       sample: 9
     authenticate_name:
       description:
-        - Common Name (CN) that is embedded in a server certificate.
+        - Common Name (CN) embedded in a server certificate.
         - The system authenticates a server based on the specified CN.
       returned: queried
       type: str
@@ -4420,7 +4420,7 @@ server_ssl_profiles:
     bypass_on_client_cert_fail:
       description:
         - Enables or disables SSL forward proxy bypass on failing to get
-          client certificate that server asks for.
+          client certificate that the server asks for.
       returned: queried
       type: bool
       sample: yes
@@ -4434,7 +4434,7 @@ server_ssl_profiles:
       sample: no
     c3d_ca_cert:
       description:
-        - Name of the certificate file that is used as the
+        - Name of the certificate file used as the
           certification authority certificate when SSL client certificate
           constrained delegation is enabled.
       returned: queried
@@ -4442,7 +4442,7 @@ server_ssl_profiles:
       sample: /Common/cacert.crt
     c3d_ca_key:
       description:
-        - Name of the key file that is used as the
+        - Name of the key file used as the
           certification authority key when SSL client certificate
           constrained delegation is enabled.
       returned: queried
@@ -4528,7 +4528,7 @@ server_ssl_profiles:
       sample: 10
     key:
       description:
-        - Specifies the key file name. Specifies the name of the key
+        - Specifies the name of the key
           installed on the traffic management system for the purpose of
           terminating or initiating an SSL connection.
       returned: queried
@@ -4536,7 +4536,7 @@ server_ssl_profiles:
       sample: /Common/default.key
     max_active_handshakes:
       description:
-        - Specifies the maximum number allowed SSL active handshakes.
+        - Specifies the maximum number of allowed active SSL handshakes.
       returned: queried
       type: str
       sample: 100
@@ -4554,8 +4554,8 @@ server_ssl_profiles:
       sample: no
     ocsp:
       description:
-        - Specifies the name of ocsp profile for purpose of validating
-          status of server certificate.
+        - Specifies the name of the OCSP profile for validating
+          the status of the server certificate.
       returned: queried
       type: str
     options:
@@ -4594,7 +4594,7 @@ server_ssl_profiles:
       sample: indefinite
     renegotiate_size:
       description:
-        - Specifies a throughput size, in megabytes, of SSL renegotiation.
+        - Specifies a throughput size of SSL renegotiation, in megabytes.
       returned: queried
       type: str
       sample: indefinite
@@ -4606,8 +4606,8 @@ server_ssl_profiles:
       sample: yes
     retain_certificate:
       description:
-        - APM module requires storing certificate in SSL session. When C(no),
-          certificate will not be stored in SSL session.
+        - APM module requires storing certificates in the SSL session. When C(no),
+          a certificate will not be stored in the SSL session.
       returned: queried
       type: bool
       sample: no
@@ -4625,13 +4625,13 @@ server_ssl_profiles:
       sample: require
     server_name:
       description:
-        - Server name to be included in SNI (server name
+        - Server name to be included in the SNI (server name
           indication) extension during SSL handshake in ClientHello.
       returned: queried
       type: str
     session_mirroring:
       description:
-        - Enables or disables the mirroring of sessions to high availability
+        - Enables or disables the mirroring of sessions to the high availability
           peer.
       returned: queried
       type: bool
@@ -4653,7 +4653,7 @@ server_ssl_profiles:
       sample: yes
     sni_require:
       description:
-        - When C(yes), connections to a server that does not support SNI
+        - When C(yes), connections to a server that do not support SNI
           extension will be rejected.
       returned: queried
       type: bool
@@ -4666,13 +4666,13 @@ server_ssl_profiles:
       sample: yes
     ssl_forward_proxy_enabled:
       description:
-        - Enables or disables ssl-forward-proxy feature.
+        - Enables or disables the ssl-forward-proxy feature.
       returned: queried
       type: bool
       sample: no
     ssl_sign_hash:
       description:
-        - Specifies SSL sign hash algorithm which is used to sign and verify
+        - Specifies the SSL sign hash algorithm which is used to sign and verify
           SSL Server Key Exchange and Certificate Verify messages for the
           specified SSL profiles.
       returned: queried
@@ -4680,7 +4680,7 @@ server_ssl_profiles:
       sample: sha1
     ssl_forward_proxy_bypass:
       description:
-        - Enables or disables ssl-forward-proxy-bypass feature.
+        - Enables or disables the ssl-forward-proxy-bypass feature.
       returned: queried
       type: bool
       sample: yes
@@ -4694,7 +4694,7 @@ server_ssl_profiles:
     unclean_shutdown:
       description:
         - Specifies, when C(yes), that the SSL profile performs unclean
-          shutdowns of all SSL connections, which means that underlying TCP
+          shutdowns of all SSL connections. This means underlying TCP
           connections are closed without exchanging the required SSL
           shutdown alerts.
       returned: queried
@@ -4702,8 +4702,8 @@ server_ssl_profiles:
       sample: yes
     untrusted_cert_response_control:
       description:
-        - Specifies the BIGIP action when the server certificate has
-          untrusted CA.
+        - Specifies the BIG-IP action when the server certificate has
+          an untrusted CA.
       returned: queried
       type: str
       sample: drop
@@ -4735,7 +4735,7 @@ software_hotfixes:
     checksum:
       description:
         - MD5 checksum of the image.
-        - Note that this is the checksum that is stored inside the ISO. It is not
+        - Note that this is the checksum stored inside the ISO. It is not
           the actual checksum of the ISO.
       returned: queried
       type: str
@@ -4761,7 +4761,7 @@ software_hotfixes:
       sample: Hotfix Version 3.0.1679
     verified:
       description:
-        - Whether or not the system has verified this image.
+        - Specifies whether the system has verified this image.
       returned: queried
       type: bool
       sample: yes
@@ -4806,14 +4806,14 @@ software_images:
     checksum:
       description:
         - MD5 checksum of the image.
-        - Note that this is the checksum that is stored inside the ISO. It is not
+        - Note that this is the checksum stored inside the ISO. It is not
           the actual checksum of the ISO.
       returned: queried
       type: str
       sample: df1ec715d2089d0fa54c0c4284656a98
     file_size:
       description:
-        - Size, in megabytes, of the image.
+        - Size of the image, in megabytes.
       returned: queried
       type: int
       sample: 1938
@@ -4898,7 +4898,7 @@ software_volumes:
     status:
       description:
         - Status of the software installed, or being installed, in the volume.
-        - When C(complete), indicates that the software has completed installing.
+        - When C(complete), indicates the software has completed installing.
       returned: queried
       type: str
       sample: complete
@@ -4958,7 +4958,7 @@ ssl_certs:
       sample: "emailAddress=support@f5.com,CN=..."
     last_update_time:
       description:
-        - Specifies the last time at which the file-object was
+        - Specifies the last time the file-object was
           updated/modified.
       returned: queried
       type: str
@@ -4991,14 +4991,14 @@ ssl_certs:
       sample: "Aug 13 21:21:29 2031 GMT"
     expiration_timestamp:
       description:
-        - Specifies the date at which this certificate expires. Stored as a
+        - Specifies the date this certificate expires. Stored as a
           POSIX time.
       returned: queried
       type: int
       sample: 1944422489
     create_time:
       description:
-        - Specifies the time at which the file-object was created.
+        - Specifies the time the file-object was created.
       returned: queried
       type: str
       sample: "2018-05-15T21:11:15Z"
@@ -5029,7 +5029,7 @@ ssl_keys:
       sample: key1
     key_type:
       description:
-        - Specifies the cryptographic type of the key in question. That is,
+        - Specifies the cryptographic type of the key. That is,
           which algorithm this key is compatible with.
       returned: queried
       type: str
@@ -5146,13 +5146,13 @@ system_db:
       sample: false
     value:
       description:
-        - The value of the key
+        - The value of the key.
       returned: queried
       type: str
       sample: www.f5.com
     value_range:
       description:
-        - The accepted range of values for the key
+        - The accepted range of values for the key.
       returned: queried
       type: str
       sample: string
@@ -5188,7 +5188,7 @@ system_info:
           sample: 7
         hour:
           description:
-            - The current hour of the day in 24-hour form.
+            - The current hour of the day in 24-hour format.
           returned: queried
           type: int
           sample: 18
@@ -5212,7 +5212,7 @@ system_info:
           sample: 51
         year:
           description:
-            - The current year in 4-digit form.
+            - The current year in 4-digit format.
           returned: queried
           type: int
           sample: 2018
@@ -5290,7 +5290,7 @@ system_info:
       sample: 13.1.0.7
     product_built:
       description:
-        - Unix timestamp of when the product was built.
+        - UNIX timestamp of when the product was built.
       returned: queried
       type: int
       sample: 180515152630
@@ -5302,7 +5302,7 @@ system_info:
       sample: "Tue May 15 15:26:30 PDT 2018"
     product_changelist:
       description:
-        - Changelist that product branches from.
+        - Changelist the product branches from.
       returned: queried
       type: int
       sample: 2557198
@@ -5346,7 +5346,7 @@ system_info:
       type: str
     uptime:
       description:
-        - Time, in seconds, since the system booted.
+        - Time since the system booted, in seconds.
       returned: queried
       type: int
       sample: 603202
@@ -5589,46 +5589,46 @@ tcp_profiles:
     abc:
       description:
         - Appropriate Byte Counting (RFC 3465)
-        - When C(yes), increases the congestion window by basing the increase
-          amount on the number of previously unacknowledged bytes that each ACK covers.
+        - When C(yes), increases the congestion window by basing the amount to
+          increase on the number of previously unacknowledged bytes that each ACK covers.
       returned: queried
       type: bool
       sample: yes
     ack_on_push:
       description:
-        - Specifies, when C(yes), significantly improved performance to Microsoft
+        - When C(yes), specifies significantly improved performance to Microsoft
           Windows and MacOS peers who are writing out on a very small send buffer.
       returned: queried
       type: bool
       sample: no
     auto_proxy_buffer:
       description:
-        - Specifies, C(yes), that the system uses the network measurements to set
+        - When C(yes), specifies the system uses the network measurements to set
           the optimal proxy buffer size.
       returned: queried
       type: bool
       sample: yes
     auto_receive_window:
       description:
-        - Specifies, when C(yes), that the system uses the network measurements to
+        - When C(yes), specifies the system uses the network measurements to
           set the optimal receive window size.
       returned: queried
       type: bool
       sample: no
     auto_send_buffer:
       description:
-        - Specifies, when C(yes), that the system uses the network measurements to
+        - When C(yes), specifies the system uses the network measurements to
           set the optimal send buffer size.
       returned: queried
       type: bool
       sample: yes
     close_wait:
       description:
-        - Specifies the length of time that a TCP connection remains in the LAST-ACK
+        - Specifies the length of time a TCP connection remains in the LAST-ACK
           state before quitting.
         - In addition to a numeric value, the value of this fact may also be one of
           C(immediate) or C(indefinite).
-        - When C(immediate), specifies that the TCP connection closes immediately
+        - When C(immediate), specifies the TCP connection closes immediately
           after entering the LAST-ACK state.
         - When C(indefinite), specifies that TCP connections in the LAST-ACK state
           do not close until they meet the maximum retransmissions timeout.
@@ -5637,7 +5637,7 @@ tcp_profiles:
       sample: indefinite
     congestion_metrics_cache:
       description:
-        - Specifies, when C(yes), that the system uses a cache for storing congestion
+        - When C(yes), specifies the system uses a cache for storing congestion
           metrics.
         - Subsequently, because these metrics are already known and cached, the initial
           slow-start ramp for previously-encountered peers improves.
@@ -5663,7 +5663,7 @@ tcp_profiles:
       sample: high-speed
     deferred_accept:
       description:
-        - Specifies, when C(yes), that the system defers allocation of the connection
+        - When C(yes), specifies the system defers allocation of the connection
           chain context until the system has received the payload from the client.
         - Enabling this setting is useful in dealing with 3-way handshake denial-of-service
           attacks.
@@ -5672,7 +5672,7 @@ tcp_profiles:
       sample: yes
     delay_window_control:
       description:
-        - Specifies that the system uses an estimate of queuing delay as a measure of
+        - Specifies the system uses an estimate of queuing delay as a measure of
           congestion to control, in addition to the normal loss-based control, the amount
           of data sent.
       returned: queried
@@ -5680,7 +5680,7 @@ tcp_profiles:
       sample: yes
     delayed_acks:
       description:
-        - Specifies, when checked (enabled), that the system can send fewer than one ACK
+        - When checked (enabled), specifies the system can send fewer than one ACK
           (acknowledgment) segment per data segment received.
       returned: queried
       type: bool
@@ -5688,14 +5688,14 @@ tcp_profiles:
     dsack:
       description:
         - D-SACK (RFC 2883)
-        - Specifies, when C(yes), the use of the selective ACK (SACK) option to acknowledge
+        - When C(yes), specifies the use of the selective ACK (SACK) option to acknowledge
           duplicate segments.
       returned: queried
       type: bool
       sample: yes
     early_retransmit:
       description:
-        - Specifies, when C(yes), that the system uses early retransmit (as specified in
+        - When C(yes), specifies the system uses early retransmit (as specified in
           RFC 5827) to reduce the recovery time for connections that are receive- buffer
           or user-data limited.
       returned: queried
@@ -5703,7 +5703,7 @@ tcp_profiles:
       sample: yes
     explicit_congestion_notification:
       description:
-        - Specifies, when C(yes), that the system uses the TCP flags CWR (congestion window
+        - When C(yes), specifies the system uses the TCP flags CWR (congestion window
           reduction) and ECE (ECN-Echo) to notify its peer of congestion and congestion
           counter-measures.
       returned: queried
@@ -5718,7 +5718,7 @@ tcp_profiles:
       sample: yes
     fast_open:
       description:
-        - Specifies, when C(yes), that the system supports TCP Fast Open, which reduces
+        - When C(yes), specifies, the system supports TCP Fast Open, which reduces
           latency by allowing a client to include the first packet of data with the SYN
       returned: queried
       type: bool
@@ -5739,14 +5739,14 @@ tcp_profiles:
       sample: indefinite
     fin_wait_2:
       description:
-        - Specifies the length of time that a TCP connection is in the FIN-WAIT-2 state
+        - Specifies the length of time a TCP connection is in the FIN-WAIT-2 state
           before quitting.
       returned: queried
       type: str
       sample: 100
     idle_timeout:
       description:
-        - Specifies the length of time that a connection is idle (has no traffic) before
+        - Specifies the length of time a connection is idle (has no traffic) before
           the connection is eligible for deletion.
       returned: queried
       type: str
@@ -5772,7 +5772,7 @@ tcp_profiles:
       sample: pmtu
     ip_tos:
       description:
-        - Specifies the L3 Type of Service (ToS) level that the system inserts in TCP
+        - Specifies the L3 Type of Service (ToS) level the system inserts in TCP
           packets destined for clients.
       returned: queried
       type: str
@@ -5804,7 +5804,7 @@ tcp_profiles:
       sample: 50
     limited_transmit_recovery:
       description:
-        - Specifies, when C(yes), that the system uses limited transmit recovery
+        - When C(yes), specifies the system uses limited transmit recovery
           revisions for fast retransmits (as specified in RFC 3042) to reduce
           the recovery time for connections on a lossy network.
       returned: queried
@@ -5812,7 +5812,7 @@ tcp_profiles:
       sample: yes
     link_qos:
       description:
-        - Specifies the L2 Quality of Service (QoS) level that the system inserts
+        - Specifies the L2 Quality of Service (QoS) level the system inserts
           in TCP packets destined for clients.
       returned: queried
       type: str
@@ -5825,21 +5825,21 @@ tcp_profiles:
       sample: 8
     max_syn_retrans:
       description:
-        - Specifies the maximum number of times that the system resends a SYN
+        - Specifies the maximum number of times the system resends a SYN
           packet when it does not receive a corresponding SYN-ACK.
       returned: queried
       type: int
       sample: 3
     max_segment_size:
       description:
-        - Specifies the largest amount of data that the system can receive in a
+        - Specifies the largest amount of data the system can receive in a
           single TCP segment, not including the TCP and IP headers.
       returned: queried
       type: int
       sample: 1460
     md5_signature:
       description:
-        - Specifies, when C(yes), to use RFC2385 TCP-MD5 signatures to protect
+        - When C(yes), specifies to use RFC2385 TCP-MD5 signatures to protect
           TCP traffic against intermediate tampering.
       returned: queried
       type: bool
@@ -5853,7 +5853,7 @@ tcp_profiles:
       sample: 1000
     multipath_tcp:
       description:
-        - Specifies, when C(yes), that the system accepts Multipath TCP (MPTCP)
+        - When C(yes), specifies the system accepts Multipath TCP (MPTCP)
           connections, which allow multiple client-side flows to connect to a
           single server-side flow.
       returned: queried
@@ -5861,14 +5861,14 @@ tcp_profiles:
       sample: yes
     mptcp_checksum:
       description:
-        - Specifies, when C(yes), that the system calculates the checksum for
+        - When C(yes), specifies the system calculates the checksum for
           MPTCP connections.
       returned: queried
       type: bool
       sample: no
     mptcp_checksum_verify:
       description:
-        - Specifies, when C(yes), that the system verifies the checksum for
+        - When C(yes), specifies the system verifies the checksum for
           MPTCP connections.
       returned: queried
       type: bool
@@ -5882,7 +5882,7 @@ tcp_profiles:
       sample: reset
     mptcp_fast_join:
       description:
-        - Specifies, when C(yes), a FAST join, allowing data to be sent on the
+        - When C(yes), specifies a FAST join, allowing data to be sent on the
           MP_JOIN_SYN, which can allow a server response to occur in parallel
           with the JOIN.
       returned: queried
@@ -5904,14 +5904,14 @@ tcp_profiles:
       sample: 5
     mptcp_make_after_break:
       description:
-        - Specifies that make-after-break functionality is supported, allowing
+        - Specifies make-after-break functionality is supported, allowing
           for long-lived MPTCP sessions.
       returned: queried
       type: bool
       sample: no
     mptcp_no_join_dss_ack:
       description:
-        - Specifies, when checked (enabled), that no DSS option is sent on the
+        - When checked (enabled), specifies no DSS option is sent on the
           JOIN ACK.
       returned: queried
       type: bool
@@ -5981,7 +5981,7 @@ tcp_profiles:
       sample: 32768
     proxy_max_segment:
       description:
-        - Specifies, when C(yes), that the system attempts to advertise the same
+        - When C(yes), specifies the system attempts to advertise the same
           maximum segment size (MSS) to the server-side connection as that of the
           client-side connection.
       returned: queried
@@ -5989,7 +5989,7 @@ tcp_profiles:
       sample: yes
     proxy_options:
       description:
-        - Specifies, when C(yes), that the system advertises an option (such as
+        - When C(yes), specifies the system advertises an option (such as
           time stamps) to the server only when the option is negotiated with the
           client.
       returned: queried
@@ -6003,7 +6003,7 @@ tcp_profiles:
       sample: default
     rate_pace:
       description:
-        - Specifies, when C(yes), that the system paces the egress packets to
+        - When C(yes), specifies the system paces the egress packets to
           avoid dropping packets, allowing for optimum goodput.
       returned: queried
       type: bool
@@ -6023,7 +6023,7 @@ tcp_profiles:
       sample: 65535
     reset_on_timeout:
       description:
-        - Specifies, when C(yes), that the system sends a reset packet (RST)
+        - When C(yes), specifies the system sends a reset packet (RST)
           in addition to deleting the connection, when a connection exceeds
           the idle timeout value.
       returned: queried
@@ -6038,14 +6038,14 @@ tcp_profiles:
       sample: 3
     selective_acks:
       description:
-        - Specifies, when C(yes), that the system processes data using
+        - When C(yes), specifies the system processes data using
           selective ACKs (SACKs) whenever possible, to improve system performance.
       returned: queried
       type: bool
       sample: yes
     selective_nack:
       description:
-        - Specifies, when C(yes), that the system processes data using a selective
+        - When C(yes), specifies the system processes data using a selective
           negative acknowledgment (SNACK) whenever possible, to improve system
           performance.
       returned: queried
@@ -6059,7 +6059,7 @@ tcp_profiles:
       sample: 65535
     slow_start:
       description:
-        - Specifies, when C(yes), that the system uses Slow-Start Congestion
+        - When C(yes), specifies the system uses Slow-Start Congestion
           Avoidance as described in RFC3390 in order to ramp up traffic without
           causing excessive congestion on the link.
       returned: queried
@@ -6089,14 +6089,14 @@ tcp_profiles:
       sample: 3000
     tail_loss_probe:
       description:
-        - Specifies, when C(yes), that the system uses Tail Loss Probe to
+        - When C(yes), specifies the system uses Tail Loss Probe to
           reduce the number of retransmission timeouts.
       returned: queried
       type: bool
       sample: yes
     time_wait_recycle:
       description:
-        - Specifies, when C(yes), that connections in a TIME-WAIT state are
+        - When C(yes), specifies that connections in a TIME-WAIT state are
           reused when the system receives a SYN packet, indicating a request
           for a new connection.
       returned: queried
@@ -6111,14 +6111,14 @@ tcp_profiles:
       sample: 2000
     timestamps:
       description:
-        - Specifies, when C(yes), that the system uses the timestamps extension
+        - When C(yes), specifies the system uses the timestamps extension
           for TCP (as specified in RFC 1323) to enhance high-speed network performance.
       returned: queried
       type: bool
       sample: yes
     verified_accept:
       description:
-        - Specifies, when C(yes), that the system can actually communicate with
+        - When C(yes), specifies the system can actually communicate with
           the server before establishing a client connection.
       returned: queried
       type: bool
@@ -6257,7 +6257,7 @@ trunks:
       sample: yes
     link_selection_policy:
       description:
-        - The LACP policy that the trunk uses to determine which member link can handle
+        - The LACP policy the trunk uses to determine which member link can handle
           new traffic.
       returned: queried
       type: str
@@ -6276,7 +6276,7 @@ trunks:
       sample: ['1.2', '1.3']
     distribution_hash:
       description:
-        - The basis for the has that the system uses as the frame distribution algorithm.
+        - The basis for the hash that the system uses as the frame distribution algorithm.
         - The system uses this hash to determine which interface to use for forwarding
           traffic.
       returned: queried
@@ -6346,7 +6346,7 @@ udp_profiles:
       description:
         - Number of seconds that a connection is idle before
           the connection is eligible for deletion.
-        - In addition to a number, may be one of the values C(indefinite), or
+        - In addition to a number, may be one of the values C(indefinite) or
           C(immediate).
       returned: queried
       type: bool
@@ -6366,7 +6366,7 @@ udp_profiles:
       sample: pmtu
     ip_tos_to_client:
       description:
-        - The Type of Service level that the traffic management
+        - The Type of Service level the traffic management
           system assigns to UDP packets when sending them to clients.
         - May be numeric, or the values C(pass-through) or C(mimic).
       returned: queried
@@ -6376,11 +6376,11 @@ udp_profiles:
       description:
         - The outgoing UDP packet's TTL mode.
         - Valid modes are C(proxy), C(preserve), C(decrement), and C(set).
-        - When C(proxy), set the IP TTL of ipv4 to the default value of 255 and
-          ipv6 to the default value of 64.
-        - When C(preserve), set the IP TTL to the original packet TTL value.
-        - When C(decrement), set the IP TTL to the original packet TTL value minus 1.
-        - When C(set), set the IP TTL with the specified values in C(ip_ttl_v4) and
+        - When C(proxy), sets the IP TTL of IPv4 to the default value of 255 and
+          IPv6 to the default value of 64.
+        - When C(preserve), sets the IP TTL to the original packet TTL value.
+        - When C(decrement), sets the IP TTL to the original packet TTL value minus 1.
+        - When C(set), sets the IP TTL with the specified values in C(ip_ttl_v4) and
           C(ip_ttl_v6) values in the same profile.
       returned: queried
       type: str
@@ -6399,15 +6399,15 @@ udp_profiles:
       sample: 100
     link_qos_to_client:
       description:
-        - The Quality of Service level that the system assigns to
+        - The Quality of Service level the system assigns to
           UDP packets when sending them to clients.
-        - May be either numberic, or the value C(pass-through).
+        - May be either numberic or the value C(pass-through).
       returned: queried
       type: str
       sample: pass-through
     no_checksum:
       description:
-        - Whether the checksum processing is enabled or disabled.
+        - Whether checksum processing is enabled or disabled.
         - Note that if the datagram is IPv6, the system always performs
           checksum processing.
       returned: queried
@@ -6415,7 +6415,7 @@ udp_profiles:
       sample: yes
     proxy_mss:
       description:
-        - When C(yes), specifies that the system advertises the same mss
+        - When C(yes), specifies the system advertises the same mss
           to the server as was negotiated with the client.
       returned: queried
       type: bool
@@ -6452,7 +6452,7 @@ users:
       contains:
         name:
           description:
-            - Name of partition
+            - Name of partition.
           returned: queried
           type: str
           sample: all-partitions
@@ -6487,25 +6487,25 @@ vcmp_guests:
       sample: guest1
     allowed_slots:
       description:
-        - List of slots that the guest is allowed to be assigned to.
+        - List of slots the guest is allowed to be assigned to.
       returned: queried
       type: list
       sample: [0, 1, 3]
     assigned_slots:
       description:
-        - Slots that the guest is assigned to.
+        - Slots the guest is assigned to.
       returned: queried
       type: list
       sample: [0]
     boot_priority:
       description:
-        - Specifies boot priority of the guest. Lower number means earlier to boot.
+        - Specifies the boot priority of the guest. A lower number means earlier to boot.
       returned: queried
       type: int
       sample: 65535
     cores_per_slot:
       description:
-        - Number of cores that the system allocates to the guest.
+        - Number of cores the system allocates to the guest.
       returned: queried
       type: int
       sample: 2
@@ -6517,7 +6517,7 @@ vcmp_guests:
       sample: guest1.localdomain
     hotfix_image:
       description:
-        - hotfix image to install onto any of this guest's newly created virtual disks.
+        - Hotfix image to install onto any of this guest's newly created virtual disks.
       returned: queried
       type: str
       sample: Hotfix-BIGIP-12.1.3.4-0.0.2-hf1.iso
@@ -6553,7 +6553,7 @@ vcmp_guests:
       sample: ['/Common/vlan1', '/Common/vlan2']
     min_number_of_slots:
       description:
-        - Specifies the minimum number of slots that the guest must be assigned to.
+        - Specifies the minimum number of slots the guest must be assigned to.
       returned: queried
       type: int
       sample: 2
@@ -6648,7 +6648,7 @@ virtual_addresses:
       sample: yes
     floating:
       description:
-        - Property derived from traffic-group. A floating virtual
+        - Property derived from the traffic group. A floating virtual
           address is a virtual address for a VLAN that serves as a shared
           address by all devices of a BIG-IP traffic-group.
       returned: queried
@@ -6680,7 +6680,7 @@ virtual_addresses:
       sample: no
     inherited_traffic_group:
       description:
-        - Indicates if the traffic-group is inherited from the parent folder.
+        - Indicates if the traffic group is inherited from the parent folder.
       returned: queried
       type: bool
       sample: no
@@ -6875,85 +6875,85 @@ virtual_servers:
       sample: 0
     total_hardware_syn_cookies:
       description:
-        - SYN Cookies Total Hardware
+        - SYN Cookies Total Hardware.
       returned: queried
       type: int
       sample: 0
     hardware_syn_cookie_instances:
       description:
-        - Hardware SYN Cookie Instances
+        - Hardware SYN Cookie Instances.
       returned: queried
       type: int
       sample: 0
     total_software_rejected_syn_cookies:
       description:
-        - Total Software Rejected
+        - Total Software Rejected.
       returned: queried
       type: int
       sample: 0
     software_syn_cookie_instances:
       description:
-        - Software SYN Cookie Instances
+        - Software SYN Cookie Instances.
       returned: queried
       type: int
       sample: 0
     current_syn_cache:
       description:
-        - Current SYN Cache
+        - Current SYN Cache.
       returned: queried
       type: int
       sample: 0
     max_conn_duration:
       description:
-        - Max Conn Duration/msec
+        - Max Conn Duration/msec.
       returned: queried
       type: int
       sample: 0
     mean_conn_duration:
       description:
-        - Mean Conn Duration/msec
+        - Mean Conn Duration/msec.
       returned: queried
       type: int
       sample: 0
     min_conn_duration:
       description:
-        - Min Conn Duration/msec
+        - Min Conn Duration/msec.
       returned: queried
       type: int
       sample: 0
     cpu_usage_ratio_last_5_min:
       description:
-        - CPU Usage Ratio (%) Last 5 Minutes
+        - CPU Usage Ratio (%) Last 5 Minutes.
       returned: queried
       type: int
       sample: 0
     cpu_usage_ratio_last_5_sec:
       description:
-        - CPU Usage Ratio (%) Last 5 Seconds
+        - CPU Usage Ratio (%) Last 5 Seconds.
       returned: queried
       type: int
       sample: 0
     cpu_usage_ratio_last_1_min:
       description:
-        - CPU Usage Ratio (%) Last 1 Minute
+        - CPU Usage Ratio (%) Last 1 Minute.
       returned: queried
       type: int
       sample: 0
     syn_cache_overflow:
       description:
-        - SYN Cache Overflow
+        - SYN Cache Overflow.
       returned: queried
       type: int
       sample: 0
     total_software_syn_cookies:
       description:
-        - Total Software
+        - Total Software SYN Cookies
       returned: queried
       type: int
       sample: 0
     syn_cookies_status:
       description:
-        - SYN Cookies Status
+        - SYN Cookies Status.
       returned: queried
       type: str
       sample: not-activated
@@ -6998,7 +6998,7 @@ virtual_servers:
       sample: /Common/2.2.3.3%1:76
     last_hop_pool:
       description:
-        - Name of the last hop pool that you want the virtual
+        - Name of the last hop pool you want the virtual
           server to use to direct reply traffic to the last hop router.
       returned: queried
       type: str
@@ -7017,7 +7017,7 @@ virtual_servers:
       sample: preserve
     ip_intelligence_policy:
       description:
-        - IP Intelligence policy assigned to the virtual
+        - IP Intelligence policy assigned to the virtual.
       returned: queried
       type: str
       sample: /Common/ip1
@@ -7029,7 +7029,7 @@ virtual_servers:
       sample: tcp
     default_pool:
       description:
-        - Pool name that you want the virtual server to use as the default pool.
+        - Pool name you want the virtual server to use as the default pool.
       returned: queried
       type: str
       sample: /Common/pool1
@@ -7069,7 +7069,7 @@ virtual_servers:
       sample: /Common/pool1
     status_reason:
       description:
-        - If there is a problem with the status of the virtual, that problem is reported here.
+        - If there is a problem with the status of the virtual, it is reported here.
       returned: queried
       type: str
       sample: The children pool member(s) either don't have service checking...
@@ -7081,7 +7081,7 @@ virtual_servers:
       sample: 0
     rate_class:
       description:
-        - Name of an existing rate class that you want the
+        - Name of an existing rate class you want the
           virtual server to use to enforce a throughput policy for incoming
           network traffic.
       returned: queried
@@ -7275,7 +7275,7 @@ vlans:
       sample: 0
     sflow_poll_interval_global:
       description:
-        - Whether the global VLAN poll-interval setting, overrides the object-level
+        - Whether the global VLAN poll-interval setting overrides the object-level
           poll-interval setting.
       returned: queried
       type: bool
@@ -7288,7 +7288,7 @@ vlans:
       sample: 0
     sflow_sampling_rate_global:
       description:
-        - Whether the global VLAN sampling-rate setting, overrides the object-level
+        - Whether the global VLAN sampling-rate setting overrides the object-level
           sampling-rate setting.
       returned: queried
       type: bool

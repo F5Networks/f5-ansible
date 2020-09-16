@@ -12,17 +12,17 @@ DOCUMENTATION = r'''
 module: bigip_cgnat_lsn_pool
 short_description: Manage CGNAT LSN Pools
 description:
-  - Manage CGNAT LSN Pools.
+  - Manage CGNAT LSN (Large Scale NAT) Pools.
 version_added: "1.0.0"
 options:
   name:
     description:
-      - Specifies the name of the lsn pool to manage.
+      - Specifies the name of the LSN pool to manage.
     type: str
     required: True
   description:
     description:
-      - User created lsn pool description.
+      - User created LSN pool description.
     type: str
   client_conn_limit:
     description:
@@ -40,10 +40,10 @@ options:
   inbound_connections:
     description:
       - Controls whether or not the BIG-IP system supports inbound connections for each outbound mapping.
-      - When C(disabled) system does not support inbound connections for outbound mappings, which prevents
+      - When C(disabled), system does not support inbound connections for outbound mappings, which prevents
         Port Control Protocol C(pcp) from functioning.
-      - When C(explicit) system supports inbound connections for explicit outbound mappings.
-      - When C(automatic) system supports inbound connections for every outbound mapping as it gets used.
+      - When C(explicit), the system supports inbound connections for explicit outbound mappings.
+      - When C(automatic) the system supports inbound connections for every outbound mapping as it gets used.
     type: str
     choices:
       - disabled
@@ -54,10 +54,10 @@ options:
       - Specifies the translation address mapping mode.
       - The C(napt) mode provides standard address and port translation allowing multiple clients in a private network
         to access remote networks using the single IP address assigned to their router.
-      - The C(deterministic) address translation mode provides address translation that eliminates logging of every
+      - The C(deterministic) address translation mode provides address translation that eliminates the logging of every
         address mapping, while still allowing internal client address tracking using only an external address and port,
         and a destination address and port.
-      - The C(pba)mode logs the allocation and release of port blocks for subscriber translation requests,
+      - The C(pba) mode logs the allocation and release of port blocks for subscriber translation requests,
         instead of separately logging each translation request.
     type: str
     choices:
@@ -67,10 +67,10 @@ options:
   persistence_mode:
     description:
       - Specifies the persistence settings for LSN translation entries.
-      - When C(address) the translation attempts to reuse the address mapping, but not the port mapping.
-      - When C(address-port) the translation attempts to reuse both the address and port mapping  for subsequent
+      - When C(address), the translation attempts to reuse the address mapping, but not the port mapping.
+      - When C(address-port), the translation attempts to reuse both the address and port mapping for subsequent
         packets sent from the same internal IP address and port.
-      - When C(none) the peristence is disabled.
+      - When C(none), peristence is disabled.
     type: str
     choices:
       - address
@@ -103,7 +103,7 @@ options:
     description:
       - Specifies the number of ports in a block.
       - Valid range of values is between C(0) and C(65535) inclusive.
-      - The C(pba_block_size) value be less than or equal to the LSN pool range i.e range of ports defined by
+      - The C(pba_block_size) value should be less than or equal to the LSN pool range, i.e the range of ports defined by
         C(port_range_low) and C(port_range_high) values.
     type: int
   pba_client_block_limit:
@@ -133,8 +133,8 @@ options:
   egress_intf_enabled:
     description:
       - Specifies how the system handles address translation on the interfaces specified in C(egress_interfaces).
-      - When set to C(yes) the source address translation is allowed only on the specified C(egress_interfaces).
-      - When set to C(no) source address translation is disabled on specified C(egress_interfaces).
+      - When set to C(yes), source address translation is allowed only on the specified C(egress_interfaces).
+      - When set to C(no), source address translation is disabled on the specified C(egress_interfaces).
     type: bool
   egress_interfaces:
     description:
@@ -153,7 +153,7 @@ options:
     elements: str
   backup_members:
     description:
-      - Specifies translation IP addresses available for backup members, which is used by Deterministic translation
+      - Specifies translation IP addresses available for backup members, which are used by Deterministic translation
         mode if C(deterministic) mode translation fails and falls back to C(napt) mode.
       - This is a collection of IP prefixes with their prefix lengths.
     type: list
@@ -168,20 +168,20 @@ options:
     type: str
   partition:
     description:
-      - Device partition to manage resources on.
+      - Device partition on which to manage resources.
     type: str
     default: Common
   state:
     description:
-      - When C(state) is C(present), ensures that the LSN pool exists.
-      - When C(state) is C(absent), ensures that the LSN pool is removed.
+      - When C(state) is C(present), ensures the LSN pool exists.
+      - When C(state) is C(absent), ensures the LSN pool is removed.
     type: str
     choices:
       - present
       - absent
     default: present
 notes:
-  - Requires CGNAT licensed and enabled on BIG-IP.
+  - Requires CGNAT is licensed and enabled on BIG-IP.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
@@ -317,12 +317,12 @@ egress_intf_enabled:
   type: bool
   sample: no
 egress_interfaces:
-  description: The set of interfaces on which the source address translation is allowed or disallowed.
+  description: The set of interfaces on which source address translation is allowed or disallowed.
   returned: changed
   type: list
   sample: ['/Common/tunnel1', '/Common/tunnel2']
 members:
-  description: The et of translation IP addresses available in the pool.
+  description: The set of translation IP addresses available in the pool.
   returned: changed
   type: list
   sample: ['/Common/10.10.10.0/24', '/Common/11.11.11.0/25']

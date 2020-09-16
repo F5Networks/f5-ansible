@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_monitor_dns
 short_description: Manage DNS monitors on a BIG-IP
 description:
-  - Manages DNS monitors on a BIG-IP.
+  - Manages DNS health monitors on a BIG-IP.
 version_added: "1.0.0"
 options:
   name:
@@ -43,9 +43,9 @@ options:
     description:
       - Specifies the interval for the system to use to perform the health check
         when a resource is up.
-      - When C(0), specifies that the system uses the interval specified in
+      - When C(0), specifies the system uses the interval specified in
         C(interval) to check the health of the resource.
-      - When any other number, enables specification of a different interval to
+      - When any other number, enables you to specify a different interval to
         use when checking the health of a resource that is up.
       - When creating a new monitor, if this parameter is not provided, the
         default C(0) will be used.
@@ -56,16 +56,16 @@ options:
         the monitor request.
       - If the target responds within the set time period, it is considered up.
       - If the target does not respond within the set time period, it is considered down.
-      - You can change this number to any number you want, however, it should be 3 times the
+      - You can change this to any number, however, it should be 3 times the
         interval number of seconds plus 1 second.
-      - If this parameter is not provided when creating a new monitor, then the default
+      - If this parameter is not provided when creating a new monitor, the default
         value will be C(16).
     type: int
   transparent:
     description:
       - Specifies whether the monitor operates in transparent mode.
       - Monitors in transparent mode can monitor pool members through firewalls.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be C(no).
     type: bool
   reverse:
@@ -80,7 +80,7 @@ options:
     type: bool
   receive:
     description:
-      - Specifies the IP address that the monitor uses from the resource record sections
+      - Specifies the IP address the monitor uses from the resource record sections
         of the DNS response.
       - The IP address should be specified in the dotted-decimal notation or IPv6 notation.
     type: str
@@ -90,34 +90,34 @@ options:
         response before a node will be marked up.
       - A value of 0 will cause a node to be marked up immediately after a valid
         response is received from the node.
-      - If this parameter is not provided when creating a new monitor, then the default
+      - If this parameter is not provided when creating a new monitor, the default
         value will be C(0).
     type: int
   manual_resume:
     description:
       - Specifies whether the system automatically changes the status of a resource
         to B(enabled) at the next successful monitor check.
-      - If you set this option to C(yes), you must manually re-enable the resource
+      - If C(yes), you must manually re-enable the resource
         before the system can use it for load balancing connections.
       - When creating a new monitor, if this parameter is not specified, the default
         value is C(no).
-      - When C(yes), specifies that you must manually re-enable the resource after an
+      - When C(yes), specifies you must manually re-enable the resource after an
         unsuccessful monitor check.
-      - When C(no), specifies that the system automatically changes the status of a
+      - When C(no), specifies the system automatically changes the status of a
         resource to B(enabled) at the next successful monitor check.
     type: bool
   ip:
     description:
       - IP address part of the IP/port definition.
-      - If this parameter is not provided when creating a new monitor, then the
+      - If this parameter is not provided when creating a new monitor, the
         default value will be C(*).
     type: str
   port:
     description:
       - Port address part of the IP/port definition.
-      - If this parameter is not provided when creating a new monitor, then the default
+      - If this parameter is not provided when creating a new monitor, the default
         value will be C(*).
-      - Note that if specifying an IP address, a value between 1 and 65535 must be specified.
+      - Note that if specifying an IP address, you must use a value between 1 and 65535.
     type: str
   query_name:
     description:
@@ -125,24 +125,24 @@ options:
     type: str
   query_type:
     description:
-      - Specifies the type of DNS query that the monitor sends.
+      - Specifies the type of DNS query the monitor sends.
       - When creating a new monitor, if this parameter is not specified, the default
         value is C(a).
-      - When C(a), specifies that the monitor will send a DNS query of type A.
-      - When C(aaaa), specifies that the monitor will send a DNS query of type AAAA.
+      - When C(a), specifies the monitor will send a DNS query of type A.
+      - When C(aaaa), specifies the monitor will send a DNS query of type AAAA.
     type: str
     choices:
       - a
       - aaaa
   answer_section_contains:
     description:
-      - Specifies the type of DNS query that the monitor sends.
+      - Specifies the type of DNS query the monitor sends.
       - When creating a new monitor, if this value is not specified, the default
         value is C(query-type).
       - When C(query-type), specifies that the response should contain at least one
         answer of which the resource record type matches the query type.
-      - When C(any-type), specifies that the DNS message should contain at least one answer.
-      - When C(anything), specifies that an empty answer is enough to mark the status of
+      - When C(any-type), specifies the DNS message should contain at least one answer.
+      - When C(anything), specifies an empty answer is enough to mark the status of
         the node up.
     type: str
     choices:
@@ -154,9 +154,9 @@ options:
       - Specifies the RCODE required in the response for an up status.
       - When creating a new monitor, if this parameter is not specified, the default
         value is C(no-error).
-      - When C(no-error), specifies that the status of the node will be marked up if
+      - When C(no-error), specifies the status of the node will be marked up if
         the received DNS message has no error.
-      - When C(anything), specifies that the status of the node will be marked up
+      - When C(anything), specifies the status of the node will be marked up
         irrespective of the RCODE in the DNS message received.
       - If this parameter is set to C(anything), it will disregard the C(receive)
         string, and nullify it if the monitor is being updated.
@@ -177,7 +177,7 @@ options:
   allowed_divergence_type:
     description:
       - When specifying a new monitor, if C(adaptive) is C(yes), the default is
-        C(relative)
+        C(relative).
       - When C(absolute), the number of milliseconds the latency of a monitor probe
         can exceed the mean latency of a monitor probe for the service being probed.
         In typical cases, if the monitor detects three probes in a row that miss the
@@ -204,7 +204,7 @@ options:
     type: int
   sampling_timespan:
     description:
-      - Specifies the length, in seconds, of the probe history window that the system
+      - Specifies the length, in seconds, of the probe history window the system
         uses to calculate the mean latency and standard deviation of a monitor probe.
       - While this value can be configured when C(adaptive) is C(no), it will not take
         effect on the system until C(adaptive) is C(yes).
@@ -216,7 +216,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:
@@ -332,12 +332,12 @@ query_name:
   type: str
   sample: foo
 query_type:
-  description: Type of DNS query that the monitor sends. Either C(a) or C(aaaa).
+  description: Type of DNS query the monitor sends. Either C(a) or C(aaaa).
   returned: changed
   type: str
   sample: aaaa
 receive:
-  description: IP address that the monitor uses from the resource record sections of the DNS response.
+  description: IP address the monitor uses from the resource record sections of the DNS response.
   returned: changed
   type: str
   sample: 2.3.2.4

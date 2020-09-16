@@ -40,9 +40,9 @@ options:
       - The virtual address state. If C(absent), an attempt to delete the
         virtual address will be made. This will only succeed if this
         virtual address is not in use by a virtual server. C(present) creates
-        the virtual address and enables it. If C(enabled), enable the virtual
-        address if it exists. If C(disabled), create the virtual address if
-        needed, and set state to C(disabled).
+        the virtual address and enables it. If C(enabled), enables the virtual
+        address if it exists. If C(disabled), creates the virtual address if
+        needed, and sets state to C(disabled).
     type: str
     choices:
       - present
@@ -80,12 +80,12 @@ contact:
   type: str
   sample: admin@root.local
 description:
-  description: The description that was set for the datacenter.
+  description: The description for the datacenter.
   returned: changed
   type: str
   sample: Datacenter in NYC
 enabled:
-  description: Whether the datacenter is enabled or not
+  description: Whether the datacenter is enabled or not.
   returned: changed
   type: bool
   sample: true
@@ -100,7 +100,7 @@ state:
   type: str
   sample: disabled
 location:
-  description: The location that is set for the datacenter.
+  description: The location for the datacenter.
   returned: changed
   type: str
   sample: 222 West 23rd

@@ -13,7 +13,7 @@ module: bigip_dns_zone
 short_description: Manage DNS zones on BIG-IP
 description:
   - Manage DNS zones on BIG-IP. The zones managed here are primarily used
-    for configuring DNS Express on BIG-IP. This module does not configure
+    for configuring DNS Express on a BIG-IP. This module does not configure
     zones that are found in BIG-IP ZoneRunner.
 version_added: "1.0.0"
 options:
@@ -83,7 +83,7 @@ options:
     type: str
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:
