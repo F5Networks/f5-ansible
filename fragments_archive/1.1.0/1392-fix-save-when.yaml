@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix save_when parameter not saving configuration as expected in bigip_imish_config module

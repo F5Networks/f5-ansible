@@ -1,0 +1,5 @@
+---
+minor_changes:
+  - Add pva_acceleration parameter to bigip_profile_fastl4 module
+  - Add time_wait_timeout parameter to bigip_profile_tcp module
+  - Add hw_syn_cookie parameter to bigip_vlan module

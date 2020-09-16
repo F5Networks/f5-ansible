@@ -7,11 +7,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['stableinterface'],
-                    'supported_by': 'certified'}
-
 DOCUMENTATION = r'''
 ---
 module: bigip_apm_policy_import
@@ -48,6 +43,14 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
+  reuse_objects:
+    description:
+      - When set to C(yes) and objects referred within the policy exist on the BIG-IP,
+        those will be used instead of the objects defined in the policy.
+      - Reusing existing objects reduces configuration size.
+      - The configuration of existing objects might differ to the configuration of the objects defined in the policy!
+    default: yes
+    type: bool
 notes:
   - Due to ID685681 it is not possible to execute ng_* tools via REST API on v12.x and 13.x, once this is fixed
     this restriction will be removed.
@@ -89,6 +92,17 @@ EXAMPLES = r'''
       user: admin
       password: secret
   delegate_to: localhost
+
+- name: Import APM profile without re-using existing configuration objects
+  bigip_apm_policy_import:
+    name: new_apm_profile
+    source: /root/apm_profile.tar.gz
+    reuse_objects: false
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -109,6 +123,11 @@ type:
   sample: access_policy
 force:
   description: Set when overwriting an existing policy or profile.
+  returned: changed
+  type: bool
+  sample: yes
+reuse_objects:
+  description: Set when reusing existing objects on the BIG-IP.
   returned: changed
   type: bool
   sample: yes
@@ -309,7 +328,14 @@ class ModuleManager(object):
         name = os.path.split(self.want.source)[1]
         self.upload_file_to_device(self.want.source, name)
 
-        cmd = 'ng_import -s /var/config/rest/downloads/{0} {1} -p {2}'.format(name, self.want.name, self.want.partition)
+        if self.want.reuse_objects is True:
+            reuse_objects = "-s"
+        else:
+            reuse_objects = ""
+
+        cmd = 'ng_import {0} /var/config/rest/downloads/{1} {2} -p {3}'.format(
+            reuse_objects, name, self.want.name, self.want.partition
+        )
 
         uri = "https://{0}:{1}/mgmt/tm/util/bash/".format(
             self.client.provider['server'],
@@ -369,6 +395,10 @@ class ArgumentSpec(object):
             type=dict(
                 default='profile_access',
                 choices=['profile_access', 'access_policy']
+            ),
+            reuse_objects=dict(
+                type='bool',
+                default='yes'
             ),
             partition=dict(
                 default='Common',

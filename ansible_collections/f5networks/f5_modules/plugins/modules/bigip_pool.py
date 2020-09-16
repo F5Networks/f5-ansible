@@ -7,18 +7,13 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
 DOCUMENTATION = r'''
 ---
 module: bigip_pool
 short_description: Manages F5 BIG-IP LTM pools
 description:
   - Manages F5 BIG-IP LTM pools via iControl REST API.
-version_added: "1.2.0"
+version_added: "1.0.0"
 options:
   description:
     description:

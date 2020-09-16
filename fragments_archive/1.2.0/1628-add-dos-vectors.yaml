@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - Add dns-oversize DNS protocol security vector to bigip_firewall_doc_vector
+  - Add ipv6-ext-hdr-frames security vector to bigip_firewall_doc_vector

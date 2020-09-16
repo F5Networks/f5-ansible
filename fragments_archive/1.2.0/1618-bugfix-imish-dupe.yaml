@@ -1,0 +1,7 @@
+---
+bugfixes:
+  - Fix handling of duplicate records by the bigip_imish_config module
+
+minor_changes:
+  - Add allow_duplicates parameter to bigip_imish_config module
+  - Add ImishConfig class to add duplicate records handling capability

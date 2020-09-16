@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix '?' character handling in value for bigip_data_group module

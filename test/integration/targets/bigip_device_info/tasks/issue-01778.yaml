@@ -1,0 +1,29 @@
+---
+
+- name: Issue 01778 - Gather device info with sync status
+  bigip_device_info:
+    gather_subset:
+      - sync-status
+  register: bigip_facts
+
+- name: Issue 01778 - Assert Gather device info with sync status
+  assert:
+    that:
+      - bigip_facts is success
+
+- name: Issue 01778 - Output Sync Status
+  vars:
+    jmesquery: "sync_status"
+  debug:
+    msg: "{{ bigip_facts | json_query(jmesquery) }}"
+
+- name: Issue 01778 - Extract Sync Status
+  vars:
+    jmesquery: "sync_status[0].[color, recommended_action]"
+  set_fact:
+    bigip_sync_status: "{{ bigip_facts | json_query(jmesquery) }}"
+
+- name: Issue 01778 - Check Sync Status is Green
+  fail:
+    msg: "FAILED! sync status is: {{ bigip_sync_status[0] }}, please consider following the recommended action: {{ bigip_sync_status[1] }}"
+  when: bigip_sync_status[0] != "green"

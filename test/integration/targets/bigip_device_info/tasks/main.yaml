@@ -9,7 +9,7 @@
       - system-info
   register: result
 
-- name: Assert Select multilple facts
+- name: Assert Select multiple facts
   assert:
     that:
       - result is success
@@ -496,3 +496,21 @@
 
 - import_tasks: issue-01757.yaml
   tags: issue-01757
+
+- import_tasks: issue-01778.yaml
+  tags: issue-01778
+
+- import_tasks: issue-01784.yaml
+  tags: issue-01784
+
+- import_tasks: issue-fmfa0581.yaml
+  tags: issue-fmfa0581
+
+- import_tasks: issue-fmfa0582.yaml
+  tags: issue-fmfa0582
+
+- import_tasks: issue-fmfa0583.yaml
+  tags: issue-fmfa0583
+
+- import_tasks: issue-cfe.yaml
+  tags: issue-cfe

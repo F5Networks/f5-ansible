@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Add pool order option to bigip_gtm_wide_ip module

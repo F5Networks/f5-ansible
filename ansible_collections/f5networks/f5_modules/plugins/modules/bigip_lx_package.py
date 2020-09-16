@@ -7,11 +7,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
 DOCUMENTATION = r'''
 ---
 module: bigip_lx_package
@@ -361,11 +356,12 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            if 'commandResult' in response and self.want.package_file in response['commandResult']:
-                return True
-            return False
+            if 'commandResult' in response:
+                if 'No such file or directory' in response['commandResult']:
+                    return False
+                elif self.want.package_file in response['commandResult']:
+                    return True
         raise F5ModuleError(resp.content)
 
     def remove_package_file_from_device(self):

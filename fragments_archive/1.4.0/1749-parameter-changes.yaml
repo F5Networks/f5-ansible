@@ -1,0 +1,5 @@
+---
+major_changes:
+  - Remove redundant parameters in f5_provider to fix disparity between documentation and modules' parameters
+minor_changes:
+  - Add SSH connection type capability to bigip_wait module

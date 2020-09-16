@@ -8,11 +8,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
 DOCUMENTATION = r'''
 ---
 module: bigip_device_info
@@ -35,13 +30,18 @@ options:
       - all
       - monitors
       - profiles
+      - apm-access-profiles
+      - apm-access-policies
+      - as3
       - asm-policy-stats
       - asm-policies
       - asm-server-technologies
       - asm-signature-sets
       - client-ssl-profiles
+      - cfe
       - devices
       - device-groups
+      - do
       - external-monitors
       - fasthttp-profiles
       - fastl4-profiles
@@ -86,8 +86,10 @@ options:
       - software-hotfixes
       - ssl-certs
       - ssl-keys
+      - sync-status
       - system-db
       - system-info
+      - ts
       - tcp-monitors
       - tcp-half-open-monitors
       - tcp-profiles
@@ -102,6 +104,8 @@ options:
       - "!all"
       - "!monitors"
       - "!profiles"
+      - "!apm-access-profiles"
+      - "!apm-access-policies"
       - "!asm-policy-stats"
       - "!asm-policies"
       - "!asm-server-technologies"
@@ -153,6 +157,7 @@ options:
       - "!software-hotfixes"
       - "!ssl-certs"
       - "!ssl-keys"
+      - "!sync-status"
       - "!system-db"
       - "!system-info"
       - "!tcp-monitors"
@@ -208,6 +213,46 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+apm_access_profiles:
+  description: Information about APM Access Profiles.
+  returned: When C(apm-access-profiles) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: queried
+      type: str
+      sample: /Common/foo_policy
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: queried
+      type: str
+      sample: foo_policy
+    access_policy:
+      description:
+        - APM Access Policy attached to this Access Profile.
+      returned: queried
+      type: str
+      sample: foo_policy
+apm_access_policies:
+  description: Information about APM Access Policies.
+  returned: When C(apm-access-policies) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: queried
+      type: str
+      sample: /Common/foo_policy
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: queried
+      type: str
+      sample: foo_policy
 asm_policy_stats:
   description: Miscellaneous ASM policy related information.
   returned: When C(asm-policy-stats) is specified in C(gather_subset).
@@ -5015,6 +5060,61 @@ ssl_keys:
       type: str
       sample: 1fcf7de3dd8e834d613099d8e10b2060cd9ecc9f
   sample: hash/dictionary of values
+sync_status:
+  description:
+    - Configuration Synchronization Status across all Device Groups.
+    - Note that the sync-status works across all device groups - a specific device group cannot be queried for its sync-status.
+    - In general the device-group with the 'worst' sync-status will be shown.
+  returned: When C(sync-status) is specified in C(gather_subset).
+  type: complex
+  contains:
+    color:
+      description:
+        - Sync status color.
+        - Eg. red, blue, green, yellow
+      returned: queried
+      type: str
+      sample: red
+    details:
+      description:
+        - A list of all details provided for the current sync-status of the device
+      returned: queried
+      type: list
+      sample:
+        - Optional action: Add a device to the trust domain
+    mode:
+      description:
+        - Device operation mode (high-availability, standalone)
+      returned: queried
+      type: str
+      sample:
+        - high-availability
+        - standalone
+    recommended_action:
+      description:
+        - The next recommended action to take on the current sync-status.
+        - This field might be empty.
+      returned: queried
+      type: str
+      sample: Synchronize bigip-a.example.com to group some-device-group
+    status:
+      description:
+        - Synchronization Status
+      returned: queried
+      type: str
+      sample:
+        - Changes Pending
+        - In Sync
+        - Standalone
+        - Disconnected
+    summary:
+      description: The configuration synchronization status summary
+      returned: queried
+      type: str
+      sample:
+        - The device group is awaiting the initial config sync
+        - There is a possible change conflict between ...
+  sample: hash/dictionary of values
 system_db:
   description: System DB related information.
   returned: When C(system-db) is specified in C(gather_subset).
@@ -7326,6 +7426,184 @@ class BaseParameters(Parameters):
         return result
 
 
+class ApmAccessProfileFactParameters(BaseParameters):
+    api_map = {
+        'accessPolicy': 'access_policy',
+        'fullPath': 'full_path',
+    }
+
+    returnables = [
+        'access_policy',
+        'full_path',
+        'name',
+    ]
+
+
+class ApmAccessProfileFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ApmAccessProfileFactManager, self).__init__(**kwargs)
+        self.want = ApmAccessProfileFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(apm_access_profiles=facts)
+        return result
+
+    def _exec_module(self):
+        if 'apm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ApmAccessProfileFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/apm/profile/access".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class ApmAccessPolicyFactParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+    ]
+
+
+class ApmAccessPolicyFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(ApmAccessPolicyFactManager, self).__init__(**kwargs)
+        self.want = ApmAccessProfileFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(apm_access_policies=facts)
+        return result
+
+    def _exec_module(self):
+        if 'apm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = ApmAccessProfileFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/apm/policy/access-policy".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class As3Parameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+
+    ]
+
+
+class As3FactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(As3FactManager, self).__init__(**kwargs)
+        self.want = self.module.params
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(as3_config=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        return facts
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        return collection
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/appsvcs/declare".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'class' not in response:
+            return []
+        result = {}
+        result['declaration'] = response
+        return result
+
+
 class AsmPolicyStatsParameters(BaseParameters):
     api_map = {
 
@@ -8367,6 +8645,56 @@ class ClientSslProfilesFactManager(BaseManager):
         return result
 
 
+class CFEParameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+
+    ]
+
+
+class CFEFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(CFEFactManager, self).__init__(**kwargs)
+        self.want = self.module.params
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(cfe_config=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        return facts
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        return collection
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/cloud-failover/declare".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        result = {}
+        result['declaration'] = response['declaration']
+        return result
+
+
 class DeviceGroupsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -8636,6 +8964,56 @@ class DevicesFactManager(BaseManager):
         if 'items' not in response:
             return []
         result = response['items']
+        return result
+
+
+class DOParameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+
+    ]
+
+
+class DOFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(DOFactManager, self).__init__(**kwargs)
+        self.want = self.module.params
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(do_config=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        return facts
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        return collection
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/declarative-onboarding/inspect".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        result = {}
+        result['declaration'] = response[0]['declaration']
         return result
 
 
@@ -13490,6 +13868,115 @@ class SystemDbParameters(BaseParameters):
     ]
 
 
+class SyncStatusParameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+        'color',
+        'details',
+        'mode',
+        'recommended_action',
+        'status',
+        'summary',
+    ]
+
+    @property
+    def color(self):
+        result = self._values.get('color', {}).get('description', "")
+        if result.strip():
+            return result
+        return ""
+
+    @property
+    def details(self):
+        result = []
+        details = (self._values.get('https://localhost/mgmt/tm/cm/syncStatus/0/details', {})
+                               .get('nestedStats', {})
+                               .get('entries', {}))
+        for entry in details.keys():
+            result.append(
+                details[entry].get('nestedStats', {})
+                              .get('entries', {})
+                              .get('details', {})
+                              .get('description', "")
+            )
+        result.reverse()
+        return result
+
+    @property
+    def mode(self):
+        result = self._values.get('mode', {}).get('description', "")
+        if result.strip():
+            return result
+        return ""
+
+    @property
+    def status(self):
+        result = self._values.get('status', {}).get('description', "")
+        if result.strip():
+            return result
+        return ""
+
+    @property
+    def summary(self):
+        result = self._values.get('summary', {}).get('description', "")
+        if result.strip():
+            return result
+        return ""
+
+    @property
+    def recommended_action(self):
+        for entry in self.details:
+            match = re.match(r".*[Rr]ecommended action:\s(.*)$", entry)
+            if match:
+                return match.group(1)
+        return ""
+
+
+class SyncStatusFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SyncStatusFactManager, self).__init__(**kwargs)
+        self.want = SyncStatusParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(sync_status=facts)
+        return result
+
+    def _exec_module(self):
+        facts = self.read_facts()
+        attrs = facts.to_return()
+        result = [attrs]
+        return result
+
+    def read_facts(self):
+        collection = self.read_collection_from_device()
+        return SyncStatusParameters(params=collection)
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/cm/sync-status".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        result = response.get('entries', {}) \
+                         .get('https://localhost/mgmt/tm/cm/sync-status/0', {}) \
+                         .get('nestedStats', {}) \
+                         .get('entries')
+        return result
+
+
 class SystemDbFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
         self.client = kwargs.get('client', None)
@@ -13671,7 +14158,7 @@ class SystemInfoParameters(BaseParameters):
 
     def _transform_name_attribute(self, entry):
         if isinstance(entry, dict):
-            for k, v in iteritems(entry):
+            for k, v in list(entry.items()):
                 if k == 'tmName':
                     entry['name'] = entry.pop('tmName')
                 self._transform_name_attribute(v)
@@ -13979,6 +14466,58 @@ class SystemInfoFactManager(BaseManager):
 
         result = parseStats(response)
         return result[0]
+
+
+class TSParameters(BaseParameters):
+    api_map = {
+    }
+
+    returnables = [
+
+    ]
+
+
+class TSFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(TSFactManager, self).__init__(**kwargs)
+        self.want = self.module.params
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(ts_config=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        return facts
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        return collection
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/shared/telemetry/declare".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'message' not in response:
+            return []
+        result = {}
+        result['declaration'] = response['declaration']
+        return result
 
 
 class TcpMonitorsParameters(BaseParameters):
@@ -16234,13 +16773,18 @@ class ModuleManager(object):
         self.kwargs = kwargs
         self.want = Parameters(params=self.module.params)
         self.managers = {
+            'apm-access-profiles': ApmAccessProfileFactManager,
+            'apm-access-policies': ApmAccessPolicyFactManager,
+            'as3': As3FactManager,
             'asm-policy-stats': AsmPolicyStatsFactManager,
             'asm-policies': AsmPolicyFactManager,
             'asm-server-technologies': AsmServerTechnologyFactManager,
             'asm-signature-sets': AsmSignatureSetsFactManager,
             'client-ssl-profiles': ClientSslProfilesFactManager,
+            'cfe': CFEFactManager,
             'devices': DevicesFactManager,
             'device-groups': DeviceGroupsFactManager,
+            'do': DOFactManager,
             'external-monitors': ExternalMonitorsFactManager,
             'fasthttp-profiles': FastHttpProfilesFactManager,
             'fastl4-profiles': FastL4ProfilesFactManager,
@@ -16283,8 +16827,10 @@ class ModuleManager(object):
             'software-hotfixes': SoftwareHotfixesFactManager,
             'ssl-certs': SslCertificatesFactManager,
             'ssl-keys': SslKeysFactManager,
+            'sync-status': SyncStatusFactManager,
             'system-db': SystemDbFactManager,
             'system-info': SystemInfoFactManager,
+            'ts': TSFactManager,
             'tcp-monitors': TcpMonitorsFactManager,
             'tcp-half-open-monitors': TcpHalfOpenMonitorsFactManager,
             'tcp-profiles': TcpProfilesFactManager,
@@ -16436,15 +16982,20 @@ class ArgumentSpec(object):
                     'profiles',
                     'gtm-pools',
                     'gtm-wide-ips',
+                    'as3',
 
                     # Non-meta choices
+                    'apm-access-profiles',
+                    'apm-access-policies',
                     'asm-policies',
                     'asm-policy-stats',
                     'asm-server-technologies',
                     'asm-signature-sets',
                     'client-ssl-profiles',
+                    'cfe',
                     'devices',
                     'device-groups',
+                    'do',
                     'external-monitors',
                     'fasthttp-profiles',
                     'fastl4-profiles',
@@ -16487,8 +17038,10 @@ class ArgumentSpec(object):
                     'software-hotfixes',
                     'ssl-certs',
                     'ssl-keys',
+                    'sync-status',
                     'system-db',
                     'system-info',
+                    'ts',
                     'tcp-monitors',
                     'tcp-half-open-monitors',
                     'tcp-profiles',
@@ -16509,6 +17062,8 @@ class ArgumentSpec(object):
                     '!gtm-wide-ips',
 
                     # Negations of non-meta-choices
+                    '!apm-access-profiles',
+                    '!apm-access-policies',
                     '!asm-policy-stats',
                     '!asm-policies',
                     '!asm-server-technologies',
@@ -16558,6 +17113,7 @@ class ArgumentSpec(object):
                     '!software-hotfixes',
                     '!ssl-certs',
                     '!ssl-keys',
+                    '!sync-status',
                     '!system-db',
                     '!system-info',
                     '!tcp-monitors',

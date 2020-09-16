@@ -1,0 +1,10 @@
+---
+
+- name: Select do facts
+  bigip_device_info:
+    include:
+      - do
+  register: result
+
+- debug:
+    var: result

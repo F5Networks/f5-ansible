@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Add retain_package_file option to bigip_lx_package module

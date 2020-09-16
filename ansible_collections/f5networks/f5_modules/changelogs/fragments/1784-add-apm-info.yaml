@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - Add access profile information to bigip_device_info module
+  - Add access policy information to bigip_device_info module

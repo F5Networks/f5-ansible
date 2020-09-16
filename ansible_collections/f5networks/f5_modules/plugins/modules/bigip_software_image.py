@@ -7,11 +7,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
 DOCUMENTATION = r'''
 ---
 module: bigip_software_image
@@ -405,9 +400,7 @@ class ModuleManager(object):
         try:
             upload_file(self.client, url, self.want.image)
         except F5ModuleError:
-            raise F5ModuleError(
-                "Failed to upload the file."
-            )
+            raise
 
     def read_current_from_device(self):
         resp = self.client.api.get(self.image_url)
