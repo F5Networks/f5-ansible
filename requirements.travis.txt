@@ -9,3 +9,4 @@ nose
 mock
 virtualenv
 semver
+antsibull-changelog
