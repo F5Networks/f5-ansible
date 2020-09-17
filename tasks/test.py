@@ -16,6 +16,7 @@ from invoke import task
 
 @task(name='f5-sanity')
 def f5_sanity(c):
+    collection = '{0}/ansible_collections/f5networks/f5_modules'.format(BASE_DIR)
     """Runs additional sanity tests on the F5 modules."""
     cmds = [
         'bash {0}/test/sanity/correct-defaultdict-import.sh'.format(BASE_DIR),
@@ -30,6 +31,12 @@ def f5_sanity(c):
 
     for cmd in cmds:
         c.run(cmd, pty=True)
+
+    with c.cd(collection):
+        cmd = "antsibull-changelog lint -v"
+        result = c.run(cmd, warn=True)
+        if result.failed:
+            sys.exit(1)
 
 
 @task

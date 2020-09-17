@@ -9,3 +9,4 @@ mock
 pycodestyle
 virtualenv
 invoke
+antsibull-changelog
