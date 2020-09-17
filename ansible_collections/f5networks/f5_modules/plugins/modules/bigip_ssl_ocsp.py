@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_ssl_ocsp
 short_description: Manage OCSP configurations on BIG-IP
 description:
-  - Manage OCSP configurations on BIG-IP.
+  - Manage OCSP configurations on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -30,7 +30,7 @@ options:
         response.
       - This involves creating a pool with proxy-servers.
       - Use this option when either the OCSP responder cannot be reached on any of
-        BIG-IP system's interfaces or one or more servers can proxy an HTTP request
+        BIG-IP system's interfaces, or one or more servers can proxy an HTTP request
         to an external server and fetch the response.
     type: str
   cache_timeout:
@@ -54,7 +54,7 @@ options:
       - This involves specifying one or more DNS servers in the DNS resolver
         configuration.
       - Use this option when either there is a DNS server that can do the
-        name-resolution of the OCSP responders or the OCSP responder can be
+        name-resolution of the OCSP responders, or the OCSP responder can be
         reached on one of BIG-IP system's interfaces.
     type: str
   route_domain:
@@ -83,7 +83,7 @@ options:
     type: str
   status_age:
     description:
-      - Specifies the maximum allowed lag time that the BIG-IP system accepts for
+      - Specifies the maximum allowed lag time the BIG-IP system accepts for
         the 'thisUpdate' time in the OCSP response.
     type: int
   strict_responder_checking:
@@ -93,7 +93,7 @@ options:
     type: bool
   connection_timeout:
     description:
-      - Specifies the time interval that the BIG-IP system waits for before
+      - Specifies the time interval the BIG-IP system waits for before
         ending the connection to the OCSP responder, in seconds.
     type: int
   trusted_responders:
@@ -109,8 +109,8 @@ options:
     type: str
   update_password:
     description:
-      - C(always) will allow to update passwords if the user chooses to do so.
-        C(on_create) will only set the password for newly created OCSP validators.
+      - C(always) allows the user to update passwords.
+        C(on_create) only sets the password for newly created OCSP validators.
     type: str
     choices:
       - always
@@ -123,8 +123,8 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
-      - When C(absent), ensures that the resource does not exist.
+      - When C(present), ensures the resource exists.
+      - When C(absent), ensures the resource does not exist.
     type: str
     choices:
       - present

@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_ssl_key
 short_description: Import/Delete SSL keys from BIG-IP
 description:
-  - This module will import/delete SSL keys on a BIG-IP. Keys can be imported
+  - This module imports/deletes SSL keys on a BIG-IP. Keys can be imported
     from key files on the local disk, in PEM format.
 version_added: "1.0.0"
 options:
@@ -26,9 +26,9 @@ options:
       - key_content
   state:
     description:
-      - When C(present), ensures that the key is uploaded to the device. When
-        C(absent), ensures that the key is removed from the device. If the key
-        is currently in use, the module will not be able to remove the key.
+      - When C(present), ensures the key is uploaded to the device. When
+        C(absent), ensures the key is removed from the device. If the key
+        is currently in use, the module is not able to remove the key.
     type: str
     choices:
       - present
@@ -50,7 +50,7 @@ options:
     default: Common
 notes:
   - This module does not behave like other modules that you might include in
-    roles where referencing files or templates first looks in the role's
+    roles, where referencing files or templates first looks in the role's
     files or templates directory. To have it behave that way, use the Ansible
     file or template lookup (see Examples). The lookups behave as expected in
     a role context.
@@ -95,12 +95,12 @@ key_filename:
   type: str
   sample: cert1.key
 key_checksum:
-  description: SHA1 checksum of the key that was provided.
+  description: SHA1 checksum of the key.
   returned: changed and created
   type: str
   sample: cf23df2207d99a74fbe169e3eba035e633b65d94
 key_source_path:
-  description: Path on BIG-IP where the source of the key is stored
+  description: Path on BIG-IP where the source of the key is stored.
   returned: created
   type: str
   sample: /var/config/rest/downloads/cert1.key
