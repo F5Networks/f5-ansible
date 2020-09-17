@@ -27,6 +27,7 @@ options:
     choices:
       - profile_access
       - access_policy
+      - profile_api_protection
     default: profile_access
   source:
     description:
@@ -333,8 +334,8 @@ class ModuleManager(object):
         else:
             reuse_objects = ""
 
-        cmd = 'ng_import {0} /var/config/rest/downloads/{1} {2} -p {3}'.format(
-            reuse_objects, name, self.want.name, self.want.partition
+        cmd = 'ng_import {0} /var/config/rest/downloads/{1} {2} -p {3} -t {4}'.format(
+            reuse_objects, name, self.want.name, self.want.partition, self.want.type
         )
 
         uri = "https://{0}:{1}/mgmt/tm/util/bash/".format(
@@ -394,7 +395,7 @@ class ArgumentSpec(object):
             ),
             type=dict(
                 default='profile_access',
-                choices=['profile_access', 'access_policy']
+                choices=['profile_access', 'access_policy', 'profile_api_protection']
             ),
             reuse_objects=dict(
                 type='bool',
