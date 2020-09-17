@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_selfip
 short_description: Manage Self-IPs on a BIG-IP system
 description:
-  - Manage Self-IPs on a BIG-IP system.
+  - Manage Self-IP addresses on a BIG-IP system.
 version_added: "1.0.0"
 options:
   address:
@@ -23,16 +23,16 @@ options:
     type: str
   allow_service:
     description:
-      - Configure port lockdown for the Self IP. By default, the Self IP has a
-        "default deny" policy. This can be changed to allow TCP and UDP ports
+      - Configure port lockdown for the self IP. By default, the self IP has a
+        "default deny" policy. This can be changed to allow TCP and UDP ports,
         as well as specific protocols. This list should contain C(protocol):C(port)
         values.
     type: list
     elements: str
   name:
     description:
-      - The self IP to create.
-      - If this parameter is not specified, then it will default to the value supplied
+      - The name of the self IP to create.
+      - If this parameter is not specified, it defaults to the value supplied
         in the C(address) parameter.
     type: str
     required: True
@@ -42,14 +42,14 @@ options:
     type: str
   netmask:
     description:
-      - The netmask for the self IP. When creating a new Self IP, this value
+      - The netmask for the self IP. When creating a new self IP, this value
         is required.
     type: str
   state:
     description:
-      - When C(present), guarantees that the Self-IP exists with the provided
+      - When C(present), guarantees the self IP exists with the provided
         attributes.
-      - When C(absent), removes the Self-IP from the system.
+      - When C(absent), removes the self IP from the system.
     type: str
     choices:
       - absent
@@ -57,32 +57,31 @@ options:
     default: present
   traffic_group:
     description:
-      - The traffic group for the Self IP addresses in an active-active,
-        redundant load balancer configuration. When creating a new Self IP, if
-        this value is not specified, the default of C(/Common/traffic-group-local-only)
-        will be used.
+      - The traffic group for the self IP addresses in an active-active,
+        redundant load balancer configuration. When creating a new self IP, if
+        this value is not specified, the default is C(/Common/traffic-group-local-only).
     type: str
   vlan:
     description:
-      - The VLAN that the new self IPs will be on. When creating a new Self
+      - The VLAN for the new self IPs. When creating a new self
         IP, this value is required.
     type: str
   route_domain:
     description:
-      - The route domain id of the system. When creating a new Self IP, if
-        this value is not specified, a default value of C(0) will be used.
+      - The route domain id of the system. When creating a new self IP, if
+        this value is not specified, the default value is C(0).
       - This value cannot be changed after it is set.
     type: int
   fw_enforced_policy:
     description:
-      - Specifies AFM policy to be attached to Self IP.
+      - Specifies an AFM policy to attach to Self IP.
     type: str
     version_added: "1.1.0"
   partition:
     description:
       - Device partition to manage resources on. You can set different partitions
-        for Self IPs, but the address used may not match any other address used
-        by a Self IP. In that sense, Self IPs are not isolated by partitions as
+        for self IPs, but the address used may not match any other address used
+        by a self IP. Thus, self IPs are not isolated by partitions as
         other resources on a BIG-IP are.
     type: str
     default: Common
@@ -194,37 +193,37 @@ EXAMPLES = r'''
 
 RETURN = r'''
 allow_service:
-  description: Services that allowed via this Self IP.
+  description: Services that are allowed via this self IP.
   returned: changed
   type: list
   sample: ['igmp:0','tcp:22','udp:53']
 address:
-  description: The address for the Self IP.
+  description: The address for the self IP.
   returned: changed
   type: str
   sample: 192.0.2.10
 name:
-  description: The name of the Self IP.
+  description: The name of the self IP.
   returned: created
   type: str
   sample: self1
 netmask:
-  description: The netmask of the Self IP.
+  description: The netmask of the self IP.
   returned: changed
   type: str
   sample: 255.255.255.0
 traffic_group:
-  description: The traffic group that the Self IP is a member of.
+  description: The traffic group of which the self IP is a member.
   returned: changed
   type: str
   sample: traffic-group-local-only
 vlan:
-  description: The VLAN set on the Self IP
+  description: The VLAN set on the self IP.
   returned: changed
   type: str
   sample: vlan1
 fw_enforced_policy:
-  description: Specfies AFM policy to be attached to Self IP.
+  description: Specifies an AFM policy to be attached to the self IP.
   returned: changed
   type: str
   sample: /Common/afm-blocking-policy
