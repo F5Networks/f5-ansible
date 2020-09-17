@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_sys_db
 short_description: Manage BIG-IP system database variables
 description:
-  - Manage BIG-IP system database variables
+  - Manage BIG-IP system database variables.
 version_added: "1.0.0"
 options:
   key:
@@ -23,7 +23,7 @@ options:
   state:
     description:
       - The state of the variable on the system. When C(present), guarantees
-        that an existing variable is set to C(value). When C(reset) sets the
+        an existing variable is set to C(value). When C(reset), sets the
         variable back to the default value. At least one of value and state
         C(reset) are required.
     type: str
@@ -37,7 +37,7 @@ options:
         are required.
     type: str
 notes:
-  - Requires BIG-IP version 12.0.0 or greater
+  - Requires BIG-IP version 12.0.0 or later.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -77,17 +77,17 @@ EXAMPLES = r'''
 
 RETURN = r'''
 name:
-  description: The key in the system database that was specified
+  description: The key in the system database.
   returned: changed and success
   type: str
   sample: setup.run
 default_value:
-  description: The default value of the key
+  description: The default value of the key.
   returned: changed and success
   type: str
   sample: true
 value:
-  description: The value that you set the key to
+  description: The value that you set the key to.
   returned: changed and success
   type: str
   sample: false
