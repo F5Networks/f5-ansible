@@ -52,6 +52,11 @@ New Modules
 v1.3.0
 ======
 
+Major Changes
+--------------------------------
+
+- Broke apart bigip_device_auth_radius to implement radius server configuration in bigip_device_auth_server module. Refer to module documentation for usage details
+
 Minor Changes
 -------------
 
@@ -69,11 +74,6 @@ Minor Changes
 - New bigip_monitor_mysql module to manage mysql monitor configuration
 - New bigip_monitor_oracle module to manage oracle monitor configuration
 - New bigip_ssl_csr_module to create CSR files
-
-Breaking Changes / Porting Guide
---------------------------------
-
-- Broke apart bigip_device_auth_radius to implement radius server configuration in bigip_device_auth_server module. Refer to module documentation for usage details
 
 Removed Features (previously deprecated)
 ----------------------------------------
