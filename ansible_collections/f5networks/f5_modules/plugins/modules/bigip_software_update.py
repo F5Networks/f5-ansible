@@ -62,7 +62,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 auto_check:
-  description: Whether the system checks for updates automatically.
+  description: Whether the system automatically checks for updates.
   returned: changed
   type: bool
   sample: True
@@ -72,7 +72,7 @@ auto_phone_home:
   type: bool
   sample: True
 frequency:
-  description: Frequency of auto update checks
+  description: Frequency of auto update checks.
   returned: changed
   type: str
   sample: weekly

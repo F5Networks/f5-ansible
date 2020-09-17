@@ -18,7 +18,7 @@ version_added: "1.3.0"
 options:
   name:
     description:
-      - The name of the csr file.
+      - The name of the CSR file.
     type: str
     required: True
   common_name:
@@ -31,8 +31,8 @@ options:
     type: str
   state:
     description:
-      - When C(present), ensures that the resource exists.
-      - When C(absent), ensures that the resource does not exist.
+      - When C(present), ensures the resource exists.
+      - When C(absent), ensures the resource does not exist.
     type: str
     choices:
       - present
@@ -40,7 +40,7 @@ options:
     default: present
   dest:
     description:
-      - Destination on your local filesystem when you want to save the csr file.
+      - Destination on your local filesystem when you want to save the CSR file.
     type: path
     required: True
   force:
@@ -70,12 +70,12 @@ EXAMPLES = r'''
 
 RETURN = r'''
 csr_name:
-  description: The name of the CSR file that the user provided
+  description: The name of the CSR file.
   returned: created
   type: str
   sample: csr-name
 common_name:
-  description: The common name of the CSR file that the user provided
+  description: The common name of the CSR file.
   returned: created
   type: str
   sample: csr-name
