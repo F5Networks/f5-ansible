@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_profile_persistence_universal
 short_description: Manage universal persistence profiles
 description:
-  - Manages universal persistence profiles.
+  - Manages universal persistence profiles on the BIG-IP system.
 version_added: "1.1.0"
 options:
   name:
@@ -33,28 +33,28 @@ options:
     type: str
   match_across_services:
     description:
-      - When C(yes), specifies that all persistent connections from a client IP address that go
+      - When C(yes), specifies all persistent connections from a client IP address that go
         to the same virtual IP address also go to the same node.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: bool
   match_across_virtuals:
     description:
-      - When C(yes), specifies that all persistent connections from the same client IP address
+      - When C(yes), specifies all persistent connections from the same client IP address
         go to the same node.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: bool
   match_across_pools:
     description:
-      - When C(yes), specifies that the system can use any pool that contains this persistence
+      - When C(yes), specifies the system can use any pool that contains this persistence
         record.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: bool
   mirror:
     description:
-      - When C(yes), specifies that if the active unit goes into the standby mode, the system
+      - When C(yes), specifies if the active unit goes into the standby mode, the system
         mirrors any persistence records to its peer.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
@@ -63,7 +63,7 @@ options:
     description:
       - Specifies the iRule used to select a persistence entry.
       - When creating a new profile, if this parameter is not specified, the
-        default is None, that disables this setting.
+        default is C(None), which disables this setting.
     type: str
   timeout:
     description:
@@ -75,7 +75,7 @@ options:
     type: str
   override_connection_limit:
     description:
-      - When C(yes), specifies that the system allows you to specify that pool member connection
+      - When C(yes), specifies the system allows you to specify that pool member connection
         limits will be overridden for persisted clients.
       - Per-virtual connection limits remain hard limits and are not overridden.
     type: bool
@@ -86,7 +86,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:

@@ -200,7 +200,7 @@ author:
   - Wojciech Wypior (@wojtek0806)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add pool member
   bigip_pool_member:
     pool: my-pool
@@ -348,7 +348,7 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 rate_limit:
   description: The new rate limit, in connections per second, of the pool member.
   returned: changed
